@@ -1,6 +1,6 @@
 <template>
   <div ref="barChart" class="echarts-bar" :style="{height}">
-      <sdc-chart :options="barOption" :autoresize="true"></sdc-chart>
+      <sl-chart :options="barOption" :autoresize="true"></sl-chart>
   </div>
 </template>
 

@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'development') {
   require('@shared/mock/index.js')
 }
 
-Vue.component('sdc-chart', ECharts)
+Vue.component('sl-chart', ECharts)
 Vue.config.productionTip = false
 
 Vue.prototype.$http = http
