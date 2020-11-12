@@ -7,7 +7,7 @@
 </template>
 
 <style lang="scss">
-@import '@assets/scss/_reset.scss';
+// @import '@assets/scss/_reset.scss';
 
 html {
   font-size: 12px;

@@ -1,16 +1,23 @@
 <template>
-<div class="w-login-container">
-  <form class="w-login">
-    <div class="w-form-item" :class="{error:userNameProp.isError && submited}">
-      <input type="text" v-model="userNameProp.value" :placeholder="userNameProp.tip">
-    </div>
-    <div class="w-form-item" :class="{error:passwordProp.isError && submited}">
-      <input type="password" v-model="passwordProp.value" :placeholder="passwordProp.tip">
-    </div>
-    <div class="w-button">
-      <button type="button" @click="login" :disabled="!canLogin">{{submitText}}</button>
-    </div>
-  </form>
+<div class="sl-login-container">
+    <el-form class="sl-login" :model="loginForm" :rules="loginRules" ref="loginForm"
+        label-position="left">
+        <div class="title-container">
+          <h3 class="title">{{systemName}}</h3>
+        </div>
+        <el-form-item prop="username">
+            <span class="el-icon-s-custom"></span>
+            <el-input name="username" type="text" v-model="loginForm.username"
+              placeholder="username" />
+        </el-form-item>
+        <el-form-item prop="password">
+            <span class="el-icon-lock"></span>
+            <el-input name="password" type="password" v-model="loginForm.password"
+                placeholder="password" />
+        </el-form-item>
+        <el-button ref="loginBtn" type="primary">{{registerText}}</el-button>
+        <el-button ref="loginBtn" type="primary" @click="login">{{loginText}}</el-button>
+    </el-form>
 </div>
 </template>
 
@@ -18,104 +25,67 @@
 export default {
   data () {
     return {
-      submitText: '登录',
-      submited: false,
-      userNameProp: {
-        value: '',
-        isError: true,
-        tip: '用户名'
+      systemName: 'Starlink  供 应 商 平 台',
+      registerText: '注册',
+      loginText: '登录',
+      loginForm: {
+        username: '',
+        password: ''
       },
-      passwordProp: {
-        value: '',
-        isError: true,
-        tip: '密码'
+      loginRules: {
+        username: [
+          {
+            required: true,
+            message: '账户不能为空',
+            trigger: 'blur'
+          },
+          {
+            min: 3,
+            max: 20,
+            message: '长度在 3 到 20 个字符',
+            trigger: 'blur'
+          }
+        ],
+        password: [
+          {
+            required: true,
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
   watch: {
-    'userNameProp.value': function () {
-      this.userNameProp.isError = this.userNameProp.value === ''
-    },
-    'passwordProp.value': function () {
-      this.passwordProp.isError = this.passwordProp.value === ''
-    }
+
   },
   computed: {
-    canLogin: function () {
-      return !this.userNameProp.isError && !this.passwordProp.isError
-    }
   },
   methods: {
-    login (event) {
-      if (!this.submited) {
-        this.submited = true
-      }
-      if (this.canLogin) {
-        this.$router.push('home')
-      }
+    login () {
+      this.$router.push('home')
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-$borderW:1px;
-$errorCorlor:#f00;
-$fontCorlor:#fff;
-$placeholderColor:#ccc;
-$black:#000;
+@import '@assets/scss/_var.scss';
 
-.w-login-container {
+.sl-login-container {
   height: 100%;
-  // background-image: url('/img/bg.jpg');
-  background-color: $black;
+  background-color: $color-login-bg;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.w-login {
+.sl-login {
   display: inline-block;
   position: absolute;
   left: 50%;
   top: 50%;
   padding: 1em;
   transform: translate(-50%,-50%);
-}
-
-.w-form-item {
-  margin-bottom: 1em;
-  &.error {
-    input {
-      border:$borderW solid $errorCorlor
-    }
-  }
-
-  input {
-    padding: 0.5em;
-    width: 20vw;
-    font-size: 1.5rem;
-    color:$fontCorlor;
-    background: transparent;
-    border: none;
-    box-shadow: 0 0 0.5em #000;
-  }
-  input::-webkit-input-placeholder {
-    color:$placeholderColor;
-  }
-}
-
-.w-button {
-  button {
-    width: 10vw;
-    padding: 0.3em 0.5em;
-    border: none;
-    color: $fontCorlor;
-    font-size: 1.8rem;
-    box-shadow: 0 0 1em;
-    background: transparent;
-    cursor: pointer;
-  }
 }
 
 </style>

@@ -6,7 +6,7 @@ import ECharts from 'vue-echarts'
 import { http, get, post, del, patch, put } from '@shared/http'
 import i18n from '@/lang'
 import '@components/element'
-import '@assets/scss/com.scss'
+import '@assets/scss/common.scss'
 import 'element-ui/lib/theme-chalk/index.css'
 
 if (process.env.NODE_ENV === 'development') {
