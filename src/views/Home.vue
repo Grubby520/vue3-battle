@@ -36,8 +36,8 @@ export default {
 </script>
 
 <style lang="scss">
-  @import '@static/scss/_var.scss';
-  @import '@static/scss/_fn.scss';
+  @import '@assets/scss/_var.scss';
+  @import '@assets/scss/_fn.scss';
   $headerLH:pxToRem(50px);
   $asideMinW:pxToRem(220px);
   $headerBg:#052137;

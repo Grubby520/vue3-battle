@@ -6,7 +6,7 @@
 
 <script>
 import { merge } from '@shared/util'
-import { BaseOption } from './com'
+import { BASE_OPTION } from './baseOption'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 
@@ -27,11 +27,11 @@ export default {
   },
   watch: {
     options: function (newValue) {
-      this.barOption = merge({}, BaseOption, this.defaultOption, this.options)
+      this.barOption = merge({}, BASE_OPTION, this.defaultOption, this.options)
     }
   },
   mounted () {
-    this.barOption = merge({}, BaseOption, this.defaultOption, this.options)
+    this.barOption = merge({}, BASE_OPTION, this.defaultOption, this.options)
   }
 }
 </script>

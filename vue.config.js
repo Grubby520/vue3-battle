@@ -10,9 +10,14 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias
-      .set('@components', resolve('src/components'))
-      .set('@static', resolve('src/assets'))
       .set('@shared', resolve('src/shared'))
+      .set('@components', resolve('src/shared/components'))
+      .set('@directives', resolve('src/shared/directives'))
+      .set('@filters', resolve('src/shared/filters'))
+      .set('@mixins', resolve('src/shared/mixins'))
+      .set('@plugins', resolve('src/shared/plugins'))
+      .set('@assets', resolve('src/assets'))
+      .set('@api', resolve('src/api'))
   },
   configureWebpack: {
     plugins: []

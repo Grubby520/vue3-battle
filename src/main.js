@@ -6,11 +6,11 @@ import ECharts from 'vue-echarts'
 import { http, get, post, del, patch, put } from '@shared/http'
 import i18n from '@/lang'
 import '@components/element'
+import '@assets/scss/com.scss'
 import 'element-ui/lib/theme-chalk/index.css'
-import './assets/scss/com.scss'
 
 if (process.env.NODE_ENV === 'development') {
-  require('@shared/mock/index.js')
+  require('@/mock')
 }
 
 Vue.component('sl-chart', ECharts)

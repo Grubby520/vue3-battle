@@ -1,6 +1,6 @@
 <script>
 import EchartsBar from '@components/echarts/EchartsBar'
-import { API } from '@shared/api'
+// import { API } from '@api/api'
 import { setLang } from '@shared/util'
 
 export default {
@@ -92,9 +92,9 @@ export default {
     )
   },
   mounted: function () {
-    this.$get(API.def).then(data => {
-      this.$console.log(data)
-    })
+    // this.$get(API.def).then(data => {
+    //   this.$console.log(data)
+    // })
   }
 }
 </script>
