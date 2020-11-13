@@ -1,0 +1,36 @@
+{
+  // 保存文件时，自动格式化
+  "editor.formatOnSave": true,
+  // 格式化粘贴到文件内的内容
+  "editor.formatOnPaste": true,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // 是否开启eslint检测
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "html",
+    "vue",
+    "typescript",
+    "typescriptreact",
+    "jsx"
+  ],
+  "vetur.validation.template": false,
+  "vetur.format.defaultFormatter.html": "prettyhtml",
+  "vetur.format.defaultFormatter.js": "vscode-typescript",
+  "vetur.format.defaultFormatterOptions": {
+    "prettier": {
+      "singleQuote": true,
+      "semi": false,
+      "eslintIntegration": true
+    }
+  },
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "[vue]": {
+    "editor.defaultFormatter": "octref.vetur"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
+}

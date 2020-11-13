@@ -1,9 +1,9 @@
 <template>
-    <div>
-        首页内容
-        <br>
-        <router-link to="doc">Go to Doc</router-link>
-    </div>
+  <div>
+    首页内容
+    <br />
+    <router-link to="doc">Go to Doc</router-link>
+  </div>
 </template>
 
 <script>
@@ -23,5 +23,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 </style>
