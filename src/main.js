@@ -8,6 +8,7 @@ import i18n from '@/lang'
 import '@components/element'
 import '@assets/scss/common.scss'
 import 'element-ui/lib/theme-chalk/index.css'
+import '@components/register.js'
 
 if (process.env.NODE_ENV === 'development') {
   require('@/mock')

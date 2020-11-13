@@ -1,5 +1,4 @@
 <script>
-import EchartsBar from '@components/echarts/EchartsBar'
 // import { API } from '@api/api'
 import { setLang } from '@shared/util'
 
@@ -61,7 +60,6 @@ export default {
     }
   },
   components: {
-    EchartsBar
   },
   render: function (h) {
     return (
@@ -87,7 +85,7 @@ export default {
         <input vShow={this.showInput} vModel={this.inputText} />&nbsp;&nbsp;<span>{this.inputText}</span>
         <button onClick={this.btnClick}>隐藏/显示输入框</button>
         <h1>图标功能测试</h1>
-        <echarts-bar options={this.barOpt}></echarts-bar>
+        <SlEchartsBar options={this.barOpt}></SlEchartsBar>
       </div>
     )
   },

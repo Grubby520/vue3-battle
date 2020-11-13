@@ -1,8 +1,5 @@
 {
-  // 保存文件时，自动格式化
-  "editor.formatOnSave": true,
-  // 格式化粘贴到文件内的内容
-  "editor.formatOnPaste": true,
+  // "editor.formatOnSave": true,
   "[scss]": {
     "editor.formatOnSave": false
   },
@@ -38,5 +35,8 @@
   },
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
   }
 }

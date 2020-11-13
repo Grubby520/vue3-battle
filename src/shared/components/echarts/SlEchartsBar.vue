@@ -11,7 +11,7 @@ import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 
 export default {
-  name: 'EchartsBar',
+  name: 'SlEchartsBar',
   data () {
     return {
       defaultOption: {}, // 柱状图基础配置
