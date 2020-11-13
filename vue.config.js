@@ -3,6 +3,7 @@ const path = require('path')
 function resolve (dirName) {
   return path.resolve(__dirname, dirName)
 }
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
   css: {
@@ -18,6 +19,10 @@ module.exports = {
       .set('@plugins', resolve('src/shared/plugins'))
       .set('@assets', resolve('src/assets'))
       .set('@api', resolve('src/api'))
+
+    if (process.env.config_report) {
+      config.plugin('webpack-bundle-analyzer').use(BundleAnalyzerPlugin)
+    }
   },
   configureWebpack: {
     plugins: []
