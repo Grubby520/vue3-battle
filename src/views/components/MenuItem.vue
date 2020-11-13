@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 'MenuBar',
+  name: 'MenuItem',
   props: {
     isCollapse: {
       type: Boolean,
@@ -30,25 +30,7 @@ export default {
   },
   data: () => {
     return {
-      menu: [
-        {
-          path: '1',
-          name: 'name',
-          icon: 'icon',
-          chidren: [
-            {
-              path: '1-2',
-              name: 'name12',
-              icon: 'icon12'
-            }
-          ]
-        },
-        {
-          path: '2',
-          name: 'name2',
-          icon: 'icon2'
-        }
-      ]
+
     }
   },
   methods: {
