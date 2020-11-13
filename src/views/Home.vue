@@ -1,24 +1,24 @@
 <template>
-  <div class="home">
-    <!--头部-->
-    <header class="page-header">
-      <!-- <img alt="logo" src="../assets/logo.png"> -->
-    </header>
-    <section class="page-body">
-      <!--侧边栏-->
-      <aside class="page-aside">
-      </aside>
-      <!--页面内容-->
-      <article class="page-content">
-        <div class="page-breadcrumb">
-          <el-breadcrumb separator-class="el-icon-arrow-right">
-            <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" :to="{ path: item.path }">{{item.label}}</el-breadcrumb-item>
-          </el-breadcrumb>
-        </div>
+  <section class="home page-body">
+    <!--侧边栏-->
+    <aside class="page-aside">
+    </aside>
+    <!--页面内容-->
+    <article class="page-article">
+      <!--头部-->
+      <header class="page-header">
+        <!-- <img alt="logo" src="../assets/logo.png"> -->
+      </header>
+      <div class="page-breadcrumb">
+        <el-breadcrumb separator-class="el-icon-arrow-right">
+          <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" :to="{ path: item.path }">{{item.label}}</el-breadcrumb-item>
+        </el-breadcrumb>
+      </div>
+      <div class="page-content">
         <router-view/>
-      </article>
-    </section>
-  </div>
+      </div>
+    </article>
+  </section>
 </template>
 
 <script>
@@ -40,32 +40,35 @@ export default {
   @import '@assets/scss/_fn.scss';
   $headerLH:pxToRem(50px);
   $asideMinW:pxToRem(220px);
-  $headerBg:#052137;
 
   .block-border {
     box-sizing: border-box;
   }
 
-  .page-header {
-    height: $headerLH;
-    line-height: $headerLH;
-    box-sizing: border-box;
-    background-color: $headerBg;
-  }
-
   .page-body {
     display: flex;
-    height: calc(100vh - #{$headerLH});
+    height: 100%;
     @extend .block-border;
     .page-aside {
       flex: 1;
       min-width:$asideMinW;
+      max-width:$asideMinW;
+      background-color: $color-aside-bg;
       @extend .block-border;
     }
 
-    .page-content {
+    .page-article {
+      height: calc(100vh - #{$headerLH});
       flex: 5;
       @extend .block-border;
+
+      .page-header {
+        height: $headerLH;
+        line-height: $headerLH;
+        box-sizing: border-box;
+        background-color: $color-header-bg;
+      }
+
       .page-breadcrumb {
         padding: 1em;
       }

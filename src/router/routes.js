@@ -12,7 +12,7 @@ export const routes = [
       {
         path: '',
         name: 'index',
-        component: () => import('../views/homeChildren/Index.vue')
+        component: () => import('../views/Index.vue')
       }
     ]
   },
