@@ -3,8 +3,8 @@
   "editor.formatOnSave": true,
   // 格式化粘贴到文件内的内容
   "editor.formatOnPaste": true,
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "[scss]": {
+    "editor.formatOnSave": false
   },
   // 是否开启eslint检测
   "eslint.validate": [
@@ -27,6 +27,12 @@
     }
   },
   "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[vue]": {
     "editor.defaultFormatter": "octref.vetur"
   },
