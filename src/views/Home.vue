@@ -114,6 +114,7 @@ $asideMinW: pxToRem(220px);
 
     .page-content {
       flex: 1;
+      overflow: auto;
     }
   }
 }

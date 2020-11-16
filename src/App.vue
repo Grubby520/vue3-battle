@@ -7,10 +7,8 @@
 </template>
 
 <style lang="scss">
-// @import '@assets/scss/_reset.scss';
-
 html {
-  font-size: 12px;
+  font-size: 10px; //设为10,方便计算rem
 }
 
 html,
@@ -23,6 +21,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  font-size: 14px; // 设计稿主字体大小
   height: 100%;
 }
 </style>
