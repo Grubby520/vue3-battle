@@ -13,7 +13,7 @@
               />
             </SlBaseCell>
           </el-col>
-          <el-col :span="7">
+          <el-col :span="8">
             <SlBaseCell label="供方货号">
               <el-input
                 v-model.trim="recommonPar.productName"
@@ -49,7 +49,7 @@
         @handleSelectionChange="handleSelectionChange"
       >
         <div slot="opration" slot-scope="props">
-          <span @click="pass(props)" class="btn">维护</span>
+          <span @click="maintain(props)" class="btn">维护</span>
           <span @click="pass()" class="btn">查看</span>
           <span @click="pass()" class="btn">推品</span>
           <span @click="pass()" class="btn">删除</span>
@@ -67,7 +67,7 @@ export default {
       tableData: [],
       columns: [
         {
-          prop: 'ID',
+          prop: 'product',
           label: '商品信息',
           width: '300',
           isInImg: 'imageSrc',
@@ -123,6 +123,18 @@ export default {
       //   .then((res) => {
       //   const { list, pageNum, pageSize, total } = res.data
       // this.tableData = list
+      this.tableData = [
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          storeName: 'ffeersd',
+          img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+          skuCode: '上海市普陀区江路 1517 弄',
+          url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+          startTime: '2020-11-16',
+          creatTime: '2020-11-18'
+        }
+      ]
       updatePagination({
         pageIndex: 1,
         pageSize: pageSize,
@@ -137,7 +149,10 @@ export default {
       // 复选框信息
       console.log(val)
     },
-    reset () { }
+    reset () { },
+    maintain (row) {
+
+    }
   }
 }
 </script>
