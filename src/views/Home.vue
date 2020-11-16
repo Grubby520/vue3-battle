@@ -94,8 +94,10 @@ $asideMinW: pxToRem(220px);
   }
 
   .page-article {
-    height: calc(100vh - #{$headerLH});
+    height: 100%;
     flex: 1;
+    display: flex;
+    flex-direction: column;
     @extend .block-border;
 
     .page-header {
@@ -105,8 +107,13 @@ $asideMinW: pxToRem(220px);
       background-color: $color-header-bg;
     }
 
-    .page-breadcrumb {
+    .page-breadcrumb,
+    .page-content {
       padding: 1em;
+    }
+
+    .page-content {
+      flex: 1;
     }
   }
 }
