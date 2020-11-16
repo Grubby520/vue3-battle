@@ -9,7 +9,8 @@ export default new Vuex.Store({
     systemName: 'Starlink供应商平台',
     loadingInstance: null,
     breadcrumbs: [],
-    activePath: null
+    activePath: null,
+    menuCollapse: false
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
     },
     SET_ACTIVE_PATH (state, activePath) {
       state.activePath = activePath
+    },
+    SET_MENU_COLLAPSE (state, menuCollapse) {
+      state.menuCollapse = menuCollapse
     }
   },
   actions: {
