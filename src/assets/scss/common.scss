@@ -1,18 +1,21 @@
 @import '@assets/scss/_reset.scss';
 
-//全局图表块样式
+.align-center {
+  text-align: center;
+}
+
 .echarts {
-    width: 100% !important;
-    height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .mr-2rem {
-    margin-right: 2rem !important;
+  margin-right: 2rem !important;
 }
 
 .btn{
-    color:rgb(21, 146, 241);
-    display:block;
+  color:rgb(21, 146, 241);
+  display:block;
 }
 .flex-left{
   display: flex;
