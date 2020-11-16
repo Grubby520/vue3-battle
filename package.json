@@ -16,6 +16,7 @@
     "core-js": "^3.4.4",
     "d3": "^5.15.0",
     "echarts": "^4.6.0",
+    "element-china-area-data": "^5.0.2",
     "element-ui": "^2.13.0",
     "jsplumb": "^2.12.8",
     "lodash": "^4.17.20",
