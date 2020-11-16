@@ -1,13 +1,12 @@
 <template>
   <div>
-    首页内容
-    <br />
-    <router-link to="/doc">Go to Doc</router-link>
+    我的档案
   </div>
 </template>
 
 <script>
 export default {
+  name: 'MyFile',
   data () {
     return {
 
