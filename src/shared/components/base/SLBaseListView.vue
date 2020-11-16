@@ -1,15 +1,15 @@
 <template>
-  <div class="list">
-    <div slot="top" v-if="$slots.criteria || $slots.addButton">
+  <div class="bases">
+    <div slot="top" v-if="$slots.criteria">
       <slot name="criteria" />
-      <div class="list-search">
+      <div class="bases-search">
         <el-button v-if="$slots.criteria" type="primary" size="mini" @click="search">搜索</el-button>
-        <el-button v-if="$slots.criteria && isRest" type="warning" size="mini" @click="reset">重置</el-button>
+        <el-button v-if="$slots.criteria && isRest" size="mini" @click="reset">重置</el-button>
       </div>
     </div>
     <div v-if="pagination.total > 0">
       <slot>表格区域</slot>
-      <div class="list-page" v-if="isPagination">
+      <div class="bases-page" v-if="isPagination">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="refresh"
@@ -27,6 +27,7 @@
 
 <script>
 export default {
+  name: 'SlBaseListView',
   props: {
     criteria: {
       type: Object,
@@ -102,9 +103,17 @@ export default {
 </script>
 
 <style lang="scss">
-.list {
-  /deep/.el-pagination.is-background .el-pager li:not(.disabled).active {
-    // background-color: rgb(0, 209, 178);
+.bases {
+  padding: 20px;
+  &-search {
+    text-align: right;
+    font-size: 12px;
+    padding: 5px;
+  }
+  &-page {
+    margin-bottom: 20px;
+    margin-top: 5px;
+    text-align: center;
   }
   /deep/.el-pagination.is-background .btn-next,
   .el-pagination.is-background .btn-prev,
@@ -118,16 +127,6 @@ export default {
   }
   /deep/.el-pagination__total {
     color: #000;
-  }
-  &-search {
-    text-align: right;
-    font-size: 12px;
-    padding: 5px;
-  }
-  &-page {
-    margin-bottom: 20px;
-    margin-top: 5px;
-    text-align: center;
   }
 }
 </style>

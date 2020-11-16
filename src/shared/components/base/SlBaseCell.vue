@@ -10,6 +10,7 @@
 </template>
 <script>
 export default {
+  name: 'SlBaseCell',
   props: {
     spans: {
       type: Array,

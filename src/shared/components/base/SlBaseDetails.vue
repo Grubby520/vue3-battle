@@ -14,6 +14,7 @@
 
 <script>
 export default {
+  name: 'SlBaseDetails',
   props: {
     mode: { type: String, required: false, default: '' },
     gotoList: { type: Function, required: false },

@@ -1,0 +1,152 @@
+<template>
+  <div class="recommond">
+    <SlBaseListView @goto-page="gotoPage" class="recommonPar" @reset="reset" ref="listView">
+      <div slot="criteria">
+        <el-row type="flex" justify="center">
+          <el-col :span="7">
+            <SlBaseCell label="品类">
+              <el-input
+                v-model.trim="recommonPar.productName"
+                clearable
+                size="mini"
+                placeholder="请输入学科"
+              />
+            </SlBaseCell>
+          </el-col>
+          <el-col :span="7">
+            <SlBaseCell label="供方货号">
+              <el-input
+                v-model.trim="recommonPar.productName"
+                clearable
+                size="mini"
+                placeholder="请输入供方货号"
+              />
+            </SlBaseCell>
+          </el-col>
+          <el-col :span="7">
+            <SlBaseCell label="状态">
+              <el-select size="mini" v-model="recommonPar.productName">
+                <el-option
+                  v-for="item in status"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </SlBaseCell>
+          </el-col>
+        </el-row>
+      </div>
+      <el-divider />
+      <div class="recommond-btns">
+        <el-button type="primary" size="mini">批量推品</el-button>
+        <el-button type="primary" size="mini">导入SPU</el-button>
+        <el-button type="primary" size="mini">导入商品图片</el-button>
+      </div>
+      <SlBaseTable
+        :tableData="tableData"
+        :columns="columns"
+        @handleSelectionChange="handleSelectionChange"
+      >
+        <div slot="opration" slot-scope="props">
+          <span @click="pass(props)" class="btn">维护</span>
+          <span @click="pass()" class="btn">查看</span>
+          <span @click="pass()" class="btn">推品</span>
+          <span @click="pass()" class="btn">删除</span>
+        </div>
+      </SlBaseTable>
+    </SlBaseListView>
+  </div>
+</template>
+<script>
+// import recommond from '@api/recommendProducts/recommendProducts.js'
+export default {
+  data () {
+    return {
+      recommonPar: {},
+      tableData: [],
+      columns: [
+        {
+          prop: 'ID',
+          label: '商品信息',
+          width: '300',
+          isInImg: 'imageSrc',
+          pre: {
+            id: 'PID',
+            productName: '平台PID',
+            productVariantId: '店铺'
+          }
+        },
+        {
+          prop: 'productName',
+          label: '品类'
+        },
+        {
+          prop: 'skuCode',
+          label: '商店'
+        },
+        {
+          prop: 'skuCode',
+          label: '供货价（元）'
+        },
+        {
+          prop: 'skuCode',
+          label: '状态'
+        },
+        {
+          prop: 'skuCode',
+          label: '询盘意见'
+        },
+        {
+          prop: 'skuCode',
+          label: '创建时间/更新时间',
+          pre: {
+            startTime: '创建',
+            creatTime: '更新'
+          }
+        }
+      ],
+      status: [
+        { 'value': 1, 'label': '待推品' },
+        { 'value': 2, 'label': '已推品' },
+        { 'value': 3, 'label': '被选品' },
+        { 'value': 4, 'label': '询盘中' }
+      ]
+    }
+  },
+
+  methods: {
+    gotoPage (pageIndex, pageSize, updatePagination) {
+      this.recommonPar.pageIndex = pageIndex
+      this.recommonPar.pageSize = pageSize
+      // recommond.getList({ ...this.recommonPar })
+      //   .then((res) => {
+      //   const { list, pageNum, pageSize, total } = res.data
+      // this.tableData = list
+      updatePagination({
+        pageIndex: 1,
+        pageSize: pageSize,
+        total: 100
+      })
+      // })
+      // .catch(() => {
+      //   this.showLoad = false
+      // })
+    },
+    handleSelectionChange (val) {
+      // 复选框信息
+      console.log(val)
+    },
+    reset () { }
+  }
+}
+</script>
+<style lang="scss" scoped>
+.recommond {
+  &-btns {
+    display: flex;
+    justify-content: start;
+    margin-bottom: 10px;
+  }
+}
+</style>
