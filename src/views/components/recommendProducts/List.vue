@@ -160,7 +160,7 @@ export default {
 .recommond {
   &-btns {
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     margin-bottom: 10px;
   }
 }
