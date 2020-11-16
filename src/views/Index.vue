@@ -2,7 +2,7 @@
   <div>
     首页内容
     <br />
-    <router-link to="doc">Go to Doc</router-link>
+    <router-link to="/doc">Go to Doc</router-link>
   </div>
 </template>
 

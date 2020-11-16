@@ -88,15 +88,14 @@ $asideMinW: pxToRem(220px);
   height: 100%;
   @extend .block-border;
   .page-aside {
-    flex: 1;
-    width: $asideMinW;
+    min-width: $asideMinW;
     background-color: $color-aside-bg;
     @extend .block-border;
   }
 
   .page-article {
     height: calc(100vh - #{$headerLH});
-    flex: 5;
+    flex: 1;
     @extend .block-border;
 
     .page-header {
