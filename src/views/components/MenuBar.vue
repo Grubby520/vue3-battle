@@ -1,59 +1,67 @@
 
 <template>
-  <div>
-    <el-menu default-active="1-1" :collapse="isCollapse">
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航一</span>
-        </template>
-        <el-menu-item index="1-1">选项1</el-menu-item>
-        <el-menu-item index="1-2">选项2</el-menu-item>
-        <el-menu-item index="1-3">选项3</el-menu-item>
-      </el-submenu>
-      <el-submenu index="2">
-        <span slot="title">选项4</span>
-        <el-menu-item index="2-1">选项1</el-menu-item>
-      </el-submenu>
+  <div class="menu-bar">
+    <el-menu
+      :router="true"
+      :default-active="activePath"
+      :collapse="isCollapse"
+      :background-color="backgroundColor"
+      :text-color="textColor"
+      :active-text-color="activeTextColor"
+    >
+      <template v-for="(item,index) in menus">
+        <MenuItem
+          :key="'menu-'+index"
+          v-if="!item.children || item.children.length === 0"
+          :menuItem="item"
+        ></MenuItem>
+        <Submenu :key="'submenu-'+index" v-else :submenu="item"></Submenu>
+      </template>
     </el-menu>
   </div>
 </template>
 
 <script>
+import Submenu from './Submenu'
+import MenuItem from './MenuItem'
 export default {
   name: 'MenuBar',
   props: {
     isCollapse: {
       type: Boolean,
       default: false
+    },
+    activePath: {
+      type: String,
+      default: null
+    },
+    menus: {
+      type: Array,
+      default: () => ([])
+    },
+    backgroundColor: {
+      type: String,
+      default: '#222d32'
+    },
+    textColor: {
+      type: String,
+      default: '#8aa4af'
+    },
+    activeTextColor: {
+      type: String,
+      default: '#fff'
     }
+  },
+  components: {
+    Submenu,
+    MenuItem
   },
   data: () => {
     return {
-      menu: [
-        {
-          path: '1',
-          name: 'name',
-          icon: 'icon',
-          chidren: [
-            {
-              path: '1-2',
-              name: 'name12',
-              icon: 'icon12'
-            }
-          ]
-        },
-        {
-          path: '2',
-          name: 'name2',
-          icon: 'icon2'
-        }
-      ]
+
     }
   },
   methods: {
-  },
-  components: {
   },
   mounted: function () {
 
@@ -62,4 +70,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.menu-bar {
+  .el-menu {
+    border: none;
+  }
+}
 </style>

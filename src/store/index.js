@@ -7,23 +7,28 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     loadingInstance: null,
-    breadcrumbs: []
+    breadcrumbs: [],
+    activePath: null
   },
   mutations: {
-    setLoadingInstance (state, payload) {
-      state.loadingInstance = payload
+    SET_LAODING (state, loadingInstance) {
+      state.loadingInstance = loadingInstance
     },
-    setBreadcrumbs (state, payload) {
-      state.breadcrumbs = payload
+
+    SET_BREADCRUMBS (state, breadcrumbs) {
+      state.breadcrumbs = breadcrumbs
+    },
+    SET_ACTIVE_PATH (state, activePath) {
+      state.activePath = activePath
     }
   },
   actions: {
-    createLoading ({ commit }) {
-      commit('setLoadingInstance', Loading.service({ fullscreen: true }))
+    OPEN_LOADING ({ commit }) {
+      commit('SET_LAODING', Loading.service({ fullscreen: true }))
     },
-    closeLoading ({ state, commit }) {
+    CLOSE_LOADING ({ state, commit }) {
       state.loadingInstance && state.loadingInstance.close()
-      commit('setLoadingInstance', null)
+      commit('SET_LAODING', null)
     }
   },
   modules: {

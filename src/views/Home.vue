@@ -2,11 +2,9 @@
   <section class="home page-body">
     <!--侧边栏-->
     <aside class="page-aside">
-      <MenuBar />
+      <MenuBar :menus="menus" :activePath="activePath"></MenuBar>
     </aside>
-    <!--页面内容-->
     <article class="page-article">
-      <!--头部-->
       <header class="page-header">
         <!-- <img alt="logo" src="../assets/logo.png"> -->
       </header>
@@ -30,14 +28,47 @@
 // @ is an alias to /src
 import { mapState } from 'vuex'
 import MenuBar from '@/views/components/MenuBar.vue'
+import { homeRoutes } from '@/router/homeRoutes.js'
 
 export default {
   name: 'Home',
   components: {
     MenuBar
   },
+  data () {
+    return {
+      menus: []
+    }
+  },
   computed: {
-    ...mapState(['breadcrumbs'])
+    ...mapState(['breadcrumbs', 'activePath'])
+  },
+  methods: {
+    getMenus () {
+      let menus = []
+      this.routesToMenus(homeRoutes, menus)
+      return menus
+    },
+    routesToMenus (routes = [], menus = [], prevPath = '/home') {
+      routes.forEach(route => {
+        const { path, name, icon, children } = route
+        const curPath = `${prevPath}/${path}`
+        let menu = {
+          path: curPath,
+          name,
+          icon
+        }
+        menus.push(menu)
+        if (children && children.length > 0) {
+          menu.children = []
+          this.routesToMenus(route.children, menu.children, curPath)
+        }
+      })
+      return this.menus
+    }
+  },
+  mounted () {
+    this.menus = this.getMenus()
   }
 }
 </script>
@@ -58,8 +89,7 @@ $asideMinW: pxToRem(220px);
   @extend .block-border;
   .page-aside {
     flex: 1;
-    min-width: $asideMinW;
-    max-width: $asideMinW;
+    width: $asideMinW;
     background-color: $color-aside-bg;
     @extend .block-border;
   }
