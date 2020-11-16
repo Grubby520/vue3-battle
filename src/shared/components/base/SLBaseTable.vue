@@ -4,8 +4,7 @@
     class="tableData"
     @selection-change="handleSelectionChange"
     :border="border"
-    :header-cell-style="{ textAlign: 'center' }"
-    :cell-style="{ textAlign: 'center' }"
+    size="mini"
   >
     <el-table-column v-if="selection" type="selection" width="55" fixed />
     <div v-for="item in columns" :key="item.label">
@@ -51,15 +50,17 @@
         <template slot-scope="scope">
           <div class="tableData-col">
             <el-row type="flex" align="middle">
-              <el-col :span="10" align="center" v-if="item.isInImg">
+              <el-col :span="10" v-if="item.isInImg">
                 <img :src="scope.row[item.isInImg]" class="tableData-col-img" />
               </el-col>
 
               <el-col :span="item.isInImg?14:24">
-                <div v-if="item.pre" style="text-align:left;">
-                  <div v-for="(pr, ins) in item.pre" :key="pr">
-                    <span>{{ pr }}:</span>
-                    <span>{{ scope.row[ins] }}</span>
+                <div v-if="item.pre" :class="{'tableData-col-pre' : !item.isInImg && item.pre }">
+                  <div>
+                    <div v-for="(pr, ins) in item.pre" :key="pr" style="text-align:left;">
+                      <span>{{ pr }}:</span>
+                      <span>{{ scope.row[ins] }}</span>
+                    </div>
                   </div>
                 </div>
                 <div v-else class="tableData-col-text">{{ scope.row[item.prop] }}</div>
@@ -69,7 +70,7 @@
         </template>
       </el-table-column>
     </div>
-    <el-table-column width="100px" align="center" label="操作">
+    <el-table-column width="180px" align="center" label="操作">
       <template slot-scope="scope">
         <slot name="opration" :row="scope.row"></slot>
       </template>
@@ -78,6 +79,7 @@
 </template>
 <script>
 export default {
+  name: 'SlBaseTable',
   props: {
     tableData: {
       type: Array,
@@ -121,6 +123,11 @@ export default {
         height: 100%;
         object-fit: contain;
       }
+    }
+    &-pre {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }
   &-popover {
