@@ -4,9 +4,8 @@
   text-align: center;
 }
 
-.echarts {
-  width: 100% !important;
-  height: 100% !important;
+.color-text--white {
+  color: $color-white;
 }
 
 .mr-2rem {
@@ -17,3 +16,9 @@
   color:rgb(21, 146, 241);
   display:block;
 }
+
+.echarts {
+  width: 100% !important;
+  height: 100% !important;
+}
+

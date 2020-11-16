@@ -2,12 +2,12 @@
   <section class="home page-body">
     <!--侧边栏-->
     <aside class="page-aside">
+      <SystemInfo></SystemInfo>
+      <UserStatus></UserStatus>
       <MenuBar :menus="menus" :activePath="activePath"></MenuBar>
     </aside>
     <article class="page-article">
-      <header class="page-header">
-        <!-- <img alt="logo" src="../assets/logo.png"> -->
-      </header>
+      <header class="page-header"></header>
       <div class="page-breadcrumb">
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item
@@ -27,12 +27,16 @@
 <script>
 // @ is an alias to /src
 import { mapState } from 'vuex'
+import SystemInfo from '@/views/components/SystemInfo.vue'
+import UserStatus from '@/views/components/UserStatus.vue'
 import MenuBar from '@/views/components/MenuBar.vue'
 import { homeRoutes } from '@/router/homeRoutes.js'
 
 export default {
   name: 'Home',
   components: {
+    SystemInfo,
+    UserStatus,
     MenuBar
   },
   data () {

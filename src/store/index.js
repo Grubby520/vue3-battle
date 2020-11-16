@@ -6,6 +6,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    systemName: 'Starlink供应商平台',
     loadingInstance: null,
     breadcrumbs: [],
     activePath: null

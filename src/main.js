@@ -1,3 +1,6 @@
+import '@assets/scss/common.scss'
+import 'element-ui/lib/theme-chalk/index.css'
+import 'nprogress/nprogress.css'// Progress 进度条 样式
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -6,8 +9,6 @@ import ECharts from 'vue-echarts'
 import { http, get, post, del, patch, put } from '@shared/http'
 import i18n from '@/lang'
 import '@components/elementUI'
-import '@assets/scss/common.scss'
-import 'element-ui/lib/theme-chalk/index.css'
 import '@components/register.js'
 
 if (process.env.NODE_ENV === 'development') {

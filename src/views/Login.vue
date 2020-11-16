@@ -37,10 +37,11 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data () {
     return {
-      systemName: 'Starlink供应商平台',
       registerText: '注册',
       loginText: '登录',
       loginForm: {
@@ -70,14 +71,12 @@ export default {
       }
     }
   },
-  watch: {
-
-  },
   computed: {
+    ...mapState(['systemName'])
   },
   methods: {
     login () {
-      this.$router.push('home')
+      this.$router.push('home/index')
     }
   }
 }
