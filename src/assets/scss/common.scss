@@ -22,3 +22,14 @@
   height: 100% !important;
 }
 
+.flex-left{
+  display: flex;
+  justify-content:start;
+  align-items:center;
+}
+
+.flex-center{
+  display: flex;
+  justify-content:center;
+  align-items:center;
+}

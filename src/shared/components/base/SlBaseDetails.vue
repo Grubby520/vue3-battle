@@ -78,6 +78,7 @@ export default {
 <style scoped lang="scss">
 .detailControl {
   overflow: hidden;
+  margin-top: 10px;
   .detailCenter {
     text-align: center;
     margin-bottom: 10px;
