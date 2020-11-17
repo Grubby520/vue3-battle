@@ -2,10 +2,8 @@
 <template>
   <el-submenu :index="submenu.path">
     <template slot="title">
-      <slot>
-        <i :class="[submenu.icon]"></i>
-        <span slot="title">{{submenu.name}}</span>
-      </slot>
+      <i :class="[submenu.icon]"></i>
+      <span slot="title">{{submenu.name}}</span>
     </template>
     <template v-for="(submenuItem,index) in submenu.children">
       <MenuItem

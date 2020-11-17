@@ -1,5 +1,5 @@
 <template>
-  <h1 class="system-info">{{systemName}}</h1>
+  <h1 class="system-info">{{menuCollapse?'SRM':systemName}}</h1>
 </template>
 
 <script>
@@ -8,6 +8,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'SystemInfo',
   props: {
+
   },
   data: () => {
     return {
@@ -15,7 +16,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['systemName'])
+    ...mapState(['systemName', 'menuCollapse'])
   },
   methods: {
   },
