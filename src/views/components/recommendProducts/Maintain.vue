@@ -1,15 +1,10 @@
 <template>
   <div class="maintain">
-    <div class="maintain-base">
-      <p>基本信息</p>
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="form"
-        label-width="100px"
-        class="maintain-base-form"
-      >
-        <el-row type="flex" justify="center">
+    <div class="maintain__base">
+      <p class="maintain__base--p">基本信息</p>
+      <el-divider />
+      <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
+        <el-row type="flex" justify="center" class="maintain__form">
           <el-col :span="11">
             <el-form-item prop="type" label="分类">
               <el-select size="mini" v-model="ruleForm.productName" style="width:100%;">
@@ -18,7 +13,7 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                ></el-option>
+                />
               </el-select>
             </el-form-item>
             <el-form-item prop="type" label="商品名称">
@@ -44,26 +39,83 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <div class="maintain__other">
+          <p class="maintain__other--p">其他信息</p>
+          <el-divider />
+          <div class="maintain__other--modify">
+            <div class="flex-left">
+              <p style="margin-right:10px">颜色</p>
+              <i class="el-icon-edit" @click="modifyDialog(1)" />
+            </div>
+            <div class="flex-left spans">
+              <p v-for="color in colors" :key="color.label">{{color.label}}</p>
+            </div>
+            <div class="flex-left">
+              <p style="margin-right:10px">尺码</p>
+              <i class="el-icon-edit" @click="modifyDialog(2)" />
+            </div>
+            <div class="flex-left spans">
+              <p v-for="size in sizes" :key="size.label">{{size.label}}</p>
+            </div>
+            <div v-if="dailog"></div>
+            <div class="flex-left checkbox">
+              <p>是否有现货</p>
+              <el-checkbox-group v-model="checkList">
+                <el-checkbox label="有" />
+                <el-checkbox label="无" />
+              </el-checkbox-group>
+              <el-form-item prop="type" label="生产周期">
+                <el-input
+                  size="mini"
+                  clearable
+                  v-model="ruleForm.remarks"
+                  placeholder="请输入商品名称"
+                  maxlength="255"
+                />
+              </el-form-item>
+              <el-form-item prop="type" label="库存数量">
+                <el-input
+                  size="mini"
+                  clearable
+                  v-model="ruleForm.remarks"
+                  placeholder="请输入商品名称"
+                  maxlength="255"
+                />
+              </el-form-item>
+              <el-form-item prop="type" label="当前库存可维持">
+                <el-input
+                  size="mini"
+                  clearable
+                  v-model="ruleForm.remarks"
+                  placeholder="请输入商品名称"
+                  maxlength="255"
+                />
+              </el-form-item>
+              <p>{{'天'}}</p>
+            </div>
+            <div class="flex-left checkbox">
+              <p>是否有版</p>
+              <el-checkbox-group v-model="checkList">
+                <el-checkbox label="有" />
+                <el-checkbox label="无" />
+              </el-checkbox-group>
+              <el-form-item prop="type" label="打版周期">
+                <el-input
+                  size="mini"
+                  clearable
+                  v-model="ruleForm.remarks"
+                  placeholder="请输入商品名称"
+                  maxlength="255"
+                />
+              </el-form-item>
+            </div>
+            <div class="flex-left">
+              <p>尺码表</p>
+            </div>
+          </div>
+          <div></div>
+        </div>
       </el-form>
-    </div>
-    <div class="maintain-other">
-      <p>其他信息</p>
-      <div class="maintain-other-modify">
-        <div class="flex-left">
-          <p style="margin-right:10px">颜色</p>
-          <i class="el-icon-edit" />
-        </div>
-        <div></div>
-        <div class="flex-left">
-          <p style="margin-right:10px">尺码</p>
-          <i class="el-icon-edit" />
-        </div>
-        <div></div>
-        <p>是否有现货</p>
-        <p>是否有版</p>
-        <p>尺码表</p>
-      </div>
-      <div></div>
     </div>
     <SlBaseDetails
       ref="control"
@@ -72,18 +124,38 @@
       :mode="mode"
       :create="create"
       :gotoList="gotoList"
+      :isRight="true"
       size="mini"
       saveText="确定"
       cancelText="取消"
     />
+    <div v-if="dailog">
+      <el-dialog :visible.sync="dailog" width="50%" :title="title">
+        <ModifyPropery></ModifyPropery>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
 <script>
+import ModifyPropery from './ModifyPropery'
 export default {
+  components: { ModifyPropery },
   data () {
     return {
+      dailog: false,
+      title: '',
+      mode: 'create',
       ruleForm: {},
+      checkList: ['有'],
+      colors: [
+        { label: '红色' },
+        { label: '蓝色' }
+      ],
+      sizes: [
+        { label: '红色' },
+        { label: '蓝色' }
+      ],
       status: [
         { 'value': 1, 'label': '男装' },
         { 'value': 2, 'label': '女装' },
@@ -93,8 +165,8 @@ export default {
         { 'value': 6, 'label': '服饰配件' },
         { 'value': 7, 'label': '男鞋' },
         { 'value': 8, 'label': '女鞋' }
-
-      ]
+      ],
+      rules: {}
     }
   },
   created () {
@@ -104,7 +176,14 @@ export default {
 
   },
   methods: {
-
+    create () { },
+    gotoList () {
+      this.$router.back()
+    },
+    modifyDialog (pro) {
+      this.title = pro === 1 ? '修改颜色' : '修改尺码'
+      this.dailog = true
+    }
   }
 }
 </script>
@@ -112,34 +191,62 @@ export default {
 <style scoped lang="scss">
 .maintain {
   padding: 20px;
-  @mixin boder {
-    border: 1px solid #DCDFE6;
-    p:first-child {
-      font-size: 15px;
-      font-weight: bold;
-      color: #DCDFE6;
-      margin: 10px 0 10px 10px;
+  $boder: 1px solid #DCDFE6;
+  .title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #DCDFE6;
+    line-height: 40px;
+    margin-left: 10px;
+  }
+  .checkbox {
+    /deep/.el-form-item {
+      margin-bottom: 0 !important;
+    }
+    /deep/ .el-checkbox-group {
+      font-size: unset !important;
+    }
+    P {
+      margin-right: 10px;
+    }
+    p:last-child {
+      margin-left: 10px;
     }
   }
-  &-base {
-    @include boder;
-    border-bottom: none;
-    &-form {
-      border-top: 1px solid #DCDFE6;
+  .spans {
+    border: $boder;
+    padding: 2px;
+    p {
+      background-color: #DCDFE6;
+      padding: 0px 10px;
+      line-height: 20px;
+      margin-left: 10px;
+      margin-right: 10px;
     }
   }
-  &-other {
-    @include boder;
+  &__base {
+    border: $boder;
+    &--p {
+      @extend .title;
+    }
+  }
+  &__form {
+    border-bottom: $boder;
+  }
+  &__other {
+    border-top: unset;
     font-size: 14px;
     color: #606266;
     line-height: 40px;
-    &-modify {
-      border-top: 1px solid #DCDFE6;
-      p {
-        margin-right: 10px;
-        margin-left: 10px;
-      }
+    &--p {
+      @extend .title;
     }
+    &--modify {
+      padding-left: 10px;
+    }
+  }
+  /deep/.el-divider--horizontal {
+    margin: 0 0 24px 0;
   }
 }
 </style>

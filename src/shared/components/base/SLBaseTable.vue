@@ -56,8 +56,8 @@
 
               <el-col :span="item.isInImg?14:24">
                 <div v-if="item.pre" :class="{'tableData-col-pre' : !item.isInImg && item.pre }">
-                  <div>
-                    <div v-for="(pr, ins) in item.pre" :key="pr" style="text-align:left;">
+                  <div class="tableData-col-con">
+                    <div v-for="(pr, ins) in item.pre" :key="pr">
                       <span>{{ pr }}:</span>
                       <span>{{ scope.row[ins] }}</span>
                     </div>
@@ -128,6 +128,9 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    &-con {
+      text-align: left;
     }
   }
   &-popover {
