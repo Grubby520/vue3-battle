@@ -1,13 +1,19 @@
 <template>
   <section class="home page-body">
     <!--侧边栏-->
-    <aside class="page-aside">
+    <aside class="page-aside" :class="{'page-aside--collapse':menuCollapse}">
       <SystemInfo></SystemInfo>
       <UserStatus></UserStatus>
       <MenuBar :menus="menus" :activePath="activePath"></MenuBar>
     </aside>
     <article class="page-article">
-      <header class="page-header"></header>
+      <header class="page-header">
+        <span
+          class="menu-collapse"
+          :class="{'el-icon-s-fold':!menuCollapse,'el-icon-s-unfold':menuCollapse}"
+          @click="triggerMenuCollapse"
+        ></span>
+      </header>
       <div class="page-breadcrumb">
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item
@@ -45,7 +51,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['breadcrumbs', 'activePath'])
+    ...mapState(['breadcrumbs', 'activePath', 'menuCollapse'])
   },
   methods: {
     getMenus () {
@@ -69,6 +75,9 @@ export default {
         }
       })
       return this.menus
+    },
+    triggerMenuCollapse () {
+      this.$store.commit('SET_MENU_COLLAPSE', !this.menuCollapse)
     }
   },
   mounted () {
@@ -95,6 +104,12 @@ $asideMinW: pxToRem(220px);
     min-width: $asideMinW;
     background-color: $color-aside-bg;
     @extend .block-border;
+    overflow: hidden;
+    &.page-aside--collapse {
+      width: 0;
+      min-width: 0;
+      transition: all 150ms;
+    }
   }
 
   .page-article {
@@ -109,6 +124,11 @@ $asideMinW: pxToRem(220px);
       line-height: $headerLH;
       box-sizing: border-box;
       background-color: $color-header-bg;
+      .menu-collapse {
+        padding-left: 0.5em;
+        font-size: 2.5rem;
+        cursor: pointer;
+      }
     }
 
     .page-breadcrumb,
