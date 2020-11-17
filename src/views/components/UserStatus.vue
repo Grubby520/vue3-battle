@@ -3,7 +3,7 @@
     <div class="user-avatar">
       <img src="@/assets/user-avatar.png" alt="头像" />
     </div>
-    <div class="user-name">
+    <div class="user-name" :class="{'menu-collapse':menuCollapse}">
       <span class="flex-1">{{name}}</span>
       <div class="flex-1 status--online">ONLINE</div>
     </div>
@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 export default {
   name: 'UserStatus',
@@ -26,7 +27,7 @@ export default {
     }
   },
   computed: {
-
+    ...mapState(['menuCollapse'])
   },
   methods: {
   },
@@ -60,6 +61,10 @@ export default {
     display: flex;
     flex-direction: column;
     flex: 1;
+    transition: all;
+    &.menu-collapse {
+      display: none;
+    }
     .status--online {
       position: relative;
       &::before {

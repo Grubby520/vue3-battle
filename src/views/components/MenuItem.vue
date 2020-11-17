@@ -1,12 +1,8 @@
 
 <template>
   <el-menu-item :index="menuItem.path">
-    <template slot="title">
-      <slot>
-        <i :class="[menuItem.icon]"></i>
-        <span slot="title">{{menuItem.name}}</span>
-      </slot>
-    </template>
+    <i :class="[menuItem.icon]"></i>
+    <span slot="title">{{menuItem.name}}</span>
   </el-menu-item>
 </template>
 

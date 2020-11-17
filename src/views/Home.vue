@@ -4,7 +4,7 @@
     <aside class="page-aside" :class="{'page-aside--collapse':menuCollapse}">
       <SystemInfo></SystemInfo>
       <UserStatus></UserStatus>
-      <MenuBar :menus="menus" :activePath="activePath"></MenuBar>
+      <MenuBar :menus="menus" :activePath="activePath" :isCollapse="menuCollapse"></MenuBar>
     </aside>
     <article class="page-article">
       <header class="page-header">
@@ -61,17 +61,19 @@ export default {
     },
     routesToMenus (routes = [], menus = [], prevPath = '/home') {
       routes.forEach(route => {
-        const { path, name, icon, children } = route
-        const curPath = `${prevPath}/${path}`
-        let menu = {
-          path: curPath,
-          name,
-          icon
-        }
-        menus.push(menu)
-        if (children && children.length > 0) {
-          menu.children = []
-          this.routesToMenus(route.children, menu.children, curPath)
+        const { path, name, icon, children, notMenu } = route
+        if (!notMenu) {
+          const curPath = `${prevPath}/${path}`
+          let menu = {
+            path: curPath,
+            name,
+            icon
+          }
+          menus.push(menu)
+          if (children && children.length > 0) {
+            menu.children = []
+            this.routesToMenus(route.children, menu.children, curPath)
+          }
         }
       })
       return this.menus
@@ -105,10 +107,10 @@ $asideMinW: pxToRem(220px);
     background-color: $color-aside-bg;
     @extend .block-border;
     overflow: hidden;
+    transition: all 100ms;
     &.page-aside--collapse {
-      width: 0;
-      min-width: 0;
-      transition: all 150ms;
+      width: 6.4rem;
+      min-width: 6.4rem;
     }
   }
 
@@ -127,6 +129,7 @@ $asideMinW: pxToRem(220px);
       .menu-collapse {
         padding-left: 0.5em;
         font-size: 2.5rem;
+        color: #fff;
         cursor: pointer;
       }
     }
