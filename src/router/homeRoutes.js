@@ -1,4 +1,4 @@
-import ParentMenuRoute from '@/views/components/ParentMenuRoute.vue'
+import ParentMenuRoute from '@/views/components/layout/ParentMenuRoute.vue'
 export const homeRoutes = [
   {
     path: 'index',

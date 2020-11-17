@@ -37,11 +37,11 @@
 <script>
 // @ is an alias to /src
 import { mapState } from 'vuex'
-import SystemInfo from '@/views/components/SystemInfo.vue'
-import UserStatus from '@/views/components/UserStatus.vue'
-import UserInfo from '@/views/components/UserInfo.vue'
-import UserOperations from '@/views/components/UserOperations.vue'
-import MenuBar from '@/views/components/MenuBar.vue'
+import SystemInfo from '@/views/components/layout/SystemInfo.vue'
+import UserStatus from '@/views/components/layout/UserStatus.vue'
+import UserInfo from '@/views/components/layout/UserInfo.vue'
+import UserOperations from '@/views/components/layout/UserOperations.vue'
+import MenuBar from '@/views/components/layout/MenuBar.vue'
 import { homeRoutes } from '@/router/homeRoutes.js'
 
 export default {
