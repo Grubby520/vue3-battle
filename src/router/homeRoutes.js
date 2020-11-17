@@ -20,17 +20,18 @@ export const homeRoutes = [
     component: ParentMenuRoute,
     children: [
       {
+        path: 'list',
+        name: 'OMD推品列表',
+        icon: 'el-icon-postcard',
+        component: () => import('@/views/RecommendProductsList.vue')
+      },
+      {
         path: 'maintain',
-        name: '商品管理',
+        name: 'OMD推品',
+        notMenu: true,
         icon: 'el-icon-postcard',
         component: () => import('@/views/components/recommendProducts/Maintain.vue')
       }
     ]
-  },
-  {
-    path: 'maintain',
-    name: 'ODM推品',
-    icon: 'el-icon-postcard',
-    component: () => import('@/views/components/recommendProducts/Maintain.vue')
   }
 ]
