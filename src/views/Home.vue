@@ -151,6 +151,10 @@ $asideMinW: pxToRem(220px);
       flex: 1;
       overflow: auto;
     }
+
+    .page-breadcrumb {
+      background-color: $color-breadcrumb-bg;
+    }
   }
 }
 </style>
