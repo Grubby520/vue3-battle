@@ -151,7 +151,7 @@ export default {
     },
     reset () { },
     maintain (row) {
-
+      this.$router.push({ path: '/home/recommendProducts/maintain' })
     }
   }
 }

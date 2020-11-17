@@ -1,4 +1,17 @@
 import axios from 'axios'
+import store from '@/store'
+
+function addLoading () {
+  store.state.loadingCount++
+  store.dispatch('OPEN_LOADING')
+}
+
+function closeLoading () {
+  store.state.loadingCount--
+  if (store.state.loadingCount === 0) {
+    store.dispatch('CLOSE_LOADING')
+  }
+}
 
 const axiosInstance = axios.create({
   baseURL: '',
@@ -8,18 +21,24 @@ const axiosInstance = axios.create({
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
+  addLoading()
   return config
 }, err => {
+  store.dispatch('CLOSE_LOADING')
+  store.commit('SET_LOADING_COUNT', 0)
   // 错误处理
-  return Promise.resolve(err)
+  return Promise.reject(err)
 })
 
 // 响应拦截
 axiosInstance.interceptors.response.use(
   res => {
+    closeLoading()
     return res.data
   },
   err => {
+    store.dispatch('CLOSE_LOADING')
+    store.commit('SET_LOADING_COUNT', 0)
     // 错误处理
     if (err && err.response) {
       switch (err.response.status) {
@@ -34,7 +53,7 @@ axiosInstance.interceptors.response.use(
     } else {
       err.message = '连接服务器失败!'
     }
-    return Promise.resolve(err)
+    return Promise.reject(err)
   })
 
 export const get = function (url, params) {
