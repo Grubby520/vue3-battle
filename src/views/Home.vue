@@ -7,12 +7,16 @@
       <MenuBar :menus="menus" :activePath="activePath" :isCollapse="menuCollapse"></MenuBar>
     </aside>
     <article class="page-article">
-      <header class="page-header">
+      <header class="page-header clearfix">
         <span
           class="menu-collapse"
           :class="{'el-icon-s-fold':!menuCollapse,'el-icon-s-unfold':menuCollapse}"
           @click="triggerMenuCollapse"
         ></span>
+        <div class="float-right mr-1rem">
+          <UserInfo class="mr-1rem"></UserInfo>
+          <UserOperations></UserOperations>
+        </div>
       </header>
       <div class="page-breadcrumb">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -35,6 +39,8 @@
 import { mapState } from 'vuex'
 import SystemInfo from '@/views/components/SystemInfo.vue'
 import UserStatus from '@/views/components/UserStatus.vue'
+import UserInfo from '@/views/components/UserInfo.vue'
+import UserOperations from '@/views/components/UserOperations.vue'
 import MenuBar from '@/views/components/MenuBar.vue'
 import { homeRoutes } from '@/router/homeRoutes.js'
 
@@ -43,6 +49,8 @@ export default {
   components: {
     SystemInfo,
     UserStatus,
+    UserInfo,
+    UserOperations,
     MenuBar
   },
   data () {

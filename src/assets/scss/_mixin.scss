@@ -19,3 +19,11 @@
     width: 98%;
   }
 }
+
+@mixin clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
