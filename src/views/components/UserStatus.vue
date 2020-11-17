@@ -4,7 +4,7 @@
       <img src="@/assets/user-avatar.png" alt="头像" />
     </div>
     <div class="user-name" :class="{'menu-collapse':menuCollapse}">
-      <span class="flex-1">{{name}}</span>
+      <span class="flex-1">{{userInfo.name}}</span>
       <div class="flex-1 status--online">ONLINE</div>
     </div>
   </div>
@@ -16,10 +16,6 @@ import { mapState } from 'vuex'
 export default {
   name: 'UserStatus',
   props: {
-    name: {
-      type: String,
-      default: 'admin'
-    }
   },
   data: () => {
     return {
@@ -27,7 +23,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['menuCollapse'])
+    ...mapState(['menuCollapse', 'userInfo'])
   },
   methods: {
   },

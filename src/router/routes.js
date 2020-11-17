@@ -6,6 +6,11 @@ export const routes = [
     component: () => import('@/views/Login.vue')
   },
   {
+    path: '/register',
+    name: '注册',
+    component: () => import('@/views/Register.vue')
+  },
+  {
     path: '/modifyPassword',
     name: '修改密码',
     component: () => import('@/views/ModifyPassword.vue')

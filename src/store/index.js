@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { Loading } from 'element-ui'
+import userInfo from './userInfo'
 
 Vue.use(Vuex)
 
@@ -11,7 +12,8 @@ export default new Vuex.Store({
     loadingCount: 0, // 用于计算请求的次数
     breadcrumbs: [],
     activePath: null,
-    menuCollapse: false
+    menuCollapse: false,
+    userInfo
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
@@ -29,6 +31,9 @@ export default new Vuex.Store({
     },
     SET_LOADING_COUNT (state, loadingCount) {
       state.loadingCount = loadingCount
+    },
+    SET_USER_INFO (state, userInfo) {
+      state.userInfo = Object.assign(state.userInfo, userInfo)
     }
   },
   actions: {
