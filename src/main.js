@@ -6,8 +6,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import i18n from '@/lang'
-import '@components/elementUI'
-import '@components/register.js'
+import '@shared/components/elementUI.js'
+import '@shared/components/register.js'
 import { http, get, post, del, patch, put } from '@shared/http'
 
 if (process.env.NODE_ENV === 'development') {
