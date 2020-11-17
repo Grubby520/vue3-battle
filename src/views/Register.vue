@@ -172,6 +172,7 @@ export default {
 
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
+@import '@assets/scss/_mixin.scss';
 .sl-login-container {
     height: 100%;
     background-color: $color-login-bg;
@@ -243,33 +244,7 @@ export default {
     }
 }
 
-@media only screen and (max-width: 1920px) {
-    .sl-login {
-        width: 25%;
-    }
-}
-
-@media only screen and (max-width: 1366px) {
-    .sl-login {
-        width: 30%;
-    }
-}
-
-@media only screen and (max-width: 960px) {
-    .sl-login {
-        width: 40%;
-    }
-}
-
-@media only screen and (max-width: 600px) {
-    .sl-login {
-        width: 60%;
-    }
-}
-
-@media only screen and (max-width: 300px) {
-    .sl-login {
-        width: 98%;
-    }
+.sl-login {
+    @include login-responsive-layout;
 }
 </style>
