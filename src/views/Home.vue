@@ -61,17 +61,19 @@ export default {
     },
     routesToMenus (routes = [], menus = [], prevPath = '/home') {
       routes.forEach(route => {
-        const { path, name, icon, children } = route
-        const curPath = `${prevPath}/${path}`
-        let menu = {
-          path: curPath,
-          name,
-          icon
-        }
-        menus.push(menu)
-        if (children && children.length > 0) {
-          menu.children = []
-          this.routesToMenus(route.children, menu.children, curPath)
+        const { path, name, icon, children, notMenu } = route
+        if (!notMenu) {
+          const curPath = `${prevPath}/${path}`
+          let menu = {
+            path: curPath,
+            name,
+            icon
+          }
+          menus.push(menu)
+          if (children && children.length > 0) {
+            menu.children = []
+            this.routesToMenus(route.children, menu.children, curPath)
+          }
         }
       })
       return this.menus

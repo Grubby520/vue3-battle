@@ -40,6 +40,7 @@
 import { mapState } from 'vuex'
 
 export default {
+  name: 'Login',
   data () {
     return {
       registerText: '注册',
@@ -76,7 +77,7 @@ export default {
   },
   methods: {
     login () {
-      this.$router.push('home/index')
+      this.$router.push('home/myFile')
     }
   }
 }
