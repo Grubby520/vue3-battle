@@ -39,7 +39,7 @@
       </div>
       <el-divider />
       <div class="recommond-btns">
-        <el-button type="primary" size="mini">批量推品</el-button>
+        <el-button type="primary" size="mini" @click="recommon">批量推品</el-button>
         <el-button type="primary" size="mini">导入SPU</el-button>
         <el-button type="primary" size="mini">导入商品图片</el-button>
       </div>
@@ -49,10 +49,10 @@
         @handleSelectionChange="handleSelectionChange"
       >
         <div slot="opration" slot-scope="props">
-          <span @click="maintain(props)" class="btn">维护</span>
-          <span @click="pass()" class="btn">查看</span>
-          <span @click="pass()" class="btn">推品</span>
-          <span @click="pass()" class="btn">删除</span>
+          <span @click="maintain(props,'create')" class="btn">维护</span>
+          <span @click="maintain(props,'view')" class="btn">查看</span>
+          <span @click="recommon(props)" class="btn">推品</span>
+          <span @click="deleteProduct(props)" class="btn">删除</span>
         </div>
       </SlBaseTable>
     </SlBaseListView>
@@ -65,6 +65,7 @@ export default {
     return {
       recommonPar: {},
       tableData: [],
+      selections: [],
       columns: [
         {
           prop: 'product',
@@ -146,12 +147,18 @@ export default {
       // })
     },
     handleSelectionChange (val) {
-      // 复选框信息
-      console.log(val)
+      this.selections = val
     },
     reset () { },
-    maintain (row) {
-      this.$router.push({ path: '/home/recommendProducts/maintain' })
+    maintain (row, status) {
+      this.$router.push({ path: '/home/recommendProducts/maintain', query: { mode: status } })
+    },
+    recommon (row) {
+      // const LEN = this.selections.length
+
+    },
+    deleteProduct (row) {
+
     }
   }
 }

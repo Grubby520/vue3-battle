@@ -29,6 +29,7 @@ export const homeRoutes = [
         path: 'maintain',
         name: 'OMD推品',
         notMenu: true,
+        props: route => { return { id: route.query.id, mode: route.query.mode } },
         icon: 'el-icon-postcard',
         component: () => import('@/views/components/recommendProducts/Maintain.vue')
       }

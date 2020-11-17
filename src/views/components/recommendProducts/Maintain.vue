@@ -1,7 +1,7 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
-      <p class="maintain__base--p">基本信息</p>
+      <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
         <el-row type="flex" justify="center" class="maintain__form">
@@ -9,7 +9,7 @@
             <el-form-item prop="type" label="分类">
               <el-select size="mini" v-model="ruleForm.productName" style="width:100%;">
                 <el-option
-                  v-for="item in status"
+                  v-for="item in category"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -40,24 +40,24 @@
           </el-col>
         </el-row>
         <div class="maintain__other">
-          <p class="maintain__other--p">其他信息</p>
+          <p class="maintain__other-baseTitle">其他信息</p>
           <el-divider />
-          <div class="maintain__other--modify">
+          <div class="maintain__other-modify">
             <div class="flex-left">
               <p style="margin-right:10px">颜色</p>
               <i class="el-icon-edit" @click="modifyDialog(1)" />
             </div>
             <div class="flex-left spans">
-              <p v-for="color in colors" :key="color.label">{{color.label}}</p>
+              <p v-for="(color,coIndex) in colors" :key="coIndex">{{color}}</p>
             </div>
             <div class="flex-left">
               <p style="margin-right:10px">尺码</p>
               <i class="el-icon-edit" @click="modifyDialog(2)" />
             </div>
             <div class="flex-left spans">
-              <p v-for="size in sizes" :key="size.label">{{size.label}}</p>
+              <p v-for="(size, siIndex) in sizes" :key="siIndex">{{size}}</p>
             </div>
-            <div v-if="dailog"></div>
+            <div v-if="dialog"></div>
             <div class="flex-left checkbox">
               <p>是否有现货</p>
               <el-checkbox-group v-model="checkList">
@@ -116,22 +116,22 @@
           <div></div>
         </div>
       </el-form>
+      <SlBaseDetails
+        ref="control"
+        :references="$refs"
+        form="form"
+        :mode="mode"
+        :create="create"
+        :gotoList="gotoList"
+        :isRight="true"
+        size="mini"
+        saveText="保存"
+        cancelText="取消"
+      />
     </div>
-    <SlBaseDetails
-      ref="control"
-      :references="$refs"
-      form="form"
-      :mode="mode"
-      :create="create"
-      :gotoList="gotoList"
-      :isRight="true"
-      size="mini"
-      saveText="确定"
-      cancelText="取消"
-    />
-    <div v-if="dailog">
-      <el-dialog :visible.sync="dailog" width="50%" :title="title">
-        <ModifyPropery></ModifyPropery>
+    <div v-if="dialog">
+      <el-dialog :visible.sync="dialog" width="30%" :title="title">
+        <ModifyPropery @closeDialog="closeDialog" @properys="properys" :status="status" />
       </el-dialog>
     </div>
   </div>
@@ -141,22 +141,20 @@
 import ModifyPropery from './ModifyPropery'
 export default {
   components: { ModifyPropery },
+  props: {
+    mode: { type: String, required: false, default: '' },
+    id: { type: Number, required: false, default: undefined }
+  },
   data () {
     return {
-      dailog: false,
+      dialog: false,
       title: '',
-      mode: 'create',
+      status: '',
       ruleForm: {},
       checkList: ['有'],
-      colors: [
-        { label: '红色' },
-        { label: '蓝色' }
-      ],
-      sizes: [
-        { label: '红色' },
-        { label: '蓝色' }
-      ],
-      status: [
+      colors: [],
+      sizes: [],
+      category: [
         { 'value': 1, 'label': '男装' },
         { 'value': 2, 'label': '女装' },
         { 'value': 3, 'label': '童装' },
@@ -182,7 +180,20 @@ export default {
     },
     modifyDialog (pro) {
       this.title = pro === 1 ? '修改颜色' : '修改尺码'
-      this.dailog = true
+      this.status = pro === 1 ? 'color' : 'size'
+      this.dialog = true
+    },
+    closeDialog (val) {
+      this.dialog = val
+    },
+    properys (val, status, properys) {
+      console.log(val, 'properys', properys)
+      this.dialog = val
+      if (status !== 'color') {
+        this.sizes.push(...properys)
+      } else {
+        this.colors.push(...properys)
+      }
     }
   }
 }
@@ -216,6 +227,7 @@ export default {
   .spans {
     border: $boder;
     padding: 2px;
+    height: 20px;
     p {
       background-color: #DCDFE6;
       padding: 0px 10px;
@@ -226,7 +238,7 @@ export default {
   }
   &__base {
     border: $boder;
-    &--p {
+    &-baseTitle {
       @extend .title;
     }
   }
@@ -238,15 +250,19 @@ export default {
     font-size: 14px;
     color: #606266;
     line-height: 40px;
-    &--p {
+    &-baseTitle {
       @extend .title;
     }
-    &--modify {
-      padding-left: 10px;
+    &-modify {
+      margin-left: 10px;
+      margin-right: 10px;
     }
   }
   /deep/.el-divider--horizontal {
     margin: 0 0 24px 0;
+  }
+  /deep/.el-dialog__title {
+    font-size: 15px;
   }
 }
 </style>
