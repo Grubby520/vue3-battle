@@ -6,6 +6,11 @@ export const routes = [
     component: () => import('@/views/Login.vue')
   },
   {
+    path: '/register',
+    name: '注册',
+    component: () => import('@/views/Register.vue')
+  },
+  {
     path: '/home',
     component: () => import('@/views/Home.vue'),
     children: homeRoutes
