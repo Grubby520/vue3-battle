@@ -203,12 +203,6 @@ export default {
 }
 
 .register-container /deep/ {
-  .el-input__inner {
-    display: inline-block;
-    height: 4rem;
-    line-height: 4rem;
-    padding: 0 0.3em 0 2em;
-  }
   .el-form-item__label {
     color: $color-white;
   }
