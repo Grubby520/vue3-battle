@@ -9,7 +9,7 @@
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="modifyPassword">修改密码</el-dropdown-item>
-        <el-dropdown-item>退出</el-dropdown-item>
+        <el-dropdown-item @click.native="quit">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
@@ -31,6 +31,9 @@ export default {
   methods: {
     modifyPassword () {
       this.$router.push('/modifyPassword')
+    },
+    quit () {
+      this.$router.push('/login')
     }
   },
   mounted: function () {
