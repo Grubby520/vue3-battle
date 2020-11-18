@@ -67,15 +67,10 @@
 </template>
 
 <script>
+import { passwordValidator, phoneNoValidator } from '@shared/validate'
+
 export default {
   data () {
-    let validateTel = (rule, value, callback) => {
-      if (!(/^1[3|4|5|6|7|8|9]\d{9}$/.test(value))) {
-        callback(new Error('请输入正确格式联系电话'))
-      } else {
-        callback()
-      }
-    }
     return {
       form: {
         username: '', // 公司名称
@@ -117,7 +112,7 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: ['blur', 'change'] },
-          { pattern: /^[\S]{8,20}$/, message: '请输入8-20位数字、字母、符号，区分大小写', trigger: ['blur', 'change'] }
+          { validator: passwordValidator, trigger: ['blur', 'change'] }
         ],
         contactPerson: [
           { required: true, message: '请输入联系人信息', trigger: ['blur', 'change'] },
@@ -125,7 +120,7 @@ export default {
         ],
         telephone: [
           { required: true, message: '请输入联系电话', trigger: ['blur', 'change'] },
-          { validator: validateTel, trigger: ['blur', 'change'] }
+          { validator: phoneNoValidator, trigger: ['blur', 'change'] }
         ],
         address: [
           { required: true, message: '请选择公司地址', trigger: ['blur', 'change'] }
