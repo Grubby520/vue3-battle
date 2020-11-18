@@ -42,6 +42,14 @@ export const homeRoutes = [
         },
         props: route => { return { id: route.query.id, mode: route.query.mode } },
         component: () => import('@/views/components/recommendProducts/Maintain.vue')
+      },
+      {
+        path: 'importSpu',
+        name: '导入SPU',
+        meta: {
+          icon: 'el-icon-postcard'
+        },
+        component: () => import('@/views/ImportSpu.vue')
       }
     ]
   },

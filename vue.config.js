@@ -19,6 +19,7 @@ module.exports = {
       .set('@plugins', resolve('src/shared/plugins'))
       .set('@assets', resolve('src/assets'))
       .set('@api', resolve('src/api'))
+      .set('@', resolve('src'))
 
     if (process.env.config_report) {
       config.plugin('webpack-bundle-analyzer').use(BundleAnalyzerPlugin)
