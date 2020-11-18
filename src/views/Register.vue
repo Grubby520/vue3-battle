@@ -70,7 +70,7 @@
 export default {
   data () {
     let validateTel = (rule, value, callback) => {
-      if (!(/^1[3|4|5|7|8]\d{9}$/.test(value))) {
+      if (!(/^1[3|4|5|6|7|8|9]\d{9}$/.test(value))) {
         callback(new Error('请输入正确格式联系电话'))
       } else {
         callback()
@@ -78,8 +78,8 @@ export default {
     }
     return {
       form: {
-        username: '测试公司名称', // 公司名称
-        account: '133333333333', // 账号
+        username: '', // 公司名称
+        account: '', // 账号
         password: '',
         contactPerson: '', // 联系人
         telephone: '', // 联系电话
