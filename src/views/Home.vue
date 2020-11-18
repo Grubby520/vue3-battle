@@ -127,6 +127,7 @@ $asideMinW: pxToRem(220px);
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     @extend .block-border;
 
     .page-header {
