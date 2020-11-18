@@ -44,5 +44,13 @@ export const homeRoutes = [
         component: () => import('@/views/components/recommendProducts/Maintain.vue')
       }
     ]
+  },
+  {
+    path: 'supplierList',
+    name: '供应商列表',
+    meta: {
+      icon: 'el-icon-more-outline'
+    },
+    component: () => import('@/views/SupplierList.vue')
   }
 ]

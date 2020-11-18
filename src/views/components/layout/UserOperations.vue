@@ -8,7 +8,7 @@
         <i class="el-icon-caret-bottom color-text--white"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item>修改密码</el-dropdown-item>
+        <el-dropdown-item @click.native="modifyPassword">修改密码</el-dropdown-item>
         <el-dropdown-item>退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -29,6 +29,9 @@ export default {
   computed: {
   },
   methods: {
+    modifyPassword () {
+      this.$router.push('/modifyPassword')
+    }
   },
   mounted: function () {
 

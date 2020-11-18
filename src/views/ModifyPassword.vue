@@ -38,8 +38,8 @@
           />
         </el-form-item>
         <div class="align-center">
-          <el-button class="mr-2rem" @click="cancel">{{cancelText}}</el-button>
-          <el-button type="primary" @click="submit">{{submitText}}</el-button>
+          <el-button class="mr-2rem" @click="cancel">{{$t('button.cancelText')}}</el-button>
+          <el-button type="primary" @click="submit">{{$t('button.submitText')}}</el-button>
         </div>
       </el-form>
     </div>
@@ -53,8 +53,6 @@ export default {
   name: 'modifyPassword',
   data () {
     return {
-      cancelText: '取消',
-      submitText: '提交',
       loginForm: {
         oldPassword: '',
         newPassword: '',
@@ -90,8 +88,10 @@ export default {
   },
   methods: {
     cancel () {
+      this.$router.go(-1)
     },
     submit () {
+      this.$router.go(-1)
     }
   }
 }
