@@ -46,7 +46,9 @@ export const homeRoutes = [
       {
         path: 'importSpu',
         name: '导入SPU',
-        icon: 'el-icon-postcard',
+        meta: {
+          icon: 'el-icon-postcard'
+        },
         component: () => import('@/views/ImportSpu.vue')
       }
     ]
