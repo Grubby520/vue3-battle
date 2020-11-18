@@ -25,7 +25,9 @@
                 maxlength="255"
               />
             </el-form-item>
-            <el-form-item prop="type" label="商品图片"></el-form-item>
+            <el-form-item prop="type" label="商品图片">
+              <SlUploadImages></SlUploadImages>
+            </el-form-item>
           </el-col>
           <el-col :span="11">
             <el-form-item prop="type" label="供方货号">
@@ -109,8 +111,9 @@
                 />
               </el-form-item>
             </div>
-            <div class="flex-left">
+            <div class="flex-left checkbox">
               <p>尺码表</p>
+              <SlUploadImages></SlUploadImages>
             </div>
           </div>
           <div></div>
@@ -202,11 +205,11 @@ export default {
 <style scoped lang="scss">
 .maintain {
   padding: 20px;
-  $boder: 1px solid #DCDFE6;
+  $boder: 1px solid #dcdfe6;
   .title {
     font-size: 15px;
     font-weight: bold;
-    color: #DCDFE6;
+    color: #dcdfe6;
     line-height: 40px;
     margin-left: 10px;
   }
@@ -229,7 +232,7 @@ export default {
     padding: 2px;
     height: 20px;
     p {
-      background-color: #DCDFE6;
+      background-color: #dcdfe6;
       padding: 0px 10px;
       line-height: 20px;
       margin-left: 10px;

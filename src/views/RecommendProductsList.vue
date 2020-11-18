@@ -59,7 +59,7 @@
         <el-button type="primary" size="mini">导入SPU</el-button>
         <el-button type="primary" size="mini">导入商品图片</el-button>
       </div>
-      <SlBaseTable
+      <SlTable
         ref="table"
         :tableData="tableData"
         :columns="columns"
@@ -71,7 +71,7 @@
           <span @click="recommon(props)" class="btn">推品</span>
           <span @click="deleteProduct(props)" class="btn">删除</span>
         </div>
-      </SlBaseTable>
+      </SlTable>
     </SlBaseListView>
   </div>
 </template>
