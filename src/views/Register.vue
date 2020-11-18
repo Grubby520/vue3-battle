@@ -59,7 +59,7 @@
                 </el-form-item>
 
                 <el-form-item label>
-                    <el-button type="primary" size="large" @click="register" :loading="disabled" class="register-btn">注册</el-button>
+                    <el-button type="primary" size="large" @click="register" :loading="disabled" class="register-btn">{{$t('button.registerText')}}</el-button>
                 </el-form-item>
             </el-form>
         </div>
