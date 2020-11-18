@@ -155,7 +155,7 @@ export default {
     },
     reset () { },
     maintain (row, status) {
-      this.$router.push({ path: '/home/recommendProducts/maintain', query: { mode: status } })
+      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
     },
     recommon (row) {
       this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选

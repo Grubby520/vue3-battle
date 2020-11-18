@@ -10,7 +10,7 @@ export const homeRoutes = [
     component: () => import('@/views/Index.vue')
   },
   {
-    path: 'myFile',
+    path: 'my-file',
     name: '我的档案',
     meta: {
       icon: 'el-icon-postcard'
@@ -18,7 +18,7 @@ export const homeRoutes = [
     component: () => import('@/views/MyFile.vue')
   },
   {
-    path: 'recommendProducts',
+    path: 'recommend-products',
     name: '商品管理',
     meta: {
       icon: 'el-icon-postcard'
@@ -44,7 +44,7 @@ export const homeRoutes = [
         component: () => import('@/views/components/recommendProducts/Maintain.vue')
       },
       {
-        path: 'importSpu',
+        path: 'import-spu',
         name: '导入SPU',
         meta: {
           icon: 'el-icon-postcard'
@@ -62,7 +62,7 @@ export const homeRoutes = [
     ]
   },
   {
-    path: 'supplierList',
+    path: 'supplier-list',
     name: '供应商列表',
     meta: {
       icon: 'el-icon-more-outline'
