@@ -7,7 +7,6 @@ import { getLang } from '@shared/util'
 
 Vue.use(VueI18n)
 
-console.log(getLang())
 const i18n = new VueI18n({
   locale: getLang(),
   messages: {

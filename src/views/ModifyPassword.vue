@@ -4,36 +4,39 @@
       <h3 class="modify-password__title">{{systemName}}</h3>
       <h4 class="modify-password__subtitle">修改密码</h4>
       <el-form
-        ref="loginForm"
+        ref="form"
         class="modify-password__form"
-        :model="loginForm"
-        :rules="loginRules"
+        :model="form"
+        :rules="rules"
         autocomplete="off"
       >
+        <div class="mb-1rem color-text--white">旧密码</div>
         <el-form-item prop="oldPassword">
-          <span class="el-icon-lock form-ite-icon"></span>
+          <span class="el-icon-lock form-item-icon"></span>
           <el-input
             name="oldPassword"
             type="password"
-            v-model="loginForm.oldPassword"
+            v-model="form.oldPassword"
             placeholder="请输入旧密码"
           />
         </el-form-item>
+        <div class="mb-1rem color-text--white">新密码</div>
         <el-form-item prop="newPassword">
-          <span class="el-icon-lock form-ite-icon"></span>
+          <span class="el-icon-lock form-item-icon"></span>
           <el-input
             name="newPassword"
             type="password"
-            v-model="loginForm.newPassword"
+            v-model="form.newPassword"
             placeholder="请输入新密码"
           />
         </el-form-item>
+        <div class="mb-1rem color-text--white">确认密码</div>
         <el-form-item prop="confirmPassword">
-          <span class="el-icon-lock form-ite-icon"></span>
+          <span class="el-icon-lock form-item-icon"></span>
           <el-input
             name="confirmPassword"
             type="password"
-            v-model="loginForm.confirmPassword"
+            v-model="form.confirmPassword"
             placeholder="请确认密码"
           />
         </el-form-item>
@@ -48,35 +51,48 @@
 
 <script>
 import { mapState } from 'vuex'
+import { passwordValidator } from '@shared/validate/index.js'
 
 export default {
-  name: 'modifyPassword',
+  name: 'ModifyPassword',
   data () {
+    let sameValueValidate = (rule, value, callback) => {
+      if (this.form.newPassword !== this.form.confirmPassword) {
+        callback(new Error('新密码和确认密码不一致'))
+      } else {
+        callback()
+      }
+    }
+
     return {
-      loginForm: {
+      form: {
         oldPassword: '',
         newPassword: '',
         confirmPassword: ''
       },
-      loginRules: {
+      rules: {
         oldPassword: [
+          { required: true, message: '不能为空', trigger: 'blur' },
           {
-            required: true,
-            message: '旧密码不能为空',
+            validator: passwordValidator,
             trigger: 'blur'
           }
         ],
         newPassword: [
+          { required: true, message: '不能为空', trigger: 'blur' },
           {
-            required: true,
-            message: '新密码不能为空',
+            validator: passwordValidator,
             trigger: 'blur'
           }
         ],
         confirmPassword: [
+          { required: true, message: '不能为空', trigger: 'blur' },
           {
-            required: true,
-            message: '密码不能为空',
+            validator: passwordValidator,
+            trigger: 'blur'
+          },
+          {
+            validator: sameValueValidate,
             trigger: 'blur'
           }
         ]
@@ -91,7 +107,13 @@ export default {
       this.$router.go(-1)
     },
     submit () {
-      this.$router.go(-1)
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.$router.go(-1)
+        } else {
+          return false
+        }
+      })
     }
   }
 }
@@ -146,7 +168,7 @@ export default {
   }
 }
 
-.form-ite-icon {
+.form-item-icon {
   position: absolute;
   left: 0.5em;
   top: 50%;
