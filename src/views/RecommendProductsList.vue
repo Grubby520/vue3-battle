@@ -1,30 +1,45 @@
 <template>
   <div class="recommond">
-    <SlBaseListView @goto-page="gotoPage" class="recommonPar" @reset="reset" ref="listView">
-      <div slot="criteria">
+    <SlBaseListView
+      @gotoPage="gotoPage"
+      @reset="reset"
+      :total="total"
+      :pageIndex="pageIndex"
+      class="recommonPar"
+      ref="listView"
+    >
+      <div slot="search">
         <el-row type="flex" justify="center">
           <el-col :span="7">
-            <SlBaseCell label="品类">
+            <!-- <SlBaseCell label="品类"> -->
+            <div class="flex-left">
+              <span class>品类</span>
               <el-input
                 v-model.trim="recommonPar.productName"
                 clearable
                 size="mini"
                 placeholder="请输入学科"
               />
-            </SlBaseCell>
+            </div>
+            <!-- </SlBaseCell> -->
           </el-col>
-          <el-col :span="8">
-            <SlBaseCell label="供方货号">
+          <el-col :span="7">
+            <!-- <SlBaseCell label="供方货号"> -->
+            <div class="flex-left">
+              <span class="recommond-label">供方货号</span>
               <el-input
                 v-model.trim="recommonPar.productName"
                 clearable
                 size="mini"
                 placeholder="请输入供方货号"
               />
-            </SlBaseCell>
+            </div>
+            <!-- </SlBaseCell> -->
           </el-col>
           <el-col :span="7">
-            <SlBaseCell label="状态">
+            <!-- <SlBaseCell label="状态"> -->
+            <div class="flex-left">
+              <span>状态</span>
               <el-select size="mini" v-model="recommonPar.productName">
                 <el-option
                   v-for="item in status"
@@ -33,7 +48,8 @@
                   :value="item.value"
                 ></el-option>
               </el-select>
-            </SlBaseCell>
+            </div>
+            <!-- </SlBaseCell> -->
           </el-col>
         </el-row>
       </div>
@@ -44,6 +60,7 @@
         <el-button type="primary" size="mini">导入商品图片</el-button>
       </div>
       <SlBaseTable
+        ref="table"
         :tableData="tableData"
         :columns="columns"
         @handleSelectionChange="handleSelectionChange"
@@ -66,6 +83,9 @@ export default {
       recommonPar: {},
       tableData: [],
       selections: [],
+      pageIndex: 1, // 页数
+      total: 0, // 总页数
+      pageSize: 10,
       columns: [
         {
           prop: 'product',
@@ -117,9 +137,10 @@ export default {
   },
 
   methods: {
-    gotoPage (pageIndex, pageSize, updatePagination) {
-      this.recommonPar.pageIndex = pageIndex
-      this.recommonPar.pageSize = pageSize
+    gotoPage (pageSize, pageIndex) {
+      console.log('2')
+      // this.recommonPar.pageIndex = pageIndex
+      // this.recommonPar.pageSize = pageSize
       // recommond.getList({ ...this.recommonPar })
       //   .then((res) => {
       //   const { list, pageNum, pageSize, total } = res.data
@@ -136,11 +157,7 @@ export default {
           creatTime: '2020-11-18'
         }
       ]
-      updatePagination({
-        pageIndex: 1,
-        pageSize: pageSize,
-        total: 100
-      })
+      // this.total = total
       // })
       // .catch(() => {
       //   this.showLoad = false
@@ -148,14 +165,14 @@ export default {
     },
     handleSelectionChange (val) {
       this.selections = val
+      console.log(val)
     },
     reset () { },
     maintain (row, status) {
       this.$router.push({ path: '/home/recommendProducts/maintain', query: { mode: status } })
     },
     recommon (row) {
-      // const LEN = this.selections.length
-
+      this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
     },
     deleteProduct (row) {
 
@@ -169,6 +186,8 @@ export default {
     display: flex;
     justify-content: flex-start;
     margin-bottom: 10px;
+  }
+  &-label {
   }
 }
 </style>

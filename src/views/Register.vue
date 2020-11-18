@@ -151,7 +151,7 @@ export default {
           console.log(this.form)
           // this.submit()
         } else {
-          this.$message.error('表单校验有误，请核对！')
+          this.$message.error('表单校验未通过，请核对！')
           return false
         }
       })
