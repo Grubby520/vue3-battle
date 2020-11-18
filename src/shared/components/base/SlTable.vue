@@ -80,7 +80,7 @@
 </template>
 <script>
 export default {
-  name: 'SlBaseTable',
+  name: 'SlTable',
   props: {
     tableData: {
       type: Array,

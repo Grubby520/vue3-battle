@@ -8,58 +8,44 @@
       class="recommonPar"
       ref="listView"
     >
-      <div slot="search">
-        <el-row type="flex" justify="center">
-          <el-col :span="7">
-            <!-- <SlBaseCell label="品类"> -->
-            <div class="flex-left">
-              <span class>品类</span>
-              <el-input
-                v-model.trim="recommonPar.productName"
-                clearable
-                size="mini"
-                placeholder="请输入学科"
-              />
-            </div>
-            <!-- </SlBaseCell> -->
-          </el-col>
-          <el-col :span="7">
-            <!-- <SlBaseCell label="供方货号"> -->
-            <div class="flex-left">
-              <span class="recommond-label">供方货号</span>
-              <el-input
-                v-model.trim="recommonPar.productName"
-                clearable
-                size="mini"
-                placeholder="请输入供方货号"
-              />
-            </div>
-            <!-- </SlBaseCell> -->
-          </el-col>
-          <el-col :span="7">
-            <!-- <SlBaseCell label="状态"> -->
-            <div class="flex-left">
-              <span>状态</span>
-              <el-select size="mini" v-model="recommonPar.productName">
-                <el-option
-                  v-for="item in status"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </div>
-            <!-- </SlBaseCell> -->
-          </el-col>
-        </el-row>
+      <div slot="search" class="flex-center">
+        <div class="flex-left searchUnit">
+          <span class="recommond-label">品类</span>
+          <el-input
+            class="recommond-input"
+            v-model.trim="recommonPar.productName"
+            clearable
+            placeholder="请输入学科"
+          />
+        </div>
+        <div class="flex-left searchUnit">
+          <span class="recommond-label">供方货号</span>
+          <el-input
+            class="recommond-input"
+            v-model.trim="recommonPar.productName"
+            clearable
+            placeholder="请输入供方货号"
+          />
+        </div>
+        <div class="flex-left searchUnit">
+          <span class="recommond-label">状态</span>
+          <el-select v-model="recommonPar.productName" class="recommond-input">
+            <el-option
+              v-for="item in status"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
       </div>
       <el-divider />
       <div class="recommond-btns">
-        <el-button type="primary" size="mini" @click="recommon">批量推品</el-button>
-        <el-button type="primary" size="mini">导入SPU</el-button>
-        <el-button type="primary" size="mini">导入商品图片</el-button>
+        <el-button type="primary" @click="recommon">批量推品</el-button>
+        <el-button type="primary">导入SPU</el-button>
+        <el-button type="primary">导入商品图片</el-button>
       </div>
-      <SlBaseTable
+      <SlTable
         ref="table"
         :tableData="tableData"
         :columns="columns"
@@ -71,7 +57,7 @@
           <span @click="recommon(props)" class="btn">推品</span>
           <span @click="deleteProduct(props)" class="btn">删除</span>
         </div>
-      </SlBaseTable>
+      </SlTable>
     </SlBaseListView>
   </div>
 </template>
@@ -187,7 +173,17 @@ export default {
     justify-content: flex-start;
     margin-bottom: 10px;
   }
+  .searchUnit {
+    width: 30%;
+  }
   &-label {
+    white-space: nowrap; /*强制span不换行*/
+    display: inline-block; /*将span当做块级元素对待*/
+  }
+  &-input {
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 100%;
   }
 }
 </style>
