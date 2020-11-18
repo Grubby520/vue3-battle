@@ -69,7 +69,7 @@ export default {
     },
     routesToMenus (routes = [], menus = [], prevPath = '/home') {
       routes.forEach(route => {
-        const { path, name, icon, children, notMenu } = route
+        const { path, name, children, meta: { icon, notMenu } } = route
         if (!notMenu) {
           const curPath = `${prevPath}/${path}`
           let menu = {
