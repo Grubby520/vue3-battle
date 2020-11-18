@@ -1,7 +1,7 @@
 <template>
-  <div class="user-info color-text--white">
+  <div class="user-info color-text--white align-right">
     <div>{{userInfo.company}}</div>
-    <!-- <div>{{userInfo.status}}</div> -->
+    <div class="color-text--gray">{{userInfo.status}}</div>
   </div>
 </template>
 
@@ -32,5 +32,7 @@ export default {
 <style scoped lang="scss">
 .user-info {
   display: inline-block;
+  line-height: 1.25;
+  transform: translateY(25%);
 }
 </style>

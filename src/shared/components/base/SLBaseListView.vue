@@ -48,7 +48,7 @@ export default {
         pageSize: 10,
         total: 0
       },
-      pageSizes: [10, 20, 30, 50],
+      pageSizes: [10, 20, 50, 100, 200],
       loading: false
     }
   },
