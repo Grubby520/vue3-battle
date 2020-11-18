@@ -7,7 +7,7 @@
         <el-row type="flex" justify="center" class="maintain__form">
           <el-col :span="11">
             <el-form-item prop="type" label="分类">
-              <el-select size="mini" v-model="ruleForm.productName" style="width:100%;">
+              <el-select v-model="ruleForm.productName" style="width:100%;">
                 <el-option
                   v-for="item in category"
                   :key="item.value"
@@ -17,13 +17,7 @@
               </el-select>
             </el-form-item>
             <el-form-item prop="type" label="商品名称">
-              <el-input
-                size="mini"
-                clearable
-                v-model="ruleForm.remarks"
-                placeholder="请输入商品名称"
-                maxlength="255"
-              />
+              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入商品名称" maxlength="255" />
             </el-form-item>
             <el-form-item prop="type" label="商品图片">
               <SlUploadImages></SlUploadImages>
@@ -31,13 +25,13 @@
           </el-col>
           <el-col :span="11">
             <el-form-item prop="type" label="供方货号">
-              <el-input size="mini" clearable v-model="ruleForm.remarks" placeholder="请输入供应货号" />
+              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入供应货号" />
             </el-form-item>
             <el-form-item prop="type" label="预估重量">
-              <el-input size="mini" clearable v-model="ruleForm.remarks" placeholder="请输入预估重量" />
+              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入预估重量" />
             </el-form-item>
             <el-form-item prop="type" label="供货价格">
-              <el-input size="mini" clearable v-model="ruleForm.remarks" placeholder="请输入供货单价" />
+              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入供货单价" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -68,7 +62,6 @@
               </el-checkbox-group>
               <el-form-item prop="type" label="生产周期">
                 <el-input
-                  size="mini"
                   clearable
                   v-model="ruleForm.remarks"
                   placeholder="请输入商品名称"
@@ -77,7 +70,6 @@
               </el-form-item>
               <el-form-item prop="type" label="库存数量">
                 <el-input
-                  size="mini"
                   clearable
                   v-model="ruleForm.remarks"
                   placeholder="请输入商品名称"
@@ -86,7 +78,6 @@
               </el-form-item>
               <el-form-item prop="type" label="当前库存可维持">
                 <el-input
-                  size="mini"
                   clearable
                   v-model="ruleForm.remarks"
                   placeholder="请输入商品名称"
@@ -103,7 +94,6 @@
               </el-checkbox-group>
               <el-form-item prop="type" label="打版周期">
                 <el-input
-                  size="mini"
                   clearable
                   v-model="ruleForm.remarks"
                   placeholder="请输入商品名称"
@@ -127,7 +117,6 @@
         :create="create"
         :gotoList="gotoList"
         :isRight="true"
-        size="mini"
         saveText="保存"
         cancelText="取消"
       />
@@ -220,6 +209,7 @@ export default {
     /deep/ .el-checkbox-group {
       font-size: unset !important;
     }
+    margin-top: 10px;
     P {
       margin-right: 10px;
     }
@@ -232,7 +222,7 @@ export default {
     padding: 2px;
     height: 20px;
     p {
-      background-color: #dcdfe6;
+      background-color: #96999e;
       padding: 0px 10px;
       line-height: 20px;
       margin-left: 10px;
