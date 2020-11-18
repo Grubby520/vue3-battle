@@ -7,6 +7,7 @@
       :page-sizes="pageSizes"
       :page-size="page.limit"
       layout="total, sizes, prev, pager, next, jumper"
+      background
       :total="total"
     ></el-pagination>
   </div>
@@ -14,6 +15,7 @@
 
 <script>
 export default {
+  name: 'SlBasePagination',
   props: {
     total: {
       type: Number
@@ -32,7 +34,7 @@ export default {
     }
   },
   methods: {
-    // // 每页查看条数变化
+    // 每页查看条数变化
     handleSizeChange (val) {
       this.page.pageSize = val
       this.$emit('pageChange', this.page)

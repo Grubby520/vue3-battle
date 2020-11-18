@@ -5,6 +5,7 @@
     @selection-change="handleSelectionChange"
     :border="border"
     size="mini"
+    ref="multipleTable"
   >
     <el-table-column v-if="selection" type="selection" width="55" fixed />
     <div v-for="item in columns" :key="item.label">
