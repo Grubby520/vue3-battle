@@ -69,7 +69,7 @@ export default {
     },
     routesToMenus (routes = [], menus = [], prevPath = '/home') {
       routes.forEach(route => {
-        const { path, name, icon, children, notMenu } = route
+        const { path, name, children, meta: { icon, notMenu } } = route
         if (!notMenu) {
           const curPath = `${prevPath}/${path}`
           let menu = {
@@ -127,6 +127,7 @@ $asideMinW: pxToRem(220px);
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     @extend .block-border;
 
     .page-header {

@@ -25,6 +25,16 @@ router.beforeEach((to, from, next) => {
         label: ele.name
       }
     })
+
+    // 补充非菜单路由页的面包屑数据
+    if (to.meta.notMenu) {
+      if (from.name) {
+        breadcrumbs.splice(breadcrumbs.length - 1, 0, {
+          path: from.fullPath,
+          label: from.name
+        })
+      }
+    }
     store.commit('SET_BREADCRUMBS', breadcrumbs)
   }
 
@@ -35,7 +45,11 @@ router.beforeEach((to, from, next) => {
 // 全局后置守卫
 router.afterEach((to, from) => {
   if (to.path.includes('/home')) {
-    store.commit('SET_ACTIVE_PATH', to.path)
+    if (to.meta.notMenu) {
+      store.commit('SET_ACTIVE_PATH', from.path)
+    } else {
+      store.commit('SET_ACTIVE_PATH', to.path)
+    }
   }
   NProgress.done()
 })

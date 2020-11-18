@@ -21,7 +21,9 @@ const axiosInstance = axios.create({
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
-  addLoading()
+  if (config.addLoading) {
+    addLoading()
+  }
   return config
 }, err => {
   store.dispatch('CLOSE_LOADING')
