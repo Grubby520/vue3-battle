@@ -79,7 +79,6 @@ export default {
   data () {
     let validateTel = (rule, value, callback) => {
       if (!(/^1[3|4|5|7|8]\d{9}$/.test(value))) {
-        console.log(1111)
         callback(new Error('请输入正确格式联系电话'))
       } else {
         callback()
