@@ -29,7 +29,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import { downloadFile } from '@/shared/download'
+import { downloadFile } from '@/shared/util'
 import importSpuTemplate from '@/assets/template/import-spu.xlsx'
 const { mapActions } = createNamespacedHelpers('productManage')
 export default {

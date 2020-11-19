@@ -14,7 +14,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import { downloadJsonToCsv } from '@/shared/json2Csv'
+import { downloadJsonToCsv } from '@/shared/util'
 // 获取[store] [productManage] 模块的 [mapGetters]
 const { mapGetters } = createNamespacedHelpers('productManage')
 
