@@ -61,28 +61,18 @@
                 <el-checkbox label="无" />
               </el-checkbox-group>
               <el-form-item prop="type" label="生产周期">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
-                  maxlength="255"
+                <el-input-number
+                  v-model="ruleForm.num"
+                  controls-position="right"
+                  @change="handleChange"
+                  :min="1"
                 />
               </el-form-item>
               <el-form-item prop="type" label="库存数量">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
-                  maxlength="255"
-                />
+                <el-input clearable v-model="ruleForm.remarks" maxlength="255" />
               </el-form-item>
               <el-form-item prop="type" label="当前库存可维持">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
-                  maxlength="255"
-                />
+                <el-input clearable v-model="ruleForm.remarks" maxlength="255" />
               </el-form-item>
               <p>{{'天'}}</p>
             </div>
@@ -93,10 +83,11 @@
                 <el-checkbox label="无" />
               </el-checkbox-group>
               <el-form-item prop="type" label="打版周期">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
+                <el-input-number
+                  v-model="ruleForm.num1"
+                  controls-position="right"
+                  @change="handleChange"
+                  :min="1"
                   maxlength="255"
                 />
               </el-form-item>
@@ -142,7 +133,10 @@ export default {
       dialog: false,
       title: '',
       status: '',
-      ruleForm: {},
+      ruleForm: {
+        num: 1,
+        num1: 1
+      },
       checkList: ['有'],
       colors: [],
       sizes: [],

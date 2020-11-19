@@ -3,8 +3,8 @@
     <div v-if="$slots.search">
       <slot name="search"></slot>
       <div class="bases-search">
-        <el-button v-if="$slots.search" type="primary" @click="searchPage">搜索</el-button>
-        <el-button v-if="$slots.search && isRest" @click="reset">重置</el-button>
+        <el-button type="primary" @click="searchPage">搜索</el-button>
+        <el-button v-if="isReset" @click="reset">重置</el-button>
       </div>
     </div>
     <template>
@@ -25,7 +25,7 @@ export default {
   props: {
     total: { type: Number, required: false, default: undefined },
     pageIndex: { type: Number, required: false, default: undefined },
-    isRest: { type: Boolean, required: false, default: true },
+    isReset: { type: Boolean, required: false, default: true },
     isPagination: { type: Boolean, required: false, default: true }
   },
   mounted () {

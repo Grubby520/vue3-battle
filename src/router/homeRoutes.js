@@ -50,6 +50,14 @@ export const homeRoutes = [
           icon: 'el-icon-postcard'
         },
         component: () => import('@/views/ImportSpu.vue')
+      },
+      {
+        path: 'uploadImages',
+        name: '导入商品图片',
+        meta: {
+          icon: 'el-icon-postcard'
+        },
+        component: () => import('@/views/components/recommendProducts/UploadImages.vue')
       }
     ]
   },
