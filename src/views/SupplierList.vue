@@ -1,16 +1,17 @@
 <template>
-  <div class="recommond">
+  <div>
     <SlBaseListView
       @gotoPage="gotoPage"
       @reset="reset"
       :total="total"
       :pageIndex="pageIndex"
-      class="recommonPar"
+      :searchBarStyle="{marginTop:'auto',display:'inline-block'}"
       ref="listView"
     >
-      <div slot="search"></div>
+      <div slot="search">
+        <SlSearchForm v-model="query" :items="searchItems"></SlSearchForm>
+      </div>
       <el-divider />
-
       <SlTable
         ref="table"
         :tableData="tableData"
@@ -33,6 +34,27 @@ export default {
   name: 'SupplierList',
   data () {
     return {
+      searchItems: [
+        {
+          type: 'input',
+          name: 'supplierName',
+          label: '供应商'
+        },
+        {
+          type: 'input',
+          name: 'account',
+          label: '账号'
+        },
+        {
+          type: 'select',
+          name: 'supplierStatus',
+          label: '供应商状态',
+          data: {
+            options: []
+          }
+        }
+      ],
+      query: {},
       recommonPar: {},
       tableData: [],
       selections: [],
