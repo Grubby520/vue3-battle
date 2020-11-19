@@ -21,6 +21,21 @@ module.exports = {
       .set('@api', resolve('src/api'))
       .set('@', resolve('src'))
 
+    config.module
+      .rule('office')
+      .test(/\.(xls|docx|xlsx|doc)(\?.*)?$/)
+      .use('url-loader')
+      .loader('url-loader')
+      .tap(options => {
+        options = {
+          query: {
+            limit: 10000,
+            name: path.posix.join('static', 'fonts/[name].[hash:7].[ext]')
+          }
+        }
+      })
+      .end()
+
     if (process.env.config_report) {
       config.plugin('webpack-bundle-analyzer').use(BundleAnalyzerPlugin)
     }

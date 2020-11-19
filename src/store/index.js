@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Loading } from 'element-ui'
 import userInfo from './userInfo'
+import productManage from './modules/productManage'
 
 Vue.use(Vuex)
 
@@ -14,6 +15,9 @@ export default new Vuex.Store({
     activePath: null,
     menuCollapse: false,
     userInfo
+  },
+  getters: {
+    IMPORRT_SPU_RESULT_DATA: (state) => 'just like this'
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
@@ -48,5 +52,6 @@ export default new Vuex.Store({
     }
   },
   modules: {
+    productManage
   }
 })
