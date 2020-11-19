@@ -82,13 +82,8 @@
         </el-form-item>
 
         <el-form-item label>
-          <el-button
-            type="primary"
-            size="large"
-            @click="register"
-            :loading="disabled"
-            class="register-btn"
-          >{{$t('button.registerText')}}</el-button>
+          <el-button @click="login" :loading="disabled" class="register-btn">返回登录</el-button>
+          <el-button type="primary" @click="register" :loading="disabled" class="register-btn">提交注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -162,6 +157,9 @@ export default {
     }
   },
   methods: {
+    login () {
+      this.$router.push('login')
+    },
     register () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -203,12 +201,6 @@ export default {
 }
 
 .register-container /deep/ {
-  .el-input__inner {
-    display: inline-block;
-    height: 4rem;
-    line-height: 4rem;
-    padding: 0 0.3em 0 2em;
-  }
   .el-form-item__label {
     color: $color-white;
   }
@@ -241,8 +233,8 @@ export default {
 }
 
 .register-btn {
-  width: 20rem;
   margin-top: 1rem;
+  margin-right: 1rem;
 }
 
 .label-space {

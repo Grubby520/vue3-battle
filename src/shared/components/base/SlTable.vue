@@ -73,7 +73,7 @@
     </div>
     <el-table-column width="180px" align="center" label="操作">
       <template slot-scope="scope">
-        <slot name="opration" :row="scope.row"></slot>
+        <slot name="operation" :row="scope.row"></slot>
       </template>
     </el-table-column>
   </el-table>
