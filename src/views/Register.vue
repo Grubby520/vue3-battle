@@ -1,69 +1,93 @@
 <template>
-    <div class="sl-login-container">
-        <div class="sl-login">
-            <h3 class="sl-login-title">注册Starlink供应商平台</h3>
-            <el-form ref="form" class="sl-login-form" :model="form" :rules="rules" label-width="12rem">
-                <el-form-item label="公司名称：" prop="username">
-                    <el-input v-model="form.username" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
-                </el-form-item>
+  <div class="sl-login-container">
+    <div class="sl-login">
+      <h3 class="sl-login-title">注册Starlink供应商平台</h3>
+      <el-form ref="form" class="sl-login-form" :model="form" :rules="rules" label-width="12rem">
+        <el-form-item label="公司名称：" prop="username">
+          <el-input v-model="form.username" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
+        </el-form-item>
 
-                <el-form-item prop="account">
-                    <template v-slot:label>
-                        <span>
-                            <span class="label-space label-two-space">账号</span>：
-                        </span>
-                    </template>
-                    <el-input v-model="form.account" maxlength="100" clearable placeholder="请填写账户"></el-input>
-                </el-form-item>
+        <el-form-item prop="account">
+          <template v-slot:label>
+            <span>
+              <span class="label-space label-two-space">账号</span>：
+            </span>
+          </template>
+          <el-input v-model="form.account" maxlength="100" clearable placeholder="请填写账户"></el-input>
+        </el-form-item>
 
-                <el-form-item label="密码：" prop="password">
-                    <template v-slot:label>
-                        <span>
-                            <span class="label-space label-two-space">密码</span>：
-                        </span>
-                    </template>
-                    <el-input v-model="form.password" minlength="8" maxlength="20" type="password" clearable placeholder="由8-20位数字、字母、符号组成，区分大小写"></el-input>
-                </el-form-item>
+        <el-form-item label="密码：" prop="password">
+          <template v-slot:label>
+            <span>
+              <span class="label-space label-two-space">密码</span>：
+            </span>
+          </template>
+          <el-input
+            v-model="form.password"
+            minlength="8"
+            maxlength="20"
+            type="password"
+            clearable
+            placeholder="由8-20位数字、字母、符号组成，区分大小写"
+          ></el-input>
+        </el-form-item>
 
-                <el-form-item label="联系人：" prop="contactPerson">
-                    <template v-slot:label>
-                        <span>
-                            <span class="label-space label-three-space">联系人</span>：
-                        </span>
-                    </template>
-                    <el-input v-model="form.contactPerson" minlength="2" maxlength="50" clearable placeholder="请输入联系人信息"></el-input>
-                </el-form-item>
+        <el-form-item label="联系人：" prop="contactPerson">
+          <template v-slot:label>
+            <span>
+              <span class="label-space label-three-space">联系人</span>：
+            </span>
+          </template>
+          <el-input
+            v-model="form.contactPerson"
+            minlength="2"
+            maxlength="50"
+            clearable
+            placeholder="请输入联系人信息"
+          ></el-input>
+        </el-form-item>
 
-                <el-form-item label="联系电话：" prop="telephone">
-                    <el-input v-model="form.telephone" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
-                </el-form-item>
+        <el-form-item label="联系电话：" prop="telephone">
+          <el-input v-model="form.telephone" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
+        </el-form-item>
 
-                <el-form-item label="公司地址：" prop="address">
-                    <SlAreaCascader v-model="form.address"></SlAreaCascader>
-                </el-form-item>
+        <el-form-item label="公司地址：" prop="address">
+          <SlAreaCascader v-model="form.address"></SlAreaCascader>
+        </el-form-item>
 
-                <el-form-item label prop="detailAddress">
-                    <el-input v-model="form.detailAddress" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
-                </el-form-item>
+        <el-form-item label prop="detailAddress">
+          <el-input v-model="form.detailAddress" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
+        </el-form-item>
 
-                <el-form-item label="供应类型：" prop="supplierType">
-                    <el-select v-model="form.supplierType" placeholder="请选择供应类型">
-                        <el-option v-for="(item, index) in supplierTypeOps" :key="index" :label="item.lable" :value="item.value"></el-option>
-                    </el-select>
-                </el-form-item>
+        <el-form-item label="供应类型：" prop="supplierType">
+          <el-select v-model="form.supplierType" placeholder="请选择供应类型">
+            <el-option
+              v-for="(item, index) in supplierTypeOps"
+              :key="index"
+              :label="item.lable"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
 
-                <el-form-item label="供应方式：" prop="supplierMethod">
-                    <el-select v-model="form.supplierMethod" placeholder="请选择供应方式">
-                        <el-option v-for="(item, index) in supplierMethodOps" :key="index" :label="item.lable" :value="item.value"></el-option>
-                    </el-select>
-                </el-form-item>
+        <el-form-item label="供应方式：" prop="supplierMethod">
+          <el-select v-model="form.supplierMethod" placeholder="请选择供应方式">
+            <el-option
+              v-for="(item, index) in supplierMethodOps"
+              :key="index"
+              :label="item.lable"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
 
-                <el-form-item label>
-                    <el-button type="primary" size="large" @click="register" :loading="disabled" class="register-btn">{{$t('button.registerText')}}</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+        <el-form-item label>
+          <el-button @click="login" :loading="disabled" class="register-btn">返回登录</el-button>
+          <el-button type="primary" @click="register" :loading="disabled" class="register-btn">提交注册</el-button>
+        </el-form-item>
+      </el-form>
     </div>
+  </div>
 </template>
 
 <script>
@@ -136,6 +160,9 @@ export default {
     }
   },
   methods: {
+    login () {
+      this.$router.push('login')
+    },
     register () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -169,77 +196,77 @@ export default {
 @import '@assets/scss/_var.scss';
 @import '@assets/scss/_mixin.scss';
 .sl-login-container {
-    height: 100%;
-    background-color: $color-login-bg;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+  height: 100%;
+  background-color: $color-login-bg;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .sl-login-container /deep/ {
-    .el-input__inner {
-        display: inline-block;
-        height: 4rem;
-        line-height: 4rem;
-        padding: 0 0.3em 0 2em;
-    }
-    .el-form-item__label {
-        color: $color-white;
-    }
-    .el-form-item__content {
-        width: 70%;
-    }
-    .el-select,
-    .el-input,
-    .el-cascader {
-        width: 100%;
-    }
+  .el-input__inner {
+    display: inline-block;
+    height: 4rem;
+    line-height: 4rem;
+    padding: 0 0.3em 0 2em;
+  }
+  .el-form-item__label {
+    color: $color-white;
+  }
+  .el-form-item__content {
+    width: 70%;
+  }
+  .el-select,
+  .el-input,
+  .el-cascader {
+    width: 100%;
+  }
 }
 
 .sl-login-title {
-    margin-bottom: 1em;
-    font-size: 2.5rem;
-    color: $color-white;
-    letter-spacing: 0.2em;
-    text-align: center;
+  margin-bottom: 1em;
+  font-size: 2.5rem;
+  color: $color-white;
+  letter-spacing: 0.2em;
+  text-align: center;
 }
 
 .sl-login {
-    display: inline-block;
-    position: absolute;
-    width: 25%;
-    left: 50%;
-    top: 45%;
-    padding: 1em;
-    transform: translate(-50%, -50%);
+  display: inline-block;
+  position: absolute;
+  width: 25%;
+  left: 50%;
+  top: 45%;
+  padding: 1em;
+  transform: translate(-50%, -50%);
 }
 
 .form-ite-icon {
-    position: absolute;
-    left: 0.5em;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
+  position: absolute;
+  left: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
 }
 
 .register-btn {
-    width: 20rem;
-    margin-top: 1rem;
+  margin-top: 1rem;
+  margin-right: 1rem;
 }
 
 .label-space {
-    display: inline-block;
-    width: 5.5rem;
-    white-space: nowrap;
-    &.label-two-space {
-        letter-spacing: 2.6rem;
-    }
-    &.label-three-space {
-        letter-spacing: 0.7rem;
-    }
+  display: inline-block;
+  width: 5.5rem;
+  white-space: nowrap;
+  &.label-two-space {
+    letter-spacing: 2.6rem;
+  }
+  &.label-three-space {
+    letter-spacing: 0.7rem;
+  }
 }
 
 .sl-login {
-    @include login-responsive-layout;
+  @include login-responsive-layout;
 }
 </style>
