@@ -13,8 +13,10 @@ function closeLoading () {
   }
 }
 
+let baseURL = process.env.NODE_ENV === 'development' ? '/api' : ''
+
 const axiosInstance = axios.create({
-  baseURL: '',
+  baseURL: baseURL,
   timeout: 3000,
   headers: {}
 })
@@ -71,7 +73,7 @@ export const post = function (url, params) {
 }
 
 export const put = function (url, params) {
-  return axiosInstance.put(url, { data: params })
+  return axiosInstance.put(url, params)
 }
 
 export const patch = function (url, params) {

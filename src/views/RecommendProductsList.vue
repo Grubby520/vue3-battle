@@ -6,7 +6,6 @@
       :total="total"
       :pageIndex="pageIndex"
       class="recommonPar"
-      ref="listView"
     >
       <div slot="search">
         <SlSearchForm v-model="query" :items="searchItems" />
@@ -34,7 +33,7 @@
   </div>
 </template>
 <script>
-// import recommond from '@api/recommendProducts/recommendProducts.js'
+import recommond from '@api/recommendProducts/recommendProducts.js'
 export default {
   data () {
     return {
@@ -44,15 +43,14 @@ export default {
       pageIndex: 1, // 页数
       total: 0, // 总页数
       pageSize: 10,
-      searchPar: {},
       query: {
-        productName: '',
-        size: '',
+        categoryName: '',
+        itemNo: '',
         status: ''
       },
       searchItems: [
-        { type: 'input', label: '品类', name: 'productName' },
-        { type: 'input', label: '供方货号', name: 'size' },
+        { type: 'input', label: '品类', name: 'categoryName' },
+        { type: 'input', label: '供方货号', name: 'itemNo' },
         {
           type: 'select',
           label: '状态',
@@ -69,42 +67,33 @@ export default {
       ],
       columns: [
         {
-          prop: 'product',
+          prop: 'productName',
           label: '商品信息',
           width: '300',
           isInImg: 'imageSrc',
           pre: {
-            id: 'PID',
-            productName: '平台PID',
-            productVariantId: '店铺'
+            productName: '商品名称',
+            itemNo: '供方货号'
           }
         },
         {
-          prop: 'productName',
+          prop: 'categoryName',
           label: '品类'
         },
         {
-          prop: 'skuCode',
-          label: '商店'
-        },
-        {
-          prop: 'skuCode',
+          prop: 'supplyPrice',
           label: '供货价（元）'
         },
         {
-          prop: 'skuCode',
+          prop: 'status',
           label: '状态'
-        },
-        {
-          prop: 'skuCode',
-          label: '询盘意见'
         },
         {
           prop: 'skuCode',
           label: '创建时间/更新时间',
           pre: {
-            startTime: '创建',
-            creatTime: '更新'
+            createTime: '创建',
+            updateTime: '更新'
           }
         }
       ]
@@ -114,40 +103,35 @@ export default {
   methods: {
     gotoPage (pageSize, pageIndex) {
       this.recommonPar = { ...this.searchPar, pageIndex, pageSize }
-      // recommond.getList({ ...this.recommonPar })
-      //   .then((res) => {
-      //   const { list, pageNum, pageSize, total } = res.data
-      // this.tableData = list
-      this.tableData = [
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          storeName: 'ffeersd',
-          img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-          skuCode: '上海市普陀区江路 1517 弄',
-          url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-          startTime: '2020-11-16',
-          creatTime: '2020-11-18'
-        }
-      ]
-      // this.total = total
-      // })
-      // .catch(() => {
-      //   this.showLoad = false
-      // })
+      recommond.getList({ ...this.recommonPar })
+        .then((res) => {
+          // debugger
+          const { data, total } = res
+          this.tableData = data
+          console.log(data)
+          // this.tableData = [
+          //   {
+          //     date: '2016-05-04',
+          //     name: '王小虎',
+          //     storeName: 'ffeersd',
+          //     img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+          //     skuCode: '上海市普陀区江路 1517 弄',
+          //     url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+          //     startTime: '2020-11-16',
+          //     creatTime: '2020-11-18'
+          //   }
+          // ]
+          this.total = total
+        })
     },
     handleSelectionChange (val) {
       this.selections = val
       console.log(val)
     },
     reset () {
-      this.query.productName = ''
-      this.query.size = ''
+      this.query.categoryName = ''
+      this.query.itemNo = ''
       this.query.status = ''
-      // Object.assign(this.query, {})
-    },
-    maintain (row, status) {
-      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
     },
     recommon (row) {
       this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
@@ -155,12 +139,11 @@ export default {
     deleteProduct (row) {
 
     },
+    maintain (row, status) {
+      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
+    },
     uploadImages () {
       this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
-    },
-    valChange (val) {
-      console.log(val)
-      this.searchPar = val
     }
   }
 }
