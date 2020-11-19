@@ -1,3 +1,4 @@
+export * from './messageUI'
 export const merge = require('lodash/merge')
 
 export const getLang = function () {
