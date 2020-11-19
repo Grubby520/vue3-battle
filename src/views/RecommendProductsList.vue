@@ -51,7 +51,7 @@
         :columns="columns"
         @handleSelectionChange="handleSelectionChange"
       >
-        <div slot="opration" slot-scope="props">
+        <div slot="operation" slot-scope="props">
           <span @click="maintain(props,'create')" class="btn">维护</span>
           <span @click="maintain(props,'view')" class="btn">查看</span>
           <span @click="recommon(props)" class="btn">推品</span>
