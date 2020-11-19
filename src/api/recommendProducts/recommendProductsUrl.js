@@ -1,5 +1,5 @@
 const RECOMMENDURLS = {
-  'recommendProducts': 'products/product-variant-offline-plan'
+  'recommendProducts': '/category/list'
 }
 
 export default RECOMMENDURLS

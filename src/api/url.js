@@ -2,7 +2,7 @@
 const URL = {
   uploadDownIMages: '',
   getOss: '',
-  uploadFile: ''
+  uploadFile: '/srm/goods/aliyun/oss.jpg'
 
 }
 export default URL

@@ -7,7 +7,7 @@
       list-type="picture-card"
       :limit="200"
       :auto-upload="true"
-      accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif, image/ico"
+      accept="image/png, image/jpeg, image/jpg, image/bmp"
       :file-list="fileList"
       :http-request="uploadFile"
       :on-error="onError"
@@ -42,6 +42,7 @@
   </div>
 </template>
 <script>
+// import upload from '@api/api'
 export default {
   name: 'SlUploadImages',
   props: {
@@ -66,7 +67,7 @@ export default {
   },
   methods: {
     beforeUpload (file) {
-      const TYPE = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp', 'image/gif', 'image/ico']
+      const TYPE = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp']
       const LIMITSIZE = file.size / 1024 / 1024 <= 4
       const LIMITIMAGE = TYPE.includes(file.type)
       if (!LIMITIMAGE || !LIMITSIZE) {
@@ -107,8 +108,16 @@ export default {
       // this.uploadedImages.push(file.name)
       // console('eeerdd', response, file, fileList)
     },
-    uploadFile () {
-      console.log('Upload')
+    uploadFile (file) {
+      // debugger
+      console.log('Upload', file)
+      // const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'fileType': file.file.type, 'imageType': 0 }
+      // upload.uploadFile({ ...PARAMS })
+
+      this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', file.file, { headers: { 'Content-Type': 'image/jpg' } })
+        .then(res => {
+          // debugger
+        })
     },
     onError () { this.$message.error('上传图片失败!') }
   }
