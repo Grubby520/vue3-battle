@@ -49,7 +49,8 @@ export const homeRoutes = [
         meta: {
           icon: 'el-icon-postcard'
         },
-        component: () => import('@/views/ImportSpu.vue')
+        // component: () => import('@/views/ImportSpu.vue')
+        component: () => import('@/views/components/recommendProducts/UploadImages')
       },
       {
         path: 'import-product-imgs',
@@ -58,7 +59,7 @@ export const homeRoutes = [
           icon: 'el-icon-postcard',
           notMenu: true
         },
-        component: () => import('@/views/components/recommendProducts/UploadImages')
+        component: () => import('@/views/ImportProductImgs')
       }
     ]
   },

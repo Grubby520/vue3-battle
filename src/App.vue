@@ -3,8 +3,20 @@
     <transition name="slide-fade">
       <router-view />
     </transition>
+    <remote-js src="//at.alicdn.com/t/font_2214107_eremntfnql.js"></remote-js>
   </div>
 </template>
+
+<script>
+import RemoteJs from '@components/remoteJs/RemoteJs.js'
+
+export default {
+  name: 'App',
+  components: {
+    RemoteJs
+  }
+}
+</script>
 
 <style lang="scss">
 html {
