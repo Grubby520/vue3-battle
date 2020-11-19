@@ -6,7 +6,6 @@
       :key="index"
       v-model.trim="modifyPro[index]"
       clearable
-      size="mini"
       class="modifyPropery__input"
     />
     <div class="modifyPropery__icon" @click="add">
@@ -14,8 +13,8 @@
     </div>
     <el-divider />
     <div class="flex-center">
-      <el-button size="mini" @click="cancel">取消</el-button>
-      <el-button size="mini" type="primary" @click="save">确定</el-button>
+      <el-button @click="cancel">取消</el-button>
+      <el-button type="primary" @click="save">确定</el-button>
     </div>
   </div>
 </template>
@@ -57,7 +56,7 @@ export default {
     margin: 10px 0;
   }
   &__icon {
-    border: 1px dashed #DCDFE6;
+    border: 1px dashed #dcdfe6;
     margin-top: 10px;
     margin-bottom: 20px;
     text-align: center;

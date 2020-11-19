@@ -1,8 +1,8 @@
-import { get } from '../../shared/http'
-console.log('ssss', get)
-const recommond = {
+import { get } from '@shared/http'
+import RECOMMENDURLS from './recommendProductsUrl'
+const RECOMMEND = {
   getList ({ ...params }) {
-    return get(`products/product-variant-offline-plan`, params)
+    return get(RECOMMENDURLS.recommendProducts, params)
   }
 }
-export default recommond
+export default RECOMMEND

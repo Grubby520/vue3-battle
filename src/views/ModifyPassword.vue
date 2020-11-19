@@ -51,18 +51,18 @@
 
 <script>
 import { mapState } from 'vuex'
-import { passwordValidator } from '@shared/validate/index.js'
+import { emptyValidator, passwordValidator, fnValidator } from '@shared/validate/index.js'
 
 export default {
   name: 'ModifyPassword',
   data () {
-    let sameValueValidate = (rule, value, callback) => {
-      if (this.form.newPassword !== this.form.confirmPassword) {
-        callback(new Error('新密码和确认密码不一致'))
-      } else {
-        callback()
-      }
-    }
+    let validators = [
+      emptyValidator('不能为空'),
+      passwordValidator()
+    ]
+    let sameValueValidator = fnValidator('新密码和确认密码不一致', () => {
+      return this.form.newPassword !== this.form.confirmPassword
+    })
 
     return {
       form: {
@@ -71,30 +71,11 @@ export default {
         confirmPassword: ''
       },
       rules: {
-        oldPassword: [
-          { required: true, message: '不能为空', trigger: 'blur' },
-          {
-            validator: passwordValidator,
-            trigger: 'blur'
-          }
-        ],
-        newPassword: [
-          { required: true, message: '不能为空', trigger: 'blur' },
-          {
-            validator: passwordValidator,
-            trigger: 'blur'
-          }
-        ],
+        oldPassword: validators,
+        newPassword: validators,
         confirmPassword: [
-          { required: true, message: '不能为空', trigger: 'blur' },
-          {
-            validator: passwordValidator,
-            trigger: 'blur'
-          },
-          {
-            validator: sameValueValidate,
-            trigger: 'blur'
-          }
+          ...validators,
+          sameValueValidator
         ]
       }
     }

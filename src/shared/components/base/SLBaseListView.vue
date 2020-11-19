@@ -54,6 +54,7 @@ export default {
     text-align: right;
     font-size: 12px;
     padding: 5px;
+    margin-top: 20px;
   }
   &-page {
     margin-bottom: 20px;

@@ -1,8 +1,8 @@
 <template>
-  <div class="sl-login-container">
-    <div class="sl-login">
-      <h3 class="sl-login-title">注册Starlink供应商平台</h3>
-      <el-form ref="form" class="sl-login-form" :model="form" :rules="rules" label-width="12rem">
+  <div class="register-container">
+    <div class="register">
+      <h3 class="register-title">注册Starlink供应商平台</h3>
+      <el-form ref="form" class="register-form" :model="form" :rules="rules" label-width="12rem">
         <el-form-item label="公司名称：" prop="username">
           <el-input v-model="form.username" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
         </el-form-item>
@@ -91,9 +91,10 @@
 </template>
 
 <script>
-import { passwordValidator, phoneNoValidator } from '@shared/validate'
+import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
 
 export default {
+  name: 'Register',
   data () {
     return {
       form: {
@@ -128,32 +129,28 @@ export default {
         }
       ],
       rules: {
-        username: [
-          { required: true, message: '请填写公司名称', trigger: ['blur', 'change'] }
-        ],
-        account: [
-          { required: true, message: '请填写账户', trigger: ['blur', 'change'] }
-        ],
+        username: [emptyValidator('请填写公司名称', ['blur', 'change'])],
+        account: [emptyValidator('请填写账户', ['blur', 'change'])],
         password: [
-          { required: true, message: '请输入密码', trigger: ['blur', 'change'] },
-          { validator: passwordValidator, trigger: ['blur', 'change'] }
+          emptyValidator('请输入密码', ['blur', 'change']),
+          passwordValidator()
         ],
         contactPerson: [
-          { required: true, message: '请输入联系人信息', trigger: ['blur', 'change'] },
-          { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: ['blur', 'change'] }
+          emptyValidator('请输入联系人信息', ['blur', 'change']),
+          charLimitValidator('长度在 2 到 50 个字符', 2, 50, ['blur', 'change'])
         ],
         telephone: [
-          { required: true, message: '请输入联系电话', trigger: ['blur', 'change'] },
-          { validator: phoneNoValidator, trigger: ['blur', 'change'] }
+          emptyValidator('请输入联系电话', ['blur', 'change']),
+          phoneNoValidator()
         ],
         address: [
-          { required: true, message: '请选择公司地址', trigger: ['blur', 'change'] }
+          emptyValidator('请选择公司地址', ['blur', 'change'])
         ],
         supplierType: [
-          { required: true, message: '请选择供应类型', trigger: ['blur', 'change'] }
+          emptyValidator('请选择供应类型', ['blur', 'change'])
         ],
         supplierMethod: [
-          { required: true, message: '请选择供应方式', trigger: ['blur', 'change'] }
+          emptyValidator('请选择供应方式', ['blur', 'change'])
         ]
       },
       disabled: false
@@ -195,7 +192,7 @@ export default {
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
 @import '@assets/scss/_mixin.scss';
-.sl-login-container {
+.register-container {
   height: 100%;
   background-color: $color-login-bg;
   background-position: center;
@@ -203,13 +200,7 @@ export default {
   background-repeat: no-repeat;
 }
 
-.sl-login-container /deep/ {
-  .el-input__inner {
-    display: inline-block;
-    height: 4rem;
-    line-height: 4rem;
-    padding: 0 0.3em 0 2em;
-  }
+.register-container /deep/ {
   .el-form-item__label {
     color: $color-white;
   }
@@ -223,7 +214,7 @@ export default {
   }
 }
 
-.sl-login-title {
+.register-title {
   margin-bottom: 1em;
   font-size: 2.5rem;
   color: $color-white;
@@ -231,7 +222,7 @@ export default {
   text-align: center;
 }
 
-.sl-login {
+.register {
   display: inline-block;
   position: absolute;
   width: 25%;
@@ -239,14 +230,6 @@ export default {
   top: 45%;
   padding: 1em;
   transform: translate(-50%, -50%);
-}
-
-.form-ite-icon {
-  position: absolute;
-  left: 0.5em;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
 }
 
 .register-btn {
@@ -266,7 +249,7 @@ export default {
   }
 }
 
-.sl-login {
+.register {
   @include login-responsive-layout;
 }
 </style>

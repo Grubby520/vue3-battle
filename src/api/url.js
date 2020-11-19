@@ -1,4 +1,8 @@
 // 用于存放接口地址
-export const URL = {
+const URL = {
+  uploadDownIMages: '',
+  getOss: '',
+  uploadFile: ''
 
 }
+export default URL

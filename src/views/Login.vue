@@ -2,15 +2,9 @@
   <div class="sl-login-container">
     <div class="sl-login">
       <h3 class="sl-login-title">{{systemName}}</h3>
-      <el-form
-        ref="loginForm"
-        class="sl-login-form"
-        :model="loginForm"
-        :rules="loginRules"
-        autocomplete="off"
-      >
+      <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
-          <span class="el-icon-s-custom form-ite-icon"></span>
+          <span class="el-icon-s-custom form-item-icon"></span>
           <el-input
             name="username"
             type="text"
@@ -19,7 +13,7 @@
           />
         </el-form-item>
         <el-form-item prop="password">
-          <span class="el-icon-lock form-ite-icon"></span>
+          <span class="el-icon-lock form-item-icon"></span>
           <el-input
             name="password"
             type="password"
@@ -38,7 +32,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { passwordValidator } from '@shared/validate/index.js'
+import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate/index.js'
 
 export default {
   name: 'Login',
@@ -50,24 +44,12 @@ export default {
       },
       loginRules: {
         username: [
-          {
-            required: true,
-            message: '账户不能为空',
-            trigger: 'blur'
-          },
-          { min: 1, max: 100, message: '字符长度不能超过100', trigger: 'blur' }
-
+          emptyValidator('账户不能为空'),
+          charLimitValidator('字符长度不能超过100', 1, 100)
         ],
         password: [
-          {
-            required: true,
-            message: '不能为空',
-            trigger: 'blur'
-          },
-          {
-            validator: passwordValidator,
-            trigger: 'blur'
-          }
+          emptyValidator('密码不能为空'),
+          passwordValidator()
         ]
       }
     }
@@ -79,7 +61,7 @@ export default {
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$router.push('home/myFile')
+          this.$router.push('home/my-file')
         } else {
           return false
         }
@@ -131,7 +113,7 @@ export default {
   transform: translate(-50%, -50%);
 }
 
-.form-ite-icon {
+.form-item-icon {
   position: absolute;
   left: 0.5em;
   top: 50%;
