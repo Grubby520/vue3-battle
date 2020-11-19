@@ -55,9 +55,10 @@ export const homeRoutes = [
         path: 'import-product-imgs',
         name: '导入商品图片',
         meta: {
-          icon: 'el-icon-postcard'
+          icon: 'el-icon-postcard',
+          notMenu: true
         },
-        component: () => import('@/views/ImportProductImgs.vue')
+        component: () => import('@/views/components/recommendProducts/UploadImages')
       }
     ]
   },
