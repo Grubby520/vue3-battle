@@ -31,7 +31,9 @@
 import { createNamespacedHelpers } from 'vuex'
 import { downloadFile } from '@/shared/util'
 import importSpuTemplate from '@/assets/template/import-spu.xlsx'
+import RECOMMEND_API from '@api/recommendProducts/recommendProducts.js'
 const { mapActions } = createNamespacedHelpers('productManage')
+const { uploadSpuData } = RECOMMEND_API
 export default {
   // 当前组件的名字
   name: 'spuUploadData',
@@ -65,18 +67,17 @@ export default {
       // 将当前上传数据的状态设置为true
       this.isUploadData = true
       // 执行上传文件
-      this.$http.post('http://10.250.1.205:9300/product/importSpu', formData)
-        .then((response) => {
-          // 如果接口返回成功状态
-          if (response.success) {
-            const data = response.data
-            // 将后台返回的数据暂存在本地
-            this.resultData = data
-            this.fileName = file.name
-          }
-          // 将当前上传数据状态设置为false
-          this.isUploadData = false
-        })
+      uploadSpuData(formData).then((response) => {
+        // 如果接口返回成功状态
+        if (response.success) {
+          const data = response.data
+          // 将后台返回的数据暂存在本地
+          this.resultData = data
+          this.fileName = file.name
+        }
+        // 将当前上传数据状态设置为false
+        this.isUploadData = false
+      })
     },
     // 清空已经上传的文件
     cancel () {
