@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     modifyPassword () {
-      this.$router.push('/modifyPassword')
+      this.$router.push('/modify-password')
     },
     quit () {
       this.$router.push('/login')

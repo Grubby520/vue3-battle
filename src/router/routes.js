@@ -11,7 +11,7 @@ export const routes = [
     component: () => import('@/views/Register.vue')
   },
   {
-    path: '/modifyPassword',
+    path: '/modify-password',
     name: '修改密码',
     component: () => import('@/views/ModifyPassword.vue')
   },

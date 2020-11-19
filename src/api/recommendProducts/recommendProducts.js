@@ -1,5 +1,5 @@
 import { get } from '@shared/http'
-import RECOMMENDURLS from './url'
+import RECOMMENDURLS from './recommendProductsUrl'
 const RECOMMEND = {
   getList ({ ...params }) {
     return get(RECOMMENDURLS.recommendProducts, params)

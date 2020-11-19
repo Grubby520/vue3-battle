@@ -8,36 +8,8 @@
       class="recommonPar"
       ref="listView"
     >
-      <div slot="search" class="flex-center">
-        <div class="flex-left searchUnit">
-          <span class="recommond-label">品类</span>
-          <el-input
-            class="recommond-input"
-            v-model.trim="recommonPar.productName"
-            clearable
-            placeholder="请输入学科"
-          />
-        </div>
-        <div class="flex-left searchUnit">
-          <span class="recommond-label">供方货号</span>
-          <el-input
-            class="recommond-input"
-            v-model.trim="recommonPar.productName"
-            clearable
-            placeholder="请输入供方货号"
-          />
-        </div>
-        <div class="flex-left searchUnit">
-          <span class="recommond-label">状态</span>
-          <el-select v-model="recommonPar.productName" class="recommond-input">
-            <el-option
-              v-for="item in status"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
+      <div slot="search">
+        <SlSearchForm v-model="query" :items="searchItems" />
       </div>
       <el-divider />
       <div class="recommond-btns">
@@ -51,7 +23,7 @@
         :columns="columns"
         @handleSelectionChange="handleSelectionChange"
       >
-        <div slot="opration" slot-scope="props">
+        <div slot="operation" slot-scope="props">
           <span @click="maintain(props,'create')" class="btn">维护</span>
           <span @click="maintain(props,'view')" class="btn">查看</span>
           <span @click="recommon(props)" class="btn">推品</span>
@@ -72,6 +44,29 @@ export default {
       pageIndex: 1, // 页数
       total: 0, // 总页数
       pageSize: 10,
+      searchPar: {},
+      query: {
+        productName: '',
+        size: '',
+        status: ''
+      },
+      searchItems: [
+        { type: 'input', label: '品类', name: 'productName' },
+        { type: 'input', label: '供方货号', name: 'size' },
+        {
+          type: 'select',
+          label: '状态',
+          name: 'status',
+          data: {
+            options: [
+              { 'value': 1, 'label': '待推品' },
+              { 'value': 2, 'label': '已推品' },
+              { 'value': 3, 'label': '被选品' },
+              { 'value': 4, 'label': '询盘中' }
+            ]
+          }
+        }
+      ],
       columns: [
         {
           prop: 'product',
@@ -112,21 +107,13 @@ export default {
             creatTime: '更新'
           }
         }
-      ],
-      status: [
-        { 'value': 1, 'label': '待推品' },
-        { 'value': 2, 'label': '已推品' },
-        { 'value': 3, 'label': '被选品' },
-        { 'value': 4, 'label': '询盘中' }
       ]
     }
   },
 
   methods: {
     gotoPage (pageSize, pageIndex) {
-      console.log('2')
-      // this.recommonPar.pageIndex = pageIndex
-      // this.recommonPar.pageSize = pageSize
+      this.recommonPar = { ...this.searchPar, pageIndex, pageSize }
       // recommond.getList({ ...this.recommonPar })
       //   .then((res) => {
       //   const { list, pageNum, pageSize, total } = res.data
@@ -153,9 +140,14 @@ export default {
       this.selections = val
       console.log(val)
     },
-    reset () { },
+    reset () {
+      this.query.productName = ''
+      this.query.size = ''
+      this.query.status = ''
+      // Object.assign(this.query, {})
+    },
     maintain (row, status) {
-      this.$router.push({ path: '/home/recommendProducts/maintain', query: { mode: status } })
+      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
     },
     recommon (row) {
       this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
@@ -164,7 +156,11 @@ export default {
 
     },
     uploadImages () {
-      this.$router.push({ path: '/home/recommendProducts/uploadImages' })
+      this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
+    },
+    valChange (val) {
+      console.log(val)
+      this.searchPar = val
     }
   }
 }
@@ -175,18 +171,6 @@ export default {
     display: flex;
     justify-content: flex-start;
     margin-bottom: 10px;
-  }
-  .searchUnit {
-    width: 30%;
-  }
-  &-label {
-    white-space: nowrap; /*强制span不换行*/
-    display: inline-block; /*将span当做块级元素对待*/
-  }
-  &-input {
-    margin-left: 20px;
-    margin-right: 20px;
-    width: 100%;
   }
 }
 </style>
