@@ -11,6 +11,9 @@ const COMMONAPI = {
   },
   getOss ({ ...params }) {
     return put(URL.getOss, params)
+  },
+  category () {
+    return get(URL.categoryUrl)
   }
 
 }
