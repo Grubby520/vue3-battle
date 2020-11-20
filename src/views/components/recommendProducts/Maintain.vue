@@ -1,5 +1,6 @@
 <template>
   <div class="maintain">
+    <!-- {{uploadImageUrl}} -->
     <div class="maintain__base">
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
@@ -25,7 +26,7 @@
               />
             </el-form-item>
             <el-form-item prop="images" label="商品图片">
-              <SlUploadImages></SlUploadImages>
+              <SlUploadImages v-model="uploadImageUrl" :imageUrls="imageUrls"></SlUploadImages>
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -110,7 +111,7 @@
             </div>
             <div class="flex-left checkbox">
               <p>尺码表</p>
-              <SlUploadImages></SlUploadImages>
+              <SlUploadImages v-model="uploadSizeUrl"></SlUploadImages>
             </div>
           </div>
           <div></div>
@@ -157,6 +158,12 @@ export default {
       checkList: ['有'],
       colors: [],
       sizes: [],
+      uploadImageUrl: [],
+      uploadSizeUrl: [],
+      imageUrls: [
+        { url: 'https://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/oss/%E5%B0%8F%E6%98%9F.jpg?OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Expires=4321432434029009000&Signature=CXZIKPNQ3yNrf3nrPnRiPn97N5I%3D' }
+
+      ],
       category: [
         { 'value': 1, 'label': '男装' },
         { 'value': 2, 'label': '女装' },
