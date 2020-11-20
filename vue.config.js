@@ -19,7 +19,6 @@ module.exports = {
       .set('@plugins', resolve('src/shared/plugins'))
       .set('@assets', resolve('src/assets'))
       .set('@api', resolve('src/api'))
-      .set('@', resolve('src'))
 
     config.module
       .rule('office')

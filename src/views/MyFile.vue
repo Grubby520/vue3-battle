@@ -23,7 +23,7 @@
 
           <el-col :span="12">
             <el-form-item label="联系电话：" prop="telephone">
-              <el-input v-model="form.telephone" type="tel"></el-input>
+              <el-input v-model="form.telephone" type="tel" maxlength="11"></el-input>
             </el-form-item>
           </el-col>
 
@@ -35,7 +35,7 @@
 
           <el-col :span="12">
             <el-form-item label="公司详细地址：">
-              <el-input v-model="form.detailAddress"></el-input>
+              <el-input v-model="form.detailAddress" maxlength="100"></el-input>
             </el-form-item>
           </el-col>
 
@@ -68,22 +68,16 @@
       </el-form>
 
       <footer>
-        <el-button type="primary">保 存</el-button>
+        <el-button type="primary" @click="save">保 存</el-button>
       </footer>
     </el-card>
   </div>
 </template>
 
 <script>
+import { emptyValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
 export default {
   data () {
-    let validateTel = (rule, value, callback) => {
-      if (!(/^1[3|4|5|7|8]\d{9}$/.test(value))) {
-        callback(new Error('请输入正确格式联系电话'))
-      } else {
-        callback()
-      }
-    }
     return {
       form: {
         name: '测试公司名称', // 公司名称
@@ -117,22 +111,28 @@ export default {
       ],
       rules: {
         contactPerson: [
-          { required: true, message: '请输入联系人信息', trigger: 'blur' },
-          { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+          emptyValidator('请输入联系人信息', ['blur', 'change']),
+          charLimitValidator('长度在 2 到 50 个字符', 2, 50, ['blur', 'change'])
         ],
         telephone: [
-          { validator: validateTel, trigger: 'blur' }
+          emptyValidator('请输入联系电话', ['blur', 'change']),
+          phoneNoValidator()
         ],
         address: [
-          { required: true, message: '请选择公司地址', trigger: 'blur' }
+          emptyValidator('请选择公司地址', ['blur', 'change'])
         ],
         supplierMethod: [
-          { required: true, message: '请选择供应方式', trigger: 'blur' }
+          emptyValidator('请选择供应方式', ['blur', 'change'])
         ]
       }
     }
   },
   methods: {
+    save () {
+      this.$refs['form'].validate((valid) => {
+        console.log(valid)
+      })
+    }
   }
 }
 </script>

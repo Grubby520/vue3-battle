@@ -1,6 +1,6 @@
 <template>
   <div class="recommond">
-    <SlBaseListView
+    <SlListView
       @gotoPage="gotoPage"
       @reset="reset"
       :total="total"
@@ -11,35 +11,32 @@
         <SlSearchForm v-model="query" :items="searchItems" />
       </div>
       <el-divider />
-      <div class="recommond-btns">
+      <SlTableToolbar>
         <el-button type="primary" @click="recommon">批量推品</el-button>
         <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
         <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
-      </div>
-      <SlTable
-        ref="table"
-        :tableData="tableData"
-        :columns="columns"
-        @handleSelectionChange="handleSelectionChange"
-      >
-        <div slot="operation" slot-scope="props">
-          <span @click="maintain(props,'create')" class="btn">维护</span>
-          <span @click="maintain(props,'view')" class="btn">查看</span>
-          <span @click="recommon(props)" class="btn">推品</span>
-          <span @click="deleteProduct(props)" class="btn">删除</span>
+      </SlTableToolbar>
+      <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
+        <div slot="operation" slot-scope="{row}">
+          <span @click="maintain(row,'create')" class="btn">维护</span>
+          <span @click="maintain(row,'view')" class="btn">查看</span>
+          <span @click="recommon(row)" class="btn">推品</span>
+          <span @click="deleteProduct(row)" class="btn">删除</span>
+          <span @click="cancel(row)" class="btn">取消推品</span>
         </div>
       </SlTable>
-    </SlBaseListView>
+    </SlListView>
   </div>
 </template>
 <script>
-import recommond from '@api/recommendProducts/recommendProducts.js'
+import { successNotify, errorNotify } from '@shared/util'
+
+// import recommond from '@api/recommendProducts/recommendProducts.js'
 export default {
   data () {
     return {
-      recommonPar: {},
       tableData: [],
-      selections: [],
+      selections: [], // 复选框数据
       pageIndex: 1, // 页数
       total: 0, // 总页数
       pageSize: 10,
@@ -70,7 +67,7 @@ export default {
           prop: 'productName',
           label: '商品信息',
           width: '300',
-          isInImg: 'imageSrc',
+          isInImg: 'img',
           pre: {
             productName: '商品名称',
             itemNo: '供方货号'
@@ -102,31 +99,39 @@ export default {
 
   methods: {
     gotoPage (pageSize, pageIndex) {
-      this.recommonPar = { ...this.searchPar, pageIndex, pageSize }
-      recommond.getList({ ...this.recommonPar })
-        .then((res) => {
-          // debugger
-          const { data, total } = res
-          this.tableData = data
-          console.log(data)
-          // this.tableData = [
-          //   {
-          //     date: '2016-05-04',
-          //     name: '王小虎',
-          //     storeName: 'ffeersd',
-          //     img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-          //     skuCode: '上海市普陀区江路 1517 弄',
-          //     url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-          //     startTime: '2020-11-16',
-          //     creatTime: '2020-11-18'
-          //   }
-          // ]
-          this.total = total
-        })
-    },
-    handleSelectionChange (val) {
-      this.selections = val
-      console.log(val)
+      // const RECOMMONDPAR = { ...this.searchPar, pageIndex, pageSize }
+      // recommond.getList({ ...RECOMMONDPAR })
+      //   .then((res) => {
+      //     // debugger
+      //     const { data, total } = res
+      //     this.tableData = data
+      //     console.log(data)
+      this.tableData = [
+        {
+          id: 111,
+          date: '2016-05-04',
+          name: '王小虎',
+          storeName: 'ffeersd',
+          img: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1605852642005&di=3e20d8008a8d9fe08528b0cdb2549fe1&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Fmw690%2F7ff6fc1fly1gf16gku4ahj20j60j6ae4.jpg',
+          skuCode: '上海市普陀区江路 1517 弄',
+          url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+          startTime: '2020-11-16',
+          creatTime: '2020-11-18'
+        },
+        {
+          id: 111,
+          date: '2016-05-04',
+          name: '王小虎',
+          storeName: 'ffeersd',
+          img: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1605852642005&di=3e20d8008a8d9fe08528b0cdb2549fe1&imgtype=0&src=http%3A%2F%2Fww2.sinaimg.cn%2Fmw690%2F7ff6fc1fly1gf16gku4ahj20j60j6ae4.jpg',
+          skuCode: '上海市普陀区江路 1517 弄',
+          url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+          startTime: '2020-11-16',
+          creatTime: '2020-11-18'
+        }
+      ]
+      // this.total = total
+      // })
     },
     reset () {
       this.query.categoryName = ''
@@ -134,10 +139,19 @@ export default {
       this.query.status = ''
     },
     recommon (row) {
-      this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
+      // this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
+      const selectionArr = this.selections.reduce((init, a) => init.concat(a.id), [])
+      console.log(selectionArr)
+      successNotify(this, `供方货号：${row.id}推品成功`)
+      errorNotify(this, `供方货号：${row.id}推品失败`)
     },
     deleteProduct (row) {
-
+      successNotify(this, `供方货号：${row.id}删除推品成功`)
+      errorNotify(this, `供方货号：${row.id}删除推品失败`)
+    },
+    cancel (row) {
+      successNotify(this, `供方货号：${row.id}取消推品成功`)
+      errorNotify(this, `供方货号：${row.id}取消推品失败`)
     },
     maintain (row, status) {
       this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
@@ -153,10 +167,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 .recommond {
-  &-btns {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 10px;
-  }
 }
 </style>

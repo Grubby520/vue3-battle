@@ -8,21 +8,12 @@ import store from './store'
 import i18n from '@/lang'
 import '@shared/components/elementUI.js'
 import '@shared/components/register.js'
-import { http, get, post, del, patch, put } from '@shared/http'
 
 if (process.env.NODE_ENV === 'development') {
   require('@/mock')
 }
 
 Vue.config.productionTip = false
-
-Vue.prototype.$http = http
-Vue.prototype.$get = get
-Vue.prototype.$post = post
-Vue.prototype.$del = del
-Vue.prototype.$patch = patch
-Vue.prototype.$put = put
-Vue.prototype.$console = console
 
 new Vue({
   router,
