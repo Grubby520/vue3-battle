@@ -67,13 +67,13 @@ export default {
     return {
       zipList: [
         {
-          percentage: '10'
+          percentage: 10
         },
         {
-          percentage: '20'
+          percentage: 20
         },
         {
-          percentage: '100'
+          percentage: 100
         }]
     }
   }
