@@ -12,31 +12,7 @@
       <template v-if="item.isImg">
         <el-table-column align="center" :prop="item.prop" :label="item.label" :width="item.width">
           <template slot-scope="scope">
-            <el-popover placement="right" trigger="hover" v-if="popver">
-              <div>
-                <el-image
-                  class="tableData-popover"
-                  :src="scope.row[item.prop]"
-                  fit="contain"
-                  slot="reference"
-                />
-              </div>
-
-              <el-image
-                class="tableData-image"
-                :src="scope.row[item.prop]"
-                fit="contain"
-                slot="reference"
-              />
-            </el-popover>
-            <div v-else>
-              <el-image
-                class="tableData-image"
-                :src="scope.row[item.prop]"
-                fit="contain"
-                slot="reference"
-              />
-            </div>
+            <SlImage size="10rem" :src="scope.row[item.prop]" />
           </template>
         </el-table-column>
       </template>
@@ -52,7 +28,7 @@
           <div class="tableData-col">
             <el-row type="flex" align="middle">
               <el-col :span="10" v-if="item.isInImg">
-                <img :src="scope.row[item.isInImg]" class="tableData-col-img" />
+                <SlImage size="10rem" :src="scope.row[item.isInImg]" />
               </el-col>
 
               <el-col :span="item.isInImg?14:24">
@@ -81,6 +57,9 @@
 <script>
 export default {
   name: 'SlTable',
+  model: {
+    event: 'changeSelection'
+  },
   props: {
     tableData: {
       type: Array,
@@ -102,12 +81,9 @@ export default {
     popver: { type: Boolean, required: false, default: false },
     tooltip: { type: Boolean, required: false, default: false }
   },
-  data () {
-    return {}
-  },
   methods: {
     handleSelectionChange (val) {
-      this.$emit('handleSelectionChange', val)
+      this.$emit('changeSelection', val)
     }
   }
 }
@@ -116,9 +92,9 @@ export default {
 .tableData {
   &-col {
     &-img {
-      width: 100px;
-      height: 100px;
-      margin-right: 10px;
+      width: 10rem;
+      height: 10rem;
+      margin-right: 1rem;
       img {
         width: 100%;
         height: 100%;
@@ -133,14 +109,6 @@ export default {
     &-con {
       text-align: left;
     }
-  }
-  &-popover {
-    width: 320px;
-    height: 320px;
-  }
-  &-image {
-    width: 100px;
-    height: 100px;
   }
   /deep/ .cell {
     text-align: center;

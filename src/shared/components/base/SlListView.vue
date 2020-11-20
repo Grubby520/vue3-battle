@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 'SlBaseListView',
+  name: 'SlListView',
   props: {
     total: { type: Number, required: false, default: undefined },
     pageIndex: { type: Number, required: false, default: undefined },
@@ -52,13 +52,13 @@ export default {
 .bases {
   &-search {
     text-align: right;
-    font-size: 12px;
-    padding: 5px;
-    margin-top: 20px;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    margin-top: 2rem;
   }
   &-page {
-    margin-bottom: 20px;
-    margin-top: 5px;
+    margin-bottom: 2rem;
+    margin-top: 0.5rem;
     text-align: center;
   }
 }
