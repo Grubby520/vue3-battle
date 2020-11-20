@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import UploadZip from '@/views/components/importImgsZip/UploadZip.vue'
+import UploadZip from '@/views/components/ImportProductImgs/UploadZip.vue'
 
 export default {
   name: 'ImportProductImgs',
