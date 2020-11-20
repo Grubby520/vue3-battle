@@ -1,12 +1,12 @@
 <template>
   <!-- 导入SPU -- 上传数据 -->
-  <div class="upload-data">
+  <div class="upload-data" v-loading="isUploadData">
     <!-- 页头内容 -->
     <span class="upload-data__header">
       <el-button type="primary" icon="el-icon-download" @click="downloadTemplate">下载模板</el-button>
     </span>
     <!-- 页面主体内容 提交时增加loading效果-->
-    <div class="upload-data__body" v-loading="isUploadData">
+    <div class="upload-data__body">
       <el-upload
         class="sl-upload"
         action="/upload/file"
@@ -18,8 +18,8 @@
     </div>
     <!-- 操作按钮 -->
     <div class="upload-data__actions">
-      <el-button @click="cancel" :disabled="!resultData">取消</el-button>
-      <el-button type="primary" @click="submit" :disabled="!resultData">下一步</el-button>
+      <el-button @click="cancel" :disabled="!file">取消</el-button>
+      <el-button type="primary" @click="submit" :disabled="!file">下一步</el-button>
     </div>
   </div>
 </template>
@@ -38,8 +38,8 @@ export default {
     return {
       // 文件名称
       fileName: '',
-      // 上传数据后后台回调的数据
-      resultData: null,
+      // 上传的文件
+      file: null,
       // 是否正在上传文件
       isUploadData: false
     }
@@ -58,37 +58,38 @@ export default {
     uploadFile (event) {
       // 获取回调的文件
       const file = event.file
-      // 生成一个FormData, 并将文件赋予其作为一个属性
-      let formData = new FormData()
-      formData.append('file', file)
-      // 将当前上传数据的状态设置为true
-      this.isUploadData = true
-      // 执行上传文件
-      uploadSpuData(formData).then((response) => {
-        // 如果接口返回成功状态
-        if (response.success) {
-          const data = response.data
-          // 将后台返回的数据暂存在本地
-          this.resultData = data
-          this.fileName = file.name
-        }
-        // 将当前上传数据状态设置为false
-        this.isUploadData = false
-      })
+      // 将上传的数据暂存在本地
+      this.file = file
+      this.fileName = file.name
     },
     // 清空已经上传的文件
     cancel () {
       this.fileName = ''
-      this.resultData = null
+      this.file = null
     },
     // 提交上传的文件，进入下一步
     submit () {
+      const file = this.file
       // 判断是否已经上传了文件且有回调
-      if (this.resultData) {
-        // 将后台回调的数据暂存在 [store]
-        this.setImportSpuResultData(this.resultData).then(() => {
-          // 进入到下一步
-          this.$emit('submit')
+      if (file) {
+        // 生成一个FormData, 并将文件赋予其作为一个属性
+        let formData = new FormData()
+        formData.append('file', file)
+        // 将当前上传数据的状态设置为true
+        this.isUploadData = true
+        // 执行上传文件
+        uploadSpuData(formData).then((response) => {
+          // 如果接口返回成功状态
+          if (response.success) {
+            const data = response.data
+            // 将后台回调的数据暂存在 [store]
+            this.setImportSpuResultData(data).then(() => {
+              // 进入到下一步
+              this.$emit('submit')
+            })
+          }
+          // 将当前上传数据状态设置为false
+          this.isUploadData = false
         })
       }
     }

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { getCookie } from '@shared/util'
 
 function addLoading () {
   store.state.loadingCount++
@@ -23,9 +24,14 @@ const axiosInstance = axios.create({
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
+  const token = getCookie('authToken')
   if (config.addLoading) {
     addLoading()
   }
+  if (token) {
+    config.headers['Authorization'] = token
+  }
+
   return config
 }, err => {
   store.dispatch('CLOSE_LOADING')
@@ -60,24 +66,27 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(err)
   })
 
-export const get = function (url, params) {
-  return axiosInstance.get(url, { params })
+export const get = function (url, params, config) {
+  return axiosInstance.get(url, {
+    params,
+    ...config
+  })
 }
 
-export const del = function (url, params) {
-  return axiosInstance.delete(url, { params })
+export const del = function (url, params, config) {
+  return axiosInstance.delete(url, { params, ...config })
 }
 
-export const post = function (url, params) {
-  return axiosInstance.post(url, { data: params })
+export const post = function (url, params, config) {
+  return axiosInstance.post(url, params, { ...config })
 }
 
-export const put = function (url, params) {
-  return axiosInstance.put(url, params)
+export const put = function (url, params, config) {
+  return axiosInstance.put(url, params, { ...config })
 }
 
-export const patch = function (url, params) {
-  return axiosInstance.patch(url, { data: params })
+export const patch = function (url, params, config) {
+  return axiosInstance.patch(url, params, { ...config })
 }
 
 export const http = axiosInstance
