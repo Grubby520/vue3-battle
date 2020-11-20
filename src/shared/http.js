@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { getCookie } from '@shared/util'
 
 function addLoading () {
   store.state.loadingCount++
@@ -23,9 +24,14 @@ const axiosInstance = axios.create({
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
+  const token = getCookie('authToken')
   if (config.addLoading) {
     addLoading()
   }
+  if (token) {
+    config.headers['Authorization'] = token
+  }
+
   return config
 }, err => {
   store.dispatch('CLOSE_LOADING')
@@ -72,15 +78,15 @@ export const del = function (url, params, config) {
 }
 
 export const post = function (url, params, config) {
-  return axiosInstance.post(url, { data: params, ...config })
+  return axiosInstance.post(url, params, { ...config })
 }
 
 export const put = function (url, params, config) {
-  return axiosInstance.put(url, { data: params, ...config })
+  return axiosInstance.put(url, params, { ...config })
 }
 
 export const patch = function (url, params, config) {
-  return axiosInstance.patch(url, { data: params, ...config })
+  return axiosInstance.patch(url, params, { ...config })
 }
 
 export const http = axiosInstance
