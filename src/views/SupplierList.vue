@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SlBaseListView
+    <SlListView
       @gotoPage="gotoPage"
       @reset="reset"
       :total="page.total"
@@ -28,7 +28,7 @@
           <el-button @click="resetPassword(row)" type="text">重置密码</el-button>
         </div>
       </SlTable>
-    </SlBaseListView>
+    </SlListView>
     <!-- 审核 -->
     <el-dialog title="供应商注册审核" :visible.sync="auditDialogVisible" :center="true" width="300px">
       <div class="align-center">
