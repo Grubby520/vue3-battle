@@ -50,8 +50,8 @@ export default {
 
 <style scoped lang="scss">
 .pagenation {
-  margin-bottom: 20px;
-  margin-top: 20px;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
   text-align: center;
 }
 </style>
