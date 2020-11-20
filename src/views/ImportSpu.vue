@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import UploadData from '@/views/components/importSpu/UploadData'
-import UploadResult from '@/views/components/importSpu/UploadResult'
+import UploadData from '@/views/components/recommendProducts/importSpu/UploadData'
+import UploadResult from '@/views/components/recommendProducts/importSpu/UploadResult'
 export default {
   name: 'importSpu',
   components: {
@@ -54,7 +54,8 @@ export default {
 .import-spu {
   &__steps {
     padding: 4rem 0;
-    border: 1px dashed #797979;
+    border: 1px dashed #d9d9d9;
+    border-radius: 0.5rem;
 
     /deep/.is-process {
       color: #d3d3d3;

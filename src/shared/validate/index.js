@@ -1,5 +1,5 @@
 import { isEmpty } from '@shared/util'
-import { passwordReg, phoneNoReg } from './regular.js'
+import { passwordReg, phoneNoReg, numberReg } from './regular.js'
 
 /**
  * 生成验证器
@@ -65,6 +65,13 @@ export const passwordValidator = function (errorMsg = '请输入8-20位字符', 
 export const phoneNoValidator = function (errorMsg = '请输入正确格式手机号码', trigger = 'blur') {
   return {
     validator: generateFormItemValidator(phoneNoReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+export const numberValidator = function (errorMsg = '请输入0-9999之间的数字', trigger = 'blur') {
+  return {
+    validator: generateFormItemValidator(numberReg, errorMsg),
     message: errorMsg,
     trigger: trigger
   }
