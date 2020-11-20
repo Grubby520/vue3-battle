@@ -1,5 +1,5 @@
-@import '@assets/scss/_reset.scss';
-@import '@assets/scss/_mixin.scss';
+@import "@assets/scss/_reset.scss";
+@import "@assets/scss/_mixin.scss";
 
 .align-center {
   text-align: center;
@@ -29,9 +29,9 @@
   margin-bottom: 1rem !important;
 }
 
-.btn{
-  color:rgb(21, 146, 241);
-  display:block;
+.btn {
+  color: rgb(21, 146, 241);
+  display: block;
 }
 
 .echarts {
@@ -39,16 +39,20 @@
   height: 100% !important;
 }
 
-.flex-left{
+.flex-left {
   display: flex;
-  justify-content:flex-start;
-  align-items:center;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.flex-center{
+.flex-center {
   display: flex;
-  justify-content:center;
-  align-items:center;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex1 {
+  flex: 1;
 }
 
 .text-overflow {

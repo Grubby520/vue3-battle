@@ -13,7 +13,7 @@
       <el-divider />
       <div class="recommond-btns">
         <el-button type="primary" @click="recommon">批量推品</el-button>
-        <el-button type="primary">导入SPU</el-button>
+        <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
         <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
       </div>
       <SlTable
@@ -141,6 +141,9 @@ export default {
     },
     maintain (row, status) {
       this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
+    },
+    uploadSpu () {
+      this.$router.push({ path: '/home/recommend-products/import-spu' })
     },
     uploadImages () {
       this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
