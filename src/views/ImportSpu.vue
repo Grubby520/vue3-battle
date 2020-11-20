@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import UploadData from '@/views/components/importSpu/UploadData'
-import UploadResult from '@/views/components/importSpu/UploadResult'
+import UploadData from '@/views/components/recommendProducts/importSpu/UploadData'
+import UploadResult from '@/views/components/recommendProducts/importSpu/UploadResult'
 export default {
   name: 'importSpu',
   components: {

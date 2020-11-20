@@ -6,8 +6,8 @@
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
         <el-row type="flex" justify="center" class="maintain__form">
           <el-col :span="11">
-            <el-form-item prop="type" label="分类">
-              <el-select v-model="ruleForm.productName" style="width:100%;">
+            <el-form-item prop="categoryName" label="分类">
+              <el-select v-model="ruleForm.categoryId" style="width:100%;">
                 <el-option
                   v-for="item in category"
                   :key="item.value"
@@ -16,22 +16,32 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item prop="type" label="商品名称">
-              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入商品名称" maxlength="255" />
+            <el-form-item label="商品名称" prop="productName">
+              <el-input
+                clearable
+                v-model.trim="ruleForm.productName"
+                placeholder="请输入商品名称"
+                maxlength="255"
+              />
             </el-form-item>
-            <el-form-item prop="type" label="商品图片">
+            <el-form-item prop="images" label="商品图片">
               <SlUploadImages></SlUploadImages>
             </el-form-item>
           </el-col>
           <el-col :span="11">
-            <el-form-item prop="type" label="供方货号">
-              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入供应货号" />
+            <el-form-item prop="itemNo" label="供方货号">
+              <el-input
+                clearable
+                v-model.trim="ruleForm.itemNo"
+                placeholder="请输入供应货号"
+                maxlength="100"
+              />
             </el-form-item>
-            <el-form-item prop="type" label="预估重量">
-              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入预估重量" />
+            <el-form-item prop="weight" label="预估重量">
+              <el-input clearable v-model.trim="ruleForm.weight" placeholder="请输入预估重量" />
             </el-form-item>
-            <el-form-item prop="type" label="供货价格">
-              <el-input clearable v-model="ruleForm.remarks" placeholder="请输入供货单价" />
+            <el-form-item prop="supplyPrice" label="供货价格">
+              <el-input clearable v-model.trim="ruleForm.supplyPrice" placeholder="请输入供货单价" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -53,7 +63,15 @@
             <div class="flex-left spans">
               <p v-for="(size, siIndex) in sizes" :key="siIndex">{{size}}</p>
             </div>
-            <div v-if="dialog"></div>
+            <div class="flex-left checkbox">
+              <p>成份</p>
+              <el-input
+                clearable
+                v-model.trim="ruleForm.ingredient"
+                maxlength="50"
+                style="width:10%;"
+              />
+            </div>
             <div class="flex-left checkbox">
               <p>是否有现货</p>
               <el-checkbox-group v-model="checkList">
@@ -61,28 +79,17 @@
                 <el-checkbox label="无" />
               </el-checkbox-group>
               <el-form-item prop="type" label="生产周期">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
-                  maxlength="255"
+                <el-input-number
+                  v-model="ruleForm.productionCycle"
+                  controls-position="right"
+                  :min="1"
                 />
               </el-form-item>
               <el-form-item prop="type" label="库存数量">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
-                  maxlength="255"
-                />
+                <el-input clearable v-model.trim="ruleForm.stock" />
               </el-form-item>
               <el-form-item prop="type" label="当前库存可维持">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
-                  maxlength="255"
-                />
+                <el-input clearable v-model.trim="ruleForm.currentStockAvailableDays" />
               </el-form-item>
               <p>{{'天'}}</p>
             </div>
@@ -93,10 +100,10 @@
                 <el-checkbox label="无" />
               </el-checkbox-group>
               <el-form-item prop="type" label="打版周期">
-                <el-input
-                  clearable
-                  v-model="ruleForm.remarks"
-                  placeholder="请输入商品名称"
+                <el-input-number
+                  v-model="ruleForm.makePatternCycle"
+                  controls-position="right"
+                  :min="1"
                   maxlength="255"
                 />
               </el-form-item>
@@ -131,6 +138,7 @@
 
 <script>
 import ModifyPropery from './ModifyPropery'
+import { numberValidator } from '@shared/validate/index'
 export default {
   components: { ModifyPropery },
   props: {
@@ -142,7 +150,10 @@ export default {
       dialog: false,
       title: '',
       status: '',
-      ruleForm: {},
+      ruleForm: {
+        productionCycle: 1,
+        makePatternCycle: 1
+      },
       checkList: ['有'],
       colors: [],
       sizes: [],
@@ -156,7 +167,29 @@ export default {
         { 'value': 7, 'label': '男鞋' },
         { 'value': 8, 'label': '女鞋' }
       ],
-      rules: {}
+      rules: {
+        categoryName: [
+          { required: true, message: '', trigger: 'change' }
+        ],
+        // productName: [
+        //   { required: true, message: '', trigger: 'blur' }
+        // ],
+        images: [
+          { required: true, message: '', trigger: 'change' }
+        ],
+        itemNo: [
+          { required: true, message: '', trigger: 'change' }
+        ],
+        weight: [
+          numberValidator()
+        ],
+        supplyPrice: [
+          { required: true, message: '', trigger: 'change' }
+        ]
+        // weight: [
+        //   { required: false, validator: 'numberValidator', trigger: 'blur' }
+        // ]
+      }
     }
   },
   created () {
@@ -166,7 +199,10 @@ export default {
 
   },
   methods: {
-    create () { },
+    create () {
+      this.ruleForm.size = this.sizes
+      this.ruleForm.color = this.colors
+    },
     gotoList () {
       this.$router.back()
     },
@@ -212,6 +248,7 @@ export default {
     margin-top: 10px;
     P {
       margin-right: 10px;
+      width: 100px;
     }
     p:last-child {
       margin-left: 10px;

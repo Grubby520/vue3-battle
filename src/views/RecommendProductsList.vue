@@ -6,44 +6,15 @@
       :total="total"
       :pageIndex="pageIndex"
       class="recommonPar"
-      ref="listView"
     >
-      <div slot="search" class="flex-center">
-        <div class="flex-left searchUnit">
-          <span class="recommond-label">品类</span>
-          <el-input
-            class="recommond-input"
-            v-model.trim="recommonPar.productName"
-            clearable
-            placeholder="请输入学科"
-          />
-        </div>
-        <div class="flex-left searchUnit">
-          <span class="recommond-label">供方货号</span>
-          <el-input
-            class="recommond-input"
-            v-model.trim="recommonPar.productName"
-            clearable
-            placeholder="请输入供方货号"
-          />
-        </div>
-        <div class="flex-left searchUnit">
-          <span class="recommond-label">状态</span>
-          <el-select v-model="recommonPar.productName" class="recommond-input">
-            <el-option
-              v-for="item in status"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </div>
+      <div slot="search">
+        <SlSearchForm v-model="query" :items="searchItems" />
       </div>
       <el-divider />
       <div class="recommond-btns">
         <el-button type="primary" @click="recommon">批量推品</el-button>
         <el-button type="primary">导入SPU</el-button>
-        <el-button type="primary">导入商品图片</el-button>
+        <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
       </div>
       <SlTable
         ref="table"
@@ -62,7 +33,7 @@
   </div>
 </template>
 <script>
-// import recommond from '@api/recommendProducts/recommendProducts.js'
+import recommond from '@api/recommendProducts/recommendProducts.js'
 export default {
   data () {
     return {
@@ -72,96 +43,107 @@ export default {
       pageIndex: 1, // 页数
       total: 0, // 总页数
       pageSize: 10,
+      query: {
+        categoryName: '',
+        itemNo: '',
+        status: ''
+      },
+      searchItems: [
+        { type: 'input', label: '品类', name: 'categoryName' },
+        { type: 'input', label: '供方货号', name: 'itemNo' },
+        {
+          type: 'select',
+          label: '状态',
+          name: 'status',
+          data: {
+            options: [
+              { 'value': 1, 'label': '待推品' },
+              { 'value': 2, 'label': '已推品' },
+              { 'value': 3, 'label': '被选品' },
+              { 'value': 4, 'label': '询盘中' }
+            ]
+          }
+        }
+      ],
       columns: [
         {
-          prop: 'product',
+          prop: 'productName',
           label: '商品信息',
           width: '300',
           isInImg: 'imageSrc',
           pre: {
-            id: 'PID',
-            productName: '平台PID',
-            productVariantId: '店铺'
+            productName: '商品名称',
+            itemNo: '供方货号'
           }
         },
         {
-          prop: 'productName',
+          prop: 'categoryName',
           label: '品类'
         },
         {
-          prop: 'skuCode',
-          label: '商店'
-        },
-        {
-          prop: 'skuCode',
+          prop: 'supplyPrice',
           label: '供货价（元）'
         },
         {
-          prop: 'skuCode',
+          prop: 'status',
           label: '状态'
-        },
-        {
-          prop: 'skuCode',
-          label: '询盘意见'
         },
         {
           prop: 'skuCode',
           label: '创建时间/更新时间',
           pre: {
-            startTime: '创建',
-            creatTime: '更新'
+            createTime: '创建',
+            updateTime: '更新'
           }
         }
-      ],
-      status: [
-        { 'value': 1, 'label': '待推品' },
-        { 'value': 2, 'label': '已推品' },
-        { 'value': 3, 'label': '被选品' },
-        { 'value': 4, 'label': '询盘中' }
       ]
     }
   },
 
   methods: {
     gotoPage (pageSize, pageIndex) {
-      console.log('2')
-      // this.recommonPar.pageIndex = pageIndex
-      // this.recommonPar.pageSize = pageSize
-      // recommond.getList({ ...this.recommonPar })
-      //   .then((res) => {
-      //   const { list, pageNum, pageSize, total } = res.data
-      // this.tableData = list
-      this.tableData = [
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          storeName: 'ffeersd',
-          img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
-          skuCode: '上海市普陀区江路 1517 弄',
-          url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
-          startTime: '2020-11-16',
-          creatTime: '2020-11-18'
-        }
-      ]
-      // this.total = total
-      // })
-      // .catch(() => {
-      //   this.showLoad = false
-      // })
+      this.recommonPar = { ...this.searchPar, pageIndex, pageSize }
+      recommond.getList({ ...this.recommonPar })
+        .then((res) => {
+          // debugger
+          const { data, total } = res
+          this.tableData = data
+          console.log(data)
+          // this.tableData = [
+          //   {
+          //     date: '2016-05-04',
+          //     name: '王小虎',
+          //     storeName: 'ffeersd',
+          //     img: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+          //     skuCode: '上海市普陀区江路 1517 弄',
+          //     url: 'https://fuss10.elemecdn.com/1/34/19aa98b1fcb2781c4fba33d850549jpeg.jpeg',
+          //     startTime: '2020-11-16',
+          //     creatTime: '2020-11-18'
+          //   }
+          // ]
+          this.total = total
+        })
     },
     handleSelectionChange (val) {
       this.selections = val
       console.log(val)
     },
-    reset () { },
-    maintain (row, status) {
-      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
+    reset () {
+      this.query.categoryName = ''
+      this.query.itemNo = ''
+      this.query.status = ''
     },
     recommon (row) {
       this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
     },
     deleteProduct (row) {
 
+    },
+    maintain (row, status) {
+      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
+    },
+    uploadImages () {
+      this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
     }
   }
 }
@@ -172,18 +154,6 @@ export default {
     display: flex;
     justify-content: flex-start;
     margin-bottom: 10px;
-  }
-  .searchUnit {
-    width: 30%;
-  }
-  &-label {
-    white-space: nowrap; /*强制span不换行*/
-    display: inline-block; /*将span当做块级元素对待*/
-  }
-  &-input {
-    margin-left: 20px;
-    margin-right: 20px;
-    width: 100%;
   }
 }
 </style>
