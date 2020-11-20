@@ -2,33 +2,19 @@ import axios from 'axios'
 import store from '@/store'
 import { getCookie } from '@shared/util'
 
-function addLoading () {
-  store.state.loadingCount++
-  store.dispatch('OPEN_LOADING')
-}
-
-function closeLoading () {
-  store.state.loadingCount--
-  if (store.state.loadingCount === 0) {
-    store.dispatch('CLOSE_LOADING')
-  }
-}
-
 let baseURL = process.env.NODE_ENV === 'development' ? '/api' : ''
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
   timeout: 3000,
-  headers: {
-
-  }
+  headers: {}
 })
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
   const token = getCookie('authToken')
   if (config.addLoading) {
-    addLoading()
+    store.dispatch('OPEN_LOADING', true)
   }
   if (token) {
     config.headers['Authorization'] = token
@@ -45,7 +31,7 @@ axiosInstance.interceptors.request.use(config => {
 // 响应拦截
 axiosInstance.interceptors.response.use(
   res => {
-    closeLoading()
+    store.dispatch('CLOSE_LOADING', true)
     return res.data
   },
   err => {
