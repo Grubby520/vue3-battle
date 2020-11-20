@@ -91,7 +91,7 @@ export default {
   },
   mounted: function () {
     // this.$get(API.def).then(data => {
-    //   this.$console.log(data)
+    //
     // })
   }
 }

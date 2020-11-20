@@ -3,6 +3,8 @@ export * from './messageUI'
 export * from './json2Csv'
 // 下载文件
 export * from './download'
+export * from './cookies'
+export * from './crypto'
 
 export const merge = require('lodash/merge')
 

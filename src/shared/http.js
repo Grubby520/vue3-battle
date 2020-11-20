@@ -60,24 +60,27 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(err)
   })
 
-export const get = function (url, params) {
-  return axiosInstance.get(url, { params })
+export const get = function (url, params, config) {
+  return axiosInstance.get(url, {
+    params,
+    ...config
+  })
 }
 
-export const del = function (url, params) {
-  return axiosInstance.delete(url, { params })
+export const del = function (url, params, config) {
+  return axiosInstance.delete(url, { params, ...config })
 }
 
-export const post = function (url, params) {
-  return axiosInstance.post(url, { data: params })
+export const post = function (url, params, config) {
+  return axiosInstance.post(url, { data: params, ...config })
 }
 
-export const put = function (url, params) {
-  return axiosInstance.put(url, params)
+export const put = function (url, params, config) {
+  return axiosInstance.put(url, { data: params, ...config })
 }
 
-export const patch = function (url, params) {
-  return axiosInstance.patch(url, { data: params })
+export const patch = function (url, params, config) {
+  return axiosInstance.patch(url, { data: params, ...config })
 }
 
 export const http = axiosInstance
