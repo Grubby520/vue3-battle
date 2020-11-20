@@ -49,7 +49,7 @@ export default {
         { type: 'input', label: '品类', name: 'categoryName' },
         { type: 'input', label: '供方货号', name: 'itemNo' },
         {
-          type: 'select',
+          type: 'single-select',
           label: '状态',
           name: 'status',
           data: {

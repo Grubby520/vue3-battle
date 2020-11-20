@@ -19,7 +19,9 @@ let baseURL = process.env.NODE_ENV === 'development' ? '/api' : ''
 const axiosInstance = axios.create({
   baseURL: baseURL,
   timeout: 3000,
-  headers: {}
+  headers: {
+
+  }
 })
 
 // 请求拦截

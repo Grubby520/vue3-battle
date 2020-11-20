@@ -45,17 +45,18 @@ module.exports = {
   // lintOnSave: false,
   transpileDependencies: ['vue-echarts', 'resize-detector'], // vue-cli创建的项目,使用vue-echarts时需要加如此配置
   devServer: {
-    port: 8088
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://localhost:8088',
-    //     ws: true,
-    //     secure: false,
-    //     changeOrigin: true,
-    //     pathRewrite: {
-    //       '^/api': ''
-    //     }
-    //   }
-    // }
+    port: 8088,
+    proxy: {
+      '/api': {
+        // target: 'http://10.250.1.7:9200/',
+        target: 'http://10.250.1.166:8080/',
+        ws: true,
+        secure: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    }
   }
 }

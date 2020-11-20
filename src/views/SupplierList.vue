@@ -8,7 +8,7 @@
       ref="listView"
     >
       <div slot="search">
-        <SlSearchForm v-model="query" :items="searchItems"></SlSearchForm>
+        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm"></SlSearchForm>
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -46,6 +46,8 @@
 
 <script>
 import { confirmBox, successNotify } from '@shared/util'
+import SupplierUrl from '@api/supplier/supplierUrl'
+import SupplierApi from '@api/supplier'
 
 export default {
   name: 'SupplierList',
@@ -63,16 +65,12 @@ export default {
           label: '账号'
         },
         {
-          type: 'select',
+          type: 'single-select',
           name: 'status',
           label: '供应商状态',
           data: {
-            options: [
-              {
-                label: '供应商状态',
-                value: '1'
-              }
-            ]
+            remoteUrl: SupplierUrl.statusList,
+            options: []
           }
         }
       ],
@@ -128,17 +126,22 @@ export default {
   },
 
   methods: {
-    gotoPage (pageSize, pageIndex) {
-      console.log({
-        ...this.query
-      })
-      this.tableData = [
-        {
-          supplierName: '供应商名称'
+    gotoPage (pageSize = 10, pageIndex = 1) {
+      SupplierApi.getList({
+        ...this.query,
+        pageNum: pageIndex,
+        pageSize: pageSize
+      }).then((res) => {
+        let { data, success } = res
+        if (success) {
+          this.page.total = data.total
+          this.tableData = data.list
         }
-      ]
+      })
     },
-    reset () { },
+    reset () {
+      this.$refs.searchForm.reset()
+    },
     handleSelectionChange (val) {
       this.selections = val
       console.log(val)
