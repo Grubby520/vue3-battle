@@ -1,22 +1,20 @@
 <template>
   <div class="uploadImage">
-    <!-- {{fileList}} -->
+    <!-- 上传图片 -->
     <el-upload
-      action="#"
+      action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
       ref="uploader"
       list-type="picture-card"
       :limit="200"
-      :auto-upload="true"
       accept="image/png, image/jpeg, image/jpg, image/bmp"
       :file-list="fileList"
       :http-request="uploadFile"
-      :on-error="onError"
-      :on-success="onSuccess"
       :on-exceed="handleExceed"
       :on-change="onChange"
       :before-upload="beforeUpload"
     >
       <i slot="default" class="el-icon-plus"></i>
+      <!-- 图片图标 -- 展示图片 -->
       <div slot="file" slot-scope="{file}">
         <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
         <span class="el-upload-list__item-actions">
@@ -36,90 +34,103 @@
         </span>
       </div>
     </el-upload>
+    <!-- 预览图片 -->
     <el-dialog :visible.sync="dialogVisible" width="20%">
       <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
 </template>
 <script>
-// import upload from '@api/api'
+import upload from '@api/api'
+// 本地下载方法
+import { downloadFile } from '@/shared/util'
 export default {
   name: 'SlUploadImages',
+  model: {
+    event: 'changeUploadImages'
+  },
   props: {
-    fileLists: { type: Array, required: false, default: () => { return [] } }
+    // 需要回显图片数组
+    imageUrls: { type: Array, required: false, default: () => { return [] } }
   },
   data () {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
       disabled: false,
-      imageUrl: '',
-      fileList: []
+      fileList: [], // 上传图片列表
+      uploadImages: [] // 预上传图片
     }
   },
   watch: {
-    'fileLists': {
+    // 监听回显图片
+    'imageUrls': {
       handler (newValue) {
         this.fileList = newValue
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   },
   methods: {
+
     beforeUpload (file) {
+      // 上传支持的格式
       const TYPE = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp']
+      // 上传支持的大小
       const LIMITSIZE = file.size / 1024 / 1024 <= 4
       const LIMITIMAGE = TYPE.includes(file.type)
       if (!LIMITIMAGE || !LIMITSIZE) {
+        // 校验上传图片的格式和大小
         !LIMITIMAGE && this.$message.error('上传图片格式不正确!')
         !LIMITSIZE && this.$message.error('上传图片大小不能超过 4MB!')
-        this.$refs.uploader.abort(file)
-        this.fileList.splice(this.fileList.indexOf(file), 1) // 删除钩子列表中数据
+        this.cancelUpload(file)
       }
     },
     handleExceed () {
       this.$message.error(`上传图片不能超过200张!`)
     },
     onChange (file, fileList) {
+      // 上传的图片列表中包含本次上传的图片就放弃上传
       if (this.fileList.some(item => item.name === file.name)) {
-        this.$refs.uploader.abort(file) // 有相同的图片取消上传
-        fileList.splice(fileList.indexOf(file), 1) // 删除钩子列表中数据
+        this.cancelUpload(file)
         this.$message.error('不能上传相同的图片!')
       } else {
         this.fileList.push(file)
       }
     },
     handleRemove (file) {
-      this.$confirm('确实要删除该图片吗？?', '提示', {
+      this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.fileList.splice(this.fileList.indexOf(file), 1) // 删除钩子列表中数据
+        this.cancelUpload(file)
       })
     },
     handlePictureCardPreview (file) {
+      // 预览
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    handleDownload (file) { },
-    onSuccess (response, file, fileList) {
-      // debugger
-      // this.uploadedImages.push(file.name)
-      // console('eeerdd', response, file, fileList)
+    handleDownload (file) {
+      // 下载oss和本地图片下载到本地
+      downloadFile(file.url, file.name)
     },
     uploadFile (file) {
-      // debugger
-      console.log('Upload', file)
-      // const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'fileType': file.file.type, 'imageType': 0 }
-      // upload.uploadFile({ ...PARAMS })
-
-      this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', file.file, { headers: { 'Content-Type': 'image/jpg' } })
+      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': 0 }
+      upload.getOssUrl(PARAMS)
         .then(res => {
-          // debugger
+          this.uploadImages.push(res.data)
+          this.$emit('changeUploadImages', this.uploadImages)
         })
     },
-    onError () { this.$message.error('上传图片失败!') }
+    cancelUpload (file) {
+      // 取消上传文件
+      this.$refs.uploader.abort(file)
+      // 上传列表中删除取消文件
+      this.fileList.splice(this.fileList.indexOf(file), 1)
+    }
   }
 
 }
