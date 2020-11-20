@@ -54,7 +54,8 @@ export default {
 .import-spu {
   &__steps {
     padding: 4rem 0;
-    border: 1px dashed #797979;
+    border: 1px dashed #d9d9d9;
+    border-radius: 0.5rem;
 
     /deep/.is-process {
       color: #d3d3d3;

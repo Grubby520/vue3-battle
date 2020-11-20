@@ -3,10 +3,7 @@
   <div class="upload-data">
     <!-- 页头内容 -->
     <span class="upload-data__header">
-      <div class="sl-button" @click="downloadTemplate">
-        <i class="el-icon-download"></i>
-        <span class="sl-button__download">下载模板</span>
-      </div>
+      <el-button type="primary" icon="el-icon-download" @click="downloadTemplate">下载模板</el-button>
     </span>
     <!-- 页面主体内容 提交时增加loading效果-->
     <div class="upload-data__body" v-loading="isUploadData">
@@ -105,21 +102,19 @@ export default {
   &__header {
     display: block;
     padding: 2rem 0 1rem;
-    .sl-button {
-      font-size: 2.2rem;
-
-      .sl-button__download {
-        cursor: pointer;
-        color: #8080ff;
-      }
-    }
   }
 
   // 页面主体内容
   &__body {
     width: 100%;
     padding: 20rem 0;
-    border: 1px dashed #797979;
+    border: 1px dashed #d9d9d9;
+    border-radius: 0.5rem;
+
+    &:hover {
+      border-color: #409eff;
+    }
+
     .sl-upload {
       height: 4rem;
       /deep/.el-upload {
@@ -130,15 +125,20 @@ export default {
       &__action {
         display: block;
         width: 70%;
-        border: 1px solid #000000;
+        border: 1px solid #c0c4cc;
+        border-radius: 0.5rem;
         text-align: left;
         font-size: 1.8rem;
-        color: #999999 !important;
+        color: #606266 !important;
         padding: 1rem 2rem;
 
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
+
+        &:hover {
+          border-color: #409eff;
+        }
       }
     }
   }
