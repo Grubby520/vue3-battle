@@ -21,9 +21,15 @@
         将zip文件拖到此处，或
         <em>点击上传</em>
       </div>
-      <div slot="file" slot-scope="{file}">
-        <span>{{file.name}}</span>
-        <el-progress :percentage="file.percentage" />
+      <div class="progress-item" slot="file" slot-scope="{file}">
+        <div class="progress-container">
+          <p>{{file.name}}</p>
+          <el-progress :percentage="file.percentage" />
+        </div>
+        <div class="progress-explain">
+          <p>{{file.status === 'uploading' ? '上传中' : '上传成功'}}</p>
+          <p>已经上传{{file.percentage}}%</p>
+        </div>
       </div>
     </el-upload>
   </div>
@@ -31,6 +37,8 @@
 
 <script>
 import axios from 'axios'
+import { post, get } from '@shared/http'
+import { errorNotify } from '@shared/util/messageUI'
 
 export default {
   name: 'UploadZip',
@@ -38,7 +46,7 @@ export default {
     accept: {
       type: String,
       default:
-        '.jpg,.jpeg,.png,.pdf,.xlsx,.xls,.docx,.doc,.zip,.rar,.arj,.z,.zip'
+        '.zip'
     },
     limit: {
       type: Number,
@@ -46,35 +54,48 @@ export default {
     },
     size: {
       type: Number,
-      default: 5
+      default: 80
     }
   },
   data: function () {
     return {
       requestUrl: '',
-      fileList: []
+      fileList: [],
+      uploadingCount: 0
+    }
+  },
+  watch: {
+    uploadingCount (val) {
+      this.$emit('statusChange', val === 0 ? 'done' : 'uploading')
     }
   },
   methods: {
-    preUploadAction (params) {
-      const preUrl = '/productImage/generateImageZipImportUrl'
+    preUploadAction (params, elParams) {
       return new Promise((resolve, reject) => {
-        this.$get(preUrl, params).then(res => {
+        const preUrl = '/productImage/generateImageZipImportUrl'
+        get(preUrl, params).then(res => {
           let { success, data } = res
           if (success && data.baseCheckVO && data.baseCheckVO.code === 0) {
+            elParams.onProgress({ percent: 30 }, elParams.file)
             resolve(data.imageImportVO)
           } else {
+            this.uploadingCount--
+            elParams.onError()
             reject(new Error('预检请求失败'))
           }
         }).catch(err => {
+          this.uploadingCount--
           reject(err)
         })
       })
     },
     httpRequest (elParams) {
       console.log(elParams)
+      elParams.file.status = 'uploading'
+      elParams.file.percentage = 0
+      elParams.onProgress({ percent: 0 }, elParams.file)
       const file = elParams.file
-      this.preUploadAction({ fileName: file.name, contentType: file.type }).then(res => {
+      this.preUploadAction({ fileName: file.name, contentType: file.type }, elParams).then(res => {
         axios.put(res.url, file, {
           timeout: 8 * 60 * 1000,
           headers: {
@@ -82,10 +103,12 @@ export default {
           }
         })
           .then((response) => {
+            elParams.onProgress({ percent: 60 }, elParams.file)
             this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
           })
           .catch((error) => {
-            elParams.onError()
+            this.uploadingCount--
+            elParams.onError(error)
             let timeout = String(error).indexOf('timeout') > -1
             if (timeout) {
               this.$message({
@@ -96,66 +119,63 @@ export default {
             }
           })
       }).catch(err => {
-        console.log(err)
+        elParams.onError(err)
       })
     },
     afterUploadAction (params, elParams) {
-      elParams.onSuccess()
-      axios.post('/api/productImage/importImageZip', params).then(res => {
+      post('/productImage/importImageZip', params).then(res => {
         if (res.success) {
-          console.log(`${params.fileName}入库成功`)
+          elParams.onProgress({ percent: 100 }, elParams.file)
+          elParams.onSuccess()
+        } else {
+          elParams.onError()
         }
+      }).catch(err => {
+        elParams.onError(err)
+      }).finally(res => {
+        this.uploadingCount--
       })
     },
     beforeUpload (file) {
       console.log('beforeUpload')
-      const isOverSize = file.size / 1024 / 1024 > this.size
-      // 上传文件大小限制
-      if (isOverSize) {
-        this.$message.error(
-          `${file.name}超出限制大小，大小不能超过 ${this.size}MB`
-        )
+      // const isOverSize = file.size / 1024 / 1024 > this.size
+      if (this.uploadingCount >= this.limit) {
+        errorNotify(this, `同时上传的压缩包不能超过20个，请在其它压缩包上传完成后再操作`, 15000)
         return false
       }
+      // // 上传文件大小限制
+      // if (isOverSize) {
+      //   this.$message.error(
+      //     `${file.name}超出限制大小，大小不能超过 ${this.size}MB`
+      //   )
+      //   return false
+      // }
       // 上传文件类型限制
       if (this.accept.indexOf(this.getFileType(file.name)) === -1) {
-        this.$message({
-          showClose: true,
-          message: `${file.name}文件类型错误，请选择以${this.accept}为结尾的文件`,
-          type: 'error',
-          duration: 15000
-        })
+        errorNotify(this, `${file.name}文件类型错误，请选择以${this.accept}为结尾的文件`, 15000)
         return false
       }
-      this.uploadCount += 1
-      this.$emit('changeDisabled', true)
+      this.uploadingCount++
     },
-    onChange (e) {
-      console.log('onChange e', e)
+    onChange (file, fileList) {
+      console.log('onChange e', file, fileList)
     },
-    onError () {
-      console.log('onError')
-      this.verifyIsUploadComplete()
-      this.$message.error('上传失败！')
-
-      // this.onUploadProgress(0)
+    onError (error, file, fileList) {
+      console.log('onError', error, file, fileList)
+      errorNotify(this, `${file.name}上传失败！`)
+    },
+    onProgress (event, file, fileList) {
+      console.log('onProgress', event, file, fileList)
     },
     onSuccess (response, file, fileList) {
       console.log('onSuccess', response, file, fileList)
-      this.verifyIsUploadComplete()
-      this.$message.success('上传成功！')
-      // this.files.push({
-      //   fileName: file.name,
-      //   url: this.httpResponse.showUrl
-      // })
-      // this.fileList = fileList
-      // this.$emit('emitFile', this.files)
-
-      // this.onUploadProgress(0)
     },
     beforeRemove (file) {
       console.log('beforeRemove')
       const isOverSize = file.size / 1024 / 1024 > this.size
+      if (this.uploadingCount >= this.limit) {
+        return true
+      }
       if (isOverSize) {
         return true
       }
@@ -192,35 +212,13 @@ export default {
       )
     },
     onRemove (file, fileList) {
-      if (file.status === 'uploading') {
-        this.verifyIsUploadComplete()
-      }
-      this.updateFiles(fileList)
+      // if (file.status === 'uploading') {
+      //   this.verifyIsUploadComplete()
+      // }
+      // this.updateFiles(fileList)
     },
     updateFiles (fileList, index) {
-      this.files = fileList.map((item) => {
-        return {
-          fileName: item.name,
-          url: item.url
-        }
-      })
-      this.$emit('emitFile', this.files)
-    },
-    onExceed (files, fileList) {
-      this.$message.warning(
-        `最多上传 ${this.limit} 个文件，请把已上传的文件删除后重新上传！`
-      )
-    },
-    onProgress (event, file, fileList) {
 
-    },
-    verifyIsUploadComplete () {
-      this.vaildCount += 1
-      if (this.vaildCount === this.uploadCount) {
-        this.$emit('changeDisabled', false)
-        this.uploadCount = 0
-        this.vaildCount = 0
-      }
     },
     handleUploadProgress (percentage) {
 
@@ -239,6 +237,47 @@ export default {
   .el-upload,
   .el-upload-dragger {
     width: 100%;
+  }
+  .el-upload-list__item {
+    display: inline-block;
+    width: 50%;
+    &:hover {
+      background: none;
+      .el-progress__text {
+        display: inline-block;
+      }
+    }
+    &:first-child {
+      margin-top: 2rem;
+    }
+  }
+  .el-upload-list__item .el-progress {
+    position: static;
+  }
+  .el-upload-list__item .el-progress__text {
+    position: static;
+  }
+  .el-upload-list__item .el-progress-bar {
+    margin-right: -5.5rem;
+    padding-right: 5rem;
+  }
+}
+.progress-item {
+  display: flex;
+  width: 100%;
+  .progress-container {
+    flex: 1;
+    position: relative;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    padding: 2rem 1.4rem;
+    margin-right: 1.4rem;
+    margin-bottom: 1.4rem;
+  }
+  .progress-explain {
+    width: 12rem;
+    flex: 0 1 auto;
+    padding-top: 2rem;
   }
 }
 </style>
