@@ -16,9 +16,6 @@ export default new Vuex.Store({
     menuCollapse: false,
     userInfo
   },
-  getters: {
-    IMPORRT_SPU_RESULT_DATA: (state) => 'just like this'
-  },
   mutations: {
     SET_LAODING (state, loadingInstance) {
       state.loadingInstance = loadingInstance
@@ -41,12 +38,21 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    OPEN_LOADING ({ state, commit }) {
+    OPEN_LOADING ({ state, commit }, isCount = false) {
+      if (isCount) { // 是否计数,用于请求拦截场景
+        state.loadingCount++
+      }
       if (!state.loadingInstance) {
         commit('SET_LAODING', Loading.service({ fullscreen: true }))
       }
     },
-    CLOSE_LOADING ({ state, commit }) {
+    CLOSE_LOADING ({ state, commit }, isCount = false) {
+      if (isCount) {
+        state.loadingCount--
+        if (state.loadingCount > 0) {
+          return
+        }
+      }
       state.loadingInstance && state.loadingInstance.close()
       commit('SET_LAODING', null)
     }

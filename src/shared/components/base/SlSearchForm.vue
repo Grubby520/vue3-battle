@@ -19,16 +19,15 @@
               clearable
             ></el-input>
           </el-form-item>
-          <el-form-item v-else-if="item.type === 'select'" :label="item.label" :prop="item.name">
-            <el-select v-model="form[item.name]" placeholder="请选择" clearable>
-              <el-option
-                v-for="(selectItem,index) in options[item.name]"
-                :key="'option_'+index"
-                :label="selectItem.label"
-                :value="selectItem.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
+          <template v-else-if="item.type === 'single-select'">
+            <el-form-item :label="item.label" :prop="item.name">
+              <SlSingleSelect
+                v-model="form[item.name]"
+                :remoteUrl="item.data.remoteUrl"
+                :options="options[item.name]"
+              ></SlSingleSelect>
+            </el-form-item>
+          </template>
         </el-col>
       </el-row>
     </el-form>
@@ -55,20 +54,29 @@ export default {
   data () {
     return {
       options: {},
+      resetForm: {},
       form: {}
     }
   },
   methods: {
     formChange () {
       this.$emit('valChange', this.form)
+    },
+    reset () {
+      this.form = JSON.parse(JSON.stringify(this.resetForm))
+      this.$emit('valChange', this.form)
     }
   },
   created () {
     this.items.forEach(item => {
-      this.$set(this.form, item.name, '')
+      this.$set(this.form, item.name, item.isMultivalued ? [] : '')
       if (item.data && item.data.options) {
         this.$set(this.options, item.name, item.data.options)
       }
+    })
+    // 保存初始表单值
+    Object.keys(this.form).forEach(key => {
+      this.resetForm[key] = this.form[key]
     })
   },
   mounted () {

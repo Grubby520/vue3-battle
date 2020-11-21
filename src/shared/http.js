@@ -1,18 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-import { getCookie } from '@shared/util'
-
-function addLoading () {
-  store.state.loadingCount++
-  store.dispatch('OPEN_LOADING')
-}
-
-function closeLoading () {
-  store.state.loadingCount--
-  if (store.state.loadingCount === 0) {
-    store.dispatch('CLOSE_LOADING')
-  }
-}
+import { getCookie, merge } from '@shared/util'
 
 let baseURL = process.env.NODE_ENV === 'development' ? '/api' : ''
 
@@ -25,8 +13,9 @@ const axiosInstance = axios.create({
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
   const token = getCookie('authToken')
-  if (config.addLoading) {
-    addLoading()
+  if (config.headers['addLoading']) {
+    store.dispatch('OPEN_LOADING', true)
+    delete config.headers['addLoading']
   }
   if (token) {
     config.headers['Authorization'] = token
@@ -43,7 +32,7 @@ axiosInstance.interceptors.request.use(config => {
 // 响应拦截
 axiosInstance.interceptors.response.use(
   res => {
-    closeLoading()
+    store.dispatch('CLOSE_LOADING', true)
     return res.data
   },
   err => {
@@ -66,7 +55,18 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(err)
   })
 
+function addLoadingConfigToHeader (config) {
+  if (config && config.addLoading !== undefined) {
+    config.headers = config.headers ? config.headers = merge(config.headers, {
+      addLoading: config.addLoading
+    }) : { addLoading: config.addLoading }
+    delete config.addLoading
+  }
+  return config
+}
+
 export const get = function (url, params, config) {
+  config = addLoadingConfigToHeader(config)
   return axiosInstance.get(url, {
     params,
     ...config
@@ -74,19 +74,23 @@ export const get = function (url, params, config) {
 }
 
 export const del = function (url, params, config) {
+  config = addLoadingConfigToHeader(config)
   return axiosInstance.delete(url, { params, ...config })
 }
 
 export const post = function (url, params, config) {
-  return axiosInstance.post(url, params, { ...config })
+  config = addLoadingConfigToHeader(config)
+  return axiosInstance.post(url, params, config)
 }
 
 export const put = function (url, params, config) {
-  return axiosInstance.put(url, params, { ...config })
+  config = addLoadingConfigToHeader(config)
+  return axiosInstance.put(url, params, config)
 }
 
 export const patch = function (url, params, config) {
-  return axiosInstance.patch(url, params, { ...config })
+  config = addLoadingConfigToHeader(config)
+  return axiosInstance.patch(url, params, config)
 }
 
 export const http = axiosInstance

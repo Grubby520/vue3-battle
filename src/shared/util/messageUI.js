@@ -22,6 +22,7 @@ export function successNotify (context, msg, useHtml = false, duration = 4500) {
     duration
   })
 }
+
 export function errorNotify (context, msg, useHtml = false, duration = 4500) {
   context.$notify({
     title: '失败',

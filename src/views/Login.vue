@@ -33,8 +33,8 @@
 <script>
 import { mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
-import { valueToMd5 } from '@shared/util'
-import LoginApi from '@api/login'
+// import { valueToMd5 } from '@shared/util'
+// import LoginApi from '@api/login'
 
 export default {
   name: 'Login',
@@ -63,13 +63,13 @@ export default {
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          LoginApi.authLogin({
-            username: this.loginForm.username,
-            password: valueToMd5(this.loginForm.password)
-          }).then((res) => {
-            console.log(res)
-            // this.$router.push('home/my-file')
-          })
+          // LoginApi.authLogin({
+          //   username: this.loginForm.username,
+          //   password: valueToMd5(this.loginForm.password)
+          // }).then((res) => {
+          //   console.log(res)
+          // })
+          this.$router.push('home/my-file')
         } else {
           return false
         }

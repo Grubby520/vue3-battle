@@ -47,7 +47,7 @@
         </template>
       </el-table-column>
     </div>
-    <el-table-column width="180px" align="center" label="操作">
+    <el-table-column width="180px" align="center" label="操作" v-if="operate">
       <template slot-scope="scope">
         <slot name="operation" :row="scope.row"></slot>
       </template>
@@ -78,8 +78,8 @@ export default {
 
     border: { type: Boolean, required: false, default: true },
     selection: { type: Boolean, required: false, default: true },
-    popver: { type: Boolean, required: false, default: false },
-    tooltip: { type: Boolean, required: false, default: false }
+    operate: { type: Boolean, required: false, default: true },
+    tooltip: { type: Boolean, required: false, default: true }
   },
   methods: {
     handleSelectionChange (val) {

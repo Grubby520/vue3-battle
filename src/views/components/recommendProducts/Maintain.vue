@@ -7,14 +7,7 @@
         <el-row type="flex" justify="center" class="maintain__form">
           <el-col :span="11">
             <el-form-item prop="categoryName" label="分类">
-              <el-select v-model="ruleForm.categoryId" style="width:100%;">
-                <el-option
-                  v-for="item in category"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <SlCategory v-model="ruleForm.categoryId" />
             </el-form-item>
             <el-form-item label="商品名称" prop="productName">
               <el-input
@@ -25,7 +18,7 @@
               />
             </el-form-item>
             <el-form-item prop="images" label="商品图片">
-              <SlUploadImages></SlUploadImages>
+              <SlUploadImages v-model="uploadImageUrl" :imageUrls="imageUrls" />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -69,20 +62,19 @@
                 clearable
                 v-model.trim="ruleForm.ingredient"
                 maxlength="50"
-                style="width:10%;"
+                style="width:31%;"
               />
             </div>
             <div class="flex-left checkbox">
               <p>是否有现货</p>
-              <el-checkbox-group v-model="checkList">
-                <el-checkbox label="有" />
-                <el-checkbox label="无" />
-              </el-checkbox-group>
+              <el-radio v-model="ruleForm.isSpot" :label="true">有</el-radio>
+              <el-radio v-model="ruleForm.isSpot" :label="false">无</el-radio>
               <el-form-item prop="type" label="生产周期">
                 <el-input-number
-                  v-model="ruleForm.productionCycle"
+                  v-model.trim="ruleForm.productionCycle"
                   controls-position="right"
                   :min="1"
+                  style="width:100%"
                 />
               </el-form-item>
               <el-form-item prop="type" label="库存数量">
@@ -95,22 +87,21 @@
             </div>
             <div class="flex-left checkbox">
               <p>是否有版</p>
-              <el-checkbox-group v-model="checkList">
-                <el-checkbox label="有" />
-                <el-checkbox label="无" />
-              </el-checkbox-group>
+              <el-radio v-model="ruleForm.hasPattern" :label="true">有</el-radio>
+              <el-radio v-model="ruleForm.hasPattern" :label="false">无</el-radio>
               <el-form-item prop="type" label="打版周期">
                 <el-input-number
                   v-model="ruleForm.makePatternCycle"
                   controls-position="right"
                   :min="1"
                   maxlength="255"
+                  style="width:100%"
                 />
               </el-form-item>
             </div>
             <div class="flex-left checkbox">
               <p>尺码表</p>
-              <SlUploadImages></SlUploadImages>
+              <SlUploadImages v-model="uploadSizeUrl" :imageUrls="imageSizeUrls" />
             </div>
           </div>
           <div></div>
@@ -121,7 +112,8 @@
         :references="$refs"
         form="form"
         :mode="mode"
-        :create="create"
+        :load="load"
+        :modify="modify"
         :gotoList="gotoList"
         :isRight="true"
         saveText="保存"
@@ -139,6 +131,8 @@
 <script>
 import ModifyPropery from './ModifyPropery'
 import { numberValidator } from '@shared/validate/index'
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+
 export default {
   components: { ModifyPropery },
   props: {
@@ -150,23 +144,13 @@ export default {
       dialog: false,
       title: '',
       status: '',
-      ruleForm: {
-        productionCycle: 1,
-        makePatternCycle: 1
-      },
-      checkList: ['有'],
+      ruleForm: {},
       colors: [],
       sizes: [],
-      category: [
-        { 'value': 1, 'label': '男装' },
-        { 'value': 2, 'label': '女装' },
-        { 'value': 3, 'label': '童装' },
-        { 'value': 4, 'label': '内衣' },
-        { 'value': 5, 'label': '手袋' },
-        { 'value': 6, 'label': '服饰配件' },
-        { 'value': 7, 'label': '男鞋' },
-        { 'value': 8, 'label': '女鞋' }
-      ],
+      uploadImageUrl: [],
+      imageUrls: [],
+      imageSizeUrls: [],
+      uploadSizeUrl: [],
       rules: {
         categoryName: [
           { required: true, message: '', trigger: 'change' }
@@ -199,11 +183,42 @@ export default {
 
   },
   methods: {
-    create () {
-      this.ruleForm.size = this.sizes
-      this.ruleForm.color = this.colors
+    load () {
+      // 获取接口详情信息
+      RecommondApi.recommendDetail(this.id)
+        .then((res) => {
+          console.log(res.data)
+          this.ruleForm = res.data
+          const { productImageList, sizeImageList, color, size } = res.data
+          const IMAGEURLS = []
+          const IMAGESIZEURLS = []
+          // 商品图片回显
+          productImageList.forEach((img) => {
+            IMAGEURLS.push({ url: img.imageUrl, ossPath: img.ossPath })
+          })
+          // 尺码图片回显
+          sizeImageList.forEach((size) => {
+            IMAGESIZEURLS.push({ url: size.imageUrl, ossPath: size.ossPath })
+          })
+          // 颜色回显
+          this.colors = color.split(',')
+          // 尺码回显
+          this.sizes = size.split(',')
+          console.log(IMAGESIZEURLS)
+          this.imageUrls = IMAGEURLS
+          this.imageSizeUrls = IMAGESIZEURLS
+        })
+        .catch(() => {
+
+        })
+    },
+    modify () {
+      // 编辑页面
+      this.ruleForm.size = this.sizes.join(',')
+      this.ruleForm.color = this.colors.join(',')
     },
     gotoList () {
+      // 取消返回列表
       this.$router.back()
     },
     modifyDialog (pro) {
@@ -215,7 +230,7 @@ export default {
       this.dialog = val
     },
     properys (val, status, properys) {
-      console.log(val, 'properys', properys)
+      // 修改颜色和尺寸
       this.dialog = val
       if (status !== 'color') {
         this.sizes.push(...properys)
@@ -234,7 +249,7 @@ export default {
   .title {
     font-size: 15px;
     font-weight: bold;
-    color: #dcdfe6;
+    color: #a9aaac;
     line-height: 40px;
     margin-left: 10px;
   }
@@ -256,11 +271,15 @@ export default {
   }
   .spans {
     border: $boder;
-    padding: 2px;
-    height: 20px;
+    height: 32px;
+    width: 53%;
+    line-height: 32px;
+    border-radius: 4px;
     p {
-      background-color: #96999e;
+      background-color: #eff3f7;
       padding: 0px 10px;
+      text-align: center;
+      border-radius: 4px;
       line-height: 20px;
       margin-left: 10px;
       margin-right: 10px;

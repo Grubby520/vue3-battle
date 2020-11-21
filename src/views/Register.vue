@@ -2,40 +2,48 @@
   <div class="register-container">
     <div class="register">
       <h3 class="register-title">注册Starlink供应商平台</h3>
-      <el-form ref="form" class="register-form" :model="form" :rules="rules" label-width="12rem">
-        <el-form-item label="公司名称：" prop="username">
+      <el-form
+        ref="form"
+        class="register-form"
+        :model="form"
+        :rules="rules"
+        label-width="12rem"
+        label-position="left"
+      >
+        <el-form-item label="公司名称" prop="username">
           <el-input v-model="form.username" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
         </el-form-item>
 
         <el-form-item prop="account">
           <template v-slot:label>
             <span>
-              <span class="label-space label-two-space">账号</span>：
+              <span class="label-space label-two-space">账号</span>
             </span>
           </template>
           <el-input v-model="form.account" maxlength="100" clearable placeholder="请填写账户"></el-input>
         </el-form-item>
 
-        <el-form-item label="密码：" prop="password">
+        <el-form-item prop="password">
           <template v-slot:label>
             <span>
-              <span class="label-space label-two-space">密码</span>：
+              <span class="label-space label-two-space">密码</span>
             </span>
           </template>
           <el-input
             v-model="form.password"
             minlength="8"
             maxlength="20"
-            type="password"
+            :type="passwordType"
+            @focus="passwordFocus"
             clearable
             placeholder="由8-20位数字、字母、符号组成，区分大小写"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="联系人：" prop="contactPerson">
+        <el-form-item prop="contactPerson">
           <template v-slot:label>
             <span>
-              <span class="label-space label-three-space">联系人</span>：
+              <span class="label-space label-three-space">联系人</span>
             </span>
           </template>
           <el-input
@@ -47,11 +55,11 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="联系电话：" prop="telephone">
+        <el-form-item label="联系电话" prop="telephone">
           <el-input v-model="form.telephone" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
         </el-form-item>
 
-        <el-form-item label="公司地址：" prop="address">
+        <el-form-item label="公司地址" prop="address">
           <SlAreaCascader v-model="form.address"></SlAreaCascader>
         </el-form-item>
 
@@ -59,7 +67,7 @@
           <el-input v-model="form.detailAddress" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
         </el-form-item>
 
-        <el-form-item label="供应类型：" prop="supplierType">
+        <el-form-item label="供应类型" prop="supplierType">
           <el-select v-model="form.supplierType" placeholder="请选择供应类型">
             <el-option
               v-for="(item, index) in supplierTypeOps"
@@ -70,7 +78,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="供应方式：" prop="supplierMethod">
+        <el-form-item label="供应方式" prop="supplierMethod">
           <el-select v-model="form.supplierMethod" placeholder="请选择供应方式">
             <el-option
               v-for="(item, index) in supplierMethodOps"
@@ -108,6 +116,7 @@ export default {
         supplierType: 1, // 供应类型
         supplierMethod: 1 // 供应方式
       },
+      passwordType: 'text',
       supplierTypeOps: [
         {
           lable: '自有工厂',
@@ -159,6 +168,10 @@ export default {
   methods: {
     login () {
       this.$router.push('login')
+    },
+    passwordFocus () {
+      console.log(1)
+      this.passwordType = 'password'
     },
     register () {
       this.$refs.form.validate(valid => {
