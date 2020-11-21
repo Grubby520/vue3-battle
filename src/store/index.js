@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { Loading } from 'element-ui'
-import userInfo from './userInfo'
-import productManage from './modules/productManage'
+import { loadModules } from './loadModules'
+const modules = loadModules()
 
 Vue.use(Vuex)
 
@@ -13,8 +13,7 @@ export default new Vuex.Store({
     loadingCount: 0, // 用于计算请求的次数
     breadcrumbs: [],
     activePath: null,
-    menuCollapse: false,
-    userInfo
+    menuCollapse: false
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
@@ -57,7 +56,5 @@ export default new Vuex.Store({
       commit('SET_LAODING', null)
     }
   },
-  modules: {
-    productManage
-  }
+  modules
 })

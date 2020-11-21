@@ -2,7 +2,7 @@ import axios from 'axios'
 import store from '@/store'
 import { getCookie, merge } from '@shared/util'
 
-let baseURL = process.env.NODE_ENV === 'development' ? '/api' : ''
+let baseURL = process.env.NODE_ENV === 'development' ? '' : ''
 
 const axiosInstance = axios.create({
   baseURL: baseURL,

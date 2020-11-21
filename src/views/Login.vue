@@ -23,7 +23,7 @@
         </el-form-item>
         <div class="align-center">
           <el-button type="primary" class="mr-2rem" @click="register">{{$t('button.registerText')}}</el-button>
-          <el-button type="primary" @click="login">{{$t('button.loginText')}}</el-button>
+          <el-button type="primary" @click="login" :loading="isLoading">{{$t('button.loginText')}}</el-button>
         </div>
       </el-form>
     </div>
@@ -31,10 +31,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+
+import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
-// import { valueToMd5 } from '@shared/util'
-// import LoginApi from '@api/login'
+import { valueToMd5 } from '@shared/util'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
   name: 'Login',
@@ -53,25 +54,27 @@ export default {
           emptyValidator('密码不能为空'),
           passwordValidator()
         ]
-      }
+      },
+      isLoading: false
     }
   },
   computed: {
     ...mapState(['systemName'])
   },
   methods: {
+    ...userMapActions(['AUTH_LOGIN']),
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          // LoginApi.authLogin({
-          //   username: this.loginForm.username,
-          //   password: valueToMd5(this.loginForm.password)
-          // }).then((res) => {
-          //   console.log(res)
-          // })
-          this.$router.push('home/my-file')
-        } else {
-          return false
+          this.isLoading = true
+          this.AUTH_LOGIN({
+            username: this.loginForm.username,
+            password: valueToMd5(this.loginForm.password)
+          }).then(res => {
+            this.$router.push('home/my-file')
+          }).finally(() => {
+            this.isLoading = false
+          })
         }
       })
     },

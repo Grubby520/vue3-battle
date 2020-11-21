@@ -10,17 +10,17 @@
         label-width="12rem"
         label-position="left"
       >
-        <el-form-item label="公司名称" prop="username">
-          <el-input v-model="form.username" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
+        <el-form-item label="公司名称" prop="supplierName">
+          <el-input v-model="form.supplierName" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
         </el-form-item>
 
-        <el-form-item prop="account">
+        <el-form-item prop="userName">
           <template v-slot:label>
             <span>
               <span class="label-space label-two-space">账号</span>
             </span>
           </template>
-          <el-input v-model="form.account" maxlength="100" clearable placeholder="请填写账户"></el-input>
+          <el-input v-model="form.userName" maxlength="100" clearable placeholder="请填写账户"></el-input>
         </el-form-item>
 
         <el-form-item prop="password">
@@ -33,21 +33,19 @@
             v-model="form.password"
             minlength="8"
             maxlength="20"
-            :type="passwordType"
-            @focus="passwordFocus"
             clearable
             placeholder="由8-20位数字、字母、符号组成，区分大小写"
           ></el-input>
         </el-form-item>
 
-        <el-form-item prop="contactPerson">
+        <el-form-item prop="contactName">
           <template v-slot:label>
             <span>
               <span class="label-space label-three-space">联系人</span>
             </span>
           </template>
           <el-input
-            v-model="form.contactPerson"
+            v-model="form.contactName"
             minlength="2"
             maxlength="50"
             clearable
@@ -55,20 +53,20 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="联系电话" prop="telephone">
-          <el-input v-model="form.telephone" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
+        <el-form-item label="联系电话" prop="contactNumber">
+          <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
         </el-form-item>
 
         <el-form-item label="公司地址" prop="address">
           <SlAreaCascader v-model="form.address"></SlAreaCascader>
         </el-form-item>
 
-        <el-form-item label prop="detailAddress">
-          <el-input v-model="form.detailAddress" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
+        <el-form-item label prop="addressDetail">
+          <el-input v-model="form.addressDetail" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
         </el-form-item>
 
-        <el-form-item label="供应类型" prop="supplierType">
-          <el-select v-model="form.supplierType" placeholder="请选择供应类型">
+        <el-form-item label="供应类型" prop="supplyType">
+          <el-select v-model="form.supplyType" placeholder="请选择供应类型">
             <el-option
               v-for="(item, index) in supplierTypeOps"
               :key="index"
@@ -78,8 +76,8 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="供应方式" prop="supplierMethod">
-          <el-select v-model="form.supplierMethod" placeholder="请选择供应方式">
+        <el-form-item label="供应方式" prop="supplyWay">
+          <el-select v-model="form.supplyWay" placeholder="请选择供应方式">
             <el-option
               v-for="(item, index) in supplierMethodOps"
               :key="index"
@@ -90,8 +88,8 @@
         </el-form-item>
 
         <el-form-item label>
-          <el-button @click="login" :loading="disabled" class="register-btn">返回登录</el-button>
-          <el-button type="primary" @click="register" :loading="disabled" class="register-btn">提交注册</el-button>
+          <el-button @click="goBack" class="register-btn">返回登录</el-button>
+          <el-button type="primary" @click="register" :loading="isLoading" class="register-btn">提交</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -100,23 +98,24 @@
 
 <script>
 import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
+import { valueToMd5 } from '@shared/util'
+import UserApi from '@api/user'
 
 export default {
   name: 'Register',
   data () {
     return {
       form: {
-        username: '', // 公司名称
-        account: '', // 账号
+        supplierName: '', // 公司名称
+        userName: '', // 账号
         password: '',
-        contactPerson: '', // 联系人
-        telephone: '', // 联系电话
+        contactName: '', // 联系人
+        contactNumber: '', // 联系电话
         address: [], // 公司地址
-        detailAddress: '', // 详细地址
-        supplierType: 1, // 供应类型
-        supplierMethod: 1 // 供应方式
+        addressDetail: '', // 详细地址
+        supplyType: 1, // 供应类型
+        supplyWay: 1 // 供应方式
       },
-      passwordType: 'text',
       supplierTypeOps: [
         {
           lable: '自有工厂',
@@ -138,65 +137,58 @@ export default {
         }
       ],
       rules: {
-        username: [emptyValidator('请填写公司名称', ['blur', 'change'])],
-        account: [emptyValidator('请填写账户', ['blur', 'change'])],
+        supplierName: [emptyValidator('请填写公司名称', ['blur', 'change'])],
+        userName: [emptyValidator('请填写账户', ['blur', 'change'])],
         password: [
           emptyValidator('请输入密码', ['blur', 'change']),
           passwordValidator()
         ],
-        contactPerson: [
+        contactName: [
           emptyValidator('请输入联系人信息', ['blur', 'change']),
           charLimitValidator('长度在 2 到 50 个字符', 2, 50, ['blur', 'change'])
         ],
-        telephone: [
+        contactNumber: [
           emptyValidator('请输入联系电话', ['blur', 'change']),
           phoneNoValidator()
         ],
         address: [
           emptyValidator('请选择公司地址', ['blur', 'change'])
         ],
-        supplierType: [
+        supplyType: [
           emptyValidator('请选择供应类型', ['blur', 'change'])
         ],
-        supplierMethod: [
+        supplyWay: [
           emptyValidator('请选择供应方式', ['blur', 'change'])
         ]
       },
-      disabled: false
+      isLoading: false
     }
   },
   methods: {
-    login () {
-      this.$router.push('login')
-    },
-    passwordFocus () {
-      console.log(1)
-      this.passwordType = 'password'
+    goBack () {
+      this.$router.go(-1)
     },
     register () {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.disabled = true
-          setTimeout(() => {
-            this.disabled = false
-          }, 3000)
-          console.log(this.form)
-          // this.submit()
-        } else {
-          this.$message.error('表单校验未通过，请核对！')
-          return false
+          this.isLoading = true
+          UserApi.register({
+            ...this.form,
+            password: valueToMd5(this.form.password)
+          }).then(res => {
+            if (res.success) {
+              this.$refs.form.resetFields()
+              this.$message({
+                type: 'success',
+                message: '注册成功！',
+                duration: 2000
+              })
+            }
+          }).finally(() => {
+            this.isLoading = false
+          })
         }
       })
-    },
-    submit () {
-      this.$message({
-        type: 'success',
-        message: '注册成功，即将跳转至首页！',
-        duration: 2000
-      })
-      setTimeout(() => {
-        this.$router.push('home/index')
-      }, 2000)
     }
   }
 }

@@ -4,14 +4,15 @@
       <img src="@/assets/user-avatar.png" alt="头像" />
     </div>
     <div class="user-name" :class="{'menu-collapse':menuCollapse}">
-      <span class="flex-1">{{userInfo.name}}</span>
+      <span class="flex-1">{{userName}}</span>
       <div class="flex-1 status--online">ONLINE</div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { createNamespacedHelpers, mapState } from 'vuex'
+const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'UserStatus',
@@ -23,7 +24,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['menuCollapse', 'userInfo'])
+    ...mapState(['menuCollapse']),
+    ...userMapState(['userName'])
   },
   methods: {
   },
