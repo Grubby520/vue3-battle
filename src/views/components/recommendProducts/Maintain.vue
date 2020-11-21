@@ -151,16 +151,6 @@ export default {
       imageUrls: [],
       imageSizeUrls: [],
       uploadSizeUrl: [],
-      category: [
-        { 'value': 1, 'label': '男装' },
-        { 'value': 2, 'label': '女装' },
-        { 'value': 3, 'label': '童装' },
-        { 'value': 4, 'label': '内衣' },
-        { 'value': 5, 'label': '手袋' },
-        { 'value': 6, 'label': '服饰配件' },
-        { 'value': 7, 'label': '男鞋' },
-        { 'value': 8, 'label': '女鞋' }
-      ],
       rules: {
         categoryName: [
           { required: true, message: '', trigger: 'change' }
@@ -199,15 +189,21 @@ export default {
         .then((res) => {
           console.log(res.data)
           this.ruleForm = res.data
-          const { productImageList, sizeImageList } = res.data
+          const { productImageList, sizeImageList, color, size } = res.data
           const IMAGEURLS = []
           const IMAGESIZEURLS = []
+          // 商品图片回显
           productImageList.forEach((img) => {
             IMAGEURLS.push({ url: img.imageUrl, ossPath: img.ossPath })
           })
+          // 尺码图片回显
           sizeImageList.forEach((size) => {
             IMAGESIZEURLS.push({ url: size.imageUrl, ossPath: size.ossPath })
           })
+          // 颜色回显
+          this.colors = color.split(',')
+          // 尺码回显
+          this.sizes = size.split(',')
           console.log(IMAGESIZEURLS)
           this.imageUrls = IMAGEURLS
           this.imageSizeUrls = IMAGESIZEURLS
@@ -218,8 +214,8 @@ export default {
     },
     modify () {
       // 编辑页面
-      this.ruleForm.size = this.sizes
-      this.ruleForm.color = this.colors
+      this.ruleForm.size = this.sizes.join(',')
+      this.ruleForm.color = this.colors.join(',')
     },
     gotoList () {
       // 取消返回列表
@@ -235,7 +231,6 @@ export default {
     },
     properys (val, status, properys) {
       // 修改颜色和尺寸
-      console.log(val, 'properys', properys)
       this.dialog = val
       if (status !== 'color') {
         this.sizes.push(...properys)
@@ -281,10 +276,10 @@ export default {
     line-height: 32px;
     border-radius: 4px;
     p {
-      background-color: #dce4ec;
-      padding: 0px 5px;
-      width: 50px;
+      background-color: #eff3f7;
+      padding: 0px 10px;
       text-align: center;
+      border-radius: 4px;
       line-height: 20px;
       margin-left: 10px;
       margin-right: 10px;
