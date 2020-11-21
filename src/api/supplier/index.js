@@ -6,6 +6,7 @@ const SUPPLIER_API = {
   getSupplierStatus: () => get(URL.statusList),
   frozenOrActive: (params) => put(URL.frozen, params, { addLoading: true }),
   audit: (params) => put(URL.judgeMent, params),
+  access: (params) => put(URL.access, params, { addLoading: true }),
   resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true })
 }
 
