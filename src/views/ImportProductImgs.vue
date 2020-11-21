@@ -1,21 +1,6 @@
 <template>
   <div>
-    <UploadZip class="upload-zip__component"></UploadZip>
-
-    <el-row :gutter="40" class="block-margin-top upload-zip__detail">
-      <template v-for="(item, index) in zipList">
-        <el-col :key="'zip-' + index" class="flex-left progress-item" :span="12">
-          <div class="flex1 progress-container">
-            <p>{{'P12345.zip'}}</p>
-            <el-progress :percentage="item.percentage" />
-          </div>
-          <div class="progress-explain">
-            <p>上传中</p>
-            <p>已经上传{{item.percentage}}%</p>
-          </div>
-        </el-col>
-      </template>
-    </el-row>
+    <UploadZip class="upload-zip__component" @statusChange="statusChange"></UploadZip>
 
     <div class="block-margin-top upload-zip__notice">
       <h4>如何创建图片压缩包</h4>
@@ -57,6 +42,7 @@
 
 <script>
 import UploadZip from '@/views/components/ImportProductImgs/UploadZip.vue'
+import { confirmBox } from '@shared/util/messageUI'
 
 export default {
   name: 'ImportProductImgs',
@@ -65,16 +51,23 @@ export default {
   },
   data: function () {
     return {
-      zipList: [
-        {
-          percentage: 10
-        },
-        {
-          percentage: 20
-        },
-        {
-          percentage: 100
-        }]
+      uploadStatus: 'done'
+    }
+  },
+  methods: {
+    statusChange (val) {
+      this.uploadStatus = val
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    if (this.uploadStatus !== 'done') {
+      confirmBox(this, '有文件正在上传中，确认跳转至其它页面吗？').then(res => {
+        next()
+      }).catch(res => {
+        next(false)
+      })
+    } else {
+      next()
     }
   }
 }
