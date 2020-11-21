@@ -44,7 +44,7 @@ export default {
     remoteUrl: {
       handler: function (val, oldVal) {
         if (val) {
-          get(val, { addLoading: false }).then(res => {
+          get(val).then(res => {
             this.selfOptions = res.data || []
           })
         }
