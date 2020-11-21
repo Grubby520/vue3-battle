@@ -31,9 +31,6 @@ export default new Vuex.Store({
     },
     SET_LOADING_COUNT (state, loadingCount) {
       state.loadingCount = loadingCount
-    },
-    SET_USER_INFO (state, userInfo) {
-      state.userInfo = Object.assign(state.userInfo, userInfo)
     }
   },
   actions: {

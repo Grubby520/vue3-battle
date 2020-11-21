@@ -62,7 +62,7 @@ export default {
     ...mapState(['systemName'])
   },
   methods: {
-    ...userMapActions(['AUTH_LOGIN']),
+    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO']),
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
@@ -81,6 +81,9 @@ export default {
     register () {
       this.$router.push('register')
     }
+  },
+  beforeDestroy () {
+    this.GET_USER_INFO()
   }
 }
 </script>

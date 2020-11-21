@@ -11,24 +11,14 @@
         autocomplete="off"
       >
         <div class="mb-1rem color-text--white">旧密码</div>
-        <el-form-item prop="oldPassword">
+        <el-form-item prop="oldPass">
           <span class="el-icon-lock form-item-icon"></span>
-          <el-input
-            name="oldPassword"
-            type="password"
-            v-model="form.oldPassword"
-            placeholder="请输入旧密码"
-          />
+          <el-input name="oldPass" type="password" v-model="form.oldPass" placeholder="请输入旧密码" />
         </el-form-item>
         <div class="mb-1rem color-text--white">新密码</div>
-        <el-form-item prop="newPassword">
+        <el-form-item prop="newPass">
           <span class="el-icon-lock form-item-icon"></span>
-          <el-input
-            name="newPassword"
-            type="password"
-            v-model="form.newPassword"
-            placeholder="请输入新密码"
-          />
+          <el-input name="newPass" type="password" v-model="form.newPass" placeholder="请输入新密码" />
         </el-form-item>
         <div class="mb-1rem color-text--white">确认密码</div>
         <el-form-item prop="confirmPassword">
@@ -42,7 +32,7 @@
         </el-form-item>
         <div class="align-center">
           <el-button class="mr-2rem" @click="cancel">{{$t('button.cancelText')}}</el-button>
-          <el-button type="primary" @click="submit">{{$t('button.submitText')}}</el-button>
+          <el-button type="primary" :loading="isLoading" @click="submit">{{$t('button.submitText')}}</el-button>
         </div>
       </el-form>
     </div>
@@ -50,8 +40,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, fnValidator } from '@shared/validate/index.js'
+import { valueToMd5 } from '@shared/util'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
   name: 'ModifyPassword',
@@ -61,36 +53,54 @@ export default {
       passwordValidator()
     ]
     let sameValueValidator = fnValidator('新密码和确认密码不一致', () => {
-      return this.form.newPassword !== this.form.confirmPassword
+      return this.form.newPass !== this.form.confirmPassword
     })
 
     return {
       form: {
-        oldPassword: '',
-        newPassword: '',
+        oldPass: '',
+        newPass: '',
         confirmPassword: ''
       },
       rules: {
-        oldPassword: validators,
-        newPassword: validators,
+        oldPass: validators,
+        newPass: validators,
         confirmPassword: [
           ...validators,
           sameValueValidator
         ]
-      }
+      },
+      isLoading: false
     }
   },
   computed: {
     ...mapState(['systemName'])
   },
   methods: {
+    ...userMapActions(['MODIFY_PASSWORD']),
     cancel () {
       this.$router.go(-1)
     },
     submit () {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$router.go(-1)
+          let { oldPass, newPass } = this.form
+          this.isLoading = true
+          this.MODIFY_PASSWORD({
+            oldPass: valueToMd5(oldPass),
+            newPass: valueToMd5(newPass)
+          }).then((res) => {
+            if (res) {
+              this.$message({
+                type: 'success',
+                message: '密码修改成功!',
+                duration: 2000
+              })
+              this.$router.go(-1)
+            }
+          }).finally(() => {
+            this.isLoading = false
+          })
         } else {
           return false
         }

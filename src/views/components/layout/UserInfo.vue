@@ -1,7 +1,7 @@
 <template>
   <div class="user-info color-text--white align-right">
     <div>{{supplierName}}</div>
-    <div class="color-text--gray">{{statusName}}</div>
+    <div class="color-text--gray">{{supplierStatus}}</div>
   </div>
 </template>
 
@@ -19,7 +19,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['supplierName', 'statusName'])
+    ...mapState(['supplierName', 'supplierStatus'])
   },
   methods: {
   },
