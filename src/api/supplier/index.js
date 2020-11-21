@@ -5,7 +5,7 @@ const SUPPLIER_API = {
   getList: (params) => post(URL.list, params),
   getSupplierStatus: () => get(URL.statusList),
   frozenOrActive: (params) => put(URL.frozen, params, { addLoading: true }),
-  audit: (params) => put(URL.judgeMent, params, { addLoading: true }),
+  audit: (params) => put(URL.judgeMent, params),
   resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true })
 }
 
