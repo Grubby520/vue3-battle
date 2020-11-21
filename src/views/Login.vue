@@ -71,7 +71,9 @@ export default {
             username: this.loginForm.username,
             password: valueToMd5(this.loginForm.password)
           }).then(res => {
-            this.$router.push('home/my-file')
+            if (res.success) {
+              this.$router.push('home/my-file')
+            }
           }).finally(() => {
             this.isLoading = false
           })

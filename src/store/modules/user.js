@@ -27,8 +27,8 @@ export default {
         if (success) {
           setSessionItem('token', data.token)
           setSessionItem('userKey', data.userKey)
-          return res
         }
+        return res
       })
     },
     SIGN_OUT ({ commit }) {
