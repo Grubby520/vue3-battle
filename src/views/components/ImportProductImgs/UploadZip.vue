@@ -36,8 +36,7 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { post, get } from '@shared/http'
+import ImportProductApi from '@api/importProduct'
 import { errorNotify } from '@shared/util/messageUI'
 
 export default {
@@ -72,8 +71,7 @@ export default {
   methods: {
     preUploadAction (params, elParams) {
       return new Promise((resolve, reject) => {
-        const preUrl = '/productImage/generateImageZipImportUrl'
-        get(preUrl, params).then(res => {
+        ImportProductApi.preUploadAction(params).then(res => {
           let { success, data } = res
           if (success && data.baseCheckVO && data.baseCheckVO.code === 0) {
             elParams.onProgress({ percent: 30 }, elParams.file)
@@ -96,34 +94,29 @@ export default {
       elParams.onProgress({ percent: 0 }, elParams.file)
       const file = elParams.file
       this.preUploadAction({ fileName: file.name, contentType: file.type }, elParams).then(res => {
-        axios.put(res.url, file, {
+        let config = {
           timeout: 8 * 60 * 1000,
           headers: {
             'Content-Type': file.type
           }
+        }
+        ImportProductApi.ossUploadAction(res.url, file, config).then((response) => {
+          elParams.onProgress({ percent: 60 }, elParams.file)
+          this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
+        }).catch((error) => {
+          this.uploadingCount--
+          elParams.onError(error)
+          let timeout = String(error).indexOf('timeout') > -1
+          if (timeout) {
+            errorNotify(this, `上传图片超时，请检查网络或调整图片大小`, 15000)
+          }
         })
-          .then((response) => {
-            elParams.onProgress({ percent: 60 }, elParams.file)
-            this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
-          })
-          .catch((error) => {
-            this.uploadingCount--
-            elParams.onError(error)
-            let timeout = String(error).indexOf('timeout') > -1
-            if (timeout) {
-              this.$message({
-                message: '上传图片超时，请检查网络或调整图片大小',
-                type: 'error',
-                duration: 5 * 1000
-              })
-            }
-          })
       }).catch(err => {
         elParams.onError(err)
       })
     },
     afterUploadAction (params, elParams) {
-      post('/productImage/importImageZip', params).then(res => {
+      ImportProductApi.afterUploadAction(params).then(res => {
         if (res.success) {
           elParams.onProgress({ percent: 100 }, elParams.file)
           elParams.onSuccess()
@@ -189,26 +182,6 @@ export default {
           lockScroll: false,
           closeOnClickModal: false
         }
-      )
-    },
-    removeFile (file, index) {
-      console.log('removeFile')
-      this.$confirm(
-        `你确定要删除 ${file.name || file.fileName}？`,
-        '提示',
-        {
-          lockScroll: false,
-          closeOnClickModal: false
-        }
-      ).then(
-        () => {
-          if (!this.showFileList) {
-            this.files.splice(index, 1)
-            this.fileList.splice(index, 1)
-          }
-          this.$emit('emitFile', this.fileList, this.files)
-        },
-        () => { }
       )
     },
     onRemove (file, fileList) {

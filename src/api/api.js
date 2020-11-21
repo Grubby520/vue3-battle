@@ -11,6 +11,9 @@ const COMMONAPI = {
   },
   getOssUrl (params) {
     return get(URL.ossUrl, params)
+  },
+  deleteOssUrl (params) {
+    return get(URL.deleteOssUrl, params)
   }
 
 }

@@ -62,10 +62,12 @@ export default {
   beforeRouteLeave (to, from, next) {
     if (this.uploadStatus !== 'done') {
       confirmBox(this, '有文件正在上传中，确认跳转至其它页面吗？').then(res => {
-        next(true)
+        next()
       }).catch(res => {
         next(false)
       })
+    } else {
+      next()
     }
   }
 }

@@ -1,4 +1,4 @@
-import { get, http, del, put } from '@shared/http'
+import { get, http, del, put, post } from '@shared/http'
 import RECOMMENDURLS from './recommendProductsUrl'
 const RECOMMEND = {
   // odm推品列表
@@ -25,6 +25,10 @@ const RECOMMEND = {
   // odm 推品详情
   recommendDetail (id) {
     return get(`${RECOMMENDURLS.RCOMMENDUEL}${id}`)
+  },
+  // 编辑推品
+  modifyDetail (info) {
+    return post(`${RECOMMENDURLS.RCOMMENDUEL}`, info)
   }
 }
 export default RECOMMEND
