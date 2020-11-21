@@ -25,10 +25,10 @@
       </SlTableToolbar>
       <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
         <div slot="operation" slot-scope="{row}">
-          <el-button v-if="row.status === 0" @click="showAuditDialog(row)" type="text">审核</el-button>
-          <el-button v-if="row.status === 1" @click="access(row)" type="text">准入</el-button>
-          <el-button v-if="row.status === 2" @click="freezeOrActive(row,'freeze')" type="text">冻结</el-button>
+          <el-button v-if="row.status === 0" @click="access(row)" type="text">准入</el-button>
+          <el-button v-if="row.status === 1" @click="showAuditDialog(row)" type="text">审核</el-button>
           <el-button v-if="row.status === 3" @click="freezeOrActive(row,'active')" type="text">取消冻结</el-button>
+          <el-button v-if="row.status === 4" @click="freezeOrActive(row,'freeze')" type="text">冻结</el-button>
           <el-button @click="resetPassword(row)" type="text">重置密码</el-button>
         </div>
       </SlTable>
@@ -37,8 +37,8 @@
     <el-dialog title="供应商注册审核" :visible.sync="auditDialogVisible" :center="true" width="300px">
       <div class="align-center">
         <el-radio-group v-model="auditStatus" size="medium">
-          <el-radio :label="1">通过</el-radio>
-          <el-radio :label="4">不通过</el-radio>
+          <el-radio :label="0">通过</el-radio>
+          <el-radio :label="2">不通过</el-radio>
         </el-radio-group>
       </div>
       <span slot="footer">
@@ -149,15 +149,25 @@ export default {
       this.$refs.searchForm.reset()
       this.gotoPage(10, 1)
     },
-    access () {
-      confirmBox(this, '供应商【广州十三行服装有限公司】准入后，可以正式接单').then(() => {
-        successNotify(this, '供应商【广州十三行服装有限公司】准入成功')
+    // 准入
+    access ({ id, supplierName }) {
+      confirmBox(this, `供应商${supplierName}准入后，可以正式接单`).then(() => {
+        SupplierApi.access({
+          id,
+          status: 4
+        }).then((res) => {
+          if (res.success) {
+            this.gotoPage(10, 1)
+            successNotify(this, `供应商${supplierName}准入成功`)
+          }
+        })
       }).catch(() => { })
     },
     showAuditDialog (row) {
       this.auditRow = row
       this.auditDialogVisible = true
     },
+    // 审核
     doAudit () {
       this.isLoading = true
       SupplierApi.audit({
@@ -172,6 +182,7 @@ export default {
         this.isLoading = false
       })
     },
+    // 冻结、取消冻结
     freezeOrActive (data, type) {
       let status
       let params = []
@@ -180,7 +191,7 @@ export default {
       }
 
       if (type === 'active') {
-        status = 2
+        status = 4
       }
 
       if (Array.isArray(data)) {
