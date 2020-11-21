@@ -2,6 +2,7 @@
 const URL = {
   uploadDownIMages: '',
   categoryUrl: '/category/list',
-  ossUrl: '/productImage/generatePreUploadUrl'
+  ossUrl: '/productImage/generatePreUploadUrl',
+  deleteOssUrl: '/productImage/generatePreDeleteUrl'
 }
 export default URL
