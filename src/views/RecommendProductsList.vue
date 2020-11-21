@@ -1,6 +1,7 @@
 <template>
   <div class="recommond">
     <SlListView
+      ref="listView"
       @gotoPage="gotoPage"
       @reset="reset"
       :total="total"
@@ -8,7 +9,9 @@
       class="recommonPar"
     >
       <div slot="search">
+        <!-- 搜索区域包含搜索和重置按钮 -->
         <SlSearchForm v-model="query" :items="searchItems" />
+        <!-- <SlCategory v-model="category"></SlCategory> -->
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -16,13 +19,14 @@
         <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
         <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
       </SlTableToolbar>
+      <!-- 表格区域包含分页 -->
       <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
         <div slot="operation" slot-scope="{row}">
-          <span @click="maintain(row,'create')" class="btn">维护</span>
-          <span @click="maintain(row,'view')" class="btn">查看</span>
-          <span @click="recommon(row)" class="btn">推品</span>
-          <span @click="deleteProduct(row)" class="btn">删除</span>
-          <span @click="cancel(row)" class="btn">取消推品</span>
+          <el-button type="text" @click="maintain(row,'modify')" class="btn">维护</el-button>
+          <el-button type="text" @click="maintain(row,'view')" class="btn">查看</el-button>
+          <el-button type="text" @click="recommon(row)" class="btn">推品</el-button>
+          <el-button type="text" @click="deleteProduct(row)" class="btn">删除</el-button>
+          <el-button type="text" @click="cancel(row)" class="btn">取消推品</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -31,15 +35,16 @@
 <script>
 import { successNotify, errorNotify } from '@shared/util'
 
-import recommond from '@api/recommendProducts/recommendProducts.js'
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 export default {
   data () {
     return {
       tableData: [],
-      selections: [], // 复选框数据
+      selections: [], // 复选框数据R
       pageIndex: 1, // 页数
       total: 0, // 总数
       pageSize: 10,
+      category: undefined,
       query: {
         categoryName: '',
         itemNo: '',
@@ -48,6 +53,7 @@ export default {
       searchItems: [
         { type: 'input', label: '品类', name: 'categoryName' },
         { type: 'input', label: '供方货号', name: 'itemNo' },
+        { type: 'component', label: '品类', name: 'itemNo', componentName: 'SlCategory' },
         {
           type: 'single-select',
           label: '状态',
@@ -99,8 +105,8 @@ export default {
 
   methods: {
     gotoPage (pageSize, pageIndex) {
-      const RECOMMONDPAR = { ...this.searchPar, pageIndex, pageSize }
-      recommond.getRecommedList({ ...RECOMMONDPAR })
+      const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
+      RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
           this.tableData = list
@@ -136,29 +142,44 @@ export default {
       this.query.categoryName = ''
       this.query.itemNo = ''
       this.query.status = ''
+      // 更新列表
+      this.$refs.listView.refresh()
     },
     recommon (row) {
       // this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
-      const selectionArr = this.selections.reduce((init, a) => init.concat(a.id), [])
-      console.log(selectionArr)
-      successNotify(this, `供方货号：${row.id}推品成功`)
-      errorNotify(this, `供方货号：${row.id}推品失败`)
+      // 批量推品
+      const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
+      // 判断批量推品还是单独推品
+      const PUSHPRODUCTS = SELECTIONARR && SELECTIONARR.length > 0 ? SELECTIONARR : [row.id]
+      RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+        .then(() => {
+          successNotify(this, `供方货号：${row.itemNo}推品成功`)
+        })
+        .catch(() => {
+          errorNotify(this, `供方货号：${row.itemNo}推品失败`)
+        })
     },
     deleteProduct (row) {
-      recommond.deleteRecommed(row.id)
+      RecommondApi.deleteRecommed(row.id)
         .then(res => {
-          successNotify(this, `供方货号：${row.id}删除推品成功`)
+          successNotify(this, `供方货号：${row.itemNo}删除推品成功`)
         })
         .catch(res => {
-          errorNotify(this, `供方货号：${row.id}删除推品失败`)
+          errorNotify(this, `供方货号：${row.itemNo}删除推品失败`)
         })
     },
     cancel (row) {
-      successNotify(this, `供方货号：${row.id}取消推品成功`)
-      errorNotify(this, `供方货号：${row.id}取消推品失败`)
+      const params = row.id
+      RecommondApi.cancelrcommend({ productIdList: [params] })
+        .then(res => {
+          successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
+        })
+        .catch(() => {
+          errorNotify(this, `供方货号：${row.itemNo}取消推品失败`)
+        })
     },
     maintain (row, status) {
-      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status } })
+      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status, id: row.id } })
     },
     uploadSpu () {
       this.$router.push({ path: '/home/recommend-products/import-spu' })

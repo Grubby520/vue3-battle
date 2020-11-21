@@ -1,24 +1,27 @@
 <template>
   <div class="category">
-    <el-select v-model="category" placeholder="请选择" clearable>
+    <!-- {{cate}} -->
+    <el-select v-model="cate" placeholder="请选择" clearable class="category-select" @change="change">
       <el-option
         v-for="(category,index) in categoryArr"
         :key="'category_'+index"
         :label="category.label"
         :value="category.value"
-      ></el-option>
+      />
     </el-select>
   </div>
 </template>
 
 <script>
 import categoryService from '@api/api.js'
-console.log(categoryService)
 export default {
   name: 'SlCategory',
   model: {
-    prop: 'category',
+    prop: 'cate',
     event: 'changeCategory'
+  },
+  props: {
+    cate: { type: String, required: false, default: '' }
   },
   data () {
     return {
@@ -34,8 +37,11 @@ export default {
   methods: {
     getCategory () {
       categoryService.category().then(res => {
-        debugger
+        this.categoryArr = res.data
       })
+    },
+    change () {
+      this.$emit('changeCategory', this.cate)
     }
   }
 }
@@ -43,5 +49,8 @@ export default {
 
 <style scoped lang="scss">
 .category {
+  &-select {
+    width: 100%;
+  }
 }
 </style>
