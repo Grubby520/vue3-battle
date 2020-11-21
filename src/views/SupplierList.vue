@@ -37,12 +37,12 @@
     <el-dialog title="供应商注册审核" :visible.sync="auditDialogVisible" :center="true" width="300px">
       <div class="align-center">
         <el-radio-group v-model="auditStatus" size="medium">
-          <el-radio :label="true">通过</el-radio>
-          <el-radio :label="false">不通过</el-radio>
+          <el-radio :label="1">通过</el-radio>
+          <el-radio :label="4">不通过</el-radio>
         </el-radio-group>
       </div>
       <span slot="footer">
-        <el-button type="primary" @click="doAudit">确 定</el-button>
+        <el-button type="primary" :disabled="!auditStatus" @click="doAudit" :loading="isLoading">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -125,7 +125,9 @@ export default {
         }
       ],
       auditDialogVisible: false,
-      auditStatus: null
+      auditStatus: null,
+      auditRow: null,
+      isLoading: false
     }
   },
 
@@ -153,11 +155,22 @@ export default {
       }).catch(() => { })
     },
     showAuditDialog (row) {
-      this.auditStatus = false
+      this.auditRow = row
       this.auditDialogVisible = true
     },
     doAudit () {
-      this.auditDialogVisible = false
+      this.isLoading = true
+      SupplierApi.audit({
+        id: this.auditRow.id,
+        status: this.auditStatus
+      }).then((res) => {
+        if (res.success) {
+          this.gotoPage(10, 1)
+          this.auditDialogVisible = false
+        }
+      }).finally(() => {
+        this.isLoading = false
+      })
     },
     freezeOrActive (data, type) {
       let status
@@ -202,6 +215,9 @@ export default {
         // })
       }).catch(() => { })
     }
+  },
+  beforeDestroy () {
+    this.auditRow = null
   }
 }
 </script>
