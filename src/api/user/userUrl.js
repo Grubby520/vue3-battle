@@ -6,6 +6,7 @@ export default {
   register: baseURL + 'user/register',
   userInfo: baseURL + 'user/info',
   logout: baseURL + 'user/logout',
+  resetPassword: baseURL + 'user/newPassword',
   docDetails: baseURL + 'supplier/userId',
   docModify: baseURL + 'supplier'
 }

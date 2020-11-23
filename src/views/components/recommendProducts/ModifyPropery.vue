@@ -13,8 +13,8 @@
     </div>
     <el-divider />
     <div class="flex-center">
-      <el-button @click="cancel">取消</el-button>
-      <el-button type="primary" @click="save">确定</el-button>
+      <el-button @click="cancel">{{$t('button.cancelText')}}</el-button>
+      <el-button type="primary" @click="save">{{$t('button.enterText')}}</el-button>
     </div>
   </div>
 </template>

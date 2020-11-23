@@ -1,3 +1,5 @@
+import { Message } from 'element-ui'
+
 /**
 * 确认弹窗
 * @param {Object} context this上下文
@@ -31,4 +33,13 @@ export function errorNotify (context, msg, useHtml = false, duration = 4500) {
     dangerouslyUseHTMLString: useHtml,
     duration
   })
+}
+
+export function errorMessageTip (msg) {
+  Message.error({
+    showClose: true,
+    message: msg,
+    duration: 4500
+  })
+  return Promise.resolve(true)
 }

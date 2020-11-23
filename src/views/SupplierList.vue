@@ -42,16 +42,23 @@
         </el-radio-group>
       </div>
       <span slot="footer">
-        <el-button type="primary" :disabled="!auditStatus" @click="doAudit" :loading="isLoading">确 定</el-button>
+        <el-button
+          type="primary"
+          :disabled="!auditStatus"
+          @click="doAudit"
+          :loading="isLoading"
+        >{{$t('button.enterText')}}</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
 import { confirmBox, successNotify } from '@shared/util'
 import SupplierUrl from '@api/supplier/supplierUrl'
 import SupplierApi from '@api/supplier'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
   name: 'SupplierList',
@@ -73,6 +80,7 @@ export default {
           name: 'status',
           label: '供应商状态',
           data: {
+            isBlock: true,
             remoteUrl: SupplierUrl.statusList,
             options: []
           }
@@ -132,6 +140,7 @@ export default {
   },
 
   methods: {
+    ...userMapActions(['RESET_PASSWORD']),
     gotoPage (pageSize = 10, pageIndex = 1) {
       SupplierApi.getList({
         ...this.query,
@@ -196,8 +205,7 @@ export default {
 
       if (Array.isArray(data)) {
         params = data.filter(item => {
-          // 冻结则过滤掉状态不为2的,取消冻结则过滤掉状态不为3的
-          return type === 'freeze' ? item.status === 2 : item.status === 3
+          return type === 'freeze' ? item.status === 3 : item.status === 4
         }).map(ele => {
           return {
             status,
@@ -219,11 +227,13 @@ export default {
     },
     resetPassword (row) {
       confirmBox(this, '确定要重置该用户密码?').then(() => {
-        // SupplierApi.resetPassword({
-        //   supplierId: row.id
-        // }).then((res) => {
-        //   successNotify(this, `密码重置成功<p>新密码：123133</p>`, true, 0)
-        // })
+        this.RESET_PASSWORD({
+          supplierId: row.id
+        }).then(res => {
+          if (res) {
+            successNotify(this, `密码重置成功!<p>新密码：${res.data}</p>`, true, 0)
+          }
+        })
       }).catch(() => { })
     }
   },

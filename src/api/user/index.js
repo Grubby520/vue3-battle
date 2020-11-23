@@ -7,6 +7,7 @@ const USER_API = {
   register: (params) => post(URL.register, params),
   getUserInfo: () => get(URL.userInfo),
   logout: () => get(URL.logout, {}, { addLoading: true }),
+  resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true }),
   docDetails: () => get(URL.docDetails),
   docModify: (params) => post(URL.docModify, params)
 }
