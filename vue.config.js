@@ -48,8 +48,7 @@ let config = {
     port: 8088,
     proxy: {
       '/api': {
-        // target: 'http://10.250.1.7:9200/',
-        target: 'http://10.250.1.166:8080/',
+        target: process.env.VUE_APP_API_URL + '/',
         ws: true,
         secure: false,
         changeOrigin: true,

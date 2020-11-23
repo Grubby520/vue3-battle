@@ -13,9 +13,9 @@ import moment from 'moment'
 Vue.prototype.$moment = moment
 moment.locale('zh-cn')
 
-if (process.env.NODE_ENV === 'development') {
-  require('@/mock')
-}
+// if (process.env.NODE_ENV === 'development') {
+//   require('@/mock')
+// }
 
 Vue.config.productionTip = false
 
