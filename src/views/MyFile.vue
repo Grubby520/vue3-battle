@@ -138,8 +138,12 @@ export default {
     getDetails () {
       this.loading = true
       UserApi.docDetails().then(res => {
-        if (res.data) {
-          this.form = res.data
+        let { data } = res
+        if (data) {
+          this.form = {
+            ...res.data,
+            address: !data.address ? [] : JSON.parse(data.address)
+          }
         }
       }).finally(() => {
         this.loading = false

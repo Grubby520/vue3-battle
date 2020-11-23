@@ -1,6 +1,6 @@
 // 用于存放接口地址
 const URL = {
-  dictUrl: 'common-service/data/name-value/list',
+  dictUrl: 'srm-common-service/data/name-value/list',
   categoryUrl: '/category/list',
   // oss预上传地址
   ossUrl: '/goods-service/productImage/generatePreUploadUrl',

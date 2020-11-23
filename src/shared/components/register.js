@@ -1,6 +1,8 @@
 import Vue from 'vue'
-import ECharts from 'vue-echarts'
-Vue.component('sl-chart', ECharts)
+import ECharts from './echarts'
+import Moment from './moment'
+Vue.use(ECharts)
+Vue.use(Moment)
 
 const requireInstance = require.context('../', true, /\.vue$/)
 function importAllComponents (r) {

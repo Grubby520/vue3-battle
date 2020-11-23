@@ -1,4 +1,4 @@
-const baseURL = '/goods-service'
+const baseURL = '/srm-goods-service'
 const RECOMMENDURLS = {
   // odm 列表页
   recommendproducts: baseURL + '/product/list',
