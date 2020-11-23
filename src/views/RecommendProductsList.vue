@@ -4,7 +4,7 @@
       ref="listView"
       @gotoPage="gotoPage"
       @reset="reset"
-      :total="total"
+      :total="page.total"
       :pageIndex="pageIndex"
       class="recommonPar"
     >
@@ -40,10 +40,12 @@ export default {
   data () {
     return {
       tableData: [],
-      selections: [], // 复选框数据R
-      pageIndex: 1, // 页数
-      total: 0, // 总数
-      pageSize: 10,
+      selections: [], // 复选框数据
+      page: {
+        pageIndex: 1,
+        pageSize: 10,
+        total: 0
+      },
       category: undefined,
       query: {
         categoryName: '',
@@ -104,7 +106,7 @@ export default {
   },
 
   methods: {
-    gotoPage (pageSize, pageIndex) {
+    gotoPage (pageSize = 10, pageIndex = 1) {
       const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
@@ -115,7 +117,7 @@ export default {
             item.createTimes = this.$moment(item.createTime).format('YYYY-M-D HH:mm')
             item.updateTimes = this.$moment(item.updateTime).format('YYYY-M-D HH:mm')
           })
-          this.total = total
+          this.page.total = total
         })
     },
     reset () {
