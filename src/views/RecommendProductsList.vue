@@ -34,7 +34,7 @@
 </template>
 <script>
 import { successNotify, errorNotify } from '@shared/util'
-
+import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 export default {
   data () {
@@ -53,20 +53,23 @@ export default {
         status: ''
       },
       searchItems: [
-        { type: 'input', label: '品类', name: 'categoryName' },
+        {
+          type: 'single-select',
+          label: '品类',
+          name: 'status',
+          data: {
+            remoteUrl: RecommondUrl.recommendCategory,
+            options: []
+          }
+        },
         { type: 'input', label: '供方货号', name: 'itemNo' },
-        { type: 'component', label: '品类', name: 'itemNo', componentName: 'SlCategory' },
         {
           type: 'single-select',
           label: '状态',
           name: 'status',
           data: {
-            options: [
-              { 'value': 1, 'label': '待推品' },
-              { 'value': 2, 'label': '已推品' },
-              { 'value': 3, 'label': '被选品' },
-              { 'value': 4, 'label': '询盘中' }
-            ]
+            remoteUrl: RecommondUrl.recommendstatus,
+            options: []
           }
         }
       ],

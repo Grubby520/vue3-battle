@@ -41,7 +41,7 @@
   </div>
 </template>
 <script>
-import uploadApi from '@api/api'
+import CommonApi from '@api/api'
 import { http } from '@shared/http.js'
 import { downloadFile } from '@/shared/util'
 export default {
@@ -52,14 +52,14 @@ export default {
   props: {
     // 需要回显图片数组
     imageUrls: { type: Array, required: false, default: () => { return [] } },
-    imageType: { type: Number, required: false, default: undefined }
-    // disabled: { type: Boolean, required: false, default: false }
+    imageType: { type: Number, required: false, default: undefined },
+    disabled: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      disabled: false,
+      // disabled: false,
       fileList: [], // 上传图片列表
       uploadImages: [] // 预上传图片地址和上传的file
     }
@@ -126,7 +126,7 @@ export default {
       console.log('file', file)
       const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
       // 获取预上传oss地址
-      uploadApi.getOssUrl(PARAMS)
+      CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
           this.uploadImages.push(res.data)
