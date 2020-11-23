@@ -24,7 +24,7 @@ const RECOMMEND = {
   },
   // odm 推品详情
   recommendDetail (id) {
-    return get(`${RECOMMENDURLS.RCOMMENDUEL}${id}`)
+    return get(`${RECOMMENDURLS.RCOMMENDUEL}/${id}`)
   },
   // 编辑推品
   modifyDetail (info) {

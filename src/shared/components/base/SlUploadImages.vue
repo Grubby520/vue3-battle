@@ -16,7 +16,7 @@
       <i slot="default" class="el-icon-plus"></i>
       <!-- 图片图标 -- 展示图片 -->
       <div slot="file" slot-scope="{file}">
-        <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
+        <img class="el-upload-list__item-thumbnail" :src="file.imageUrl" alt />
         <span class="el-upload-list__item-actions">
           <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
             <i class="el-icon-zoom-in"></i>
@@ -43,10 +43,7 @@
 <script>
 import uploadApi from '@api/api'
 import { http } from '@shared/http.js'
-
-// 本地下载方法
 import { downloadFile } from '@/shared/util'
-console.log('httpApi', http)
 export default {
   name: 'SlUploadImages',
   model: {
@@ -56,6 +53,7 @@ export default {
     // 需要回显图片数组
     imageUrls: { type: Array, required: false, default: () => { return [] } },
     imageType: { type: Number, required: false, default: undefined }
+    // disabled: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
@@ -97,7 +95,10 @@ export default {
     onChange (file, fileList) {
       // 上传的图片列表中包含本次上传的图片就放弃上传
       if (this.fileList.some(item => item.name === file.name)) {
-        this.cancelUpload(file)
+        // 取消上传
+        this.$refs.uploader.abort(file)
+        // 删除钩子列表中数据
+        fileList.splice(fileList.indexOf(file), 1)
         this.$message.error('不能上传相同的图片!')
       } else {
         this.fileList.push(file)
@@ -134,8 +135,8 @@ export default {
         })
     },
     gotoOss (images) {
-      // 根据预上传oss地址上传图片到oss上
       this.uploadImages.forEach(pre => {
+        // 根据预上传oss地址上传图片到oss上
         http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
           .then(res => {
             console.log('保存时上传到oss')

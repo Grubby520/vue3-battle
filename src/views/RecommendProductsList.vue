@@ -5,7 +5,7 @@
       @gotoPage="gotoPage"
       @reset="reset"
       :total="page.total"
-      :pageIndex="pageIndex"
+      :pageIndex="page.pageIndex"
       class="recommonPar"
     >
       <div slot="search">
