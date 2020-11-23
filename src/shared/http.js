@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-import { merge, getSessionItem } from '@shared/util'
+import { merge, getSessionItem, errorMessageTip } from '@shared/util'
 
 let baseURL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL : ''
 const useProxy = process.env.VUE_APP_USE_PROXY === 'true' && process.env.NODE_ENV === 'development'
@@ -42,6 +42,19 @@ axiosInstance.interceptors.request.use(config => {
 axiosInstance.interceptors.response.use(
   res => {
     store.dispatch('CLOSE_LOADING', true)
+    let { error } = res.data
+    if (error) {
+      switch (error.code) {
+        case '100001': // 未登录
+        case '100002': // 账号在别处登录
+        case '100003': // 授权过期,请重新登录
+        case '200001': // 用户不存在或密码错误
+        case '200002': // 原密码错误
+          errorMessageTip(error.message)
+          break
+      }
+    }
+
     return res.data
   },
   err => {
