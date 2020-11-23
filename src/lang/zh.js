@@ -1,10 +1,11 @@
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 export default {
   button: {
-    cancelText: '取消',
-    submitText: '提交',
-    registerText: '注册',
-    loginText: '登录'
+    cancelText: '取 消',
+    submitText: '提 交',
+    registerText: '注 册',
+    loginText: '登 录',
+    saveText: '保 存'
   },
   placeholder: {
 
