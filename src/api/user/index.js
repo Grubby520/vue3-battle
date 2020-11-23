@@ -12,7 +12,9 @@ const USER_API = {
   getSupplierStatus: () => get(URL.statusList),
   frozenOrActive: (params) => put(URL.frozen, params, { addLoading: true }),
   audit: (params) => put(URL.judgeMent, params),
-  access: (params) => put(URL.access, params, { addLoading: true })
+  access: (params) => put(URL.access, params, { addLoading: true }),
+  docDetails: () => get(URL.docDetails),
+  docModify: (params) => post(URL.docModify, params)
 }
 
 export default USER_API

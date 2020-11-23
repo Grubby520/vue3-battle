@@ -6,18 +6,33 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
       "@shared/*": [
         "src/shared/*"
+      ],
+      "@components/*": [
+        "src/shared/components/*"
+      ],
+      "@directives/*": [
+        "src/shared/directives/*"
+      ],
+      "@filters/*": [
+        "src/shared/filters/*"
+      ],
+      "@mixins/*": [
+        "src/shared/mixins/*"
+      ],
+      "@plugins/*": [
+        "src/shared/plugins/*"
+      ],
+      "@assets/*": [
+        "src/assets/*"
       ],
       "@api/*": [
         "src/api/*"
       ],
-      "@components/*": [
-        "src/shared/components/*"
-      ]
+      "@/*": [
+        "src/*"
+      ],
     },
   },
   "include": [
