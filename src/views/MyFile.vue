@@ -68,7 +68,7 @@
       </el-form>
 
       <footer>
-        <el-button type="primary" @click="save">保 存</el-button>
+        <el-button type="primary" @click="save">{{$t('button.saveText')}}</el-button>
       </footer>
     </el-card>
   </div>

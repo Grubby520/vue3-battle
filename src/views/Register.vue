@@ -88,8 +88,13 @@
         </el-form-item>
 
         <el-form-item label>
-          <el-button @click="goBack" class="register-btn">返回登录</el-button>
-          <el-button type="primary" @click="register" :loading="isLoading" class="register-btn">提交</el-button>
+          <el-button @click="goBack" class="register-btn">{{$t('button.cancelText')}}</el-button>
+          <el-button
+            type="primary"
+            @click="register"
+            :loading="isLoading"
+            class="register-btn"
+          >{{$t('button.submitText')}}</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -183,6 +188,7 @@ export default {
                 message: '注册成功！',
                 duration: 2000
               })
+              this.goBack()
             }
           }).finally(() => {
             this.isLoading = false
