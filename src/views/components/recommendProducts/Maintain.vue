@@ -39,7 +39,12 @@
               <el-input clearable v-model.trim="ruleForm.weight" placeholder="请输入预估重量" />
             </el-form-item>
             <el-form-item prop="supplyPrice" label="供货价格">
-              <el-input clearable v-model.trim="ruleForm.supplyPrice" placeholder="请输入供货单价" />
+              <el-input
+                clearable
+                v-model.trim="ruleForm.supplyPrice"
+                placeholder="请输入供货单价"
+                @blur="blur(ruleForm.supplyPrice)"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -101,6 +106,9 @@
                   :min="1"
                   maxlength="255"
                   style="width:100%"
+                  :precision="1"
+                  :step="0.1"
+                  :max="999.9"
                 />
               </el-form-item>
             </div>
@@ -188,7 +196,6 @@ export default {
       RecommondApi.recommendDetail(this.id)
         .then((res) => {
           console.log(res.data)
-          this.ruleForm = res.data
           const { productImageList, sizeImageList, color, size } = res.data
           // 商品图片回显
           productImageList.forEach((img) => {
@@ -204,6 +211,8 @@ export default {
           this.sizes = size.split(',')
           this.imageUrls = productImageList
           this.imageSizeUrls = sizeImageList
+          res.data.supplyPrice = res.data.supplyPrice.toFixed(2)
+          this.ruleForm = res.data
         })
         .catch(() => {
 
@@ -271,6 +280,14 @@ export default {
       }
       uploadApi.deleteOssUrl(deletParams)
       console.log('val', val)
+    },
+    blur (val) {
+      if (val) {
+        this.ruleForm.supplyPrice = Number.parseFloat(val).toFixed(2)
+        if (parseFloat(val) * 100 > 999999.99 * 100) {
+          this.ruleForm.supplyPrice = 999999.99
+        }
+      }
     }
   }
 }
