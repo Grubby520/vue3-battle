@@ -4,7 +4,7 @@ import { merge, getSessionItem } from '@shared/util'
 
 let baseURL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL : ''
 const useProxy = process.env.VUE_APP_USE_PROXY === 'true' && process.env.NODE_ENV === 'development'
-baseURL = useProxy ? baseURL + '/api' : baseURL
+baseURL = useProxy ? '/api' : baseURL
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
