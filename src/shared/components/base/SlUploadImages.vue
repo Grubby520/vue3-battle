@@ -51,7 +51,8 @@ export default {
   },
   props: {
     // 需要回显图片数组
-    imageUrls: { type: Array, required: false, default: () => { return [] } }
+    imageUrls: { type: Array, required: false, default: () => { return [] } },
+    imageType: { type: Number, required: false, default: undefined }
   },
   data () {
     return {
@@ -118,13 +119,25 @@ export default {
       downloadFile(file.url, file.name)
     },
     uploadFile (file) {
-      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': 0 }
+      console.log('file', file)
+      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
+      // 获取预上传oss地址
       upload.getOssUrl(PARAMS)
         .then(res => {
+          debugger
           this.uploadImages.push(res.data)
           this.$emit('changeUploadImages', this.uploadImages)
         })
     },
+    gotoOss () {
+      this.uploadImages.forEach(img => {
+        this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', this.imageUrls.file, { headers: { 'Content-Type': 'image/jpg' } })
+          .then(res => {
+
+          })
+      })
+    },
+    deleteOss () { },
     cancelUpload (file) {
       // 取消上传文件
       this.$refs.uploader.abort(file)
