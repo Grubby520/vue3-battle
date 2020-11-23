@@ -1,4 +1,4 @@
-const baseURL = '/user-service/'// 与后端微服务名对应
+const baseURL = '/srm-user-service/'// 与后端微服务名对应
 
 export default {
   authLogin: baseURL + 'auth/login',
