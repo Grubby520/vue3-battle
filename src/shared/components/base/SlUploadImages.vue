@@ -41,9 +41,12 @@
   </div>
 </template>
 <script>
-import upload from '@api/api'
+import uploadApi from '@api/api'
+import { http } from '@shared/http.js'
+
 // 本地下载方法
 import { downloadFile } from '@/shared/util'
+console.log('httpApi', http)
 export default {
   name: 'SlUploadImages',
   model: {
@@ -51,7 +54,8 @@ export default {
   },
   props: {
     // 需要回显图片数组
-    imageUrls: { type: Array, required: false, default: () => { return [] } }
+    imageUrls: { type: Array, required: false, default: () => { return [] } },
+    imageType: { type: Number, required: false, default: undefined }
   },
   data () {
     return {
@@ -59,7 +63,7 @@ export default {
       dialogVisible: false,
       disabled: false,
       fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片
+      uploadImages: [] // 预上传图片地址和上传的file
     }
   },
   watch: {
@@ -118,12 +122,33 @@ export default {
       downloadFile(file.url, file.name)
     },
     uploadFile (file) {
-      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': 0 }
-      upload.getOssUrl(PARAMS)
+      console.log('file', file)
+      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
+      // 获取预上传oss地址
+      uploadApi.getOssUrl(PARAMS)
         .then(res => {
+          res.data.file = file.file
           this.uploadImages.push(res.data)
+          console.log('pres', res.data)
           this.$emit('changeUploadImages', this.uploadImages)
         })
+    },
+    gotoOss (images) {
+      // 根据预上传oss地址上传图片到oss上
+      this.uploadImages.forEach(pre => {
+        http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
+          .then(res => {
+            console.log('保存时上传到oss')
+          })
+      })
+    },
+    deleteOss () {
+      this.uploadImages.forEach(pre => {
+        http.del(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
+          .then(res => {
+            console.log('保存时删除上传到oss地址')
+          })
+      })
     },
     cancelUpload (file) {
       // 取消上传文件

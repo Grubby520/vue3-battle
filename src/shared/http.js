@@ -1,8 +1,10 @@
 import axios from 'axios'
 import store from '@/store'
-import { merge, getSessionItem } from '@shared/util'
+import { merge, getSessionItem, errorMessageTip } from '@shared/util'
 
-let baseURL = process.env.NODE_ENV === 'development' ? '' : ''
+let baseURL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL : ''
+const useProxy = process.env.VUE_APP_USE_PROXY === 'true' && process.env.NODE_ENV === 'development'
+baseURL = useProxy ? '/api' : baseURL
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
@@ -40,6 +42,19 @@ axiosInstance.interceptors.request.use(config => {
 axiosInstance.interceptors.response.use(
   res => {
     store.dispatch('CLOSE_LOADING', true)
+    let { error } = res.data
+    if (error) {
+      switch (error.code) {
+        case '100001': // 未登录
+        case '100002': // 账号在别处登录
+        case '100003': // 授权过期,请重新登录
+        case '200001': // 用户不存在或密码错误
+        case '200002': // 原密码错误
+          errorMessageTip(error.message)
+          break
+      }
+    }
+
     return res.data
   },
   err => {
@@ -48,17 +63,27 @@ axiosInstance.interceptors.response.use(
     // 错误处理
     if (err && err.response) {
       switch (err.response.status) {
-        case 500: err.message = '服务器错误(500)'; break
-        case 501: err.message = '服务未实现(501)'; break
-        case 502: err.message = '网络错误(502)'; break
-        case 503: err.message = '服务不可用(503)'; break
-        case 504: err.message = '网络超时(504)'; break
-        case 505: err.message = 'HTTP版本不受支持(505)'; break
+        case 500:
+          err.message = '服务器错误(500)'
+          break
+        case 501: err.message = '服务未实现(501)'
+          break
+        case 502: err.message = '网络错误(502)'
+          break
+        case 503: err.message = '服务不可用(503)'
+          break
+        case 504: err.message = '网络超时(504)'
+          break
+        case 505: err.message = 'HTTP版本不受支持(505)'
+          break
+        case 404: err.message = '访问资源不存在(404)'
+          break
         default: err.message = `连接出错(${err.response.status})!`
       }
     } else {
       err.message = '连接服务器失败!'
     }
+    errorMessageTip(err.message)
     return Promise.reject(err)
   })
 

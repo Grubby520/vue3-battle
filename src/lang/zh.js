@@ -5,7 +5,8 @@ export default {
     submitText: '提 交',
     registerText: '注 册',
     loginText: '登 录',
-    saveText: '保 存'
+    saveText: '保 存',
+    enterText: '确 定'
   },
   placeholder: {
 

@@ -7,7 +7,8 @@ export default {
     permissions: [],
     supplierStatus: '',
     supplierName: '',
-    userName: ''
+    userName: '',
+    isAdmin: false
   },
   getters: {
 
@@ -18,6 +19,7 @@ export default {
       state.supplierStatus = userInfo.supplierStatus
       state.supplierName = userInfo.supplierName
       state.userName = userInfo.userName
+      state.isAdmin = userInfo.isAdmin
     }
   },
   actions: {
@@ -53,6 +55,14 @@ export default {
     },
     MODIFY_PASSWORD ({ commit }, params) {
       return UserApi.modifyPassword(params).then((res) => {
+        const { success } = res
+        if (success) {
+          return res
+        }
+      })
+    },
+    RESET_PASSWORD ({ commit }, params) {
+      return UserApi.resetPassword(params).then((res) => {
         const { success } = res
         if (success) {
           return res

@@ -18,7 +18,7 @@
     </div>
     <!-- 操作按钮 -->
     <div class="upload-data__actions">
-      <el-button @click="cancel" :disabled="!file">取消</el-button>
+      <el-button @click="cancel" :disabled="!file">{{$t('button.cancelText')}}</el-button>
       <el-button type="primary" @click="submit" :disabled="!file">下一步</el-button>
     </div>
   </div>
