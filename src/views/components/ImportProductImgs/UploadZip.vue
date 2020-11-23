@@ -115,7 +115,7 @@ export default {
           elParams.onError(error)
           let timeout = String(error).indexOf('timeout') > -1
           if (timeout) {
-            errorNotify(this, `上传图片超时，请检查网络或调整图片大小`, 15000)
+            errorNotify(this, `上传文件超时，请检查网络或调整文件大小`, 15000)
           }
         })
       }).catch(err => {
