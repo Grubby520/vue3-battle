@@ -2,6 +2,11 @@ import axios from 'axios'
 import store from '@/store'
 import { merge, getSessionItem, errorMessageTip } from '@shared/util'
 
+// 存储http错误状态信息
+let httpErrorCache = {}
+// 同一类型的http错误,在以下时间内只做一次ui提示
+const errorTimeInterval = 1000
+
 let baseURL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL : ''
 const useProxy = process.env.VUE_APP_USE_PROXY === 'true' && process.env.NODE_ENV === 'development'
 baseURL = useProxy ? '/api' : baseURL
@@ -50,6 +55,8 @@ axiosInstance.interceptors.response.use(
         case '100003': // 授权过期,请重新登录
         case '200001': // 用户不存在或密码错误
         case '200002': // 原密码错误
+        case '200003': // 公司名重复注册
+        case '200004': // 账号重复注册
           errorMessageTip(error.message)
           break
       }
@@ -58,11 +65,13 @@ axiosInstance.interceptors.response.use(
     return res.data
   },
   err => {
+    let errorStatus
     store.dispatch('CLOSE_LOADING')
     store.commit('SET_LOADING_COUNT', 0)
     // 错误处理
     if (err && err.response) {
-      switch (err.response.status) {
+      errorStatus = err.response.status
+      switch (errorStatus) {
         case 500:
           err.message = '服务器错误(500)'
           break
@@ -83,7 +92,19 @@ axiosInstance.interceptors.response.use(
     } else {
       err.message = '连接服务器失败!'
     }
-    errorMessageTip(err.message)
+
+    if (!httpErrorCache[errorStatus]) {
+      httpErrorCache[errorStatus] = {
+        time: +new Date()
+      }
+      errorMessageTip(err.message)
+    } else {
+      let now = +new Date()
+      if (now - httpErrorCache[errorStatus].time > errorTimeInterval) {
+        errorMessageTip(err.message)
+        httpErrorCache[errorStatus].time = now
+      }
+    }
     return Promise.reject(err)
   })
 

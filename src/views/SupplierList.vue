@@ -56,8 +56,8 @@
 <script>
 import { createNamespacedHelpers } from 'vuex'
 import { confirmBox, successNotify } from '@shared/util'
-import SupplierUrl from '@api/supplier/supplierUrl'
-import SupplierApi from '@api/supplier'
+import UserUrl from '@api/user/userUrl'
+import UserApi from '@api/user'
 const { mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
@@ -81,7 +81,7 @@ export default {
           label: '供应商状态',
           data: {
             isBlock: true,
-            remoteUrl: SupplierUrl.statusList,
+            remoteUrl: UserUrl.statusList,
             options: []
           }
         }
@@ -142,7 +142,7 @@ export default {
   methods: {
     ...userMapActions(['RESET_PASSWORD']),
     gotoPage (pageSize = 10, pageIndex = 1) {
-      SupplierApi.getList({
+      UserApi.getList({
         ...this.query,
         pageNum: pageIndex,
         pageSize: pageSize
@@ -161,7 +161,7 @@ export default {
     // 准入
     access ({ id, supplierName }) {
       confirmBox(this, `供应商${supplierName}准入后，可以正式接单`).then(() => {
-        SupplierApi.access({
+        UserApi.access({
           id,
           status: 4
         }).then((res) => {
@@ -179,7 +179,7 @@ export default {
     // 审核
     doAudit () {
       this.isLoading = true
-      SupplierApi.audit({
+      UserApi.audit({
         id: this.auditRow.id,
         status: this.auditStatus
       }).then((res) => {
@@ -217,7 +217,7 @@ export default {
       }
 
       confirmBox(this, '冻结后，供应商账户将不可用，是否冻结?').then(() => {
-        SupplierApi.frozenOrActive(params).then(res => {
+        UserApi.frozenOrActive(params).then(res => {
           if (res.success) {
             successNotify(this, '操作成功')
             this.gotoPage(10, 1)

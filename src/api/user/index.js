@@ -1,4 +1,4 @@
-import { get, post } from '@shared/http'
+import { get, post, put } from '@shared/http'
 import URL from './userUrl'
 
 const USER_API = {
@@ -7,8 +7,12 @@ const USER_API = {
   register: (params) => post(URL.register, params),
   getUserInfo: () => get(URL.userInfo),
   logout: () => get(URL.logout, {}, { addLoading: true }),
-  resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true })
-
+  resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true }),
+  getList: (params) => post(URL.list, params),
+  getSupplierStatus: () => get(URL.statusList),
+  frozenOrActive: (params) => put(URL.frozen, params, { addLoading: true }),
+  audit: (params) => put(URL.judgeMent, params),
+  access: (params) => put(URL.access, params, { addLoading: true })
 }
 
 export default USER_API
