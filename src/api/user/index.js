@@ -6,7 +6,9 @@ const USER_API = {
   modifyPassword: (params) => post(URL.modifyPassword, params),
   register: (params) => post(URL.register, params),
   getUserInfo: () => get(URL.userInfo),
-  logout: () => get(URL.logout, {}, { addLoading: true })
+  logout: () => get(URL.logout, {}, { addLoading: true }),
+  resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true })
+
 }
 
 export default USER_API

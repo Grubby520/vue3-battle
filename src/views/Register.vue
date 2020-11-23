@@ -68,9 +68,9 @@
         <el-form-item label="供应类型" prop="supplyType">
           <el-select v-model="form.supplyType" placeholder="请选择供应类型">
             <el-option
-              v-for="(item, index) in supplierTypeOps"
+              v-for="(item, index) in supplierTypeOptions"
               :key="index"
-              :label="item.lable"
+              :label="item.label"
               :value="item.value"
             ></el-option>
           </el-select>
@@ -79,9 +79,9 @@
         <el-form-item label="供应方式" prop="supplyWay">
           <el-select v-model="form.supplyWay" placeholder="请选择供应方式">
             <el-option
-              v-for="(item, index) in supplierMethodOps"
+              v-for="(item, index) in supplierWayOptions"
               :key="index"
-              :label="item.lable"
+              :label="item.label"
               :value="item.value"
             ></el-option>
           </el-select>
@@ -105,6 +105,7 @@
 import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
 import { valueToMd5 } from '@shared/util'
 import UserApi from '@api/user'
+import CommonApi from '@api/api.js'
 
 export default {
   name: 'Register',
@@ -118,29 +119,11 @@ export default {
         contactNumber: '', // 联系电话
         address: [], // 公司地址
         addressDetail: '', // 详细地址
-        supplyType: 1, // 供应类型
-        supplyWay: 1 // 供应方式
+        supplyType: '', // 供应类型
+        supplyWay: '' // 供应方式
       },
-      supplierTypeOps: [
-        {
-          lable: '自有工厂',
-          value: 1
-        },
-        {
-          lable: '档口',
-          value: 2
-        }
-      ],
-      supplierMethodOps: [
-        {
-          lable: '非现货',
-          value: 1
-        },
-        {
-          lable: '现货',
-          value: 2
-        }
-      ],
+      supplierTypeOptions: [],
+      supplierWayOptions: [],
       rules: {
         supplierName: [emptyValidator('请填写公司名称', ['blur', 'change'])],
         userName: [emptyValidator('请填写账户', ['blur', 'change'])],
@@ -179,7 +162,8 @@ export default {
           this.isLoading = true
           UserApi.register({
             ...this.form,
-            password: valueToMd5(this.form.password)
+            address: JSON.stringify(this.form.address), // 复写address的值
+            password: valueToMd5(this.form.password)// 复写password的值
           }).then(res => {
             if (res.success) {
               this.$refs.form.resetFields()
@@ -196,6 +180,15 @@ export default {
         }
       })
     }
+  },
+  mounted () {
+    CommonApi.getDict({ dataCode: 'SUPPLY_TYPE' }).then(res => {
+      this.supplierTypeOptions = res.data || []
+    })
+
+    CommonApi.getDict({ dataCode: 'SUPPLY_WAY' }).then(res => {
+      this.supplierWayOptions = res.data || []
+    })
   }
 }
 </script>

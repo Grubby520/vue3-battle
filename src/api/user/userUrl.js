@@ -5,5 +5,6 @@ export default {
   modifyPassword: baseURL + 'user/password/modify',
   register: baseURL + 'user/register',
   userInfo: baseURL + 'user/info',
-  logout: baseURL + 'user/logout'
+  logout: baseURL + 'user/logout',
+  resetPassword: baseURL + 'user/newPassword'
 }
