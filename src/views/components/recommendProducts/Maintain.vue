@@ -1,7 +1,7 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
-      {{imageUrls}}
+      <!-- {{imageUrls}} -->
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
