@@ -22,6 +22,7 @@
               <SlUploadImages
                 v-model="uploadImageUrl"
                 :imageUrls="imageUrls"
+                :imageType="0"
                 @deleteImages="deleteImages"
               />
             </el-form-item>
