@@ -1,6 +1,7 @@
 <template>
   <div class="uploadImage">
     <!-- 上传图片 -->
+    {{uploadImages}}
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
       ref="uploader"
@@ -60,7 +61,7 @@ export default {
       dialogVisible: false,
       disabled: false,
       fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片
+      uploadImages: [] // 预上传图片地址和上传的file
     }
   },
   watch: {
@@ -124,14 +125,14 @@ export default {
       // 获取预上传oss地址
       upload.getOssUrl(PARAMS)
         .then(res => {
-          debugger
-          this.uploadImages.push(res.data)
-          this.$emit('changeUploadImages', this.uploadImages)
+          this.uploadImages.push(res.data, file)
+          console.log('pres', res.data)
+          // this.$emit('changeUploadImages', this.uploadImages)
         })
     },
     gotoOss () {
-      this.uploadImages.forEach(img => {
-        this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', this.imageUrls.file, { headers: { 'Content-Type': 'image/jpg' } })
+      this.uploadImages.forEach(pre => {
+        this.$http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.type } })
           .then(res => {
 
           })
