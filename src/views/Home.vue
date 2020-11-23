@@ -43,7 +43,7 @@ import UserInfo from '@/views/components/layout/UserInfo.vue'
 import UserOperations from '@/views/components/layout/UserOperations.vue'
 import MenuBar from '@/views/components/layout/MenuBar.vue'
 import { homeRoutes } from '@/router/homeRoutes.js'
-const { mapState: userMapState } = createNamespacedHelpers('user')
+const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
   name: 'Home',
@@ -69,6 +69,7 @@ export default {
     ...userMapState(['permissions'])
   },
   methods: {
+    ...userMapActions(['GET_USER_INFO']),
     getMenus (permissions) {
       let menus = []
       this.routesToMenus(homeRoutes, menus, permissions)
@@ -95,6 +96,9 @@ export default {
     triggerMenuCollapse () {
       this.$store.commit('SET_MENU_COLLAPSE', !this.menuCollapse)
     }
+  },
+  created () {
+    this.GET_USER_INFO()
   },
   mounted () {
     this.menus = this.getMenus(this.permissions || [])
