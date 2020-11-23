@@ -36,13 +36,14 @@
 
 <script>
 // @ is an alias to /src
-import { mapState } from 'vuex'
+import { createNamespacedHelpers, mapState } from 'vuex'
 import SystemInfo from '@/views/components/layout/SystemInfo.vue'
 import UserStatus from '@/views/components/layout/UserStatus.vue'
 import UserInfo from '@/views/components/layout/UserInfo.vue'
 import UserOperations from '@/views/components/layout/UserOperations.vue'
 import MenuBar from '@/views/components/layout/MenuBar.vue'
 import { homeRoutes } from '@/router/homeRoutes.js'
+const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
   name: 'Home',
@@ -58,19 +59,26 @@ export default {
       menus: []
     }
   },
+  watch: {
+    permissions (val) {
+      this.menus = this.getMenus(val || [])
+    }
+  },
   computed: {
-    ...mapState(['breadcrumbs', 'activePath', 'menuCollapse'])
+    ...mapState(['breadcrumbs', 'activePath', 'menuCollapse']),
+    ...userMapState(['permissions'])
   },
   methods: {
-    getMenus () {
+    ...userMapActions(['GET_USER_INFO']),
+    getMenus (permissions) {
       let menus = []
-      this.routesToMenus(homeRoutes, menus)
+      this.routesToMenus(homeRoutes, menus, permissions)
       return menus
     },
-    routesToMenus (routes = [], menus = [], prevPath = '/home') {
+    routesToMenus (routes = [], menus = [], permissions, prevPath = '/home') {
       routes.forEach(route => {
-        const { path, name, children, meta: { icon, notMenu } } = route
-        if (!notMenu) {
+        const { path, name, children, meta: { icon, notMenu, code } } = route
+        if (!notMenu && code && permissions.includes(code)) {
           const curPath = `${prevPath}/${path}`
           let menu = {
             path: curPath,
@@ -80,18 +88,20 @@ export default {
           menus.push(menu)
           if (children && children.length > 0) {
             menu.children = []
-            this.routesToMenus(route.children, menu.children, curPath)
+            this.routesToMenus(route.children, menu.children, permissions, curPath)
           }
         }
       })
-      return this.menus
     },
     triggerMenuCollapse () {
       this.$store.commit('SET_MENU_COLLAPSE', !this.menuCollapse)
     }
   },
+  created () {
+    this.GET_USER_INFO()
+  },
   mounted () {
-    this.menus = this.getMenus()
+    this.menus = this.getMenus(this.permissions || [])
   }
 }
 </script>

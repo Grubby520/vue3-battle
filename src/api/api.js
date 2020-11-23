@@ -2,15 +2,17 @@
 import URL from './url'
 import { get } from '@shared/http'
 const COMMONAPI = {
-  // 上传
-  download ({ ...params }) {
-    return get(URL.uploadDownIMages, params)
-  },
+  // 分类
   category () {
     return get(URL.categoryUrl)
   },
+  // 预上传oss接口
   getOssUrl (params) {
-    return get(URL.ossUrl, params)
+    return get(URL.ossUrl, { params })
+  },
+  // 预删除oss地址
+  deleteOssUrl (params) {
+    return get(URL.deleteOssUrl, params)
   }
 
 }

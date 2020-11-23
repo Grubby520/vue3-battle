@@ -9,13 +9,16 @@
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="modifyPassword">修改密码</el-dropdown-item>
-        <el-dropdown-item @click.native="quit">退出</el-dropdown-item>
+        <el-dropdown-item @click.native="signOut">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
+
 export default {
   name: 'UserOperations',
   props: {
@@ -29,11 +32,16 @@ export default {
   computed: {
   },
   methods: {
+    ...userMapActions(['SIGN_OUT']),
     modifyPassword () {
       this.$router.push('/modify-password')
     },
-    quit () {
-      this.$router.push('/login')
+    signOut () {
+      this.SIGN_OUT().then(res => {
+        if (res) {
+          this.$router.push('/login')
+        }
+      })
     }
   },
   mounted: function () {

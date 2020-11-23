@@ -1,6 +1,7 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
+      <!-- {{imageUrls}} -->
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
@@ -17,8 +18,13 @@
                 maxlength="255"
               />
             </el-form-item>
-            <el-form-item prop="images" label="商品图片">
-              <SlUploadImages v-model="uploadImageUrl" :imageUrls="imageUrls" />
+            <el-form-item label="商品图片" v-model="ruleForm.productImageList">
+              <SlUploadImages
+                v-model="uploadImageUrl"
+                :imageUrls="imageUrls"
+                :imageType="0"
+                @deleteImages="deleteImages"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="11">
@@ -34,7 +40,12 @@
               <el-input clearable v-model.trim="ruleForm.weight" placeholder="请输入预估重量" />
             </el-form-item>
             <el-form-item prop="supplyPrice" label="供货价格">
-              <el-input clearable v-model.trim="ruleForm.supplyPrice" placeholder="请输入供货单价" />
+              <el-input
+                clearable
+                v-model.trim="ruleForm.supplyPrice"
+                placeholder="请输入供货单价"
+                @blur="blur(ruleForm.supplyPrice)"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -69,7 +80,7 @@
               <p>是否有现货</p>
               <el-radio v-model="ruleForm.isSpot" :label="true">有</el-radio>
               <el-radio v-model="ruleForm.isSpot" :label="false">无</el-radio>
-              <el-form-item prop="type" label="生产周期">
+              <el-form-item prop="productionCycle" label="生产周期">
                 <el-input-number
                   v-model.trim="ruleForm.productionCycle"
                   controls-position="right"
@@ -77,10 +88,10 @@
                   style="width:100%"
                 />
               </el-form-item>
-              <el-form-item prop="type" label="库存数量">
+              <el-form-item prop="stock" label="库存数量">
                 <el-input clearable v-model.trim="ruleForm.stock" />
               </el-form-item>
-              <el-form-item prop="type" label="当前库存可维持">
+              <el-form-item prop="currentStockAvailableDays" label="当前库存可维持">
                 <el-input clearable v-model.trim="ruleForm.currentStockAvailableDays" />
               </el-form-item>
               <p>{{'天'}}</p>
@@ -96,6 +107,9 @@
                   :min="1"
                   maxlength="255"
                   style="width:100%"
+                  :precision="1"
+                  :step="0.1"
+                  :max="999.9"
                 />
               </el-form-item>
             </div>
@@ -130,14 +144,15 @@
 
 <script>
 import ModifyPropery from './ModifyPropery'
-import { numberValidator } from '@shared/validate/index'
+import uploadApi from '@api/api'
+import { numberWeightValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 
 export default {
   components: { ModifyPropery },
   props: {
     mode: { type: String, required: false, default: '' },
-    id: { type: Number, required: false, default: undefined }
+    id: { type: String, required: false, default: '' }
   },
   data () {
     return {
@@ -151,28 +166,22 @@ export default {
       imageUrls: [],
       imageSizeUrls: [],
       uploadSizeUrl: [],
+      delImages: [],
       rules: {
         categoryName: [
-          { required: true, message: '', trigger: 'change' }
+          [emptyValidator('分类不能为空')]
         ],
-        // productName: [
-        //   { required: true, message: '', trigger: 'blur' }
-        // ],
         images: [
           { required: true, message: '', trigger: 'change' }
         ],
         itemNo: [
           { required: true, message: '', trigger: 'change' }
         ],
-        weight: [
-          numberValidator()
-        ],
-        supplyPrice: [
-          { required: true, message: '', trigger: 'change' }
-        ]
-        // weight: [
-        //   { required: false, validator: 'numberValidator', trigger: 'blur' }
-        // ]
+        weight: [numberWeightValidator(), emptyValidator('预估重量不能为空')],
+        productionCycle: [numberProductionValidator()],
+        currentStockAvailableDays: [numberProductionValidator()],
+        stock: [numberStockValidator()],
+        supplyPrice: [smallValidator(), emptyValidator('供货单价不能为空')]
       }
     }
   },
@@ -188,25 +197,23 @@ export default {
       RecommondApi.recommendDetail(this.id)
         .then((res) => {
           console.log(res.data)
-          this.ruleForm = res.data
           const { productImageList, sizeImageList, color, size } = res.data
-          const IMAGEURLS = []
-          const IMAGESIZEURLS = []
           // 商品图片回显
           productImageList.forEach((img) => {
-            IMAGEURLS.push({ url: img.imageUrl, ossPath: img.ossPath })
+            img.url = img.imageUrl
           })
           // 尺码图片回显
           sizeImageList.forEach((size) => {
-            IMAGESIZEURLS.push({ url: size.imageUrl, ossPath: size.ossPath })
+            size.url = size.imageUrl
           })
           // 颜色回显
           this.colors = color.split(',')
           // 尺码回显
           this.sizes = size.split(',')
-          console.log(IMAGESIZEURLS)
-          this.imageUrls = IMAGEURLS
-          this.imageSizeUrls = IMAGESIZEURLS
+          this.imageUrls = productImageList
+          this.imageSizeUrls = sizeImageList
+          res.data.supplyPrice = res.data.supplyPrice.toFixed(2)
+          this.ruleForm = res.data
         })
         .catch(() => {
 
@@ -216,6 +223,32 @@ export default {
       // 编辑页面
       this.ruleForm.size = this.sizes.join(',')
       this.ruleForm.color = this.colors.join(',')
+      // 保存之前处理本地上传的图片的ossPath
+      this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', this.imageUrls.file, { headers: { 'Content-Type': 'image/jpg' } })
+
+      // const filetesImages = this.imageUrls.filter(image => !item.id)
+      // filetesImages.forEach(img => {
+      // })
+      this.ruleForm.productImageList = this.imageUrls
+      this.ruleForm.sizeImageList = this.imageSizeUrls
+      RecommondApi.modifyDetail(this.ruleForm)
+        .then(res => {
+          // 删除图片清除oss的图片
+          console.log('eeee')
+        })
+      // const deletParams = {
+
+      // }
+      // uploadApi.deleteOssUrl()
+
+      // this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', file.file, { headers: { 'Content-Type': 'image/jpg' } })
+      // const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': 0 }
+      // upload.getOssUrl(PARAMS)
+      //   .then(res => {
+      //     // debugger
+      //     this.uploadImages.push(res.data)
+      //     this.$emit('changeUploadImages', this.uploadImages)
+      //   })
     },
     gotoList () {
       // 取消返回列表
@@ -236,6 +269,25 @@ export default {
         this.sizes.push(...properys)
       } else {
         this.colors.push(...properys)
+      }
+    },
+    deleteImages (val) {
+      this.delImages.push(val)
+      let type = val.ossPath.split('.')[1]
+      const deletParams = {
+        contentType: `image/${type}`,
+        ossPath: val.ossPath,
+        productId: ''
+      }
+      uploadApi.deleteOssUrl(deletParams)
+      console.log('val', val)
+    },
+    blur (val) {
+      if (val) {
+        this.ruleForm.supplyPrice = Number.parseFloat(val).toFixed(2)
+        if (parseFloat(val) * 100 > 999999.99 * 100) {
+          this.ruleForm.supplyPrice = 999999.99
+        }
       }
     }
   }

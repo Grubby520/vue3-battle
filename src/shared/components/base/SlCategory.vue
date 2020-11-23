@@ -1,6 +1,5 @@
 <template>
   <div class="category">
-    <!-- {{cate}} -->
     <el-select v-model="cate" placeholder="请选择" clearable class="category-select" @change="change">
       <el-option
         v-for="(category,index) in categoryArr"
@@ -21,7 +20,7 @@ export default {
     event: 'changeCategory'
   },
   props: {
-    cate: { type: String, required: false, default: '' }
+    cate: { type: Number, required: false, default: undefined }
   },
   data () {
     return {

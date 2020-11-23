@@ -1,6 +1,7 @@
 <template>
   <div class="uploadImage">
     <!-- 上传图片 -->
+    {{uploadImages}}
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
       ref="uploader"
@@ -51,7 +52,8 @@ export default {
   },
   props: {
     // 需要回显图片数组
-    imageUrls: { type: Array, required: false, default: () => { return [] } }
+    imageUrls: { type: Array, required: false, default: () => { return [] } },
+    imageType: { type: Number, required: false, default: undefined }
   },
   data () {
     return {
@@ -59,7 +61,7 @@ export default {
       dialogVisible: false,
       disabled: false,
       fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片
+      uploadImages: [] // 预上传图片地址和上传的file
     }
   },
   watch: {
@@ -118,13 +120,25 @@ export default {
       downloadFile(file.url, file.name)
     },
     uploadFile (file) {
-      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': 0 }
+      console.log('file', file)
+      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
+      // 获取预上传oss地址
       upload.getOssUrl(PARAMS)
         .then(res => {
-          this.uploadImages.push(res.data)
-          this.$emit('changeUploadImages', this.uploadImages)
+          this.uploadImages.push(res.data, file)
+          console.log('pres', res.data)
+          // this.$emit('changeUploadImages', this.uploadImages)
         })
     },
+    gotoOss () {
+      this.uploadImages.forEach(pre => {
+        this.$http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.type } })
+          .then(res => {
+
+          })
+      })
+    },
+    deleteOss () { },
     cancelUpload (file) {
       // 取消上传文件
       this.$refs.uploader.abort(file)

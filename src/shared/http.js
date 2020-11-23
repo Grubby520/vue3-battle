@@ -1,8 +1,10 @@
 import axios from 'axios'
 import store from '@/store'
-import { getCookie, merge } from '@shared/util'
+import { merge, getSessionItem } from '@shared/util'
 
-let baseURL = process.env.NODE_ENV === 'development' ? '/api' : ''
+let baseURL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL : ''
+const useProxy = process.env.VUE_APP_USE_PROXY === 'true' && process.env.NODE_ENV === 'development'
+baseURL = useProxy ? '/api' : baseURL
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
@@ -12,13 +14,20 @@ const axiosInstance = axios.create({
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
-  const token = getCookie('authToken')
+  const token = getSessionItem('token')
+  const userKey = getSessionItem('userKey')
+
   if (config.headers['addLoading']) {
     store.dispatch('OPEN_LOADING', true)
     delete config.headers['addLoading']
   }
+
   if (token) {
-    config.headers['Authorization'] = token
+    config.headers['token'] = token
+  }
+
+  if (userKey) {
+    config.headers['userKey'] = userKey
   }
 
   return config

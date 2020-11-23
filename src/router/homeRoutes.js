@@ -1,4 +1,5 @@
 import ParentMenuRoute from '@/views/components/layout/ParentMenuRoute.vue'
+// meta.code用于菜单权限控制
 export const homeRoutes = [
   {
     path: 'index',
@@ -13,7 +14,8 @@ export const homeRoutes = [
     path: 'my-file',
     name: '我的档案',
     meta: {
-      icon: 'el-icon-postcard'
+      icon: 'el-icon-postcard',
+      code: 'menu_my_info'
     },
     component: () => import('@/views/MyFile.vue')
   },
@@ -21,21 +23,23 @@ export const homeRoutes = [
     path: 'recommend-products',
     name: '商品管理',
     meta: {
-      icon: 'el-icon-postcard'
+      icon: 'el-icon-postcard',
+      code: 'menu_goods_management'
     },
     component: ParentMenuRoute,
     children: [
       {
         path: 'list',
-        name: 'OMD推品列表',
+        name: 'ODM推品列表',
         meta: {
-          icon: 'el-icon-postcard'
+          icon: 'el-icon-postcard',
+          code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/RecommendProductsList.vue')
       },
       {
         path: 'maintain',
-        name: 'OMD推品',
+        name: 'ODM推品',
         meta: {
           icon: 'el-icon-postcard',
           notMenu: true
@@ -67,7 +71,8 @@ export const homeRoutes = [
     path: 'supplier-list',
     name: '供应商列表',
     meta: {
-      icon: 'el-icon-more-outline'
+      icon: 'el-icon-more-outline',
+      code: 'menu_supplier_list'
     },
     component: () => import('@/views/SupplierList.vue')
   }

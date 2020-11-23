@@ -1,17 +1,17 @@
 <template>
   <div class="user-info color-text--white align-right">
-    <div>{{userInfo.company}}</div>
-    <div class="color-text--gray">{{userInfo.status}}</div>
+    <div>{{supplierName}}</div>
+    <div class="color-text--gray">{{supplierStatus}}</div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { createNamespacedHelpers } from 'vuex'
+const { mapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'UserInfo',
   props: {
-
   },
   data: () => {
     return {
@@ -19,7 +19,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo'])
+    ...mapState(['supplierName', 'supplierStatus'])
   },
   methods: {
   },
