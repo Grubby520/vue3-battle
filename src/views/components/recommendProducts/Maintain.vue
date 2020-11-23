@@ -1,7 +1,7 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
-      <!-- {{imageUrls}} -->
+      {{uploadImageUrl}}
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
@@ -20,6 +20,7 @@
             </el-form-item>
             <el-form-item label="商品图片" v-model="ruleForm.productImageList">
               <SlUploadImages
+                ref="uploadImages"
                 v-model="uploadImageUrl"
                 :imageUrls="imageUrls"
                 :imageType="0"
@@ -220,15 +221,12 @@ export default {
         })
     },
     modify () {
-      // 编辑页面
+      // 颜色和尺寸
       this.ruleForm.size = this.sizes.join(',')
       this.ruleForm.color = this.colors.join(',')
       // 保存之前处理本地上传的图片的ossPath
-      this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', this.imageUrls.file, { headers: { 'Content-Type': 'image/jpg' } })
+      this.$refs.uploadImages.gotoOss()
 
-      // const filetesImages = this.imageUrls.filter(image => !item.id)
-      // filetesImages.forEach(img => {
-      // })
       this.ruleForm.productImageList = this.imageUrls
       this.ruleForm.sizeImageList = this.imageSizeUrls
       RecommondApi.modifyDetail(this.ruleForm)
@@ -236,19 +234,6 @@ export default {
           // 删除图片清除oss的图片
           console.log('eeee')
         })
-      // const deletParams = {
-
-      // }
-      // uploadApi.deleteOssUrl()
-
-      // this.$http.put('http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/aliyun/oss.jpg?Expires=1605788842&OSSAccessKeyId=LTAI4Fzb1CdVLichBMJeW6Zk&Signature=oBEThcivrlLK6IZaMLh4TAkEnes%3D', file.file, { headers: { 'Content-Type': 'image/jpg' } })
-      // const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': 0 }
-      // upload.getOssUrl(PARAMS)
-      //   .then(res => {
-      //     // debugger
-      //     this.uploadImages.push(res.data)
-      //     this.$emit('changeUploadImages', this.uploadImages)
-      //   })
     },
     gotoList () {
       // 取消返回列表

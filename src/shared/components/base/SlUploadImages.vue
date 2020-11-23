@@ -1,7 +1,6 @@
 <template>
   <div class="uploadImage">
     <!-- 上传图片 -->
-    {{uploadImages}}
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
       ref="uploader"
@@ -42,9 +41,12 @@
   </div>
 </template>
 <script>
-import upload from '@api/api'
+import uploadApi from '@api/api'
+import { http } from '@shared/http.js'
+
 // 本地下载方法
 import { downloadFile } from '@/shared/util'
+console.log('httpApi', http)
 export default {
   name: 'SlUploadImages',
   model: {
@@ -123,22 +125,31 @@ export default {
       console.log('file', file)
       const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
       // 获取预上传oss地址
-      upload.getOssUrl(PARAMS)
+      uploadApi.getOssUrl(PARAMS)
         .then(res => {
-          this.uploadImages.push(res.data, file)
+          res.data.file = file.file
+          this.uploadImages.push(res.data)
           console.log('pres', res.data)
-          // this.$emit('changeUploadImages', this.uploadImages)
+          this.$emit('changeUploadImages', this.uploadImages)
         })
     },
-    gotoOss () {
+    gotoOss (images) {
+      // 根据预上传oss地址上传图片到oss上
       this.uploadImages.forEach(pre => {
-        this.$http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.type } })
+        http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
           .then(res => {
-
+            console.log('保存时上传到oss')
           })
       })
     },
-    deleteOss () { },
+    deleteOss () {
+      this.uploadImages.forEach(pre => {
+        http.del(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
+          .then(res => {
+            console.log('保存时删除上传到oss地址')
+          })
+      })
+    },
     cancelUpload (file) {
       // 取消上传文件
       this.$refs.uploader.abort(file)

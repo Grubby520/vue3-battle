@@ -74,7 +74,7 @@ export default {
         ImportProductApi.preUploadAction(params).then(res => {
           let { success, data } = res
           if (success && data.baseCheckVO && data.baseCheckVO.code === 0) {
-            elParams.onProgress({ percent: 30 }, elParams.file)
+            elParams.onProgress({ percent: 20 }, elParams.file)
             resolve(data.imageImportVO)
           } else {
             this.uploadingCount--
@@ -98,10 +98,17 @@ export default {
           timeout: 8 * 60 * 1000,
           headers: {
             'Content-Type': file.type
+          },
+          onUploadProgress: function (ev) {
+            ev.percent = 20
+            if (ev.total > 0) {
+              ev.percent = Math.floor(ev.loaded / ev.total * 100 * 0.6) + 20
+            }
+            elParams.onProgress({ percent: ev.percent }, elParams.file)
           }
         }
         ImportProductApi.ossUploadAction(res.url, file, config).then((response) => {
-          elParams.onProgress({ percent: 60 }, elParams.file)
+          elParams.onProgress({ percent: 80 }, elParams.file)
           this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
         }).catch((error) => {
           this.uploadingCount--
