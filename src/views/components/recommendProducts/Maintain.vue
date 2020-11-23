@@ -1,7 +1,8 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
-      {{uploadImageUrl}}
+      <!-- {{uploadImageUrl}}
+      {{imageUrls}}-->
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
@@ -223,14 +224,6 @@ export default {
         .then((res) => {
           console.log(res.data)
           const { productImageList, sizeImageList, color, size } = res.data
-          // 商品图片回显
-          // productImageList.forEach((img) => {
-          //   img.url = img.imageUrl
-          // })
-          // // 尺码图片回显
-          // sizeImageList.forEach((size) => {
-          //   size.url = size.imageUrl
-          // })
           // 颜色回显
           this.colors = color.split(',')
           // 尺码回显
@@ -253,12 +246,26 @@ export default {
       // 保存之前处理本地上传的图片的ossPath(商品图片和尺寸图片)
       this.$refs.uploadImages.gotoOss()
       this.$refs.uploadSizeImages.gotoOss()
-      this.ruleForm.productImageList = this.imageUrls
+      // 产品回显图片
+      const images = this.imageUrls.filter(img => img.id)
+      this.ruleForm.productImageList = [...images, ...this.uploadImageUrl]
+      console.log(this.ruleForm.productImageList)
       this.ruleForm.sizeImageList = this.imageSizeUrls
-      RecommondApi.modifyDetail(this.ruleForm)
+      // 校验货号是否重复
+      RecommondApi.checkItem(this.ruleForm.itemNo)
         .then(res => {
-          // 清除oss的图片
-          console.log('eeee')
+          return res.success
+        })
+        .then(resp => {
+          RecommondApi.modifyDetail(this.ruleForm)
+            .then(res => {
+              // 清除oss的图片
+              this.imageUrls.forEach(delImg => {
+                this.$refs.uploadImages.deleteOss()
+                this.$refs.uploadSizeImages.deleteOss()
+              })
+              console.log('eeee')
+            })
         })
     },
     gotoList () {

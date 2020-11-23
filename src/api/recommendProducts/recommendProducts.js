@@ -7,7 +7,7 @@ const RECOMMEND = {
   },
   // odm 推品删除
   deleteRecommed (id) {
-    return del(`${RECOMMENDURLS.rcommenduel}${id}`)
+    return del(`${RECOMMENDURLS.rcommenduel}/${id}`)
   },
   // 上传Spu数据
   uploadSpuData (formData) {
@@ -29,6 +29,9 @@ const RECOMMEND = {
   // 编辑推品
   modifyDetail (info) {
     return post(`${RECOMMENDURLS.rcommenduel}`, info)
+  },
+  checkItem (itemNo) {
+    return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
   }
 }
 export default RECOMMEND

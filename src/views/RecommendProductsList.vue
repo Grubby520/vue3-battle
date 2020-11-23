@@ -1,5 +1,6 @@
 <template>
   <div class="recommond">
+    {{query}}
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -56,7 +57,7 @@ export default {
         {
           type: 'single-select',
           label: '品类',
-          name: 'status',
+          name: 'categoryId',
           data: {
             remoteUrl: RecommondUrl.recommendCategory,
             options: []
@@ -93,7 +94,7 @@ export default {
           label: '供货价（元）'
         },
         {
-          prop: 'status',
+          prop: 'productStatusName',
           label: '状态'
         },
         {
