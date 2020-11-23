@@ -5,7 +5,7 @@ function resolve (dirName) {
 }
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
-module.exports = {
+let config = {
   css: {
 
   },
@@ -60,3 +60,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = config
