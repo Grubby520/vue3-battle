@@ -3,8 +3,8 @@ const URL = {
   dictUrl: 'common-service/data/name-value/list',
   categoryUrl: '/category/list',
   // oss预上传地址
-  ossUrl: '/productImage/generatePreUploadUrl',
+  ossUrl: '/goods-service/productImage/generatePreUploadUrl',
   // oss 预删除地址
-  deleteOssUrl: '/productImage/generatePreDeleteUrl'
+  deleteOssUrl: '/goods-service/productImage/generatePreDeleteUrl'
 }
 export default URL

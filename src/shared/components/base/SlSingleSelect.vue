@@ -1,6 +1,12 @@
 <template>
   <div class="sl-single-select">
-    <el-select v-model="value" placeholder="请选择" clearable @change="selectChange">
+    <el-select
+      v-model="value"
+      placeholder="请选择"
+      clearable
+      @change="selectChange"
+      style="width:100%"
+    >
       <el-option
         v-for="(selectItem,index) in selfOptions"
         :key="'option_'+index"
@@ -75,4 +81,6 @@ export default {
 }
 </script>
 <style lang="scss">
+.sl-single-select {
+}
 </style>

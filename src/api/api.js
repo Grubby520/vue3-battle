@@ -10,7 +10,7 @@ const COMMONAPI = {
   },
   // 预上传oss接口
   getOssUrl (params) {
-    return get(URL.ossUrl, { params })
+    return get(URL.ossUrl, { ...params })
   },
   // 预删除oss地址
   deleteOssUrl (params) {

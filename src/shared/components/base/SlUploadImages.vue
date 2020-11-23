@@ -41,12 +41,11 @@
   </div>
 </template>
 <script>
-import uploadApi from '@api/api'
-import { http } from '@shared/http.js'
+import CommonApi from '@api/api'
+// import { http } from '@shared/http.js'
+import { del, put } from '@shared/http'
 
-// 本地下载方法
 import { downloadFile } from '@/shared/util'
-console.log('httpApi', http)
 export default {
   name: 'SlUploadImages',
   model: {
@@ -55,15 +54,18 @@ export default {
   props: {
     // 需要回显图片数组
     imageUrls: { type: Array, required: false, default: () => { return [] } },
-    imageType: { type: Number, required: false, default: undefined }
+    // 0为商品图片 1为尺寸图片
+    imageType: { type: Number, required: false, default: undefined },
+    disabled: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      disabled: false,
+      // disabled: false,
       fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片地址和上传的file
+      uploadImages: [], // 预上传图片地址和上传的file
+      preDeletImages: [] // 预删除图片
     }
   },
   watch: {
@@ -76,8 +78,10 @@ export default {
       immediate: true
     }
   },
+  mounted () {
+    console.log('ssssssss', this.imageUrls)
+  },
   methods: {
-
     beforeUpload (file) {
       // 上传支持的格式
       const TYPE = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp']
@@ -97,7 +101,10 @@ export default {
     onChange (file, fileList) {
       // 上传的图片列表中包含本次上传的图片就放弃上传
       if (this.fileList.some(item => item.name === file.name)) {
-        this.cancelUpload(file)
+        // 取消上传
+        this.$refs.uploader.abort(file)
+        // 删除钩子列表中数据
+        fileList.splice(fileList.indexOf(file), 1)
         this.$message.error('不能上传相同的图片!')
       } else {
         this.fileList.push(file)
@@ -109,7 +116,27 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        // 前端展示列表删除图片
         this.cancelUpload(file)
+        // 生成oss预删除图片
+        const CONTENTTYPE = 'image/' + file.ossPath.split('.')[1]
+        const PARAMS = { 'productId': file.productId, 'ossPath': file.ossPath, 'contentType': CONTENTTYPE }
+        CommonApi.deleteOssUrl(PARAMS)
+          .then(res => {
+            console.log('生成oss预删除图片')
+            this.preDeletImages.push(res.data)
+          })
+      })
+    },
+    deleteOss () {
+      // 保存删除oss上的图片
+      this.preDeletImages.forEach(delImg => {
+        console.log('delImgdelImgdelImg', delImg)
+        del(delImg.preDeleteUrl, { headers: { 'Content-Type': delImg.contentType } })
+          .then(res => {
+            debugger
+            console.log('保存时删除上传到oss地址')
+          })
       })
     },
     handlePictureCardPreview (file) {
@@ -125,28 +152,20 @@ export default {
       console.log('file', file)
       const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
       // 获取预上传oss地址
-      uploadApi.getOssUrl(PARAMS)
+      CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
+          console.log('file.file', file.file)
           this.uploadImages.push(res.data)
-          console.log('pres', res.data)
           this.$emit('changeUploadImages', this.uploadImages)
         })
     },
     gotoOss (images) {
-      // 根据预上传oss地址上传图片到oss上
       this.uploadImages.forEach(pre => {
-        http.put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
+        // 根据预上传oss地址上传图片到oss上
+        put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
           .then(res => {
             console.log('保存时上传到oss')
-          })
-      })
-    },
-    deleteOss () {
-      this.uploadImages.forEach(pre => {
-        http.del(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
-          .then(res => {
-            console.log('保存时删除上传到oss地址')
           })
       })
     },

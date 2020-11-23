@@ -1,17 +1,21 @@
-const baseURL = '/product'
+const baseURL = '/goods-service'
 const RECOMMENDURLS = {
   // odm 列表页
-  RECOMMENDPRODUCTS: baseURL + '/list',
+  recommendproducts: baseURL + '/product/list',
   // 上传SPU数据 post
   UPLOAD_SPU_DATA: '/product/importSpu',
   // odm推品
-  RECOMMEND: baseURL + '/pushed',
+  recommend: baseURL + '/product/pushed',
   // odm 取消推品
-  CANCELRCOMMEND: baseURL + '/cancel-pushed',
+  cancelrcommend: baseURL + '/product/cancel-pushed',
   // odm删除 详情
-  RCOMMENDUEL: baseURL
-  // // odm 状态
-  // RECOMMENDSTATUS: '/product/product-status'
+  rcommenduel: baseURL + '/product',
+  // odm 状态
+  recommendstatus: baseURL + '/product/product-status',
+  // odm 分类
+  recommendCategory: baseURL + '/category/list',
+  // 校验货号是否存在
+  checkItem: baseURL + '/product/check-item-no'
 }
 
 export default RECOMMENDURLS
