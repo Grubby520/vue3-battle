@@ -2,6 +2,8 @@
 import URL from './url'
 import { get } from '@shared/http'
 const COMMONAPI = {
+  // 获取字典通用接口
+  getDict: (params) => get(URL.dictUrl, params),
   // 分类
   category () {
     return get(URL.categoryUrl)

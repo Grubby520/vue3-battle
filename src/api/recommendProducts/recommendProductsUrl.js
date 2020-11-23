@@ -3,7 +3,7 @@ const RECOMMENDURLS = {
   // odm 列表页
   recommendproducts: baseURL + '/product/list',
   // 上传SPU数据 post
-  upload_spu_data: baseURL + 'http://10.250.1.205:9300/product/importSpu',
+  UPLOAD_SPU_DATA: '/product/importSpu',
   // odm推品
   recommend: baseURL + '/product/pushed',
   // odm 取消推品

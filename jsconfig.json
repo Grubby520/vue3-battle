@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ES6",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "paths": {
+      "@shared/*": [
+        "src/shared/*"
+      ],
+      "@components/*": [
+        "src/shared/components/*"
+      ],
+      "@directives/*": [
+        "src/shared/directives/*"
+      ],
+      "@filters/*": [
+        "src/shared/filters/*"
+      ],
+      "@mixins/*": [
+        "src/shared/mixins/*"
+      ],
+      "@plugins/*": [
+        "src/shared/plugins/*"
+      ],
+      "@assets/*": [
+        "src/assets/*"
+      ],
+      "@api/*": [
+        "src/api/*"
+      ],
+      "@/*": [
+        "src/*"
+      ],
+    },
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

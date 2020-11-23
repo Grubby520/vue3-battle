@@ -60,6 +60,14 @@ export default {
           return res
         }
       })
+    },
+    RESET_PASSWORD ({ commit }, params) {
+      return UserApi.resetPassword(params).then((res) => {
+        const { success } = res
+        if (success) {
+          return res
+        }
+      })
     }
   }
 }

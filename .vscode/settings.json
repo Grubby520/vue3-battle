@@ -43,4 +43,20 @@
   "editor.detectIndentation": false,
   // 重新设定tabsize
   "editor.tabSize": 2,
+  // 文件寻址 需要安装插件 Path Intellisense **1.4.2**
+  "path-intellisense.mappings": {
+    "@": "${workspaceRoot}/src",
+    "@shared": "${workspaceRoot}/src/shared",
+    "@components": "${workspaceRoot}/src/shared/components",
+    "@directives": "${workspaceRoot}/src/shared/directives",
+    "@filters": "${workspaceRoot}/src/shared/filters",
+    "@mixins": "${workspaceRoot}/src/shared/mixins",
+    "@plugins": "${workspaceRoot}/src/shared/plugins",
+    "@assets": "${workspaceRoot}/src/assets",
+    "@api": "${workspaceRoot}/src/api",
+  },
+  "path-intellisense.extensionOnImport": true,
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "path-intellisense.showHiddenFiles": true,
+  "path-intellisense.absolutePathToWorkspace": false,
 }

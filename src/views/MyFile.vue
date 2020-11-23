@@ -68,7 +68,7 @@
       </el-form>
 
       <footer>
-        <el-button type="primary" @click="save">{{$t('button.saveText')}}</el-button>
+        <el-button type="primary" :loading="loading" @click="save">{{$t('button.saveText')}}</el-button>
       </footer>
     </el-card>
   </div>
@@ -76,12 +76,15 @@
 
 <script>
 import { emptyValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
+import { successNotify } from '@shared/util/messageUI'
+import UserApi from '@api/user'
+
 export default {
   data () {
     return {
       form: {
-        name: '测试公司名称', // 公司名称
-        account: '133333333333', // 账号
+        name: '', // 公司名称
+        account: '', // 账号
         contactPerson: '', // 联系人
         telephone: '', // 联系电话
         address: [], // 公司地址
@@ -124,13 +127,36 @@ export default {
         supplierMethod: [
           emptyValidator('请选择供应方式', ['blur', 'change'])
         ]
-      }
+      },
+      loading: true
     }
   },
+  mounted () {
+    this.getDetails()
+  },
   methods: {
+    getDetails () {
+      this.loading = true
+      UserApi.docDetails().then(res => {
+        if (res.data) {
+          this.form = res.data
+        }
+      }).finally(() => {
+        this.loading = false
+      })
+    },
     save () {
       this.$refs['form'].validate((valid) => {
-        console.log(valid)
+        if (valid) {
+          this.loading = true
+          UserApi.docModify(this.form).then(res => {
+            if (res.success) {
+              successNotify('保存成功')
+            }
+          }).finally(() => {
+            this.loading = false
+          })
+        }
       })
     }
   }

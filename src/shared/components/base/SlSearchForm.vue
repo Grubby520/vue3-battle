@@ -20,7 +20,11 @@
             ></el-input>
           </el-form-item>
           <template v-else-if="item.type === 'single-select'">
-            <el-form-item :label="item.label" :prop="item.name">
+            <el-form-item
+              :label="item.label"
+              :prop="item.name"
+              :class="{'block':item.data.isBlock}"
+            >
               <SlSingleSelect
                 v-model="form[item.name]"
                 :remoteUrl="item.data.remoteUrl"
@@ -86,4 +90,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.block /deep/ {
+  .el-select {
+    display: block;
+  }
+}
 </style>
