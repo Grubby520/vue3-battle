@@ -1,8 +1,9 @@
 <template>
-  <div class="user-info color-text--white align-right">
+  <div v-if="!isAdmin" class="user-info color-text--white align-right">
     <div>{{supplierName}}</div>
     <div class="color-text--gray">{{supplierStatus}}</div>
   </div>
+  <div v-else class="display-inline-block color-text--white align-right">管理员</div>
 </template>
 
 <script>
@@ -19,7 +20,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['supplierName', 'supplierStatus'])
+    ...mapState(['supplierName', 'supplierStatus', 'isAdmin'])
   },
   methods: {
   },

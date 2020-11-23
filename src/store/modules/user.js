@@ -7,7 +7,8 @@ export default {
     permissions: [],
     supplierStatus: '',
     supplierName: '',
-    userName: ''
+    userName: '',
+    isAdmin: false
   },
   getters: {
 
@@ -18,6 +19,7 @@ export default {
       state.supplierStatus = userInfo.supplierStatus
       state.supplierName = userInfo.supplierName
       state.userName = userInfo.userName
+      state.isAdmin = userInfo.isAdmin
     }
   },
   actions: {
