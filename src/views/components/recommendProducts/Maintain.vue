@@ -1,8 +1,6 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
-      {{uploadImageUrl}}
-      <!-- {{imageUrls}} -->
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
@@ -193,14 +191,21 @@ export default {
       emptyValidator('不能为空')
     ]
     let cateValidator = fnValidator('分类不能为空', () => {
-      return this.ruleForm.categoryId !== ''
+      return this.ruleForm.categoryId === ''
+    })
+    let uploadValidator = fnValidator('上传图片不能为空', () => {
+      return this.uploadImageUrl.length <= 0
     })
     let itemNoValidator = fnValidator('同一个供应商下，供方货号唯一', () => {
-      RecommondApi.checkItem(this.ruleForm.itemNo)
-        .then(res => {
-          // return res.success
-          return !res.success
-        })
+      if (this.ruleForm.itemNo) {
+        RecommondApi.checkItem(this.ruleForm.itemNo)
+          .then(res => {
+            // debugger
+            if (res.success) {
+              return false
+            }
+          })
+      }
     })
     return {
       dialog: false,
@@ -215,13 +220,16 @@ export default {
       uploadSizeUrl: [],
       delImages: [],
       rules: {
+        categoryId: [
+          [...validators, cateValidator]
+        ],
         categoryName: [
-          [cateValidator, ...validators]
+          [emptyValidator('不能为空')]
         ],
         images: [
-          { required: true, message: '', trigger: 'change' }
+          uploadValidator, ...validators
         ],
-        itemNo: [itemNoValidator],
+        itemNo: [itemNoValidator, ...validators],
         weight: [numberWeightValidator(), emptyValidator('预估重量不能为空')],
         productionCycle: [numberProductionValidator()],
         currentStockAvailableDays: [numberProductionValidator()],

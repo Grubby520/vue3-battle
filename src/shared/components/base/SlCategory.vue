@@ -1,6 +1,12 @@
 <template>
   <div class="category">
-    <el-select v-model="cate" placeholder="请选择" clearable class="category-select" @change="change">
+    <el-select
+      v-model="cateInfo"
+      placeholder="请选择"
+      clearable
+      class="category-select"
+      @change="change"
+    >
       <el-option
         v-for="(category,index) in categoryArr"
         :key="'category_'+index"
@@ -24,10 +30,14 @@ export default {
   },
   data () {
     return {
-      categoryArr: []
+      categoryArr: [],
+      cateInfo: undefined
     }
   },
-  created () {
+  watch: {
+    'cate' (newValue) { // 回显
+      this.cateInfo = newValue
+    }
   },
   mounted () {
     this.getCategory()
@@ -39,7 +49,7 @@ export default {
       })
     },
     change () {
-      this.$emit('changeCategory', this.cate)
+      this.$emit('changeCategory', this.cateInfo)
     }
   }
 }
