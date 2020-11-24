@@ -111,9 +111,14 @@ axiosInstance.interceptors.response.use(
 
 function addLoadingConfigToHeader (config) {
   if (config && config.addLoading !== undefined) {
-    config.headers = config.headers ? config.headers = merge(config.headers, {
-      addLoading: config.addLoading
-    }) : { addLoading: config.addLoading }
+    if (config.headers) {
+      config.headers = merge(config.headers, {
+        addLoading: config.addLoading
+      })
+    } else {
+      config.headers = { addLoading: config.addLoading }
+    }
+
     delete config.addLoading
   }
   return config
