@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-import { merge, getSessionItem, errorMessageTip } from '@shared/util'
+import { merge, getSessionItem, errorMessageTip, errorNotify } from '@shared/util'
 
 // 存储http错误状态信息
 let httpErrorCache = {}
@@ -98,11 +98,11 @@ axiosInstance.interceptors.response.use(
       httpErrorCache[errorStatus] = {
         time: +new Date()
       }
-      errorMessageTip(err.message)
+      errorNotify(null, err.message)
     } else {
       let now = +new Date()
       if (now - httpErrorCache[errorStatus].time > errorTimeInterval) {
-        errorMessageTip(err.message)
+        errorNotify(null, err.message)
         httpErrorCache[errorStatus].time = now
       }
     }
