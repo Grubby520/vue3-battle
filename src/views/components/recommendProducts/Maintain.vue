@@ -1,8 +1,8 @@
 <template>
   <div class="maintain">
     <div class="maintain__base">
-      <!-- {{uploadImageUrl}}
-      {{imageUrls}}-->
+      {{uploadImageUrl}}
+      <!-- {{imageUrls}} -->
       <p class="maintain__base-baseTitle">基本信息</p>
       <el-divider />
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
@@ -28,6 +28,7 @@
                 v-model="uploadImageUrl"
                 :imageUrls="imageUrls"
                 :imageType="0"
+                :disabled="mode!=='modify'"
                 @deleteImages="deleteImages"
               />
             </el-form-item>
@@ -95,8 +96,8 @@
             </div>
             <div class="flex-left checkbox">
               <p>是否有现货</p>
-              <el-radio v-model="ruleForm.isSpot" :label="true">有</el-radio>
-              <el-radio v-model="ruleForm.isSpot" :label="false">无</el-radio>
+              <el-radio v-model="ruleForm.isSpot" :disabled="mode !=='modify'" :label="true">有</el-radio>
+              <el-radio v-model="ruleForm.isSpot" :disabled="mode !=='modify'" :label="false">无</el-radio>
               <el-form-item prop="productionCycle" label="生产周期">
                 <el-input-number
                   v-if="mode==='modify'"
@@ -123,8 +124,8 @@
             </div>
             <div class="flex-left checkbox">
               <p>是否有版</p>
-              <el-radio v-model="ruleForm.hasPattern" :label="true">有</el-radio>
-              <el-radio v-model="ruleForm.hasPattern" :label="false">无</el-radio>
+              <el-radio v-model="ruleForm.hasPattern" :disabled="mode !=='modify'" :label="true">有</el-radio>
+              <el-radio v-model="ruleForm.hasPattern" :disabled="mode !=='modify'" :label="false">无</el-radio>
               <el-form-item prop="type" label="打版周期">
                 <el-input-number
                   v-model="ruleForm.makePatternCycle"
@@ -147,6 +148,7 @@
                 v-model="uploadSizeUrl"
                 :imageUrls="imageSizeUrls"
                 :imageType="1"
+                :disabled="mode!=='modify'"
               />
             </div>
           </div>
@@ -177,7 +179,7 @@
 <script>
 import ModifyPropery from './ModifyPropery'
 import uploadApi from '@api/api'
-import { numberWeightValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
+import { numberWeightValidator, fnValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 
 export default {
@@ -187,6 +189,19 @@ export default {
     id: { type: String, required: false, default: '' }
   },
   data () {
+    let validators = [
+      emptyValidator('不能为空')
+    ]
+    let cateValidator = fnValidator('分类不能为空', () => {
+      return this.ruleForm.categoryId !== ''
+    })
+    let itemNoValidator = fnValidator('同一个供应商下，供方货号唯一', () => {
+      RecommondApi.checkItem(this.ruleForm.itemNo)
+        .then(res => {
+          // return res.success
+          return !res.success
+        })
+    })
     return {
       dialog: false,
       title: '',
@@ -201,14 +216,12 @@ export default {
       delImages: [],
       rules: {
         categoryName: [
-          [emptyValidator('分类不能为空')]
+          [cateValidator, ...validators]
         ],
         images: [
           { required: true, message: '', trigger: 'change' }
         ],
-        itemNo: [
-          { required: true, message: '', trigger: 'change' }
-        ],
+        itemNo: [itemNoValidator],
         weight: [numberWeightValidator(), emptyValidator('预估重量不能为空')],
         productionCycle: [numberProductionValidator()],
         currentStockAvailableDays: [numberProductionValidator()],
@@ -246,27 +259,25 @@ export default {
       // 保存之前处理本地上传的图片的ossPath(商品图片和尺寸图片)
       this.$refs.uploadImages.gotoOss()
       this.$refs.uploadSizeImages.gotoOss()
-      // 产品回显图片
-      const images = this.imageUrls.filter(img => img.id)
-      this.ruleForm.productImageList = [...images, ...this.uploadImageUrl]
-      console.log(this.ruleForm.productImageList)
-      this.ruleForm.sizeImageList = this.imageSizeUrls
+      // 产品回显图片和本地上传图片
+      this.ruleForm.productImageList = this.uploadImageUrl
+      this.ruleForm.sizeImageList = this.uploadSizeUrl
       // 校验货号是否重复
-      RecommondApi.checkItem(this.ruleForm.itemNo)
+      // RecommondApi.checkItem(this.ruleForm.itemNo)
+      //   .then(res => {
+      //     return res.success
+      //   })
+      //   .then(resp => {
+      RecommondApi.modifyDetail(this.ruleForm)
         .then(res => {
-          return res.success
+          // 清除oss的图片
+          this.imageUrls.forEach(delImg => {
+            // this.$refs.uploadImages.deleteOss()
+            // this.$refs.uploadSizeImages.deleteOss()
+          })
+          console.log('eeee')
         })
-        .then(resp => {
-          RecommondApi.modifyDetail(this.ruleForm)
-            .then(res => {
-              // 清除oss的图片
-              this.imageUrls.forEach(delImg => {
-                this.$refs.uploadImages.deleteOss()
-                this.$refs.uploadSizeImages.deleteOss()
-              })
-              console.log('eeee')
-            })
-        })
+      // })
     },
     gotoList () {
       // 取消返回列表

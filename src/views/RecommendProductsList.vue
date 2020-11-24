@@ -1,6 +1,5 @@
 <template>
   <div class="recommond">
-    {{query}}
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -12,22 +11,21 @@
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
         <SlSearchForm v-model="query" :items="searchItems" />
-        <!-- <SlCategory v-model="category"></SlCategory> -->
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="recommon">批量推品</el-button>
+        <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
         <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
         <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
         <div slot="operation" slot-scope="{row}">
-          <span @click="maintain(row,'modify')" class="btn">维护</span>
+          <span @click="maintain(row,'modify')" class="btn" v-if="row.productStatus !==2">维护</span>
           <span type="text" @click="maintain(row,'view')" class="btn">查看</span>
-          <span type="text" @click="recommon(row)" class="btn">推品</span>
-          <span type="text" @click="deleteProduct(row)" class="btn">删除</span>
-          <span type="text" @click="cancel(row)" class="btn">取消推品</span>
+          <span type="text" @click="recommon(row)" class="btn" v-if="row.productStatus===0">推品</span>
+          <span type="text" @click="deleteProduct(row)" class="btn" v-if="row.productStatus===0">删除</span>
+          <span type="text" @click="cancel(row)" class="btn" v-if="row.productStatus===1">取消推品</span>
         </div>
       </SlTable>
     </SlListView>
@@ -67,7 +65,7 @@ export default {
         {
           type: 'single-select',
           label: '状态',
-          name: 'status',
+          name: 'productStatus',
           data: {
             remoteUrl: RecommondUrl.recommendstatus,
             options: []
@@ -144,6 +142,7 @@ export default {
       RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
         .then(() => {
           successNotify(this, `供方货号：${ITEMNOALL}推品成功`)
+          this.$refs.listView.refresh()
         })
         .catch(() => {
           errorNotify(this, `供方货号：${ITEMNOALL}推品失败`)
@@ -164,6 +163,7 @@ export default {
       const params = row.id
       RecommondApi.cancelrcommend({ productIdList: [params] })
         .then(res => {
+          this.$refs.listView.refresh()
           successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
         })
         .catch(() => {
