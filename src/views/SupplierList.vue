@@ -191,21 +191,32 @@ export default {
         this.isLoading = false
       })
     },
+    freeze (params) {
+      UserApi.frozen(params).then(res => {
+        if (res.success) {
+          successNotify(this, '操作成功')
+          this.gotoPage(10, 1)
+        }
+      })
+    },
+    cancelFreeze (params) {
+      UserApi.cancelFrozen(params).then(res => {
+        if (res.success) {
+          successNotify(this, '操作成功')
+          this.gotoPage(10, 1)
+        }
+      })
+    },
     // 冻结、取消冻结
     freezeOrActive (data, type) {
-      let status
+      let method // 调用的接口方法
+      let status = type === 'freeze' ? (method = 'frozen', 3) : (method = 'cancelFrozen', 4)
       let params = []
-      if (type === 'freeze') {
-        status = 3
-      }
-
-      if (type === 'active') {
-        status = 4
-      }
+      let confirmText = type === 'freeze' ? '冻结后，供应商账户将不可用，是否冻结?' : '确定取消冻结?'
 
       if (Array.isArray(data)) {
         params = data.filter(item => {
-          return type === 'freeze' ? item.status === 3 : item.status === 4
+          return item.status === status
         }).map(ele => {
           return {
             status,
@@ -216,8 +227,8 @@ export default {
         params = [{ id: data.id, status }]
       }
 
-      confirmBox(this, '冻结后，供应商账户将不可用，是否冻结?').then(() => {
-        UserApi.frozenOrActive(params).then(res => {
+      confirmBox(this, `${confirmText}`).then(() => {
+        UserApi[method](params).then(res => {
           if (res.success) {
             successNotify(this, '操作成功')
             this.gotoPage(10, 1)
