@@ -1,10 +1,11 @@
 // 用于存放接口地址
+const baseURL = '/srm-goods-service'
 const URL = {
   dictUrl: 'srm-common-service/data/name-value/list',
-  categoryUrl: '/category/list',
+  categoryUrl: baseURL + '/category/list',
   // oss预上传地址
-  ossUrl: '/goods-service/productImage/generatePreUploadUrl',
+  ossUrl: baseURL + '/productImage/generatePreUploadUrl',
   // oss 预删除地址
-  deleteOssUrl: '/goods-service/productImage/generatePreDeleteUrl'
+  deleteOssUrl: baseURL + '/productImage/generatePreDeleteUrl'
 }
 export default URL

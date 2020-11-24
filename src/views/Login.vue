@@ -5,21 +5,11 @@
       <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
           <span class="el-icon-s-custom form-item-icon"></span>
-          <el-input
-            name="username"
-            type="text"
-            v-model="loginForm.username"
-            placeholder="username"
-          />
+          <el-input name="username" type="text" v-model="loginForm.username" placeholder="用户名" />
         </el-form-item>
         <el-form-item prop="password">
           <span class="el-icon-lock form-item-icon"></span>
-          <el-input
-            name="password"
-            type="password"
-            v-model="loginForm.password"
-            placeholder="password"
-          />
+          <el-input name="password" type="password" v-model="loginForm.password" placeholder="密码" />
         </el-form-item>
         <div class="align-center">
           <el-button type="primary" class="mr-2rem" @click="register">{{$t('button.registerText')}}</el-button>
@@ -90,6 +80,8 @@ export default {
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
 @import '@assets/scss/_mixin.scss';
+$inputBgColor: #454545;
+$boxShadowColor: rgba(0, 0, 0, 0.7);
 
 .sl-login-container {
   height: 100%;
@@ -100,11 +92,24 @@ export default {
 }
 
 .sl-login-container /deep/ {
+  .el-input {
+    background-color: $inputBgColor;
+  }
+
   .el-input__inner {
     display: inline-block;
-    height: 4rem;
-    line-height: 4rem;
+    height: 4.5rem;
+    line-height: 4.5rem;
     padding: 0 0.3em 0 2em;
+    color: $color-white;
+    border-radius: 0;
+    border: none !important;
+    background: transparent;
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
+      box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
+      -webkit-text-fill-color: #fff !important;
+    }
   }
 }
 
@@ -130,6 +135,7 @@ export default {
   position: absolute;
   left: 0.5em;
   top: 50%;
+  color: $color-white;
   transform: translateY(-50%);
   z-index: 10;
 }

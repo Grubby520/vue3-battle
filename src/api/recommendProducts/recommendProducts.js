@@ -1,4 +1,4 @@
-import { get, http, del, put, post } from '@shared/http'
+import { get, del, put, post } from '@shared/http'
 import RECOMMENDURLS from './recommendProductsUrl'
 const RECOMMEND = {
   // odm推品列表
@@ -11,7 +11,7 @@ const RECOMMEND = {
   },
   // 上传Spu数据
   uploadSpuData (formData) {
-    return http.post(RECOMMENDURLS.upload_spu_data, formData)
+    return post(RECOMMENDURLS.upload_spu_data, formData)
   },
   // odm取消推品
   cancelrcommend (info) {
@@ -20,7 +20,7 @@ const RECOMMEND = {
   },
   // odm 推品
   recommend (info) {
-    return put(RECOMMENDURLS.recommend, info)
+    return put(RECOMMENDURLS.recommend, info, { addLoading: true })
   },
   // odm 推品详情
   recommendDetail (id) {

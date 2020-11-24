@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import categoryService from '@api/api.js'
+import CommonApi from '@api/api.js'
 export default {
   name: 'SlCategory',
   model: {
@@ -28,14 +28,13 @@ export default {
     }
   },
   created () {
-
   },
   mounted () {
     this.getCategory()
   },
   methods: {
     getCategory () {
-      categoryService.category().then(res => {
+      CommonApi.category().then(res => {
         this.categoryArr = res.data
       })
     },
