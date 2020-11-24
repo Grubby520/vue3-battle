@@ -6,7 +6,7 @@
       <el-form :model="ruleForm" :rules="rules" ref="form" label-width="130px">
         <el-row type="flex" justify="center" class="maintain__form">
           <el-col :span="11">
-            <el-form-item prop="categoryName" label="分类">
+            <el-form-item prop="categoryId" label="分类">
               <SlCategory v-model="ruleForm.categoryId" v-if="mode==='modify'" />
               <div v-else>{{ruleForm.categoryId}}</div>
             </el-form-item>
@@ -20,10 +20,10 @@
               />
               <div v-else>{{ruleForm.productName}}</div>
             </el-form-item>
-            <el-form-item label="商品图片" v-model="ruleForm.productImageList">
+            <el-form-item label="商品图片" v-model="ruleForm.productImageList" prop="productImageList">
               <SlUploadImages
                 ref="uploadImages"
-                v-model="uploadImageUrl"
+                v-model="productImageList"
                 :imageUrls="imageUrls"
                 :imageType="0"
                 :disabled="mode!=='modify'"
@@ -177,36 +177,43 @@
 <script>
 import ModifyPropery from './ModifyPropery'
 import uploadApi from '@api/api'
-import { numberWeightValidator, fnValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
+import { numberWeightValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 
 export default {
   components: { ModifyPropery },
   props: {
-    mode: { type: String, required: false, default: '' },
+    mode: { type: String, required: false, default: 'modify' },
     id: { type: String, required: false, default: '' }
   },
   data () {
-    let validators = [
-      emptyValidator('不能为空')
-    ]
-    let cateValidator = fnValidator('分类不能为空', () => {
-      return this.ruleForm.categoryId === ''
-    })
-    let uploadValidator = fnValidator('上传图片不能为空', () => {
-      return this.uploadImageUrl.length <= 0
-    })
-    let itemNoValidator = fnValidator('同一个供应商下，供方货号唯一', () => {
-      if (this.ruleForm.itemNo) {
-        RecommondApi.checkItem(this.ruleForm.itemNo)
-          .then(res => {
-            // debugger
-            if (res.success) {
-              return false
-            }
-          })
+    // let validators = [
+    //   emptyValidator('不能为空', 'blur', true)
+    // ]
+    const imageValidta = (rule, value, callback) => {
+      if (this.imageUrls && this.imageUrls.length > 0) {
+        callback()
+      } else {
+        callback(new Error('图片不能为空'))
       }
-    })
+    }
+    const cateValidta = (rule, value, callback) => {
+      if (this.ruleForm.categoryId) {
+        callback()
+      } else {
+        callback(new Error('分类不能为空'))
+      }
+    }
+    const productValidata = (rule, value, callback) => {
+      RecommondApi.checkItem(this.ruleForm.itemNo)
+        .then(res => {
+          if (res.success) {
+            callback()
+          } else {
+            callback(new Error('同一个供应商下，供方SPU唯一'))
+          }
+        })
+    }
     return {
       dialog: false,
       title: '',
@@ -214,28 +221,36 @@ export default {
       ruleForm: {},
       colors: [],
       sizes: [],
-      uploadImageUrl: [],
+      productImageList: [],
       imageUrls: [],
       imageSizeUrls: [],
       uploadSizeUrl: [],
       delImages: [],
       rules: {
         categoryId: [
-          [...validators, cateValidator]
+          { required: true, validator: cateValidta, trigger: 'change' }
         ],
-        categoryName: [
-          [emptyValidator('不能为空')]
+        productImageList: [
+          { required: true, validator: imageValidta, trigger: 'change' }
         ],
-        images: [
-          uploadValidator, ...validators
-        ],
-        itemNo: [itemNoValidator, ...validators],
+        itemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
         weight: [numberWeightValidator(), emptyValidator('预估重量不能为空')],
         productionCycle: [numberProductionValidator()],
         currentStockAvailableDays: [numberProductionValidator()],
         stock: [numberStockValidator()],
         supplyPrice: [smallValidator(), emptyValidator('供货单价不能为空')]
       }
+    }
+  },
+  watch: {
+    'imageUrls': {
+      handler (newValue) {
+        // debugger
+        if (newValue.length > 0) {
+          this.$refs.form.clearValidate('productImageList')
+        }
+      },
+      immediate: true
     }
   },
   methods: {
@@ -268,8 +283,11 @@ export default {
       this.$refs.uploadImages.gotoOss()
       this.$refs.uploadSizeImages.gotoOss()
       // 产品回显图片和本地上传图片
-      this.ruleForm.productImageList = this.uploadImageUrl
+      this.ruleForm.productImageList = this.productImageList
       this.ruleForm.sizeImageList = this.uploadSizeUrl
+      if (this.imageUrls.length > 0) {
+        this.$refs.form.clearValidate('productImageList')
+      }
       // 校验货号是否重复
       // RecommondApi.checkItem(this.ruleForm.itemNo)
       //   .then(res => {
