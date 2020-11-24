@@ -19,7 +19,6 @@ const RECOMMEND = {
   },
   // odm取消推品
   cancelrcommend (info) {
-    console.log(info)
     return put(RECOMMENDURLS.cancelrcommend, info)
   },
   // odm 推品

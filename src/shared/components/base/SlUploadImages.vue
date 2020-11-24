@@ -79,7 +79,6 @@ export default {
     }
   },
   mounted () {
-    console.log('ssssssss', this.imageUrls)
   },
   methods: {
     beforeUpload (file) {
@@ -146,7 +145,6 @@ export default {
         // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
         put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
           .then(res => {
-            console.log('保存时上传到oss')
           })
       })
     },

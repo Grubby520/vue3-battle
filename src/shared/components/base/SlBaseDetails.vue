@@ -50,11 +50,9 @@ export default {
     doSave () {
       if (this.references && this.form) {
         this.references[this.form].validate(valid => {
-          console.log('表单验证成功')
           if (valid) {
             this.ds()
           } else {
-            console.log('表单验证错误')
             return false
           }
         })

@@ -258,7 +258,6 @@ export default {
       // 获取接口详情信息
       RecommondApi.recommendDetail(this.id)
         .then((res) => {
-          console.log(res.data)
           const { productImageList, sizeImageList, color, size } = res.data
           // 颜色回显
           this.colors = color.split(',')
@@ -301,7 +300,6 @@ export default {
             // this.$refs.uploadImages.deleteOss()
             // this.$refs.uploadSizeImages.deleteOss()
           })
-          console.log('eeee')
         })
       // })
     },
