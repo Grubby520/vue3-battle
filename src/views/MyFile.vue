@@ -10,8 +10,8 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="账号：" prop="userName">
-              <el-input v-model="form.userName" disabled></el-input>
+            <el-form-item label="账号：" prop="accountName">
+              <el-input v-model="form.accountName" disabled></el-input>
             </el-form-item>
           </el-col>
 
@@ -84,7 +84,7 @@ export default {
     return {
       form: {
         supplierName: '', // 公司名称
-        userName: '', // 账号
+        accountName: '', // 账号
         contactName: '', // 联系人
         contactNumber: '', // 联系电话
         address: [], // 公司地址
