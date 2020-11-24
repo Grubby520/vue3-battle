@@ -4,6 +4,7 @@
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
       ref="uploader"
+      :disabled="disabled"
       list-type="picture-card"
       :limit="200"
       accept="image/png, image/jpeg, image/jpg, image/bmp"
@@ -42,8 +43,7 @@
 </template>
 <script>
 import CommonApi from '@api/api'
-// import { http } from '@shared/http.js'
-import { del, put } from '@shared/http'
+import { put } from '@shared/http'
 
 import { downloadFile } from '@/shared/util'
 export default {
@@ -64,7 +64,7 @@ export default {
       dialogVisible: false,
       // disabled: false,
       fileList: [], // 上传图片列表
-      uploadImages: [], // 预上传图片地址和上传的file
+      // uploadImages: [], // 预上传图片地址和上传的file
       preDeletImages: [] // 预删除图片
     }
   },
@@ -118,25 +118,6 @@ export default {
       }).then(() => {
         // 前端展示列表删除图片
         this.cancelUpload(file)
-        // 生成oss预删除图片
-        const CONTENTTYPE = 'image/' + file.ossPath.split('.')[1]
-        const PARAMS = { 'productId': file.productId, 'ossPath': file.ossPath, 'contentType': CONTENTTYPE }
-        CommonApi.deleteOssUrl(PARAMS)
-          .then(res => {
-            console.log('生成oss预删除图片')
-            this.preDeletImages.push(res.data)
-          })
-      })
-    },
-    deleteOss () {
-      // 保存删除oss上的图片
-      this.preDeletImages.forEach(delImg => {
-        console.log('delImgdelImgdelImg', delImg)
-        del(delImg.preDeleteUrl, { headers: { 'Content-Type': delImg.contentType } })
-          .then(res => {
-            debugger
-            console.log('保存时删除上传到oss地址')
-          })
       })
     },
     handlePictureCardPreview (file) {
@@ -149,20 +130,19 @@ export default {
       downloadFile(file.url, file.name)
     },
     uploadFile (file) {
-      console.log('file', file)
       const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
       // 获取预上传oss地址
       CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
-          console.log('file.file', file.file)
-          this.uploadImages.push(res.data)
-          this.$emit('changeUploadImages', this.uploadImages)
+          const IMAGES = this.imageUrls.filter(img => img.id)
+          IMAGES.push(res.data)
+          this.$emit('changeUploadImages', IMAGES)
         })
     },
     gotoOss (images) {
       this.uploadImages.forEach(pre => {
-        // 根据预上传oss地址上传图片到oss上
+        // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
         put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
           .then(res => {
             console.log('保存时上传到oss')
