@@ -32,7 +32,6 @@
 <script>
 import { createNamespacedHelpers } from 'vuex'
 import { downloadFile } from '@/shared/util'
-import importSpuTemplate from '@/assets/template/import-spu.xlsx'
 import RECOMMEND_API from '@api/recommendProducts/recommendProducts.js'
 const { mapActions } = createNamespacedHelpers('productManage')
 const { uploadSpuData, spuDataTemplate } = RECOMMEND_API
@@ -64,7 +63,7 @@ export default {
     ...mapActions(['setImportSpuResultData']),
     // 下载Spu文件模板
     downloadTemplate () {
-      downloadFile(importSpuTemplate, 'import-spu-template.xlsx')
+      downloadFile(this.template, 'import-spu-template.xlsx')
     },
     // 上传文件的回调
     uploadFile (event) {
