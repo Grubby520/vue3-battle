@@ -23,15 +23,16 @@ export function generateFormItemValidator (validateRule, errorMsg) {
  * @param {Function} fn 判断数据错误的方法,返回Boolean类型
  * @param {String|Array} trigger 触发方式
  */
-export const fnValidator = function (errorMsg, fn, trigger = 'blur') {
+export const fnValidator = function (errorMsg, fn, trigger = 'blur', required = false) {
   return {
     validator: generateFormItemValidator(fn),
     message: errorMsg,
-    trigger: trigger
+    trigger: trigger,
+    required: required
   }
 }
 
-export const emptyValidator = function (errorMsg, trigger = 'blur') {
+export const emptyValidator = function (errorMsg, trigger = 'blur', required = false) {
   return {
     validator: (rule, value, callback) => {
       if (isEmpty(value)) {
@@ -41,7 +42,8 @@ export const emptyValidator = function (errorMsg, trigger = 'blur') {
       }
     },
     message: errorMsg,
-    trigger: trigger
+    trigger: trigger,
+    required: required
   }
 }
 
@@ -69,11 +71,12 @@ export const phoneNoValidator = function (errorMsg = '请输入正确格式手�
     trigger: trigger
   }
 }
-export const numberWeightValidator = function (errorMsg = '请输入0-9999之间的数字', trigger = 'blur', len) {
+export const numberWeightValidator = function (errorMsg = '请输入0-9999之间的数字', trigger = 'blur', required = true) {
   return {
     validator: generateFormItemValidator(numberFourReg, errorMsg),
     message: errorMsg,
-    trigger: trigger
+    trigger: trigger,
+    required: required
   }
 }
 export const numberProductionValidator = function (errorMsg = '请输入0-999之间的数字', trigger = 'blur') {
@@ -90,10 +93,11 @@ export const numberStockValidator = function (errorMsg = '请输入0-999999之�
     trigger: trigger
   }
 }
-export const smallValidator = function (errorMsg = '请输入0.00-999999.99之间的数字', trigger = 'blur') {
+export const smallValidator = function (errorMsg = '请输入0.00-999999.99之间的数字', trigger = 'blur', required = true) {
   return {
     validator: generateFormItemValidator(smallReg, errorMsg),
     message: errorMsg,
-    trigger: trigger
+    trigger: trigger,
+    required: required
   }
 }

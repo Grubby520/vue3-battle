@@ -17,7 +17,7 @@ const RECOMMENDURLS = {
   // odm 分类
   recommendCategory: baseURL + '/category/list',
   // 校验货号是否存在
-  checkItem: baseURL + '/product/check-item-no'
+  checkItem: baseURL + '/product/item-no-is-exist'
 }
 
 export default RECOMMENDURLS

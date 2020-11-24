@@ -64,7 +64,7 @@ export default {
       dialogVisible: false,
       // disabled: false,
       fileList: [], // 上传图片列表
-      // uploadImages: [], // 预上传图片地址和上传的file
+      uploadImages: [], // 预上传图片地址和上传的file
       preDeletImages: [] // 预删除图片
     }
   },
@@ -138,6 +138,7 @@ export default {
           const IMAGES = this.imageUrls.filter(img => img.id)
           IMAGES.push(res.data)
           this.$emit('changeUploadImages', IMAGES)
+          this.uploadImages.push(res.data)
         })
     },
     gotoOss (images) {
