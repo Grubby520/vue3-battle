@@ -13,6 +13,10 @@ const RECOMMEND = {
   uploadSpuData (formData) {
     return post(RECOMMENDURLS.upload_spu_data, formData)
   },
+  // 下载SPU数据模板
+  spuDataTemplate (formData) {
+    return get(RECOMMENDURLS.spu_data_template, formData)
+  },
   // odm取消推品
   cancelrcommend (info) {
     console.log(info)

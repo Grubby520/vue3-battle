@@ -3,7 +3,12 @@
   <div class="upload-data" v-loading="isUploadData">
     <!-- 页头内容 -->
     <span class="upload-data__header">
-      <el-button type="primary" icon="el-icon-download" @click="downloadTemplate">下载模板</el-button>
+      <el-button
+        type="primary"
+        icon="el-icon-download"
+        @click="downloadTemplate"
+        v-if="template"
+      >下载模板</el-button>
     </span>
     <!-- 页面主体内容 提交时增加loading效果-->
     <div class="upload-data__body">
@@ -30,12 +35,14 @@ import { downloadFile } from '@/shared/util'
 import importSpuTemplate from '@/assets/template/import-spu.xlsx'
 import RECOMMEND_API from '@api/recommendProducts/recommendProducts.js'
 const { mapActions } = createNamespacedHelpers('productManage')
-const { uploadSpuData } = RECOMMEND_API
+const { uploadSpuData, spuDataTemplate } = RECOMMEND_API
 export default {
   // 当前组件的名字
   name: 'spuUploadData',
   data () {
     return {
+      // 数据模板地址
+      template: '',
       // 文件名称
       fileName: '',
       // 上传的文件
@@ -47,6 +54,11 @@ export default {
   created () {
   },
   mounted () {
+    spuDataTemplate().then((response) => {
+      if (response.success) {
+        this.template = response.data
+      }
+    })
   },
   methods: {
     ...mapActions(['setImportSpuResultData']),
