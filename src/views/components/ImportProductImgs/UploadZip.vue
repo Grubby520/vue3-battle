@@ -37,7 +37,6 @@
 
 <script>
 import ImportProductApi from '@api/importProduct'
-import { errorNotify } from '@shared/util/messageUI'
 
 export default {
   name: 'UploadZip',
@@ -115,7 +114,11 @@ export default {
           elParams.onError(error)
           let timeout = String(error).indexOf('timeout') > -1
           if (timeout) {
-            errorNotify(this, `上传文件超时，请检查网络或调整文件大小`, 15000)
+            this.$message({
+              type: 'error',
+              message: '上传文件超时，请检查网络或调整文件大小',
+              duration: 15000
+            })
           }
         })
       }).catch(err => {
@@ -140,7 +143,11 @@ export default {
       console.log('beforeUpload')
       // const isOverSize = file.size / 1024 / 1024 > this.size
       if (this.uploadingCount >= this.limit) {
-        errorNotify(this, `同时上传的压缩包不能超过20个，请在其它压缩包上传完成后再操作`, 15000)
+        this.$message({
+          type: 'error',
+          message: '同时上传的压缩包不能超过20个，请在其它压缩包上传完成后再操作',
+          duration: 15000
+        })
         return false
       }
       // // 上传文件大小限制
@@ -152,7 +159,11 @@ export default {
       // }
       // 上传文件类型限制
       if (this.accept.indexOf(this.getFileType(file.name)) === -1) {
-        errorNotify(this, `${file.name}文件类型错误，请选择以${this.accept}为结尾的文件`, 15000)
+        this.$message({
+          type: 'error',
+          message: `${file.name}文件类型错误，请选择以${this.accept}为结尾的文件`,
+          duration: 15000
+        })
         return false
       }
       this.uploadingCount++
@@ -162,7 +173,11 @@ export default {
     },
     onError (error, file, fileList) {
       console.log('onError', error, file, fileList)
-      errorNotify(this, `${file.name}上传失败！`)
+      this.$message({
+        type: 'error',
+        message: `${file.name}上传失败！`,
+        duration: 15000
+      })
     },
     onProgress (event, file, fileList) {
       console.log('onProgress', event, file, fileList)
