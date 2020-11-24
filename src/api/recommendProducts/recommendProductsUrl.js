@@ -3,6 +3,8 @@ const RECOMMENDURLS = {
   // odm 列表页
   recommendproducts: baseURL + '/product/list',
   // 上传SPU数据 post
+  spu_data_template: baseURL + '/template/getTemplateUrl?code=IMPORT_SPU',
+  // 上传SPU数据 post
   upload_spu_data: baseURL + '/product/importSpu',
   // odm推品
   recommend: baseURL + '/product/pushed',
