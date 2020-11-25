@@ -167,7 +167,13 @@
     </div>
     <div v-if="dialog">
       <el-dialog :visible.sync="dialog" width="30%" :title="title">
-        <ModifyPropery @closeDialog="closeDialog" @properys="properys" :status="status" />
+        <ModifyPropery
+          @closeDialog="closeDialog"
+          @properys="properys"
+          :status="status"
+          :colors="colors"
+          :sizes="sizes"
+        />
       </el-dialog>
     </div>
   </div>
@@ -304,9 +310,9 @@ export default {
       // 修改颜色和尺寸
       this.dialog = val
       if (status !== 'color') {
-        this.sizes.push(...properys)
+        this.sizes = properys
       } else {
-        this.colors.push(...properys)
+        this.colors = properys
       }
     },
     blur (val) {
