@@ -7,7 +7,13 @@
     size="mini"
     ref="multipleTable"
   >
-    <el-table-column v-if="selection" type="selection" width="55" fixed />
+    <el-table-column
+      v-if="selection"
+      type="selection"
+      width="55"
+      fixed
+      :selectable="checkSelectable"
+    />
     <div v-for="item in columns" :key="item.label">
       <template v-if="item.isImg">
         <el-table-column align="center" :prop="item.prop" :label="item.label" :width="item.width">
@@ -36,11 +42,11 @@
                   <div class="tableData-col-con">
                     <div v-for="(pr, ins) in item.pre" :key="pr">
                       <span>{{ pr }}:</span>
-                      <span>{{ scope.row[ins] }}</span>
+                      <span>{{format(scope.row[ins]) }}</span>
                     </div>
                   </div>
                 </div>
-                <div v-else class="tableData-col-text">{{ scope.row[item.prop] }}</div>
+                <div v-else class="tableData-col-text">{{format(scope.row[item.prop]) }}</div>
               </el-col>
             </el-row>
           </div>
@@ -79,11 +85,31 @@ export default {
     border: { type: Boolean, required: false, default: true },
     selection: { type: Boolean, required: false, default: true },
     operate: { type: Boolean, required: false, default: true },
-    tooltip: { type: Boolean, required: false, default: true }
+    tooltip: { type: Boolean, required: false, default: true },
+    selectionsDisabled: { type: Array, required: false, default: () => { return [] } }
   },
   methods: {
     handleSelectionChange (val) {
       this.$emit('changeSelection', val)
+    },
+    checkSelectable (row) {
+      // 复选框置灰selectionsDisabled为需要置灰的数组
+      let mark = 0
+      this.selectionsDisabled.forEach((item) => {
+        if (item.id === row.id) {
+          mark = mark + 1
+          return false
+        }
+      })
+      return mark <= 0
+    },
+    format (val) {
+      // 值如果是时间格式转化为时间格式
+      if (Date.parse(val) > 0) {
+        return this.$moment(val).format('YYYY-M-D HH:mm')
+      } else {
+        return val
+      }
     }
   }
 }

@@ -1,5 +1,6 @@
 <template>
   <div class="recommond">
+    <!-- {{query}} -->
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -10,7 +11,7 @@
     >
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
-        <SlSearchForm v-model="query" :items="searchItems" />
+        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" />
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -19,13 +20,24 @@
         <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
-      <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
+      <SlTable
+        ref="table"
+        :tableData="tableData"
+        :columns="columns"
+        v-model="selections"
+        :selectionsDisabled="selectionsDisabled"
+      >
         <div slot="operation" slot-scope="{row}">
-          <span @click="maintain(row,'modify')" class="btn" v-if="row.productStatus !==2">维护</span>
-          <span type="text" @click="maintain(row,'view')" class="btn">查看</span>
-          <span type="text" @click="recommon(row)" class="btn" v-if="row.productStatus===0">推品</span>
-          <span type="text" @click="deleteProduct(row)" class="btn" v-if="row.productStatus===0">删除</span>
-          <span type="text" @click="cancel(row)" class="btn" v-if="row.productStatus===1">取消推品</span>
+          <el-button @click="maintain(row,'modify')" type="text" v-if="row.productStatus !==2">维护</el-button>
+          <el-button @click="maintain(row,'view')" type="text">查看</el-button>
+          <el-button
+            type="text"
+            @click="recommon(row)"
+            v-if="row.productStatus===0"
+            :disabled="!row.coverImageUrl"
+          >推品</el-button>
+          <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">取消推品</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -40,6 +52,7 @@ export default {
     return {
       tableData: [],
       selections: [], // 复选框数据
+      selectionsDisabled: [],
       page: {
         pageIndex: 1,
         total: 0
@@ -98,8 +111,8 @@ export default {
           prop: 'skuCode',
           label: '创建时间/更新时间',
           pre: {
-            createTimes: '创建',
-            updateTimes: '更新'
+            createTime: '创建',
+            updateTime: '更新'
           }
         }
       ]
@@ -114,17 +127,16 @@ export default {
           const { list, total } = res.data
           this.tableData = list
           this.$refs.listView.loading = false
-          list.forEach(item => {
-            item.createTimes = this.$moment(item.createTime).format('YYYY-M-D HH:mm')
-            item.updateTimes = this.$moment(item.updateTime).format('YYYY-M-D HH:mm')
-          })
+          this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
           this.page.total = total
         })
     },
     reset () {
-      this.query.categoryName = ''
-      this.query.itemNo = ''
-      this.query.status = ''
+      // this.query.categoryName = ''
+      // this.query.itemNo = ''
+      // this.query.status = ''
+      // this.$refs.reset.reset()
+      this.$refs.searchForm.reset()
       // 更新列表
       this.$refs.listView.refresh()
     },
