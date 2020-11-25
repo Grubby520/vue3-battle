@@ -17,6 +17,10 @@
   color: $color-gray;
 }
 
+.color-text--red {
+  color: $color-red;
+}
+
 .mr-1rem {
   margin-right: 1rem !important;
 }
@@ -27,6 +31,14 @@
 
 .mb-1rem {
   margin-bottom: 1rem !important;
+}
+
+.mb-2rem {
+  margin-bottom: 2rem !important;
+}
+
+.mt-2rem {
+  margin-top: 2rem !important;
 }
 
 .btn {

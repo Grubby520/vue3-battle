@@ -23,3 +23,15 @@ export function getSessionItem (name) {
 export function removeSessionItem (name) {
   sessionStorage.removeItem(name)
 }
+
+export function setLocalStorageItem (name, value) {
+  localStorage.setItem(name, value)
+}
+
+export function getLocalStorageItem (name) {
+  return localStorage.getItem(name)
+}
+
+export function removeLocalStorageItem (name) {
+  localStorage.removeItem(name)
+}
