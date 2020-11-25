@@ -22,18 +22,26 @@
 <script>
 export default {
   props: {
-    status: { type: String, required: false, default: '' }
+    status: { type: String, required: false, default: '' },
+    colors: { type: Array, required: false, default: () => { return [] } },
+    sizes: { type: Array, required: false, default: () => { return [] } }
   },
   data () {
     return {
       modifyPro: []
     }
   },
-  created () {
-
-  },
-  mounted () {
-
+  watch: {
+    status: {
+      handler (newValue) {
+        if (newValue === 'color') {
+          this.modifyPro = this.colors
+        } else {
+          this.modifyPro = this.sizes
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     add () {

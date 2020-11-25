@@ -57,7 +57,10 @@ axiosInstance.interceptors.response.use(
         case '200002': // 原密码错误
         case '200003': // 公司名重复注册
         case '200004': // 账号重复注册
-        case '500': // 文件内容为空，请重新导入！
+        case '500001': // 参数异常
+        case '500002': // 数据不存在
+        case '500003': // 数据冲突
+        case '500004': // 超出最大限制
           errorMessageTip(error.message)
           break
       }

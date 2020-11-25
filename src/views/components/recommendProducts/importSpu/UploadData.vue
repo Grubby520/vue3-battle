@@ -7,7 +7,7 @@
         type="primary"
         icon="el-icon-download"
         @click="downloadTemplate"
-        v-if="template"
+        :loading="isDownloadTemplate"
       >下载模板</el-button>
     </span>
     <!-- 页面主体内容 提交时增加loading效果-->
@@ -40,30 +40,28 @@ export default {
   name: 'spuUploadData',
   data () {
     return {
-      // 数据模板地址
-      template: '',
       // 文件名称
       fileName: '',
       // 上传的文件
       file: null,
       // 是否正在上传文件
-      isUploadData: false
+      isUploadData: false,
+      // 是否正在下载Spu文件模板
+      isDownloadTemplate: false
     }
-  },
-  created () {
-  },
-  mounted () {
-    spuDataTemplate().then((response) => {
-      if (response.success) {
-        this.template = response.data
-      }
-    })
   },
   methods: {
     ...mapActions(['setImportSpuResultData']),
     // 下载Spu文件模板
     downloadTemplate () {
-      downloadFile(this.template, 'import-spu-template.xlsx')
+      this.isDownloadTemplate = true
+      spuDataTemplate().then((response) => {
+        if (response.success) {
+          downloadFile(response.data, 'import-spu-template.xlsx')
+        }
+      }).finally(() => {
+        this.isDownloadTemplate = false
+      })
     },
     // 上传文件的回调
     uploadFile (event) {
@@ -99,6 +97,7 @@ export default {
               this.$emit('submit')
             })
           }
+        }).finally(() => {
           // 将当前上传数据状态设置为false
           this.isUploadData = false
         })

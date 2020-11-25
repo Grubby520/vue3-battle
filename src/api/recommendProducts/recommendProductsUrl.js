@@ -1,7 +1,7 @@
 const baseURL = '/srm-goods-service'
 const RECOMMENDURLS = {
   // odm 列表页
-  recommendproducts: baseURL + '/product/list',
+  recommendproducts: baseURL + '/product/page-list',
   // 上传SPU数据 post
   spu_data_template: baseURL + '/template/getTemplateUrl?code=IMPORT_SPU',
   // 上传SPU数据 post
