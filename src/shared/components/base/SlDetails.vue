@@ -1,23 +1,18 @@
 <template>
   <div class="detailControl">
     <div :class="[isRight=== true ? 'detailCenteRight' : 'detailCenter']">
-      <el-button type="primary" :size="size" @click="doSave" :loading="loading">{{saveText}}</el-button>
-      <el-button
-        :type="type"
-        :size="size"
-        :class="[cancelText===true ? 'noneShow':'']"
-        @click="gotoList"
-      >{{cancelText}}</el-button>
+      <el-button type="primary" @click="doSave" :loading="loading">{{saveText}}</el-button>
+      <el-button :class="[cancelText===true ? 'noneShow':'']" @click="cancel">{{cancelText}}</el-button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'SlBaseDetails',
+  name: 'SlDetails',
   props: {
     mode: { type: String, required: false, default: '' },
-    gotoList: { type: Function, required: false },
+    cancel: { type: Function, required: false },
     modify: { type: Function, required: false },
     load: { type: Function, required: false },
     create: { type: Function, required: false, default: undefined },
@@ -25,13 +20,10 @@ export default {
     form: { type: String, required: false, default: undefined },
     cancelText: { type: String, required: false, default: undefined },
     saveText: { type: String, required: false, default: undefined },
-    type: { type: String, required: false, default: 'default' },
-    size: { type: String, required: false, default: undefined },
     isRight: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
-      message: undefined,
       loading: false
     }
   },
@@ -40,7 +32,6 @@ export default {
   },
   methods: {
     refresh () {
-      this.message = undefined
       setTimeout(_ => {
         if (this.mode !== 'create') {
           this.action = 'load'
@@ -57,6 +48,7 @@ export default {
             this.ds()
             this.loading = false
           } else {
+            this.loading = false
             return false
           }
         })
