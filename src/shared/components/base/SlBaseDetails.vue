@@ -1,7 +1,7 @@
 <template>
   <div class="detailControl">
     <div :class="[isRight=== true ? 'detailCenteRight' : 'detailCenter']">
-      <el-button type="primary" :size="size" @click="doSave">{{saveText}}</el-button>
+      <el-button type="primary" :size="size" @click="doSave" :loading="loading">{{saveText}}</el-button>
       <el-button
         :type="type"
         :size="size"
@@ -31,7 +31,8 @@ export default {
   },
   data () {
     return {
-      message: undefined
+      message: undefined,
+      loading: false
     }
   },
   mounted () {
@@ -48,11 +49,13 @@ export default {
       }, 0)
     },
     doSave () {
+      this.loading = true
       if (this.references && this.form) {
         this.references[this.form].validate(valid => {
           if (valid) {
             // 表单校验成功
             this.ds()
+            this.loading = false
           } else {
             return false
           }
