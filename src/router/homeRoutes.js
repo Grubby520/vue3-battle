@@ -23,7 +23,7 @@ export const homeRoutes = [
     path: 'recommend-products',
     name: '商品管理',
     meta: {
-      icon: 'el-icon-postcard',
+      icon: 'el-icon-goods',
       code: 'menu_goods_management'
     },
     component: ParentMenuRoute,
@@ -32,7 +32,7 @@ export const homeRoutes = [
         path: 'list',
         name: 'ODM推品列表',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/RecommendProductsList.vue')
@@ -41,7 +41,7 @@ export const homeRoutes = [
         path: 'maintain',
         name: 'ODM推品',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: '',
           notMenu: true
         },
         props: route => { return { id: route.query.id, mode: route.query.mode } },
@@ -51,7 +51,7 @@ export const homeRoutes = [
         path: 'import-spu',
         name: '导入SPU',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: '',
           notMenu: true
         },
         component: () => import('@/views/ImportSpu.vue')
@@ -60,7 +60,7 @@ export const homeRoutes = [
         path: 'import-product-imgs',
         name: '导入商品图片',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: '',
           notMenu: true
         },
         component: () => import('@/views/ImportProductImgs')
@@ -71,7 +71,7 @@ export const homeRoutes = [
     path: 'supplier-list',
     name: '供应商列表',
     meta: {
-      icon: 'el-icon-more-outline',
+      icon: 'el-icon-user',
       code: 'menu_supplier_list'
     },
     component: () => import('@/views/SupplierList.vue')

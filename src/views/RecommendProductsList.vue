@@ -42,7 +42,6 @@ export default {
       selections: [], // 复选框数据
       page: {
         pageIndex: 1,
-        pageSize: 10,
         total: 0
       },
       category: undefined,
@@ -114,6 +113,7 @@ export default {
         .then((res) => {
           const { list, total } = res.data
           this.tableData = list
+          this.$refs.listView.loading = false
           list.forEach(item => {
             item.createTimes = this.$moment(item.createTime).format('YYYY-M-D HH:mm')
             item.updateTimes = this.$moment(item.updateTime).format('YYYY-M-D HH:mm')
@@ -150,7 +150,6 @@ export default {
     deleteProduct (row) {
       RecommondApi.deleteRecommed(row.id)
         .then(res => {
-          // 删除成功重新渲染页面
           this.$refs.listView.refresh()
           successNotify(this, `供方货号：${row.itemNo}删除推品成功`)
         })

@@ -27,7 +27,6 @@
                 :imageUrls="imageUrls"
                 :imageType="0"
                 :disabled="mode!=='modify'"
-                @deleteImages="deleteImages"
               />
             </el-form-item>
           </el-col>
@@ -153,14 +152,14 @@
           <div></div>
         </div>
       </el-form>
-      <SlBaseDetails
+      <SlDetails
         ref="control"
         :references="$refs"
         form="form"
         :mode="mode"
         :load="load"
         :modify="modify"
-        :gotoList="gotoList"
+        :cancel="cancel"
         :isRight="true"
         saveText="保存"
         cancelText="取消"
@@ -176,7 +175,6 @@
 
 <script>
 import ModifyPropery from './ModifyPropery'
-import uploadApi from '@api/api'
 import { numberWeightValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 
@@ -298,8 +296,7 @@ export default {
           this.goBack()
         })
     },
-    gotoList () {
-      // 取消返回列表
+    cancel () {
       this.goBack()
     },
     goBack () {
@@ -322,19 +319,10 @@ export default {
         this.colors.push(...properys)
       }
     },
-    deleteImages (val) {
-      this.delImages.push(val)
-      let type = val.ossPath.split('.')[1]
-      const deletParams = {
-        contentType: `image/${type}`,
-        ossPath: val.ossPath,
-        productId: ''
-      }
-      uploadApi.deleteOssUrl(deletParams)
-    },
     blur (val) {
-      if (val) {
-        this.ruleForm.supplyPrice = Number.parseFloat(val).toFixed(2)
+      const NUMBERSUPPLYPRICE = Number.parseFloat(val)
+      if (NUMBERSUPPLYPRICE && typeof NUMBERSUPPLYPRICE === 'number') {
+        this.ruleForm.supplyPrice = NUMBERSUPPLYPRICE.toFixed(2)
         if (parseFloat(val) * 100 > 999999.99 * 100) {
           this.ruleForm.supplyPrice = 999999.99
         }

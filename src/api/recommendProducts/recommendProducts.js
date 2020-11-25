@@ -23,7 +23,7 @@ const RECOMMEND = {
   },
   // odm 推品
   recommend (info) {
-    return put(RECOMMENDURLS.recommend, info, { addLoading: true })
+    return put(RECOMMENDURLS.recommend, info)
   },
   // odm 推品详情
   recommendDetail (id) {
