@@ -167,7 +167,13 @@
     </div>
     <div v-if="dialog">
       <el-dialog :visible.sync="dialog" width="30%" :title="title">
-        <ModifyPropery @closeDialog="closeDialog" @properys="properys" :status="status" />
+        <ModifyPropery
+          @closeDialog="closeDialog"
+          @properys="properys"
+          :status="status"
+          :colors="colors"
+          :sizes="sizes"
+        />
       </el-dialog>
     </div>
   </div>
@@ -185,9 +191,6 @@ export default {
     id: { type: String, required: false, default: '' }
   },
   data () {
-    // let validators = [
-    //   emptyValidator('不能为空', 'blur', true)
-    // ]
     const imageValidta = (rule, value, callback) => {
       if (this.imageUrls && this.imageUrls.length > 0) {
         callback()
@@ -243,8 +246,8 @@ export default {
   watch: {
     'imageUrls': {
       handler (newValue) {
-        // debugger
         if (newValue.length > 0) {
+          // 清除图片的校验
           this.$refs.form.clearValidate('productImageList')
         }
       },
@@ -258,13 +261,13 @@ export default {
         .then((res) => {
           const { productImageList, sizeImageList, color, size } = res.data
           // 颜色回显
-          this.colors = color.split(',')
+          this.colors = color ? color.split(',') : []
           // 尺码回显
-          this.sizes = size.split(',')
+          this.sizes = size ? size.split(',') : []
           // 商品图片回显
-          this.imageUrls = productImageList
+          this.imageUrls = productImageList.length > 0 ? productImageList : []
           // 尺码图片回显
-          this.imageSizeUrls = sizeImageList
+          this.imageSizeUrls = sizeImageList.length > 0 ? sizeImageList : []
           res.data.supplyPrice = res.data.supplyPrice.toFixed(2)
           this.ruleForm = res.data
         })
@@ -274,23 +277,15 @@ export default {
     },
     modify () {
       // 颜色和尺寸
-      this.ruleForm.size = this.sizes.join(',')
-      this.ruleForm.color = this.colors.join(',')
+      this.ruleForm.size = this.sizes && this.sizes.length > 0 ? this.sizes.join(',') : ''
+      this.ruleForm.color = this.colors && this.colors.length > 0 ? this.colors.join(',') : ''
       // 保存之前处理本地上传的图片的ossPath(商品图片和尺寸图片)
       this.$refs.uploadImages.gotoOss()
       this.$refs.uploadSizeImages.gotoOss()
       // 产品回显图片和本地上传图片
-      this.ruleForm.productImageList = this.productImageList
-      this.ruleForm.sizeImageList = this.uploadSizeUrl
-      if (this.imageUrls.length > 0) {
-        this.$refs.form.clearValidate('productImageList')
-      }
-      // 校验货号是否重复
-      // RecommondApi.checkItem(this.ruleForm.itemNo)
-      //   .then(res => {
-      //     return res.success
-      //   })
-      //   .then(resp => {
+      if (this.productImageList && this.productImageList.length > 0) this.ruleForm.productImageList = this.productImageList
+      if (this.uploadSizeUrl && this.uploadSizeUrl.length > 0) this.ruleForm.uploadSizeUrl = this.ruleForm.sizeImageList = this.uploadSizeUrl
+
       RecommondApi.modifyDetail(this.ruleForm)
         .then(res => {
           this.goBack()
@@ -314,9 +309,9 @@ export default {
       // 修改颜色和尺寸
       this.dialog = val
       if (status !== 'color') {
-        this.sizes.push(...properys)
+        this.sizes = properys
       } else {
-        this.colors.push(...properys)
+        this.colors = properys
       }
     },
     blur (val) {

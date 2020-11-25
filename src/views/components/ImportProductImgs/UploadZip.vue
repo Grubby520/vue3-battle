@@ -27,8 +27,10 @@
           <el-progress :percentage="file.percentage" />
         </div>
         <div class="progress-explain">
-          <p>{{file.status === 'uploading' ? '上传中' : '上传成功'}}</p>
-          <p>已经上传{{file.percentage}}%</p>
+          <p v-if="file.status === 'uploading'">上传中</p>
+          <p v-if="file.status === 'uploading'">已上传{{file.percentage}}%</p>
+          <p v-if="file.status === 'success'">成功：{{file.raw.successCount}}</p>
+          <p v-if="file.status === 'success'">失败：{{file.raw.failCount}}</p>
         </div>
       </div>
     </el-upload>
@@ -127,6 +129,8 @@ export default {
     afterUploadAction (params, elParams) {
       ImportProductApi.afterUploadAction(params).then(res => {
         if (res.success) {
+          elParams.file.successCount = res.data.successCount
+          elParams.file.failCount = res.data.failCount
           elParams.onProgress({ percent: 100 }, elParams.file)
           elParams.onSuccess()
         } else {
