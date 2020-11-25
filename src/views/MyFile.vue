@@ -17,13 +17,13 @@
 
           <el-col :span="12">
             <el-form-item label="联系人：" prop="contactName">
-              <el-input v-model="form.contactName"></el-input>
+              <el-input v-model.trim="form.contactName"></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :span="12">
             <el-form-item label="联系电话：" prop="contactNumber">
-              <el-input v-model="form.contactNumber" type="tel" maxlength="11"></el-input>
+              <el-input v-model.trim="form.contactNumber" type="tel" maxlength="11"></el-input>
             </el-form-item>
           </el-col>
 
@@ -35,7 +35,7 @@
 
           <el-col :span="12">
             <el-form-item label="公司详细地址：" prop="addressDetail">
-              <el-input v-model="form.addressDetail" maxlength="100"></el-input>
+              <el-input v-model.trim="form.addressDetail" maxlength="100"></el-input>
             </el-form-item>
           </el-col>
 
