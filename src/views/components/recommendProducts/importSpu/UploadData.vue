@@ -3,12 +3,7 @@
   <div class="upload-data" v-loading="isUploadData">
     <!-- 页头内容 -->
     <span class="upload-data__header">
-      <el-button
-        type="primary"
-        icon="el-icon-download"
-        @click="downloadTemplate"
-        v-if="template"
-      >下载模板</el-button>
+      <el-button type="primary" icon="el-icon-download" @click="downloadTemplate">下载模板</el-button>
     </span>
     <!-- 页面主体内容 提交时增加loading效果-->
     <div class="upload-data__body">
@@ -40,8 +35,6 @@ export default {
   name: 'spuUploadData',
   data () {
     return {
-      // 数据模板地址
-      template: '',
       // 文件名称
       fileName: '',
       // 上传的文件
@@ -50,20 +43,15 @@ export default {
       isUploadData: false
     }
   },
-  created () {
-  },
-  mounted () {
-    spuDataTemplate().then((response) => {
-      if (response.success) {
-        this.template = response.data
-      }
-    })
-  },
   methods: {
     ...mapActions(['setImportSpuResultData']),
     // 下载Spu文件模板
     downloadTemplate () {
-      downloadFile(this.template, 'import-spu-template.xlsx')
+      spuDataTemplate().then((response) => {
+        if (response.success) {
+          downloadFile(response.data, 'import-spu-template.xlsx')
+        }
+      })
     },
     // 上传文件的回调
     uploadFile (event) {
