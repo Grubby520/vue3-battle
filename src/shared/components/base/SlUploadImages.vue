@@ -63,8 +63,7 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       fileList: [], // 上传图片列表
-      uploadImages: [], // 预上传图片地址和上传的file
-      preDeletImages: [] // 预删除图片
+      uploadImages: [] // 预上传图片地址和上传的file
     }
   },
   watch: {
@@ -77,6 +76,8 @@ export default {
       immediate: true
     }
   },
+  mounted () {
+  },
   methods: {
     beforeUpload (file) {
       // 上传支持的格式
@@ -85,7 +86,6 @@ export default {
       const LIMITSIZE = file.size / 1024 / 1024 <= 4
       const LIMITIMAGE = TYPE.includes(file.type)
       if (!LIMITIMAGE || !LIMITSIZE) {
-        // 校验上传图片的格式和大小
         !LIMITIMAGE && this.$message.error('上传图片格式不正确!')
         !LIMITSIZE && this.$message.error('上传图片大小不能超过 4MB!')
         this.cancelUpload(file)
@@ -112,12 +112,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // 前端展示列表删除图片
         this.cancelUpload(file)
       })
     },
     handlePictureCardPreview (file) {
-      // 预览
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
@@ -142,7 +140,6 @@ export default {
         // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
         put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
           .then(res => {
-            console.log('保存时上传到oss成功')
           })
       })
     },

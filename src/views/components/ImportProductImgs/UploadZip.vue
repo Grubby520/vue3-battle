@@ -87,7 +87,6 @@ export default {
       })
     },
     httpRequest (elParams) {
-      console.log(elParams)
       elParams.file.status = 'uploading'
       elParams.file.percentage = 0
       elParams.onProgress({ percent: 0 }, elParams.file)
@@ -140,7 +139,6 @@ export default {
       })
     },
     beforeUpload (file) {
-      console.log('beforeUpload')
       // const isOverSize = file.size / 1024 / 1024 > this.size
       if (this.uploadingCount >= this.limit) {
         this.$message({
@@ -169,10 +167,9 @@ export default {
       this.uploadingCount++
     },
     onChange (file, fileList) {
-      console.log('onChange e', file, fileList)
     },
+    // eslint-disable-next-line handle-callback-err
     onError (error, file, fileList) {
-      console.log('onError', error, file, fileList)
       this.$message({
         type: 'error',
         message: `${file.name}上传失败！`,
@@ -180,13 +177,10 @@ export default {
       })
     },
     onProgress (event, file, fileList) {
-      console.log('onProgress', event, file, fileList)
     },
     onSuccess (response, file, fileList) {
-      console.log('onSuccess', response, file, fileList)
     },
     beforeRemove (file) {
-      console.log('beforeRemove')
       const isOverSize = file.size / 1024 / 1024 > this.size
       if (this.uploadingCount >= this.limit) {
         return true
