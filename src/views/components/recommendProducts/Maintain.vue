@@ -258,7 +258,6 @@ export default {
       // 获取接口详情信息
       RecommondApi.recommendDetail(this.id)
         .then((res) => {
-          console.log(res.data)
           const { productImageList, sizeImageList, color, size } = res.data
           // 颜色回显
           this.colors = color.split(',')
@@ -296,17 +295,14 @@ export default {
       //   .then(resp => {
       RecommondApi.modifyDetail(this.ruleForm)
         .then(res => {
-          // 清除oss的图片
-          this.imageUrls.forEach(delImg => {
-            // this.$refs.uploadImages.deleteOss()
-            // this.$refs.uploadSizeImages.deleteOss()
-          })
-          console.log('eeee')
+          this.goBack()
         })
-      // })
     },
     gotoList () {
       // 取消返回列表
+      this.goBack()
+    },
+    goBack () {
       this.$router.back()
     },
     modifyDialog (pro) {

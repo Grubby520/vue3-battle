@@ -114,7 +114,6 @@ export default {
         .then((res) => {
           const { list, total } = res.data
           this.tableData = list
-          console.log(list)
           list.forEach(item => {
             item.createTimes = this.$moment(item.createTime).format('YYYY-M-D HH:mm')
             item.updateTimes = this.$moment(item.updateTime).format('YYYY-M-D HH:mm')
