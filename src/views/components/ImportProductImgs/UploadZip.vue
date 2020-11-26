@@ -54,7 +54,7 @@ export default {
     },
     size: {
       type: Number,
-      default: 80
+      default: 200
     }
   },
   data: function () {
@@ -79,11 +79,12 @@ export default {
             resolve(data.imageImportVO)
           } else {
             this.uploadingCount--
-            elParams.onError()
+            elParams.onError(data && data.baseCheckVO && data.baseCheckVO.message ? (elParams.file.name + data.baseCheckVO.message) : `${elParams.file.name}上传失败`)
             reject(new Error('预检请求失败'))
           }
         }).catch(err => {
           this.uploadingCount--
+          elParams.onError(`${elParams.file.name}上传失败`)
           reject(err)
         })
       })
@@ -112,18 +113,13 @@ export default {
           this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
         }).catch((error) => {
           this.uploadingCount--
-          elParams.onError(error)
           let timeout = String(error).indexOf('timeout') > -1
           if (timeout) {
-            this.$message({
-              type: 'error',
-              message: '上传文件超时，请检查网络或调整文件大小',
-              duration: 15000
-            })
+            elParams.onError('上传文件超时，请检查网络或调整文件大小')
+          } else {
+            elParams.onError(error)
           }
         })
-      }).catch(err => {
-        elParams.onError(err)
       })
     },
     afterUploadAction (params, elParams) {
@@ -134,7 +130,7 @@ export default {
           elParams.onProgress({ percent: 100 }, elParams.file)
           elParams.onSuccess()
         } else {
-          elParams.onError()
+          elParams.onError(elParams.file.name + res.message || `${elParams.file.name}上传失败`)
         }
       }).catch(err => {
         elParams.onError(err)
@@ -143,7 +139,7 @@ export default {
       })
     },
     beforeUpload (file) {
-      // const isOverSize = file.size / 1024 / 1024 > this.size
+      const isOverSize = file.size / 1024 / 1024 > this.size
       if (this.uploadingCount >= this.limit) {
         this.$message({
           type: 'error',
@@ -152,13 +148,6 @@ export default {
         })
         return false
       }
-      // // 上传文件大小限制
-      // if (isOverSize) {
-      //   this.$message.error(
-      //     `${file.name}超出限制大小，大小不能超过 ${this.size}MB`
-      //   )
-      //   return false
-      // }
       // 上传文件类型限制
       if (this.accept.indexOf(this.getFileType(file.name)) === -1) {
         this.$message({
@@ -166,6 +155,13 @@ export default {
           message: `${file.name}文件类型错误，请选择以${this.accept}为结尾的文件`,
           duration: 15000
         })
+        return false
+      }
+      // 上传文件大小限制
+      if (isOverSize) {
+        this.$message.error(
+          `${file.name}超出限制大小，大小不能超过 ${this.size}MB`
+        )
         return false
       }
       this.uploadingCount++
@@ -176,7 +172,7 @@ export default {
     onError (error, file, fileList) {
       this.$message({
         type: 'error',
-        message: `${file.name}上传失败！`,
+        message: typeof error === 'string' ? error : `${file.name}上传失败！`,
         duration: 15000
       })
     },
