@@ -105,7 +105,7 @@ export default {
     },
     format (val) {
       // 值如果是时间格式转化为时间格式
-      if (Date.parse(val) > 0) {
+      if (isNaN(val) && !isNaN(Date.parse(val))) {
         return this.$moment(val).format('YYYY-M-D HH:mm')
       } else {
         return val

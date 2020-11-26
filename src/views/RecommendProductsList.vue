@@ -16,8 +16,7 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
-        <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
-        <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
+        <el-button type="primary" @click="maintain('','create')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -183,17 +182,7 @@ export default {
     },
     maintain (row, status) {
       this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status, id: row.id } })
-    },
-    uploadSpu () {
-      this.$router.push({ path: '/home/recommend-products/import-spu' })
-    },
-    uploadImages () {
-      this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
     }
   }
 }
 </script>
-<style lang="scss" scoped>
-.recommond {
-}
-</style>

@@ -7,12 +7,12 @@
         <el-row type="flex" justify="center" class="maintain__form">
           <el-col :span="11">
             <el-form-item prop="categoryId" label="分类">
-              <SlCategory v-model="ruleForm.categoryId" v-if="mode==='modify'" />
+              <SlCategory v-model="ruleForm.categoryId" v-if="isStatus" />
               <div v-else>{{ruleForm.categoryId}}</div>
             </el-form-item>
             <el-form-item label="商品名称" prop="productName">
               <el-input
-                v-if="mode==='modify'"
+                v-if="isStatus"
                 clearable
                 v-model.trim="ruleForm.productName"
                 placeholder="请输入商品名称"
@@ -33,7 +33,7 @@
           <el-col :span="11">
             <el-form-item prop="itemNo" label="供方货号">
               <el-input
-                v-if="mode==='modify'"
+                v-if="isStatus"
                 clearable
                 v-model.trim="ruleForm.itemNo"
                 placeholder="请输入供应货号"
@@ -43,7 +43,7 @@
             </el-form-item>
             <el-form-item prop="weight" label="预估重量">
               <el-input
-                v-if="mode==='modify'"
+                v-if="isStatus"
                 clearable
                 v-model.trim="ruleForm.weight"
                 placeholder="请输入预估重量"
@@ -52,7 +52,7 @@
             </el-form-item>
             <el-form-item prop="supplyPrice" label="供货价格">
               <el-input
-                v-if="mode==='modify'"
+                v-if="isStatus"
                 clearable
                 v-model.trim="ruleForm.supplyPrice"
                 placeholder="请输入供货单价"
@@ -68,14 +68,14 @@
           <div class="maintain__other-modify">
             <div class="flex-left">
               <p style="margin-right:10px">颜色</p>
-              <i class="el-icon-edit" @click="modifyDialog(1)" v-if="mode==='modify'" />
+              <i class="el-icon-edit" @click="modifyDialog(1)" v-if="isStatus" />
             </div>
             <div class="flex-left spans">
               <p v-for="(color,coIndex) in colors" :key="coIndex">{{color}}</p>
             </div>
             <div class="flex-left">
               <p style="margin-right:10px">尺码</p>
-              <i class="el-icon-edit" @click="modifyDialog(2)" v-if="mode==='modify'" />
+              <i class="el-icon-edit" @click="modifyDialog(2)" v-if="isStatus" />
             </div>
             <div class="flex-left spans">
               <p v-for="(size, siIndex) in sizes" :key="siIndex">{{size}}</p>
@@ -83,7 +83,7 @@
             <div class="flex-left checkbox">
               <p>成份</p>
               <el-input
-                v-if="mode==='modify'"
+                v-if="isStatus"
                 clearable
                 v-model.trim="ruleForm.ingredient"
                 maxlength="50"
@@ -93,11 +93,11 @@
             </div>
             <div class="flex-left checkbox">
               <p>是否有现货</p>
-              <el-radio v-model="ruleForm.isSpot" :disabled="mode !=='modify'" :label="true">有</el-radio>
-              <el-radio v-model="ruleForm.isSpot" :disabled="mode !=='modify'" :label="false">无</el-radio>
+              <el-radio v-model="ruleForm.isSpot" :disabled="!isStatus" :label="true">有</el-radio>
+              <el-radio v-model="ruleForm.isSpot" :disabled="!isStatus" :label="false">无</el-radio>
               <el-form-item prop="productionCycle" label="生产周期">
                 <el-input-number
-                  v-if="mode==='modify'"
+                  v-if="isStatus"
                   v-model.trim="ruleForm.productionCycle"
                   controls-position="right"
                   :min="1"
@@ -106,12 +106,12 @@
                 <div v-else>{{ruleForm.productionCycle}}</div>
               </el-form-item>
               <el-form-item prop="stock" label="库存数量">
-                <el-input v-if="mode==='modify'" clearable v-model.trim="ruleForm.stock" />
+                <el-input v-if="isStatus" clearable v-model.trim="ruleForm.stock" />
                 <div v-else>{{ruleForm.stock}}</div>
               </el-form-item>
               <el-form-item prop="currentStockAvailableDays" label="当前库存可维持">
                 <el-input
-                  v-if="mode==='modify'"
+                  v-if="isStatus"
                   clearable
                   v-model.trim="ruleForm.currentStockAvailableDays"
                 />
@@ -121,12 +121,12 @@
             </div>
             <div class="flex-left checkbox">
               <p>是否有版</p>
-              <el-radio v-model="ruleForm.hasPattern" :disabled="mode !=='modify'" :label="true">有</el-radio>
-              <el-radio v-model="ruleForm.hasPattern" :disabled="mode !=='modify'" :label="false">无</el-radio>
+              <el-radio v-model="ruleForm.hasPattern" :disabled="!isStatus" :label="true">有</el-radio>
+              <el-radio v-model="ruleForm.hasPattern" :disabled="!isStatus" :label="false">无</el-radio>
               <el-form-item prop="type" label="打版周期">
                 <el-input-number
                   v-model="ruleForm.makePatternCycle"
-                  v-if="mode==='modify'"
+                  v-if="isStatus"
                   controls-position="right"
                   :min="1"
                   maxlength="255"
@@ -159,6 +159,7 @@
         :mode="mode"
         :load="load"
         :modify="modify"
+        :create="create"
         :cancel="cancel"
         :isRight="true"
         saveText="保存"
@@ -219,7 +220,10 @@ export default {
       dialog: false,
       title: '',
       status: '',
-      ruleForm: {},
+      ruleForm: {
+        isSpot: true,
+        hasPattern: true
+      },
       colors: [],
       sizes: [],
       productImageList: [],
@@ -254,25 +258,38 @@ export default {
       immediate: true
     }
   },
+  computed: {
+    isStatus () {
+      if (this.mode !== 'view') {
+        return true
+      } else {
+        return false
+      }
+    }
+  },
   methods: {
     load () {
       // 获取接口详情信息
       RecommondApi.recommendDetail(this.id)
         .then((res) => {
           const { productImageList, sizeImageList, color, size } = res.data
-          // 颜色回显
+          // 颜色/尺码回显
           this.colors = color ? color.split(',') : []
-          // 尺码回显
           this.sizes = size ? size.split(',') : []
-          // 商品图片回显
+          // 商品/尺码图片回显
           this.imageUrls = productImageList.length > 0 ? productImageList : []
-          // 尺码图片回显
           this.imageSizeUrls = sizeImageList.length > 0 ? sizeImageList : []
           res.data.supplyPrice = res.data.supplyPrice.toFixed(2)
           this.ruleForm = res.data
         })
         .catch(() => {
 
+        })
+    },
+    create () {
+      RecommondApi.modifyDetail(this.ruleForm)
+        .then(res => {
+          this.goBack()
         })
     },
     modify () {
@@ -285,7 +302,6 @@ export default {
       // 产品回显图片和本地上传图片
       if (this.productImageList && this.productImageList.length > 0) this.ruleForm.productImageList = this.productImageList
       if (this.uploadSizeUrl && this.uploadSizeUrl.length > 0) this.ruleForm.uploadSizeUrl = this.ruleForm.sizeImageList = this.uploadSizeUrl
-
       RecommondApi.modifyDetail(this.ruleForm)
         .then(res => {
           this.goBack()
