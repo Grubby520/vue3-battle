@@ -13,7 +13,8 @@ export default new Vuex.Store({
     loadingCount: 0, // 用于计算请求的次数
     breadcrumbs: [],
     activePath: null,
-    menuCollapse: false
+    menuCollapse: false,
+    hasVersionUpdated: false // 版本是否更新
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     },
     SET_LOADING_COUNT (state, loadingCount) {
       state.loadingCount = loadingCount
+    },
+    SET_VERSION_UPDATED (state, hasVersionUpdated) {
+      state.hasVersionUpdated = hasVersionUpdated
     }
   },
   actions: {
