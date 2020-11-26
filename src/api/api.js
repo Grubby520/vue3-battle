@@ -15,6 +15,9 @@ const COMMONAPI = {
   // 预删除oss地址
   deleteOssUrl (params) {
     return get(URL.deleteOssUrl, params)
+  },
+  getTreeSelect () {
+    return get(URL.treeSelect)
   }
 
 }

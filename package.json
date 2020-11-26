@@ -11,6 +11,7 @@
     "analyze": "cross-env config_report=true vue-cli-service build"
   },
   "dependencies": {
+    "@riophae/vue-treeselect": "^0.4.0",
     "animejs": "^3.1.0",
     "axios": "^0.19.0",
     "core-js": "^3.4.4",

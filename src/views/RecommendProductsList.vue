@@ -1,6 +1,5 @@
 <template>
   <div class="recommond">
-    <!-- {{query}} -->
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -12,6 +11,7 @@
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
         <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" />
+        <!-- <SlTreeSelect></SlTreeSelect> -->
       </div>
       <el-divider />
       <SlTableToolbar>

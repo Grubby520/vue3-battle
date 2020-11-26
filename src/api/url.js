@@ -6,6 +6,8 @@ const URL = {
   // oss预上传地址
   ossUrl: baseURL + '/productImage/generatePreUploadUrl',
   // oss 预删除地址
-  deleteOssUrl: baseURL + '/productImage/generatePreDeleteUrl'
+  deleteOssUrl: baseURL + '/productImage/generatePreDeleteUrl',
+  // treeSelect
+  treeSelect: baseURL + '/products/category/tree'
 }
 export default URL
