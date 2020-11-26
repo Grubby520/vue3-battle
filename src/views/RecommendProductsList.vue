@@ -127,6 +127,7 @@ export default {
           const { list, total } = res.data
           this.tableData = list
           this.$refs.listView.loading = false
+          // 待推品以为的状态置灰
           this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
           this.page.total = total
         })

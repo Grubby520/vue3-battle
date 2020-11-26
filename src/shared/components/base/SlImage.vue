@@ -9,6 +9,7 @@
       <img class="sl-image--popimg" :src="loadingImg" :onerror="errorImg" :onload="loadedImg" />
     </div>
     <div class="sl-image" :style="{ ...styleSetting, 'width': size, 'height': size}">
+      <!-- {{src}} -->
       <img
         class="sl-image--img"
         :src="loadingImg"

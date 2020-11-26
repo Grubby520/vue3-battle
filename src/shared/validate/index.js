@@ -1,5 +1,5 @@
 import { isEmpty } from '@shared/util'
-import { passwordReg, phoneNoReg, numberFourReg, numberTreeReg, numberSixReg, smallReg } from './regular.js'
+import { passwordReg, phoneNoReg, smallReg } from './regular.js'
 
 /**
  * 生成验证器
@@ -71,31 +71,22 @@ export const phoneNoValidator = function (errorMsg = '请输入正确格式手�
     trigger: trigger
   }
 }
-export const numberWeightValidator = function (errorMsg = '请输入0-9999之间的数字', trigger = 'blur', required = true) {
+
+export const smallValidator = function (errorMsg = '请输入0.00-999999.99之间的数字', trigger = 'blur', required = true) {
   return {
-    validator: generateFormItemValidator(numberFourReg, errorMsg),
+    validator: generateFormItemValidator(smallReg, errorMsg),
     message: errorMsg,
     trigger: trigger,
     required: required
   }
 }
-export const numberProductionValidator = function (errorMsg = '请输入0-999之间的数字', trigger = 'blur') {
+
+export const numberValidator = function (errorMsg = '', trigger = 'blur', required = false, len) {
+  // 根据传入的要校验的数字长度
+  const number = `^[0-9]`
+  const pattern = new RegExp(`${number}{0,${len}}$`)
   return {
-    validator: generateFormItemValidator(numberTreeReg, errorMsg),
-    message: errorMsg,
-    trigger: trigger
-  }
-}
-export const numberStockValidator = function (errorMsg = '请输入0-999999之间的数字', trigger = 'blur') {
-  return {
-    validator: generateFormItemValidator(numberSixReg, errorMsg),
-    message: errorMsg,
-    trigger: trigger
-  }
-}
-export const smallValidator = function (errorMsg = '请输入0.00-999999.99之间的数字', trigger = 'blur', required = true) {
-  return {
-    validator: generateFormItemValidator(smallReg, errorMsg),
+    validator: generateFormItemValidator(pattern, errorMsg),
     message: errorMsg,
     trigger: trigger,
     required: required
