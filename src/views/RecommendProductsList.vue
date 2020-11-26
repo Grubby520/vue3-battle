@@ -1,5 +1,6 @@
 <template>
   <div class="recommond">
+    <!-- {{query}} -->
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -11,12 +12,12 @@
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
         <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" />
-        <!-- <SlTreeSelect></SlTreeSelect> -->
       </div>
+      <!-- <SlTreeSelect></SlTreeSelect> -->
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
-        <el-button type="primary" @click="maintain('','create')" class="recommond-create">创建产品</el-button>
+        <el-button type="primary" @click="OdmDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -27,8 +28,8 @@
         :selectionsDisabled="selectionsDisabled"
       >
         <div slot="operation" slot-scope="{row}">
-          <el-button @click="maintain(row,'modify')" type="text" v-if="row.productStatus !==2">维护</el-button>
-          <el-button @click="maintain(row,'view')" type="text">查看</el-button>
+          <el-button @click="OdmDetail('modify',row)" type="text" v-if="row.productStatus !==2">维护</el-button>
+          <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
           <el-button
             type="text"
             @click="recommon(row)"
@@ -180,8 +181,8 @@ export default {
           errorNotify(this, `供方货号：${row.itemNo}取消推品失败`)
         })
     },
-    maintain (row, status) {
-      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status, id: row.id } })
+    OdmDetail (status, row) {
+      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
     }
   }
 }

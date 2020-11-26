@@ -38,14 +38,14 @@ export const homeRoutes = [
         component: () => import('@/views/RecommendProductsList.vue')
       },
       {
-        path: 'maintain',
+        path: 'odmDetail',
         name: 'ODM推品',
         meta: {
           icon: '',
           notMenu: true
         },
         props: route => { return { id: route.query.id, mode: route.query.mode } },
-        component: () => import('@/views/components/recommendProducts/Maintain.vue')
+        component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
       },
       {
         path: 'import-spu',
