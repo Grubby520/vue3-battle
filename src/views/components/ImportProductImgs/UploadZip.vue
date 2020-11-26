@@ -12,6 +12,7 @@
       :before-remove="beforeRemove"
       :before-upload="beforeUpload"
       :on-remove="onRemove"
+      :accept="accept"
       class="upload-zip"
       drag
       multiple
@@ -70,6 +71,17 @@ export default {
     }
   },
   methods: {
+    async httpRequest (elParams) {
+      elParams.file.status = 'uploading'
+      elParams.file.percentage = 0
+      elParams.onProgress({ percent: 0 }, elParams.file)
+      // 获取上传地址
+      let preVo = await this.preUploadAction({ fileName: elParams.file.name, contentType: elParams.file.type }, elParams)
+      // 上传云
+      await this.ossUploadAction(preVo, elParams)
+      // 入库
+      this.afterUploadAction({ productId: preVo.productId, fileName: elParams.file.name }, elParams)
+    },
     preUploadAction (params, elParams) {
       return new Promise((resolve, reject) => {
         ImportProductApi.preUploadAction(params).then(res => {
@@ -89,29 +101,24 @@ export default {
         })
       })
     },
-    httpRequest (elParams) {
-      elParams.file.status = 'uploading'
-      elParams.file.percentage = 0
-      elParams.onProgress({ percent: 0 }, elParams.file)
-      const file = elParams.file
-      this.preUploadAction({ fileName: file.name, contentType: file.type }, elParams).then(res => {
+    ossUploadAction (params, elParams) {
+      return new Promise((resolve, reject) => {
         let config = {
           timeout: 8 * 60 * 1000,
           headers: {
-            'Content-Type': file.type
+            'Content-Type': elParams.file.type
           },
           onUploadProgress: function (ev) {
-            ev.percent = 20
+            let percent = 20
             if (ev.total > 0) {
-              ev.percent = Math.floor(ev.loaded / ev.total * 100 * 0.6) + 20
+              percent = Math.floor(ev.loaded / ev.total * 100 * 0.6) + 20
             }
-            elParams.onProgress({ percent: ev.percent }, elParams.file)
+            elParams.onProgress({ percent }, elParams.file)
           }
         }
-        ImportProductApi.ossUploadAction(res.url, file, config).then((response) => {
-          elParams.onProgress({ percent: 80 }, elParams.file)
-          this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
-        }).catch((error) => {
+        ImportProductApi.ossUploadAction(params.url, elParams.file, config).then(res => {
+          resolve()
+        }).catch(error => {
           this.uploadingCount--
           let timeout = String(error).indexOf('timeout') > -1
           if (timeout) {
@@ -119,6 +126,7 @@ export default {
           } else {
             elParams.onError(error)
           }
+          reject(error)
         })
       })
     },
