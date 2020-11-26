@@ -66,14 +66,5 @@ export const homeRoutes = [
         component: () => import('@/views/ImportProductImgs')
       }
     ]
-  },
-  {
-    path: 'supplier-list',
-    name: '供应商列表',
-    meta: {
-      icon: 'el-icon-user',
-      code: 'menu_supplier_list'
-    },
-    component: () => import('@/views/SupplierList.vue')
   }
 ]
