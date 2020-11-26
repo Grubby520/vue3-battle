@@ -306,7 +306,6 @@ export default {
       this.dialog = val
     },
     properys (val, status, properys) {
-      // debugger
       // 修改颜色和尺寸
       this.dialog = val
       if (status !== 'color') {
