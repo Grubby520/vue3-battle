@@ -181,7 +181,7 @@
 
 <script>
 import ModifyPropery from './ModifyPropery'
-import { numberWeightValidator, numberProductionValidator, emptyValidator, numberStockValidator, smallValidator } from '@shared/validate/index'
+import { numberValidator, emptyValidator, smallValidator } from '@shared/validate/index'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 
 export default {
@@ -235,10 +235,10 @@ export default {
           { required: true, validator: imageValidta, trigger: 'change' }
         ],
         itemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
-        weight: [numberWeightValidator(), emptyValidator('预估重量不能为空')],
-        productionCycle: [numberProductionValidator()],
-        currentStockAvailableDays: [numberProductionValidator()],
-        stock: [numberStockValidator()],
+        weight: [numberValidator('请输入0-9999之间的数字', 'blur', true, 4), emptyValidator('预估重量不能为空')],
+        productionCycle: [numberValidator('请输入0-999之间的数字', 'blur', false, 3)],
+        currentStockAvailableDays: [numberValidator('请输入0-999之间的数字', 'blur', false, 3)],
+        stock: [numberValidator('请输入0-999999之间的数字', 'blur', false, 6)],
         supplyPrice: [smallValidator(), emptyValidator('供货单价不能为空')]
       }
     }
