@@ -1,4 +1,4 @@
-import { get, post, put } from '@shared/http'
+import { get, post } from '@shared/http'
 import URL from './userUrl'
 
 const USER_API = {
@@ -8,12 +8,6 @@ const USER_API = {
   getUserInfo: () => get(URL.userInfo),
   logout: () => get(URL.logout, {}, { addLoading: true }),
   resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true }),
-  getList: (params) => post(URL.list, params),
-  getSupplierStatus: () => get(URL.statusList),
-  frozen: (params) => put(URL.frozen, params, { addLoading: true }),
-  cancelFrozen: (params) => put(URL.cancelFrozen, params, { addLoading: true }),
-  audit: (params) => put(URL.judgeMent, params),
-  access: (params) => put(URL.access, params, { addLoading: true }),
   docDetails: () => get(URL.docDetails),
   docModify: (params) => post(URL.docModify, params)
 }
