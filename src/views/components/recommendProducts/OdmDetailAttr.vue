@@ -17,27 +17,19 @@
         </el-form-item>
         <OdmDetailTable></OdmDetailTable>
       </el-form>
-      <div v-if="dialogSizes">
-        <el-dialog :visible.sync="dialogSizes" width="50%" title="尺码设置" center>
-          <OdmDetailAttrSizes v-if="dialogSizes" @closeDialog="closeDialog" @properys="properys" />
-        </el-dialog>
-      </div>
-      <div v-if="dialogColors">
-        <el-dialog :visible.sync="dialogColors" width="50%" :title="title" center>
-          <OdmDetailAttrColors v-if="dialogColors" @closeDialog="closeDialog" @properys="properys" />
-        </el-dialog>
-      </div>
+      <OdmDetailSizeConfig @hide="hideDialog" ref="sizeConfig"></OdmDetailSizeConfig>
+      <OdmDetailColorConfig @hide="hideDialog" ref="colorConfig"></OdmDetailColorConfig>
     </div>
   </div>
 </template>
 
 <script>
-import OdmDetailAttrSizes from './OdmDetailAttrSizes'
-import OdmDetailAttrColors from './OdmDetailAttrColors'
+import OdmDetailSizeConfig from './OdmDetailSizeConfig'
+import OdmDetailColorConfig from './OdmDetailColorConfig'
 import OdmDetailTable from './OdmDetailTable'
 import { numberValidator, emptyValidator, smallValidator } from '@shared/validate/index'
 export default {
-  components: { OdmDetailAttrSizes, OdmDetailAttrColors, OdmDetailTable },
+  components: { OdmDetailSizeConfig, OdmDetailColorConfig, OdmDetailTable },
   props: {
     isStatus: { type: Boolean, required: false, default: false }
   },
@@ -66,12 +58,28 @@ export default {
   },
   methods: {
     modifyAttr (attr) {
-      console.log(attr)
-      if (attr && attr === 'color') {
-        this.dialogColors = true
-      } else {
-        this.dialogSizes = true
+      let configRef = null
+      let data = null
+      switch (attr) {
+        case 'size':
+          configRef = this.$refs.sizeConfig
+          data = []
+          break
+        case 'color':
+          configRef = this.$refs.colorConfig
+          data = []
+          break
       }
+      // 弹窗开启统一调用的地方
+      configRef.open(data)
+    },
+    /**
+     * 弹窗关闭时响应
+     * @param {String} type 弹窗类型
+     * @param {Object} data 弹窗返回的数据
+     */
+    hideDialog (type, data) {
+
     }
   }
 }
