@@ -2,14 +2,20 @@
   <div class="odmDetail">
     <OdmDetailBase :isStatus="isStatus" />
     <OdmDetailAttr :isStatus="isStatus" />
+    <OdmDetailProductAttr :isStatus="isStatus" />
   </div>
 </template>
 
 <script>
 import OdmDetailBase from './OdmDetailBase'
 import OdmDetailAttr from './OdmDetailAttr'
+import OdmDetailProductAttr from './OdmDetailProductAttr'
 export default {
-  components: { OdmDetailBase, OdmDetailAttr },
+  components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
+  props: {
+    mode: { type: String, required: false, default: '' },
+    id: { type: String, required: false, default: '' }
+  },
   data () {
     return {
 

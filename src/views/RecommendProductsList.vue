@@ -121,18 +121,18 @@ export default {
 
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
-      this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
+      // this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
 
-      // const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
-      // RecommondApi.getRecommedList({ ...RECOMMONDPAR })
-      //   .then((res) => {
-      //     const { list, total } = res.data
-      //     this.tableData = list
-      //     this.$refs.listView.loading = false
-      //     // 待推品以为的状态置灰
-      //     this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
-      //     this.page.total = total
-      //   })
+      const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
+      RecommondApi.getRecommedList({ ...RECOMMONDPAR })
+        .then((res) => {
+          const { list, total } = res.data
+          this.tableData = list
+          this.$refs.listView.loading = false
+          // 待推品以为的状态置灰
+          this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
+          this.page.total = total
+        })
     },
     reset () {
       // this.query.categoryName = ''
