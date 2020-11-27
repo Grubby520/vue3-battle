@@ -79,19 +79,20 @@ export default {
 
 <style scoped lang="scss">
 .odmDetailAttr {
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
   &-title {
-    font-size: 15px;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #a9aaac;
-    line-height: 40px;
-    margin-left: 30px;
+    line-height: 4rem;
+    margin-left: 3rem;
   }
   &-form {
     border-top: 1px solid #dcdfe6;
     &-con {
       width: 90%;
-      margin: 40px 0;
+      margin: 0 auto;
+      padding: 2rem 0;
     }
   }
 }

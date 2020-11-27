@@ -38,7 +38,6 @@ export default {
 
 <style scoped lang="scss">
 .odmDetail {
-  // padding: 20px 40px;
   border: 1px solid #dcdfe6;
 }
 </style>
