@@ -79,20 +79,48 @@ export default {
   mounted () {
   },
   methods: {
-    beforeUpload (file) {
+    async beforeUpload (file) {
+      // 上传支持的大小
+      const LIMITM = file.size / 1024 / 1024 <= 4
       // 上传支持的格式
       const TYPE = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp']
-      // 上传支持的大小
-      const LIMITSIZE = file.size / 1024 / 1024 <= 4
       const LIMITIMAGE = TYPE.includes(file.type)
-      if (!LIMITIMAGE || !LIMITSIZE) {
+      // 图片宽高比
+      const LIMITSIZE = await this.limitSizes(file)
+      if (!LIMITIMAGE || !LIMITM || !LIMITSIZE) {
         !LIMITIMAGE && this.$message.error('上传图片格式不正确!')
-        !LIMITSIZE && this.$message.error('上传图片大小不能超过 4MB!')
+        !LIMITM && this.$message.error('上传图片大小不能超过 4MB!')
+        !LIMITSIZE && this.$message.error('请上传1:1或者4:3,宽高值最大尺寸为4096px-4096px的图片!')
         this.cancelUpload(file)
       }
     },
+    limitSizes (file) {
+      return new Promise((resolve, reject) => {
+        const READER = new FileReader()
+        // 转为base64url
+        READER.readAsDataURL(file)
+        READER.onload = (event) => {
+          var image = new Image()
+          image.src = event.target.result
+          image.onload = function () {
+            const WIDTH = image.width
+            const HEIGHT = image.height
+            switch (WIDTH < 4096 && HEIGHT < 4096) {
+              case WIDTH / HEIGHT === 1:
+                resolve(true)
+                break
+              case WIDTH / HEIGHT === 4 / 3:
+                resolve(true)
+                break
+              default:
+                resolve(false)
+            }
+          }
+        }
+      })
+    },
     handleExceed () {
-      this.$message.error(`上传图片不能超过200张!`)
+      this.$message.error(`上传图片不能超过20张!`)
     },
     onChange (file, fileList) {
       // 上传的图片列表中包含本次上传的图片就放弃上传
