@@ -25,7 +25,13 @@
         <el-form-item label="预计出货时间">
           <el-radio v-model="ruleForm.hasPattern" :disabled="!isStatus" :label="true">有</el-radio>
           <el-radio v-model="ruleForm.hasPattern" :disabled="!isStatus" :label="false">无</el-radio>
-          <el-date-picker v-model="ruleForm.time" type="date" placeholder="选择日期"></el-date-picker>
+          <el-date-picker
+            v-model="ruleForm.time"
+            type="date"
+            placeholder="选择日期"
+            value-format="yyyy-MM-dd HH:mm:ss"
+            :picker-options="pickerOptions"
+          ></el-date-picker>
         </el-form-item>
         <el-form-item label="商品描述" prop="productName">
           <el-input
@@ -33,6 +39,8 @@
             type="textarea"
             rows="5"
             clearable
+            maxlength="500"
+            show-word-limit
             v-model.trim="ruleForm.itemNo"
             placeholder="描述提示：1.务必填写完整的100%面料成分比：例如90%棉、5%氨纶、5%涤纶；2.制作工艺及功能特点、设计创意等。"
           />
@@ -70,6 +78,11 @@ export default {
         currentStockAvailableDays: [numberValidator('请输入0-999之间的数字', 'blur', false, 3)],
         stock: [numberValidator('请输入0-999999之间的数字', 'blur', false, 6)],
         supplyPrice: [smallValidator(), emptyValidator('供货单价不能为空')]
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() < Date.now()
+        }
       }
     }
   },
@@ -87,20 +100,21 @@ export default {
 
 <style scoped lang="scss">
 .odmDetailBase {
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
   &-title {
-    font-size: 15px;
+    font-size: 1.5rem;
     font-weight: bold;
     color: #a9aaac;
-    line-height: 40px;
-    margin-left: 30px;
+    line-height: 4rem;
+    margin-left: 3rem;
   }
   &-form {
     border-top: 1px solid #dcdfe6;
     border-bottom: 1px solid #dcdfe6;
     &-con {
       width: 90%;
-      margin: 40px 0;
+      margin: 0 auto;
+      padding: 2rem 0;
     }
   }
 }

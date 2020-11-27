@@ -28,16 +28,16 @@
         :selectionsDisabled="selectionsDisabled"
       >
         <div slot="operation" slot-scope="{row}">
-          <el-button @click="OdmDetail('modify',row)" type="text" v-if="row.productStatus !==2">维护</el-button>
+          <el-button @click="OdmDetail('modify',row)" type="text" v-if="row.productStatus !==2">编辑</el-button>
           <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
           <el-button
             type="text"
             @click="recommon(row)"
             v-if="row.productStatus===0"
             :disabled="!row.coverImageUrl"
-          >推品</el-button>
+          >提交</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
-          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">取消推品</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -121,16 +121,18 @@ export default {
 
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
-      const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
-      RecommondApi.getRecommedList({ ...RECOMMONDPAR })
-        .then((res) => {
-          const { list, total } = res.data
-          this.tableData = list
-          this.$refs.listView.loading = false
-          // 待推品以为的状态置灰
-          this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
-          this.page.total = total
-        })
+      this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
+
+      // const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
+      // RecommondApi.getRecommedList({ ...RECOMMONDPAR })
+      //   .then((res) => {
+      //     const { list, total } = res.data
+      //     this.tableData = list
+      //     this.$refs.listView.loading = false
+      //     // 待推品以为的状态置灰
+      //     this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
+      //     this.page.total = total
+      //   })
     },
     reset () {
       // this.query.categoryName = ''
