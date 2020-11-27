@@ -1,5 +1,6 @@
 <template>
   <div class="register-container">
+    <RegisterHeader></RegisterHeader>
     <div class="register">
       <h3 class="register-title">注册Starlink供应商平台</h3>
       <el-form
@@ -102,13 +103,19 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
+import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
 import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
 import { valueToMd5 } from '@shared/util'
 import UserApi from '@api/user'
 import CommonApi from '@api/api.js'
+const { mapState: registerMapState } = createNamespacedHelpers('register')
 
 export default {
   name: 'Register',
+  components: {
+    RegisterHeader
+  },
   data () {
     return {
       form: {
@@ -151,6 +158,9 @@ export default {
       },
       isLoading: false
     }
+  },
+  computed: {
+    ...registerMapState(['supplierName'])
   },
   methods: {
     goBack () {
