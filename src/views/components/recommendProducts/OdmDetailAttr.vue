@@ -3,33 +3,47 @@
     <p class="odmDetailAttr-title">销售属性</p>
     <div class="odmDetailAttr-form">
       <el-form
-        :model="attrForm"
+        :model="form"
         :rules="rules"
         ref="form"
         label-width="130px"
         class="odmDetailAttr-form-con"
       >
-        <el-form-item label="女装尺码：" prop="productName">
-          <el-button type="text" @click="modifyAttr('size')">添加女装尺码</el-button>
+        <el-form-item label="女装尺码：" prop="sizeList">
+          <sl-select
+            v-model="form.sizeList"
+            :options="options.size"
+            :maxHeight="200"
+            filterable
+            value="code"
+            label="name"
+            multiple
+          ></sl-select>
         </el-form-item>
-        <el-form-item label="颜色" prop="productName">
-          <el-button type="text" @click="modifyAttr('color')">添加颜色</el-button>
+
+        <el-form-item label="颜色：" prop="colorList">
+          <sl-select
+            v-model="form.colorList"
+            :options="options.color"
+            :maxHeight="200"
+            filterable
+            value="color"
+            label="name"
+            multiple
+          ></sl-select>
         </el-form-item>
         <OdmDetailTable></OdmDetailTable>
       </el-form>
-      <OdmDetailSizeConfig @hide="hideDialog" ref="sizeConfig"></OdmDetailSizeConfig>
-      <OdmDetailColorConfig @hide="hideDialog" ref="colorConfig"></OdmDetailColorConfig>
     </div>
   </div>
 </template>
 
 <script>
-import OdmDetailSizeConfig from './OdmDetailSizeConfig'
-import OdmDetailColorConfig from './OdmDetailColorConfig'
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import OdmDetailTable from './OdmDetailTable'
 import { numberValidator, emptyValidator, smallValidator } from '@shared/validate/index'
 export default {
-  components: { OdmDetailSizeConfig, OdmDetailColorConfig, OdmDetailTable },
+  components: { OdmDetailTable },
   props: {
     isStatus: { type: Boolean, required: false, default: false }
   },
@@ -37,8 +51,14 @@ export default {
     return {
       dialogColors: false,
       dialogSizes: false,
-      attrForm: {
-        hasPattern: true
+      form: {
+        hasPattern: true,
+        sizeList: [],
+        colorList: []
+      },
+      options: {
+        color: [],
+        size: []
       },
       rules: {
         itemNo: [{ required: true, trigger: 'change' }],
@@ -54,33 +74,20 @@ export default {
 
   },
   mounted () {
-
+    const getColorList = RecommondApi.getColorList()
+    const getSizeList = RecommondApi.getSizeList()
+    Promise.all([getSizeList, getColorList]).then((responses) => {
+      const sizeResponse = responses[0]
+      const colorResponse = responses[1]
+      if (sizeResponse.success) {
+        this.options.size = sizeResponse.data.sizeList
+      }
+      if (colorResponse.success) {
+        this.options.color = colorResponse.data.colorList
+      }
+    })
   },
   methods: {
-    modifyAttr (attr) {
-      let configRef = null
-      let data = null
-      switch (attr) {
-        case 'size':
-          configRef = this.$refs.sizeConfig
-          data = []
-          break
-        case 'color':
-          configRef = this.$refs.colorConfig
-          data = []
-          break
-      }
-      // 弹窗开启统一调用的地方
-      configRef.open(data)
-    },
-    /**
-     * 弹窗关闭时响应
-     * @param {String} type 弹窗类型
-     * @param {Object} data 弹窗返回的数据
-     */
-    hideDialog (type, data) {
-
-    }
   }
 }
 </script>

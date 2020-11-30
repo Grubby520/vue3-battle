@@ -35,6 +35,14 @@ const RECOMMEND = {
   },
   checkItem (itemNo) {
     return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
+  },
+  // 获得尺寸的集合
+  getSizeList () {
+    return get(RECOMMENDURLS.getSizeList)
+  },
+  // 获得颜色的集合
+  getColorList () {
+    return get(RECOMMENDURLS.getColorList)
   }
 }
 export default RECOMMEND
