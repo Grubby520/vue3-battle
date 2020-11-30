@@ -35,12 +35,11 @@ export default {
 @import '@assets/scss/_var.scss';
 
 .register-header {
-  position: fixed;
-  width: 100%;
+  position: relative;
   height: 5rem;
   line-height: 5rem;
   background-color: $color-white;
-  box-shadow: 0 0 2rem rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 0.5rem $color-gray;
   .left-module {
     float: left;
     margin-left: 20%;
