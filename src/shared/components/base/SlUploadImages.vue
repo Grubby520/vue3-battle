@@ -87,10 +87,14 @@ export default {
       const LIMITIMAGE = TYPE.includes(file.type)
       // 图片宽高比
       const LIMITSIZE = await this.limitSizes(file)
-      if (!LIMITIMAGE || !LIMITM || !LIMITSIZE) {
-        !LIMITIMAGE && this.$message.error('上传图片格式不正确!')
-        !LIMITM && this.$message.error('上传图片大小不能超过 4MB!')
-        !LIMITSIZE && this.$message.error('请上传1:1或者4:3,宽高值最大尺寸为4096px-4096px的图片!')
+      if (!LIMITM) {
+        this.$message.error('上传图片大小不能超过 4MB!')
+        this.cancelUpload(file)
+      } else if (!LIMITIMAGE) {
+        this.$message.error('上传图片格式不正确!')
+        this.cancelUpload(file)
+      } else if (!LIMITSIZE) {
+        this.$message.error('请上传1:1或者4:3,宽高值最大尺寸为4096px-4096px的图片!')
         this.cancelUpload(file)
       }
     },
