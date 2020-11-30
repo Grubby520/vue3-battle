@@ -45,6 +45,10 @@
   font-size: 16px;
 }
 
+.font-wight-normal {
+  font-weight: normal;
+}
+
 .btn {
   color: rgb(21, 146, 241);
   display: block;
@@ -92,4 +96,11 @@
 
 .display-inline-block {
   display: inline-block;
+}
+
+.reset-autofill {
+  & input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px $color-white inset !important;
+    box-shadow: 0 0 0px 1000px $color-white inset !important;
+  }
 }
