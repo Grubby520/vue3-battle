@@ -24,7 +24,7 @@ export default {
     return {
       dialogColors: false,
       dialogSizes: false,
-      productAttrForm: {
+      productttrForm: {
         hasPattern: true
       },
       rules: {
