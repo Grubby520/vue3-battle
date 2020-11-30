@@ -1,5 +1,5 @@
 import { isEmpty } from '@shared/util'
-import { passwordReg, phoneNoReg, smallReg } from './regular.js'
+import { passwordReg, phoneNoReg, smallReg, businessLicenseNoReg } from './regular.js'
 
 /**
  * 生成验证器
@@ -32,7 +32,7 @@ export const fnValidator = function (errorMsg, fn, trigger = 'blur', required = 
   }
 }
 
-export const emptyValidator = function (errorMsg, trigger = 'blur', required = false) {
+export const emptyValidator = function (errorMsg, trigger = 'blur', required = true) {
   return {
     validator: (rule, value, callback) => {
       if (isEmpty(value)) {
@@ -47,6 +47,13 @@ export const emptyValidator = function (errorMsg, trigger = 'blur', required = f
   }
 }
 
+/**
+ * 字符长度校验器
+ * @param {String} errorMsg
+ * @param {Number} min
+ * @param {Number} max
+ * @param {String} trigger
+ */
 export const charLimitValidator = function (errorMsg, min, max, trigger = 'blur') {
   return {
     min,
@@ -87,6 +94,16 @@ export const numberValidator = function (errorMsg = '', trigger = 'blur', requir
   const pattern = new RegExp(`${number}{0,${len}}$`)
   return {
     validator: generateFormItemValidator(pattern, errorMsg),
+    message: errorMsg,
+    trigger: trigger,
+    required: required
+  }
+}
+
+// 营业执照号验证
+export const businessLicenseNoValidator = function (errorMsg = '', trigger = 'blur', required = false) {
+  return {
+    validator: generateFormItemValidator(businessLicenseNoReg, errorMsg),
     message: errorMsg,
     trigger: trigger,
     required: required
