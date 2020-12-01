@@ -9,14 +9,14 @@
         label-width="130px"
         class="odmDetailAttr-form-con"
       >
-        <el-form-item label="女装尺码：" prop="sizeList">
+        <el-form-item label="尺码：" prop="sizeList">
           <sl-select
             v-model="form.sizeList"
             :options="options.size"
             :maxHeight="200"
             filterable
-            value="code"
-            label="name"
+            value="id"
+            label="attrTermName"
             multiple
           ></sl-select>
         </el-form-item>
@@ -27,8 +27,8 @@
             :options="options.color"
             :maxHeight="200"
             filterable
-            value="color"
-            label="name"
+            value="id"
+            label="attrTermName"
             multiple
           ></sl-select>
         </el-form-item>
@@ -80,10 +80,10 @@ export default {
       const sizeResponse = responses[0]
       const colorResponse = responses[1]
       if (sizeResponse.success) {
-        this.options.size = sizeResponse.data.sizeList
+        this.options.size = sizeResponse.data
       }
       if (colorResponse.success) {
-        this.options.color = colorResponse.data.colorList
+        this.options.color = colorResponse.data
       }
     })
   },

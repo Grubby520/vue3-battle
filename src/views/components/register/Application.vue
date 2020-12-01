@@ -1,139 +1,249 @@
 <template>
   <div>
-    <el-form ref="form" :model="form" :rules="rules" label-width="12rem" label-position="left">
+    <el-form
+      ref="form"
+      class="reset-autofill"
+      :model="form"
+      :rules="rules"
+      label-width="12rem"
+      label-position="left"
+    >
       <SlContentTitle text="基础信息" line></SlContentTitle>
       <el-form-item label="公司名称" prop="supplierName">
         <el-input v-model="form.supplierName" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
       </el-form-item>
-
-      <el-form-item prop="userName">
-        <template v-slot:label>
-          <span>
-            <span class="label-space label-two-space">账号</span>
-          </span>
-        </template>
-        <el-input v-model="form.userName" maxlength="100" clearable placeholder="请填写账户"></el-input>
+      <el-form-item label="营业执照号" prop="certificationNo">
+        <el-input v-model="form.certificationNo" maxlength="18" clearable placeholder="请填写公司营业执照号"></el-input>
+        <span class="float-right">(如包含字母,字母请大写)</span>
+      </el-form-item>
+      <el-form-item label="公司性质" prop="supplyType">
+        <el-radio-group v-model="form.supplyType">
+          <el-radio
+            v-for="(item,index) in supplierTypeOptions"
+            :key="'radio_'+index"
+            :label="item.value"
+          >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item label="公司地址" prop="address">
+        <SlAreaCascader v-model="form.address"></SlAreaCascader>
       </el-form-item>
 
-      <el-form-item prop="password">
-        <template v-slot:label>
-          <span>
-            <span class="label-space label-two-space">密码</span>
-          </span>
-        </template>
+      <SlContentTitle text="经营信息" line></SlContentTitle>
+      <el-form-item label="主要交易类型" prop="tradeType">
+        <el-checkbox-group v-model="form.tradeType">
+          <el-checkbox
+            v-for="(item,index) in tradeTypeOptions"
+            :key="'checkbox_'+index"
+            :label="item.value"
+          >{{item.label}}</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item label="年交易额" prop="annualTurnoverAmount">
+        <el-input v-model="form.annualTurnoverAmount" clearable placeholder="万元(￥)"></el-input>
+      </el-form-item>
+      <el-form-item label="是否自有工厂" prop="selfFactory">
+        <el-radio-group v-model="form.selfFactory" @change="selfFactoryChange">
+          <el-radio
+            v-for="(item,index) in selfFactoryOptions"
+            :key="'radio_'+index"
+            :label="item.value"
+          >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="form.selfFactory" label="工厂实力" prop="factoryDescription">
         <el-input
-          v-model="form.password"
-          minlength="8"
-          maxlength="20"
-          clearable
-          placeholder="由8-20位数字、字母、符号组成，区分大小写"
+          type="textarea"
+          :rows="4"
+          placeholder="请输入内容"
+          v-model="form.factoryDescription"
+          maxlength="100"
+          show-word-limit
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="您的优势" prop="advantage">
+        <el-input
+          type="textarea"
+          :rows="6"
+          placeholder="请输入内容"
+          v-model="form.advantage"
+          maxlength="500"
+          show-word-limit
         ></el-input>
       </el-form-item>
 
-      <el-form-item prop="contactName">
-        <template v-slot:label>
-          <span>
-            <span class="label-space label-three-space">联系人</span>
-          </span>
-        </template>
+      <SlContentTitle text="账号注册" line></SlContentTitle>
+      <el-form-item label="邮箱" prop="userName">
+        <el-input v-model="form.userName" clearable placeholder="用于登录,请务必填写正确的邮箱"></el-input>
+      </el-form-item>
+      <el-form-item label="登录密码" prop="password">
+        <el-input
+          v-model="form.password"
+          :type="passwordType"
+          minlength="6"
+          maxlength="20"
+          clearable
+          placeholder="必须包含数字、字母组合,不少于6位,不超过20位"
+          @focus="passwordTypeChange"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="确认密码" prop="confirmPassword">
+        <el-input
+          v-model="form.confirmPassword"
+          :type="passwordType"
+          minlength="6"
+          maxlength="20"
+          clearable
+          placeholder="请填写和上面相同的密码"
+          @focus="passwordTypeChange"
+        ></el-input>
+      </el-form-item>
+
+      <SlContentTitle text="联系人" line></SlContentTitle>
+      <el-form-item label="运营负责人" prop="contactName">
         <el-input
           v-model="form.contactName"
           minlength="2"
           maxlength="50"
           clearable
-          placeholder="请输入联系人信息"
+          show-word-limit
+          placeholder="请输入运营负责人"
         ></el-input>
       </el-form-item>
-
-      <el-form-item label="联系电话" prop="contactNumber">
-        <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
+      <el-form-item label="运营手机号" prop="contactNumber">
+        <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入运营手机号"></el-input>
       </el-form-item>
-
-      <el-form-item label="公司地址" prop="address">
-        <SlAreaCascader v-model="form.address"></SlAreaCascader>
-      </el-form-item>
-
-      <el-form-item label prop="addressDetail">
-        <el-input v-model="form.addressDetail" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
-      </el-form-item>
-
-      <el-form-item label="供应类型" prop="supplyType">
-        <el-select v-model="form.supplyType" placeholder="请选择供应类型">
-          <el-option
-            v-for="(item, index) in supplierTypeOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="供应方式" prop="supplyWay">
-        <el-select v-model="form.supplyWay" placeholder="请选择供应方式">
-          <el-option
-            v-for="(item, index) in supplierWayOptions"
-            :key="index"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
+      <el-form-item label="运营QQ号码" prop="qq">
+        <el-input v-model="form.qq" maxlength="20" clearable placeholder="请输入QQ号码"></el-input>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
+import {
+  emptyValidator,
+  passwordValidator,
+  phoneNoValidator,
+  charLimitValidator,
+  businessLicenseNoValidator,
+  transactionAamountValidator,
+  emailValidator,
+  digitalValidator
+} from '@shared/validate'
+
 export default {
   name: 'Application',
   props: {
+    data: {
+      type: Object,
+      default: () => ({})
+    }
   },
   data: () => {
     return {
       supplierTypeOptions: [],
+      tradeTypeOptions: [],
+      selfFactoryOptions: [],
       supplierWayOptions: [],
+      passwordType: 'text',
       form: {
         supplierName: '', // 公司名称
+        certificationNo: '', // 营业执照号
+        supplyType: '', // 公司性质
+        address: [], // 公司地址
+        tradeType: '',
+        annualTurnoverAmount: null, // 年营业额
+        selfFactory: null, // 是否自有工厂
+        factoryDescription: '', // 工厂实力
+        advantage: '',
         userName: '', // 账号
         password: '',
-        contactName: '', // 联系人
-        contactNumber: '', // 联系电话
-        address: [], // 公司地址
-        addressDetail: '', // 详细地址
-        supplyType: '', // 供应类型
-        supplyWay: '' // 供应方式
+        confirmPassword: '',
+        contactName: '', // 运营负责人
+        contactNumber: '', // 运营手机号
+        qq: ''
       },
       rules: {
-        supplierName: [emptyValidator('请填写公司名称', ['blur', 'change'])],
-        userName: [emptyValidator('请填写账户', ['blur', 'change'])],
-        password: [
-          emptyValidator('请输入密码', ['blur', 'change']),
-          passwordValidator()
+        supplierName: [
+          emptyValidator('请填写公司名称'),
+          charLimitValidator('字符长度不能超过100', 1, 100)
         ],
-        contactName: [
-          emptyValidator('请输入联系人信息', ['blur', 'change']),
-          charLimitValidator('长度在 2 到 50 个字符', 2, 50, ['blur', 'change'])
+        certificationNo: [
+          emptyValidator('请填写公司营业执照号'),
+          businessLicenseNoValidator('营业执照号不正确')
         ],
-        contactNumber: [
-          emptyValidator('请输入联系电话', ['blur', 'change']),
-          phoneNoValidator()
+        supplyType: [
+          emptyValidator('请选择供公司性质', ['blur', 'change'])
         ],
         address: [
           emptyValidator('请选择公司地址', ['blur', 'change'])
         ],
-        supplyType: [
-          emptyValidator('请选择供应类型', ['blur', 'change'])
+        tradeType: [
+          emptyValidator('请选择交易类型', ['blur', 'change'])
         ],
-        supplyWay: [
-          emptyValidator('请选择供应方式', ['blur', 'change'])
+        annualTurnoverAmount: [
+          emptyValidator('请选择输入年交易额万元(￥)'),
+          transactionAamountValidator('输入有误,请输入0.00-99999999.99之间的数值')
+        ],
+        selfFactory: [
+          emptyValidator('请选择是否自有工厂')
+        ],
+        userName: [
+          emptyValidator('请填写账户', 'blur'),
+          emailValidator()
+        ],
+        password: [
+          emptyValidator('请输入密码'),
+          passwordValidator()
+        ],
+        confirmPassword: [
+          emptyValidator('请输入'),
+          passwordValidator()
+        ],
+        contactName: [
+          emptyValidator('请输入运营联系人'),
+          charLimitValidator('长度在 2 到 50 个字符', 2, 50)
+        ],
+        contactNumber: [
+          emptyValidator('请输入运营手机号'),
+          phoneNoValidator()
+        ],
+        qq: [
+          emptyValidator('请输入QQ号'),
+          digitalValidator()
         ]
       }
+    }
+  },
+  watch: {
+    data: {
+      handler (val) {
+        this.form = Object.assign(this.form, val)
+      },
+      immediate: true
     }
   },
   computed: {
 
   },
   methods: {
+    passwordTypeChange () {
+      this.passwordType = 'password'
+    },
+    selfFactoryChange (val) {
+      let factoryDescriptionValidators = [
+        emptyValidator('请描述工厂实力')
+      ]
+      if (val) {
+        this.$set(this.rules, 'factoryDescription', factoryDescriptionValidators)
+        setTimeout(() => {
+          this.$refs.form.clearValidate()
+        }, 0)
+      } else {
+        delete this.rules['factoryDescription']
+      }
+    },
     validate () {
       return new Promise((resolve, reject) => {
         this.$refs.form.validate(valid => {
@@ -147,22 +257,52 @@ export default {
     }
   },
   mounted: function () {
-
+    this.supplierTypeOptions = [
+      {
+        label: '生产型',
+        value: 1
+      },
+      {
+        label: '贸易型',
+        value: 2
+      },
+      {
+        label: '淘宝个体',
+        value: 3
+      },
+      {
+        label: '个体工商户',
+        value: 4
+      }
+    ]
+    this.tradeTypeOptions = [
+      {
+        label: '加工',
+        value: 1
+      },
+      {
+        label: '批发',
+        value: 2
+      },
+      {
+        label: '零售',
+        value: 3
+      }
+    ]
+    this.selfFactoryOptions = [
+      {
+        label: '是',
+        value: true
+      },
+      {
+        label: '否',
+        value: false
+      }
+    ]
   }
 }
 </script>
 
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
-.label-space {
-  display: inline-block;
-  width: 5.5rem;
-  white-space: nowrap;
-  &.label-two-space {
-    letter-spacing: 2.6rem;
-  }
-  &.label-three-space {
-    letter-spacing: 0.7rem;
-  }
-}
 </style>
