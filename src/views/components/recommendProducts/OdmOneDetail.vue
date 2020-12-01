@@ -8,7 +8,7 @@
       :props="props"
       @change="change"
     />
-    <p class="odmOneDetail-des">当前选择分类：{{lables.length>0?lables:''}}</p>
+    <p class="odmOneDetail-des">当前选择分类：{{cateLabels}}</p>
     <div class="odmOneDetail-btn">
       <el-button @click="save" type="primary">确认</el-button>
     </div>
@@ -24,13 +24,10 @@ export default {
 
   data () {
     return {
-      panel: [],
-      lables: [],
-      showData: [],
-      mapData: [],
-      nodeKeys: [],
+      cateLabels: '',
+      panel: [3, 0, 0, 8],
+      mapData: [], // 每一级数据
       props: {
-        value: 'id',
         lazy: true,
         lazyLoad: this.lazyLoad
       },
@@ -44,60 +41,101 @@ export default {
 
   },
   mounted () {
-    axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
-      .then(res => {
-        this.options = res.data.data
-      })
+    this.load()
   },
   watch: {
-    'nodeKeys': {
+    'cateLabels': {
       handler (newValue) {
-        // 当前选择分类
-        const label = []
-        const showLabel = []
-        newValue.forEach(node => {
-          label.push(node)
-          const keyStr = label.join('|')
-          showLabel.push(this.mapData.get(keyStr))
-        })
-        this.lables = showLabel.join('>')
-        this.lables = this.lables.substring(0, this.lables.lastIndexOf('>'))
+        // console.log('vual', newValue)
+        // this.cateLabels = newValue
       },
       deep: true
     }
   },
   methods: {
+    lazyLoad (node, resolve) {
+      this.sss = 'ffff'
+      const { level } = node
+      // setTimeout(() => {
+      if (level === 0) {
+        console.log('1')
+        axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelOne')
+          .then(res => {
+            const list = res.data.data
+            this.mapData.push([...list])
+            const nodes = this.resultNodes(list, level)
+            resolve(nodes)
+          })
+      } else if (level === 1) {
+        console.log(2)
+        axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelTwo')
+          .then(res => {
+            const list = res.data.data
+            this.mapData.push([...list])
+            const nodes = this.resultNodes(list, level)
+            resolve(nodes)
+          })
+      } else if (level === 2) {
+        axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelThree')
+          .then(res => {
+            const list = res.data.data
+            this.mapData.push([...list])
+            const nodes = this.resultNodes(list, level)
+            resolve(nodes)
+          })
+      } else if (level === 3) {
+        axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelFour')
+          .then(res => {
+            const list = res.data.data
+            this.mapData.push([...list])
+            const nodes = this.resultNodes(list, level)
+            resolve(nodes)
+            console.log(nodes)
+          })
+      }
+      // }, 1000)
+    },
+    resultNodes (list, level) {
+      const nodes = list.map(item => ({
+        value: item.id,
+        label: item.label,
+        leaf: level >= 3
+      }))
+      return nodes
+    },
+    change (nodekeys) {
+      // console.log('nodekeys', nodekeys)
+
+      // const mapData = new Map()
+      // function deepEach (array, code = '') {
+      //   array.forEach((node) => {
+      //     const key = code ? `${code}|${node.id}` : `${code}${node.id}`
+      //     mapData.set(key, node.label)
+      //     const children = node.children
+      //     if (children && children.length > 0) {
+      //       deepEach(children, key)
+      //     }
+      //   })
+      // }
+      // deepEach(this.options)
+      // console.log('mapData', mapData)
+
+      // 根据四级id获取每级符合条件的数据
+      const nodesData = []
+      nodekeys.forEach((node, index) => {
+        const nodes = this.mapData[index].find(key => node === key.id)
+        nodesData.push(nodes)
+      })
+
+      // 当前选择分类数据
+      const cate = nodesData.reduce((init, a) => init.concat(a.label), [])
+      this.cateLabels = cate.join('>')
+    },
     save () {
 
     },
-    lazyLoad (node, resolve) {
-      // axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
-      //   .then(res => {
-      // this.options = res.data.data
-      const nodes = this.options.map(item => ({
-        ...item,
-        label: item.label,
-        value: item.id,
-        leaf: node.level >= 2
-      }))
-      resolve(nodes)
-      // })
-    },
-    change (nodeKey) {
-      const mapData = new Map()
-      function deepEach (array, code = '') {
-        array.forEach((node) => {
-          const key = code ? `${code}|${node.id}` : `${code}${node.id}`
-          mapData.set(key, node.label)
-          const children = node.children
-          if (children && children.length > 0) {
-            deepEach(children, key)
-          }
-        })
-      }
-      deepEach(this.options)
-      this.mapData = mapData
-      this.nodeKeys = nodeKey
+    load () {
+
     }
   }
 }
@@ -128,7 +166,7 @@ export default {
     height: 500px;
   }
   /deep/.el-cascader-menu__list {
-    width: 300px;
+    width: 300px; // 设置宽度防止li内容不同页面抖动
   }
   &-title {
     font-size: 18px;
