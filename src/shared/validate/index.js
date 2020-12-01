@@ -1,5 +1,16 @@
 import { isEmpty } from '@shared/util'
-import { passwordReg, phoneNoReg, smallReg, businessLicenseNoReg } from './regular.js'
+import {
+  passwordReg,
+  phoneNoReg,
+  smallReg,
+  businessLicenseNoReg,
+  emailReg,
+  numberReg,
+  idCardReg,
+  bankCardNumberReg,
+  emptyReg,
+  qqReg
+} from './regular.js'
 
 /**
  * 生成验证器
@@ -29,6 +40,23 @@ export const fnValidator = function (errorMsg, fn, trigger = 'blur', required = 
     message: errorMsg,
     trigger: trigger,
     required: required
+  }
+}
+
+/**
+ * 生成可为空的验证器
+ * @param {String} errorMsg
+ * @param {RegExp} businessReg
+ * @param {String|Array} trigger
+ */
+export const generateNotRequiredValidator = function (errorMsg, businessReg, trigger = 'blur') {
+  let fn = function (value) {
+    return !emptyReg.test(value) && !businessReg.test(value)
+  }
+  return {
+    validator: generateFormItemValidator(fn),
+    message: errorMsg,
+    trigger: trigger
   }
 }
 
@@ -63,7 +91,7 @@ export const charLimitValidator = function (errorMsg, min, max, trigger = 'blur'
   }
 }
 
-export const passwordValidator = function (errorMsg = '请输入8-20位字符', trigger = 'blur') {
+export const passwordValidator = function (errorMsg = '至少包含两种字符的组合,支持数字、大小写字母', trigger = 'blur') {
   return {
     validator: generateFormItemValidator(passwordReg, errorMsg),
     message: errorMsg,
@@ -74,6 +102,31 @@ export const passwordValidator = function (errorMsg = '请输入8-20位字符', 
 export const phoneNoValidator = function (errorMsg = '请输入正确格式手机号码', trigger = 'blur') {
   return {
     validator: generateFormItemValidator(phoneNoReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+export const emailValidator = function (errorMsg = '请输入正确的邮箱地址', trigger = 'blur') {
+  return {
+    validator: generateFormItemValidator(emailReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+// 身份证校验
+export const idCardValidator = function (errorMsg = '请输入正确的身份证号', trigger = 'blur') {
+  return {
+    validator: generateFormItemValidator(idCardReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+export const digitalValidator = function (errorMsg = '请输入数字', trigger = 'blur') {
+  return {
+    validator: generateFormItemValidator(numberReg, errorMsg),
     message: errorMsg,
     trigger: trigger
   }
@@ -101,11 +154,41 @@ export const numberValidator = function (errorMsg = '', trigger = 'blur', requir
 }
 
 // 营业执照号验证
-export const businessLicenseNoValidator = function (errorMsg = '', trigger = 'blur', required = false) {
+export const businessLicenseNoValidator = function (errorMsg = '', trigger = 'blur') {
   return {
     validator: generateFormItemValidator(businessLicenseNoReg, errorMsg),
     message: errorMsg,
-    trigger: trigger,
-    required: required
+    trigger: trigger
+  }
+}
+
+// 营业额
+export const transactionAamountValidator = function (errorMsg = '', trigger = 'blur') {
+  let transactionAamountReg = /^(([^0][0-9]{1,7}|0)\.([0-9]{1,2}))$/
+  return {
+    validator: generateFormItemValidator(transactionAamountReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+// 银行卡号
+export const bankCardNumberValidator = function (errorMsg = '请输入正确的银行卡号', trigger = 'blur') {
+  return {
+    validator: generateFormItemValidator(bankCardNumberReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+// QQ号
+export const qqValidator = function (errorMsg = '请输入正确的qq号', trigger = 'blur', required = false) {
+  if (!required) {
+    return generateNotRequiredValidator(errorMsg, qqReg, trigger)
+  }
+  return {
+    validator: generateFormItemValidator(qqReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
   }
 }
