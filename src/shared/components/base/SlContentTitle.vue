@@ -23,7 +23,7 @@ export default {
     },
     color: {
       type: String,
-      default: '#555'
+      default: '#999'
     },
     lineStyle: {
       type: Object,

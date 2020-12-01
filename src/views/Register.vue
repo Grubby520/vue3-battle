@@ -4,14 +4,20 @@
       <RegisterHeader></RegisterHeader>
     </div>
     <div class="steps-container clearfix">
-      <h2 class="float-left">商家入驻</h2>
+      <h2 class="float-left font-wight-normal">商家入驻</h2>
       <Steps :data="steps" :active="activeStep"></Steps>
     </div>
-    <div class="register-content">
-      <keep-alive>
-        <component v-bind:is="currentStep"></component>
-      </keep-alive>
-    </div>
+    <el-row>
+      <el-col class="register-content" :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
+        <keep-alive>
+          <component v-bind:is="currentStep"></component>
+        </keep-alive>
+        <div class="align-center">
+          <el-button v-if="activeStep === 1" type="primary">下一步</el-button>
+          <el-button v-if="activeStep === 2" type="primary">提交申请</el-button>
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -146,9 +152,5 @@ export default {
   margin-top: 4em;
   padding: 1em;
   transform: translateX(-50%);
-}
-
-.register-content {
-  @include login-responsive-layout;
 }
 </style>
