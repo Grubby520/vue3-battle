@@ -1,14 +1,8 @@
 <template>
   <div class="odmOneDetail">
     <p class="odmOneDetail-title">选择类目</p>
-    <el-cascader-panel
-      ref="panel"
-      :options="options"
-      v-model="panel"
-      :props="props"
-      @change="change"
-    />
-    <p class="odmOneDetail-des">当前选择分类：{{lables.length>0?lables:''}}</p>
+    <el-cascader-panel ref="panel" :props="props" @change="change" v-model="nodeDates" />
+    <p class="odmOneDetail-des">当前选择分类：{{cateLabels}}</p>
     <div class="odmOneDetail-btn">
       <el-button @click="save" type="primary">确认</el-button>
     </div>
@@ -16,88 +10,58 @@
 </template>
 
 <script>
-
 import axios from 'axios'
+
+const UrlList = [
+  'http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelOne',
+  'http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelTwo',
+  'http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelThree',
+  'http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/levelFour'
+]
 
 export default {
   components: {},
-
   data () {
     return {
-      panel: [],
-      lables: [],
-      showData: [],
-      mapData: [],
-      nodeKeys: [],
+      cateLabels: '',
+      nodeDates: [3, 0, 0, 1],
       props: {
-        value: 'id',
         lazy: true,
-        lazyLoad: this.lazyLoad
-      },
-      options: []
-    }
-  },
-  computed: {
-
-  },
-  created () {
-
-  },
-  mounted () {
-    axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
-      .then(res => {
-        this.options = res.data.data
-      })
-  },
-  watch: {
-    'nodeKeys': {
-      handler (newValue) {
-        // 当前选择分类
-        const label = []
-        const showLabel = []
-        newValue.forEach(node => {
-          label.push(node)
-          const keyStr = label.join('|')
-          showLabel.push(this.mapData.get(keyStr))
-        })
-        this.lables = showLabel.join('>')
-        this.lables = this.lables.substring(0, this.lables.lastIndexOf('>'))
-      },
-      deep: true
+        lazyLoad (node, resolve) {
+          const { level } = node
+          console.log(11111)
+          axios.get(UrlList[level])
+            .then(res => {
+              if (res && res.data && res.data.data) {
+                const nodes = res.data.data.map(item => ({
+                  value: item.id,
+                  label: item.label,
+                  leaf: level > 2,
+                  length: res.data.data.length
+                }))
+                resolve(nodes)
+              }
+            })
+        }
+      }
     }
   },
   methods: {
+    change (nodekeys) {
+      console.log(nodekeys)
+      // 根据四级id获取每级符合条件的数据
+      const nodesData = []
+      const mapData = [...this.$refs.panel.$data.menus]
+      nodekeys.forEach((node, index) => {
+        const nodes = mapData[index].find(key => node.id === key.id)
+        nodesData.push(nodes)
+      })
+      // 当前选择分类数据
+      const cate = nodesData.reduce((init, a) => init.concat(a.label), [])
+      this.cateLabels = cate.join('>')
+    },
     save () {
-
-    },
-    lazyLoad (node, resolve) {
-      // axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
-      //   .then(res => {
-      // this.options = res.data.data
-      const nodes = this.options.map(item => ({
-        ...item,
-        label: item.label,
-        value: item.id,
-        leaf: node.level >= 2
-      }))
-      resolve(nodes)
-      // })
-    },
-    change (nodeKey) {
-      const mapData = new Map()
-      function deepEach (array, code = '') {
-        array.forEach((node) => {
-          const key = code ? `${code}|${node.id}` : `${code}${node.id}`
-          mapData.set(key, node.label)
-          const children = node.children
-          if (children && children.length > 0) {
-            deepEach(children, key)
-          }
-        })
-      }
-      deepEach(this.options)
-      this.mapData = mapData
-      this.nodeKeys = nodeKey
+      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: {} })
     }
   }
 }
@@ -128,7 +92,7 @@ export default {
     height: 500px;
   }
   /deep/.el-cascader-menu__list {
-    width: 300px;
+    width: 300px; // 设置宽度防止li内容不同页面抖动
   }
   &-title {
     font-size: 18px;

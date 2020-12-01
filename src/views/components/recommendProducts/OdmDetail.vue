@@ -1,8 +1,13 @@
 <template>
   <div class="odmDetail">
-    <OdmDetailBase :isStatus="isStatus" />
-    <OdmDetailAttr :isStatus="isStatus" />
-    <OdmDetailProductAttr :isStatus="isStatus" />
+    <OdmDetailBase :isStatus="isStatus" ref="OdmDetailBase" />
+    <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
+    <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
+    <div class="odmDetail-btn">
+      <el-button @click="cancel">取消</el-button>
+      <el-button @click="submit" type="primary">保存</el-button>
+      <el-button @click="submit" type="primary">提交</el-button>
+    </div>
   </div>
 </template>
 
@@ -18,7 +23,7 @@ export default {
   },
   data () {
     return {
-
+      ref: []
     }
   },
   computed: {
@@ -30,14 +35,54 @@ export default {
       }
     }
   },
-  created () {
-
-  },
   mounted () {
-
+    this.load()
   },
   methods: {
+    submit () {
+      const OdmDetailBase = new Promise((resolve, reject) => {
+        this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
+          if (valid) resolve()
+        })
+      })
 
+      const OdmDetailAttr = new Promise((resolve, reject) => {
+        this.$refs['OdmDetailAttr'].$refs['form'].validate(valid => {
+          if (valid) resolve()
+        })
+      })
+
+      const OdmDetailProductAttr = new Promise((resolve, reject) => {
+        this.$refs['OdmDetailProductAttr'].$refs['form'].validate(valid => {
+          if (valid) resolve()
+        })
+      })
+
+      Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
+        .then(() => {
+          console.log('验证通过,提交表单')
+          if (this.mode === 'create') {
+            this.create()
+          } else {
+            this.modify()
+          }
+        })
+        .catch(err => {
+          console.log('验证失败', err)
+        })
+    },
+    load () {
+
+    },
+    create () {
+
+    },
+    modify () {
+
+    },
+    cancel () {
+      this.$router.push({ path: '/home/recommend-products/list', query: {} })
+    }
   }
 }
 </script>
@@ -45,5 +90,9 @@ export default {
 <style scoped lang="scss">
 .odmDetail {
   border: 1px solid #dcdfe6;
+  &-btn {
+    text-align: center;
+    margin: 20px;
+  }
 }
 </style>
