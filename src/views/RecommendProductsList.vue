@@ -26,9 +26,14 @@
         :columns="columns"
         v-model="selections"
         :selectionsDisabled="selectionsDisabled"
+        :tooltip="false"
       >
-        <div slot="operation" slot-scope="{row}">
-          <el-button @click="OdmDetail('modify',row)" type="text" v-if="row.productStatus !==2">编辑</el-button>
+        <div slot="operation" slot-scope="{row}" class="operate">
+          <el-button
+            @click="OdmDetail('modify',row)"
+            type="text"
+            v-if="[0, 1].includes(row.productStatus)"
+          >编辑</el-button>
           <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
           <el-button
             type="text"
@@ -100,6 +105,10 @@ export default {
           label: '品类'
         },
         {
+          prop: 'description',
+          label: '商品描述'
+        },
+        {
           prop: 'supplyPrice',
           label: '供货价（元）'
         },
@@ -127,6 +136,11 @@ export default {
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
+          list.forEach(data => {
+            if (data.description.length > 30) {
+              data.description = data.description.substring(0, 30) + '...'
+            }
+          })
           this.tableData = list
           this.$refs.listView.loading = false
           // 待推品以为的状态置灰
