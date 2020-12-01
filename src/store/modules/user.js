@@ -6,7 +6,8 @@ export default {
   state: {
     permissions: [],
     supplierStatus: '',
-    supplierName: '',
+    supplierStatusCode: '',
+    supplierName: '小王极简主义传媒有限公司',
     userName: '',
     isAdmin: false
   },
@@ -17,6 +18,7 @@ export default {
     SET_USER_INFO (state, userInfo) {
       state.permissions = userInfo.permissions
       state.supplierStatus = userInfo.supplierStatus
+      state.supplierStatusCode = userInfo.supplierStatusCode
       state.supplierName = userInfo.supplierName
       state.userName = userInfo.userName
       state.isAdmin = userInfo.isAdmin
