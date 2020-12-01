@@ -132,7 +132,7 @@ export default {
       this.cateLabels = cate.join('>')
     },
     save () {
-
+      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: {} })
     },
     load () {
 
