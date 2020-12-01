@@ -208,6 +208,7 @@ export default {
       )
       if (index > -1) this.selectedItem.splice(index, 1)
       this.emitValue()
+      this.$emit('removeTag', val)
     },
     // 搜索
     handlerFilter (e) {
