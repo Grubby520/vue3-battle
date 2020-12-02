@@ -4,11 +4,7 @@
       <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
     </div>
     <div class="register-content-container">
-      <RegisterResult
-        v-if="showResult"
-        :supplierStatusCode="supplierStatusCode"
-        :supplierStatus="supplierStatus"
-      ></RegisterResult>
+      <RegisterResult v-if="showResult" :isSubmit="isSubmit"></RegisterResult>
       <template v-else>
         <div class="steps-container clearfix">
           <h2 class="float-left font-wight-normal">商家入驻</h2>
@@ -19,7 +15,8 @@
             <keep-alive>
               <component ref="currentComponent" v-bind:is="currentStep"></component>
             </keep-alive>
-            <div class="align-center">
+            <!-- 前两步才会有的结构 -->
+            <div v-if="activeStep <= 2" class="align-center">
               <el-button type="primary" @click="goStep()">{{stepText}}</el-button>
               <el-button
                 v-if="activeStep === 2"
@@ -42,9 +39,10 @@ import Steps from '@/views/components/register/Steps.vue'
 import Application from '@/views/components/register/Application.vue'
 import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
 import RegisterResult from '@/views/components/register/RegisterResult.vue'
-import { valueToMd5 } from '@shared/util'
+import Protocol from '@/views/components/register/Protocol.vue'
 import UserApi from '@api/user'
 const { mapState: userMapState } = createNamespacedHelpers('user')
+const { mapGetters: registerMapGetters } = createNamespacedHelpers('register')
 
 export default {
   name: 'Register',
@@ -53,6 +51,7 @@ export default {
     Steps,
     Application,
     AdditionalInfo,
+    Protocol,
     RegisterResult
   },
   data () {
@@ -69,15 +68,21 @@ export default {
         }
       ],
       activeStep: 1,
-      isLoading: false
+      isLoading: false,
+      isSubmit: false
     }
   },
   computed: {
-    ...userMapState(['supplierName', 'supplierStatusCode', 'supplierStatus']),
+    ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
+    ...registerMapGetters(['getSubmitData']),
     currentStep () {
       let componentsMap = {
         1: 'Application',
-        2: 'AdditionalInfo'
+        2: 'AdditionalInfo',
+        3: 'Protocol'
+      }
+      if (!this.confirmAgreement && this.supplierStatusCode === 1) {
+        return 'Protocol'
       }
       return componentsMap[this.activeStep]
     },
@@ -89,7 +94,7 @@ export default {
       return stepTextMap[this.activeStep]
     },
     showResult () {
-      return this.supplierStatusCode
+      return [0, 1, 5].includes(this.supplierStatusCode) || this.isSubmit
     }
 
   },
@@ -99,22 +104,25 @@ export default {
         1: 2,
         2: 1
       }
+      if (this.activeStep === 1) {
+        this.$refs.currentComponent.validate().then((data) => {
+          if (data) {
+            this.activeStep = stepMap[this.activeStep]
+          }
+        })
+        return
+      }
       this.activeStep = stepMap[this.activeStep]
     },
     goBack () {
       this.$router.go(-1)
     },
     register () {
-      this.$refs.form.validate(valid => {
-        if (valid) {
+      this.$refs.currentComponent.validate().then((data) => {
+        if (data) {
           this.isLoading = true
-          UserApi.register({
-            ...this.form,
-            address: JSON.stringify(this.form.address), // 复写address的值
-            password: valueToMd5(this.form.password)// 复写password的值
-          }).then(res => {
+          UserApi.register(this.getSubmitData).then(res => {
             if (res.success) {
-              this.$refs.form.resetFields()
               this.$message({
                 type: 'success',
                 message: '注册成功！',

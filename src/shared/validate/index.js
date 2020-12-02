@@ -36,7 +36,7 @@ export function generateFormItemValidator (validateRule, errorMsg) {
  */
 export const fnValidator = function (errorMsg, fn, trigger = 'blur', required = false) {
   return {
-    validator: generateFormItemValidator(fn),
+    validator: generateFormItemValidator(fn, errorMsg),
     message: errorMsg,
     trigger: trigger,
     required: required
@@ -54,7 +54,7 @@ export const generateNotRequiredValidator = function (errorMsg, businessReg, tri
     return !emptyReg.test(value) && !businessReg.test(value)
   }
   return {
-    validator: generateFormItemValidator(fn),
+    validator: generateFormItemValidator(fn, errorMsg),
     message: errorMsg,
     trigger: trigger
   }
@@ -162,9 +162,9 @@ export const businessLicenseNoValidator = function (errorMsg = '', trigger = 'bl
   }
 }
 
-// 营业额
+// 交易额
 export const transactionAamountValidator = function (errorMsg = '', trigger = 'blur') {
-  let transactionAamountReg = /^(([^0][0-9]{1,7}|0)\.([0-9]{1,2}))$/
+  let transactionAamountReg = /^(([1-9][0-9]{1,7}|0)|([1-9][0-9]{1,7}|0).([0-9]{1,2}))$/
   return {
     validator: generateFormItemValidator(transactionAamountReg, errorMsg),
     message: errorMsg,

@@ -9,7 +9,8 @@ export default {
     supplierStatusCode: '',
     supplierName: '小王极简主义传媒有限公司',
     userName: '',
-    isAdmin: false
+    isAdmin: false,
+    confirmAgreement: false
   },
   getters: {
 
@@ -22,10 +23,11 @@ export default {
       state.supplierName = userInfo.supplierName
       state.userName = userInfo.userName
       state.isAdmin = userInfo.isAdmin
+      state.confirmAgreement = userInfo.confirmAgreement
     }
   },
   actions: {
-    AUTH_LOGIN ({ state }, params) {
+    AUTH_LOGIN ({ commit }, params) {
       return UserApi.authLogin(params).then((res) => {
         const { success, data } = res
         if (success) {

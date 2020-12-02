@@ -13,7 +13,13 @@
         <el-input v-model="form.supplierName" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
       </el-form-item>
       <el-form-item label="营业执照号" prop="certificationNo">
-        <el-input v-model="form.certificationNo" maxlength="18" clearable placeholder="请填写公司营业执照号"></el-input>
+        <el-input
+          v-model="form.certificationNo"
+          maxlength="18"
+          clearable
+          placeholder="请填写公司营业执照号"
+          show-word-limit
+        ></el-input>
         <span class="float-right">(如包含字母,字母请大写)</span>
       </el-form-item>
       <el-form-item label="公司性质" prop="supplyType">
@@ -113,8 +119,8 @@
       <el-form-item label="运营手机号" prop="contactNumber">
         <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入运营手机号"></el-input>
       </el-form-item>
-      <el-form-item label="运营QQ号码" prop="qq">
-        <el-input v-model="form.qq" maxlength="150" clearable placeholder="请输入QQ号码"></el-input>
+      <el-form-item label="运营QQ号码" prop="contactQq">
+        <el-input v-model="form.contactQq" maxlength="150" clearable placeholder="请输入QQ号码"></el-input>
       </el-form-item>
     </el-form>
   </div>
@@ -130,37 +136,56 @@ import {
   businessLicenseNoValidator,
   transactionAamountValidator,
   emailValidator,
-  qqValidator
+  qqValidator,
+  fnValidator
 } from '@shared/validate'
 import CommonApi from '@api/api.js'
-const { mapState: registerMapState, mapActions: registerMapActions } = createNamespacedHelpers('register')
+import UserApi from '@api/user'
+const { mapState: registerMapState, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
   name: 'Application',
   props: {
   },
-  data: () => {
+  data () {
+    let sameValueValidator = fnValidator('密码和确认密码不一致', () => {
+      return this.form.password && this.form.password !== this.form.confirmPassword
+    })
+
+    let certificationNoExistValidator = {
+      validator: (rule, value, callback) => {
+        UserApi.isCertificationNoExist({ certificationNo: value }).then(res => {
+          if (res.data) {
+            callback(new Error('营业执照号已存在'))
+          } else {
+            callback()
+          }
+        })
+      },
+      trigger: 'blur'
+    }
+
     return {
+      $passwordType: 'text',
       supplierTypeOptions: [],
       tradeTypeOptions: [],
       selfFactoryOptions: [],
-      passwordType: 'text',
       form: {
-        supplierName: '',
-        certificationNo: '', // 营业执照号
-        supplyType: '', // 公司性质
-        address: [],
-        tradeType: [],
-        annualTurnoverAmount: null, // 年营业额
-        selfFactory: null, // 是否自有工厂
-        factoryDescription: '', // 工厂实力
-        advantage: '',
-        userName: '',
-        password: '',
-        confirmPassword: '',
-        contactName: '',
-        contactNumber: '',
-        qq: ''
+        supplierName: '小王极简主义传媒公司1',
+        certificationNo: '123123123123123124', // 营业执照号
+        supplyType: 0, // 公司性质
+        address: ['150000', '150500', '150522'],
+        tradeType: ['0'],
+        annualTurnoverAmount: 12, // 年营业额
+        selfFactory: true, // 是否自有工厂
+        factoryDescription: '很有实力', // 工厂实力
+        advantage: '很有优势',
+        userName: 'wanglei1@qq.com',
+        password: 'w1234567',
+        confirmPassword: 'w1234567',
+        contactName: 'wlei',
+        contactNumber: '13208060814',
+        contactQq: ''
       },
       rules: {
         supplierName: [
@@ -169,7 +194,8 @@ export default {
         ],
         certificationNo: [
           emptyValidator('请填写公司营业执照号'),
-          businessLicenseNoValidator('营业执照号不正确')
+          businessLicenseNoValidator('营业执照号不正确'),
+          certificationNoExistValidator
         ],
         supplyType: [
           emptyValidator('请选择供公司性质', ['blur', 'change'])
@@ -197,7 +223,8 @@ export default {
         ],
         confirmPassword: [
           emptyValidator('请输入'),
-          passwordValidator()
+          passwordValidator(),
+          sameValueValidator
         ],
         contactName: [
           emptyValidator('请输入运营联系人'),
@@ -207,14 +234,17 @@ export default {
           emptyValidator('请输入运营手机号'),
           phoneNoValidator()
         ],
-        qq: [
+        contactQq: [
           qqValidator()
         ]
       }
     }
   },
   computed: {
-    ...registerMapState(['application'])
+    ...registerMapState(['application']),
+    passwordType () {
+      return this.form.password ? 'password' : this.$passwordType
+    }
   },
   watch: {
     application: {
@@ -237,9 +267,9 @@ export default {
     })
   },
   methods: {
-    ...registerMapActions(['SET_APPLICATION']),
+    ...registerMapMutations(['SET_APPLICATION']),
     passwordTypeChange () {
-      this.passwordType = 'password'
+      this.$passwordType = 'password'
     },
     selfFactoryChange (val) {
       let factoryDescriptionValidators = [
@@ -261,7 +291,7 @@ export default {
             this.SET_APPLICATION(JSON.parse(JSON.stringify(this.form)))
             resolve(this.form)
           } else {
-            reject(new Error(false))
+            resolve(false)
           }
         })
       })

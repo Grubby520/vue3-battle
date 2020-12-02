@@ -35,3 +35,11 @@ export function isEmpty (value) {
 
   return false
 }
+
+// 异步some函数
+export const asyncSome = async (arr, predicate) => {
+  for (let e of arr) {
+    if (await predicate(e)) return true
+  }
+  return false
+}

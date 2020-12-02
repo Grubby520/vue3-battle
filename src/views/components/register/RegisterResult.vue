@@ -3,36 +3,35 @@
     <div class="align-center">
       <span class="el-icon-success"></span>
       <div>
-        <b>您的申请已成功提交</b>
-        <div class="display-inline-block">
-          {{supplierStatus}}
+        <div v-if="[1,5].includes(supplierStatusCode)" class="display-inline-block">
+          {{supplierStatus}}&nbsp;&nbsp;
           <el-button type="text" @click.native="register">点击此处重新提交资料</el-button>
         </div>
+        <b v-if="isSubmit">您的申请已成功提交</b>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
+const { mapState: userMapState } = createNamespacedHelpers('user')
+
 export default {
   name: 'RegisterResult',
   props: {
-    supplierStatusCode: {
-      type: String,
-      default: ''
-    },
-    supplierStatus: {
-      type: String,
-      default: ''
+    isSubmit: {
+      type: Boolean,
+      default: false
     }
   },
-  data: () => {
+  data () {
     return {
 
     }
   },
   computed: {
-
+    ...userMapState(['supplierStatusCode', 'supplierStatus'])
   },
   methods: {
     register () {

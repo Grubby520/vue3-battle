@@ -1,0 +1,277 @@
+<template>
+  <div class="uploadImage">
+    <!-- 上传图片 -->
+    <el-upload
+      action="null"
+      ref="uploader"
+      list-type="picture-card"
+      :disabled="disabled"
+      :limit="imgNumber"
+      :accept="accept.join()"
+      :file-list="fileList"
+      :http-request="uploadFile"
+      :on-exceed="handleExceed"
+      :on-change="onChange"
+      :before-upload="beforeUpload"
+    >
+      <i slot="default" class="el-icon-plus"></i>
+      <!-- 图片图标 -- 展示图片 -->
+      <div slot="file" slot-scope="{file}">
+        <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
+        <span v-if="tools.length > 0" class="el-upload-list__item-actions">
+          <span
+            v-if="tools.includes('zoom')"
+            class="el-upload-list__item-preview"
+            @click="handlePictureCardPreview(file)"
+          >
+            <i class="el-icon-zoom-in"></i>
+          </span>
+          <span v-if="!disabled && tools.includes('download')" @click="handleDownload(file)">
+            <i class="el-icon-download"></i>
+          </span>
+          <span
+            v-if="!disabled && tools.includes('delete')"
+            class="el-upload-list__item-delete"
+            @click="handleRemove(file, fileList)"
+          >
+            <i class="el-icon-delete"></i>
+          </span>
+        </span>
+      </div>
+    </el-upload>
+    <!-- 预览图片 -->
+    <el-dialog :visible.sync="dialogVisible">
+      <img width="100%" :src="dialogImageUrl" alt />
+    </el-dialog>
+  </div>
+</template>
+<script>
+import CommonApi from '@api/api'
+import { put } from '@shared/http'
+import { downloadFile, asyncSome } from '@/shared/util'
+
+export default {
+  name: 'UploadImages',
+  model: {
+    event: 'imagesChange',
+    prop: 'images'
+  },
+  props: {
+    images: { type: Array, default: () => [] }, // [{name:'',url:'',...}]
+    imageType: { type: Number, required: false, default: undefined }, // 0：商品图片 1：尺寸图片 2：资质信息
+    disabled: { type: Boolean, required: false, default: false },
+    accept: { type: Array, required: false, default: () => { return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp'] } },
+    imgNumber: { type: Number, required: false, default: 200 },
+    tools: { type: Array, default: () => ['zoom', 'download', 'delete'] },
+    limits: {
+      type: Array,
+      default: () => [
+        {
+          type: 'size',
+          message: '',
+          meta: {
+            size: 4
+          }
+        },
+        {
+          type: 'scale',
+          message: '',
+          meta: {
+            tip: '图片高宽比例仅支持1:1或4:3',
+            scales: [1, 4 / 3]
+          }
+        }
+      ]
+    }
+  },
+  data () {
+    return {
+      dialogImageUrl: '',
+      dialogVisible: false,
+      fileList: [], // 上传图片列表
+      uploadImages: [] // 预上传图片地址和上传的file
+    }
+  },
+  watch: {
+    images: {
+      handler (val) {
+        this.fileList = val
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  mounted () {
+  },
+  methods: {
+    beforeUpload (file) {
+      this.limitsHandler(file)
+    },
+    limitsHandler (file) {
+      let defaultLimits = [
+        {
+          type: 'repeat',
+          message: `图片重复,请重新上传`
+        },
+        {
+          type: 'fileType',
+          message: `图片格式不正确,仅支持${this.accept.join()}`,
+          meta: {
+            accept: this.accept
+          }
+        },
+        {
+          type: 'ppi',
+          message: `图片高宽均不能超过4096像素`,
+          meta: {
+            width: 4096,
+            height: 4096
+          }
+        }
+      ]
+      let allLimits = defaultLimits.concat(this.limits)
+      let someFilter = async (item) => {
+        let isError = false
+        let message = item.message
+        switch (item.type) {
+          case 'fileType':
+            isError = !item.meta.accept.includes(file.type)
+            break
+          case 'repeat':
+            isError = this.limitRepeat(file)
+            break
+          case 'size':
+            message = `图片大小不能超过${item.meta.size}M`
+            isError = !this.limitSize(item, file)
+            break
+          case 'scale':
+            message = item.meta.tip
+            isError = !await this.limitScale(item, file)
+            break
+          case 'ppi':
+            isError = !await this.limitPPI(item, file)
+            break
+        }
+        if (isError) {
+          this.$message.error(message)
+          this.cancelUpload(file)
+        }
+        return isError
+      }
+
+      asyncSome(allLimits, someFilter)
+    },
+    limitRepeat (file) {
+      return this.fileList.filter(item => item.name === file.name).length > 1
+    },
+    limitSize (limitItem, file) {
+      return file.size / 1024 / 1024 <= limitItem.meta.size
+    },
+    limitScale (limitItem, file) {
+      return new Promise((resolve, reject) => {
+        try {
+          let fileReader = new FileReader()
+          fileReader.readAsDataURL(file)
+          fileReader.onload = (event) => {
+            let image = new Image()
+            image.src = event.target.result
+            image.onload = function () {
+              // 高宽比
+              let scale = image.height / image.width
+              resolve(limitItem.meta.scales.includes(scale))
+            }
+          }
+        } catch (error) {
+          resolve(false)
+        }
+      })
+    },
+    limitPPI (limitItem, file) {
+      return new Promise((resolve, reject) => {
+        try {
+          let fileReader = new FileReader()
+          fileReader.readAsDataURL(file)
+          fileReader.onload = (event) => {
+            let image = new Image()
+            image.src = event.target.result
+            image.onload = function () {
+              resolve(image.height < limitItem.meta.height && image.width < limitItem.meta.width)
+            }
+          }
+        } catch (error) {
+          resolve(false)
+        }
+      })
+    },
+    handleExceed () {
+      this.$message.error(`上传图片不能超过${this.imgNumber}张!`)
+    },
+    onChange (file, fileList) {
+      this.fileList.push(file)
+    },
+    handleRemove (file) {
+      this.$confirm('确实要删除该图片吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.cancelUpload(file)
+      })
+    },
+    handlePictureCardPreview (file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+    },
+    handleDownload (file) {
+      downloadFile(file.url, file.name)
+    },
+    uploadFile (req) {
+      let params = { 'itemNo': 'aliyun', 'fileName': req.file.name, 'contentType': req.file.type, 'imageType': this.imageType }
+      // 获取预上传oss地址
+      CommonApi.getOssUrl(params)
+        .then(res => {
+          let uploadImgParam = {
+            ...res.data,
+            file: req.file
+          }
+          let imgs = [...this.images]
+          imgs.push({
+            ...res.data
+          })
+          // 获取图片真实链接
+          // ------
+          this.uploadImages.push(uploadImgParam)
+        })
+    },
+    uploadToOss () {
+      this.uploadImages.forEach(pre => {
+        // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
+        put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
+          .then(res => {
+            // this.$emit('imagesChange', [])
+          })
+      })
+    },
+    cancelUpload (file) {
+      this.$refs.uploader.abort(file)
+      this.fileList.splice(this.fileList.indexOf(file), 1)
+    }
+  }
+
+}
+</script>
+<style scoped lang="scss">
+.uploadImage {
+  /deep/.el-upload-list--picture-card .el-upload-list__item {
+    width: 110px;
+    height: 110px;
+  }
+  /deep/.el-upload--picture-card {
+    width: 110px;
+    height: 110px;
+  }
+  /deep/.el-upload--picture-card {
+    line-height: 110px;
+  }
+}
+</style>

@@ -4,7 +4,7 @@
       <img src="@/assets/logo.png" alt="logo" />
     </div>
     <div class="right-module">
-      <div v-if="!supplierStatusCode">
+      <div v-if="!supplierStatusCode && supplierStatusCode!== 0">
         <span class="display-inline-block">已有账户</span>&nbsp;
         <el-button type="text" @click="login">快速登录</el-button>
       </div>
@@ -33,7 +33,7 @@ export default {
       default: ''
     }
   },
-  data: () => {
+  data () {
     return {
 
     }

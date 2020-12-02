@@ -1,4 +1,4 @@
-import { get, post } from '@shared/http'
+import { get, post, put } from '@shared/http'
 import URL from './userUrl'
 
 const USER_API = {
@@ -9,7 +9,9 @@ const USER_API = {
   logout: () => get(URL.logout, {}, { addLoading: true }),
   resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true }),
   docDetails: () => get(URL.docDetails),
-  docModify: (params) => post(URL.docModify, params)
+  docModify: (params) => post(URL.docModify, params),
+  isCertificationNoExist: (params) => get(URL.certificationNoExist, params),
+  protocolConfirm: () => put(URL.protocolConfirm)
 }
 
 export default USER_API

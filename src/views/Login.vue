@@ -25,7 +25,7 @@
 import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
 import { valueToMd5 } from '@shared/util'
-const { mapActions: userMapActions } = createNamespacedHelpers('user')
+const { mapActions: userMapActions, mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'Login',
@@ -49,10 +49,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['systemName'])
+    ...mapState(['systemName']),
+    ...userMapState(['confirmAgreement', 'supplierStatusCode'])
   },
   methods: {
-    ...userMapActions(['AUTH_LOGIN']),
+    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO']),
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
@@ -62,7 +63,15 @@ export default {
             password: valueToMd5(this.loginForm.password)
           }).then(res => {
             if (res.success) {
-              this.$router.push('home/my-file')
+              this.GET_USER_INFO().then(data => {
+                if (data) {
+                  if (!this.confirmAgreement || [0, 1, 5].includes(this.supplierStatusCode)) {
+                    this.$router.push('/register')
+                  } else {
+                    this.$router.push('home/my-file')
+                  }
+                }
+              })
             }
           }).finally(() => {
             this.isLoading = false

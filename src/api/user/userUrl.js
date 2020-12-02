@@ -8,5 +8,7 @@ export default {
   logout: baseURL + 'user/logout',
   resetPassword: baseURL + 'user/newPassword',
   docDetails: baseURL + 'supplier/userId',
-  docModify: baseURL + 'supplier'
+  docModify: baseURL + 'supplier',
+  certificationNoExist: baseURL + 'supplier/certification/exist',
+  protocolConfirm: baseURL + 'supplier/agreement/confirm'
 }

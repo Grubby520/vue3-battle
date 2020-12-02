@@ -61,6 +61,7 @@ axiosInstance.interceptors.response.use(
         case '500002': // 数据不存在
         case '500003': // 数据冲突
         case '500004': // 超出最大限制
+        case '900001':
           errorMessageTip(error.message)
           break
       }
@@ -77,24 +78,27 @@ axiosInstance.interceptors.response.use(
       errorStatus = err.response.status
       switch (errorStatus) {
         case 500:
-          err.message = '服务器错误(500)'
+          err.message = `服务器错误`
           break
-        case 501: err.message = '服务未实现(501)'
+        case 501: err.message = `服务未实现`
           break
-        case 502: err.message = '网络错误(502)'
+        case 502: err.message = `网络错误`
           break
-        case 503: err.message = '服务不可用(503)'
+        case 503: err.message = `服务不可用`
           break
-        case 504: err.message = '网络超时(504)'
+        case 504: err.message = `网络超时`
           break
-        case 505: err.message = 'HTTP版本不受支持(505)'
+        case 505: err.message = `HTTP版本不受支持`
           break
-        case 404: err.message = '访问资源不存在(404)'
+        case 401: err.message = `访问资源未授权`
           break
-        case 429: err.message = '系统繁忙,请稍后重试'
+        case 404: err.message = `访问资源不存在`
           break
-        default: err.message = `连接出错(${err.response.status})!`
+        case 429: err.message = `系统繁忙,请稍后重试`
+          break
+        default: err.message = `连接出错`
       }
+      err.message = err.message + `(${errorStatus})`
     } else {
       err.message = '连接服务器失败!'
     }

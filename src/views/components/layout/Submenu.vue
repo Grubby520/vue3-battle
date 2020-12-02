@@ -29,7 +29,7 @@ export default {
   components: {
     MenuItem
   },
-  data: () => {
+  data () {
     return {
     }
   },
