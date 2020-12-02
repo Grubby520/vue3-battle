@@ -6,6 +6,7 @@
         <el-form :model="form" :rules="rules" ref="form" label-width="120px">
           <el-form-item label="尺码" prop="sizes">
             <SlSelect
+              ref="sizeSelect"
               v-model="form.sizes"
               :options="sizeOptions"
               label="attrTermName"
@@ -21,6 +22,7 @@
           </el-form-item>
           <el-form-item label="颜色" prop="colors">
             <SlSelect
+              ref="colorSelect"
               v-model="form.colors"
               :options="colorOptions"
               label="attrTermName"
@@ -98,23 +100,28 @@
       </div>
 
       <el-button type="primary" @click="validateAll">校验销售属性</el-button>
+      <el-button type="primary" @click="changeCategoryID">改变CategoryId</el-button>
     </div>
 
-    <ProductAttributes
-      ref="customAttributesInfo"
-      :inData="metaFields"
-      :canUpdate="true"
-      :canView="false"
-    ></ProductAttributes>
+    <ProductAttributes ref="customAttributesInfo" :canUpdate="true" :canView="false"></ProductAttributes>
   </div>
 </template>
 
 <script>
+import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductAttributes from '@/views/createProduct/ProductAttributes'
+
 export default {
   name: 'SalesAttributes',
+  props: {
+    // categoryId: {
+    //   type: [String, Number],
+    //   default: ''
+    // }
+  },
   data () {
     return {
+      categoryId: '',
       rules: {
         sizes: [
           { required: true, message: '尺码不能为空', trigger: ['blur', 'change'] }
@@ -229,6 +236,38 @@ export default {
     ]
   },
   methods: {
+    requestInfo () {
+      this.clearContents()
+      this.requestSizeList()
+      this.requestColorList()
+    },
+    requestSizeList () {
+      RecommendApi.getAttrList(1, { categoryId: this.categoryId }).then(res => {
+        if (res.data) {
+          this.form.sizes = res.data.filter(item => item.state !== 'OFF')
+        }
+      })
+    },
+    requestColorList () {
+      RecommendApi.getAttrList(2, { categoryId: this.categoryId }).then(res => {
+        if (res.data) {
+          this.form.colors = res.data.filter(item => item.state !== 'OFF')
+        }
+      })
+    },
+    clearContents () {
+      this.form = {
+        sizes: [],
+        colors: []
+      }
+      this.tableData = []
+      this.productImages = []
+      this.sizeKeys = []
+      this.colorKeys = []
+      this.$refs.sizeSelect.handleClear()
+      this.$refs.colorSelect.handleClear()
+      this.$refs.form.clearValidate()
+    },
     generateTableData (handle, attribute) {
       if (handle === 'add') {
         let addItem = {}
@@ -359,9 +398,17 @@ export default {
         attrImages: this.productImages
       }
       return result
+    },
+    changeCategoryID () {
+      this.categoryId = Math.floor(Math.random() * 100) + 1
     }
   },
   watch: {
+    categoryId (val) {
+      if (val) {
+        this.requestInfo()
+      }
+    },
     'form.sizes': {
       handler (val, oldVal) {
         let len = val.length || 0
