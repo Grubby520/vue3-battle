@@ -17,17 +17,18 @@
           <el-input clearable v-model.trim="form.itemNo" maxlength="100" placeholder="请输入供方货号" />
         </el-form-item>
         <el-form-item label="预计出货时间" prop="estimatedShippingTime">
-          <el-radio v-model="form.hasPattern" :label="true" @input="resetValidate">
+          <el-radio v-model="hasPattern" :label="true" @input="resetValidate">
             现货
             <span style="color: #ff0000;">（今日可发货）</span>
           </el-radio>
-          <el-radio v-model="form.hasPattern" :label="false">期货</el-radio>
+          <el-radio v-model="hasPattern" :label="false">期货</el-radio>
+          {{form.estimatedShippingTime}}
           <el-date-picker
             v-model="form.estimatedShippingTime"
             type="date"
             placeholder="选择预计出货时间"
             value-format="yyyy-MM-dd HH:mm:ss"
-            :disabled="form.hasPattern"
+            :disabled="hasPattern"
             :picker-options="pickerOptions"
           ></el-date-picker>
         </el-form-item>
@@ -57,29 +58,31 @@
 </template>
 
 <script>
-import { isEmpty } from '@shared/util'
+// import { isEmpty } from '@shared/util'
 export default {
   props: {
     isStatus: { type: Boolean, required: false, default: false },
     id: { type: String, required: false, default: '' },
-    cateId: { type: Number, required: false, default: undefined },
+    categoryId: { type: Number, required: false, default: undefined },
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
     return {
+      hasPattern: true,
       form: {
         // 商品标题
         title: '',
         // 供方货号
         itemNo: '',
         // 预计出货类型
-        hasPattern: true,
+        // hasPattern: true,
         // 预计出货时间
         estimatedShippingTime: '',
         // 商品描述
         description: '',
         // 商品备注
-        remark: ''
+        remark: '',
+        categoryId: this.categoryId
       },
       rules: {
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
@@ -105,16 +108,22 @@ export default {
     resetValidate () {
       this.$refs.form.clearValidate('estimatedShippingTime')
     },
+    commmitInfo () {
+      if (this.hasPattern) {
+        // this.$set(this.from, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-M-D HH:mm'))
+      }
+      return this.form
+    },
     ShippingTimeValidator () {
       return {
         validator: (rule, value, callback) => {
-          if (this.form.hasPattern) {
-            callback()
-          } else if (isEmpty(value)) {
-            callback(new Error('请选择预计出货时间'))
-          } else {
-            callback()
-          }
+          // if (this.hasPattern) {
+          //   callback()
+          // } else if (isEmpty(value)) {
+          //   callback(new Error('请选择预计出货时间'))
+          // } else {
+          //   callback()
+          // }
         },
         message: '请选择预计出货时间',
         trigger: 'blur'

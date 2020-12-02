@@ -47,7 +47,6 @@ import CommonApi from '@api/api'
 import { put } from '@shared/http'
 import { downloadFile } from '@/shared/util'
 import { fileToMd5 } from '@shared/util'
-console.log('fileToMd5', fileToMd5)
 export default {
   name: 'SlUploadImages',
   model: {
@@ -214,6 +213,7 @@ export default {
     width: 110px;
     box-sizing: border-box;
     &-item-actions {
+      // 图标设置
       position: absolute;
       width: 100%;
       top: 0;

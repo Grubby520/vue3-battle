@@ -1,7 +1,7 @@
 <template>
   <div class="odmDetail" :class="{'view-container': false}">
     <OdmDetailBase
-      :cateId="cateId"
+      :categoryId="categoryId"
       :cateLabels="cateLabels"
       :isStatus="isStatus"
       ref="OdmDetailBase"
@@ -10,8 +10,8 @@
     <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
     <div class="odmDetail-btn">
       <el-button @click="cancel">取消</el-button>
-      <el-button @click="submit" type="primary">保存</el-button>
-      <el-button @click="submit" type="primary">提交</el-button>
+      <el-button @click="submitForm" type="primary">保存</el-button>
+      <el-button @click="submitForm" type="primary">提交</el-button>
     </div>
   </div>
 </template>
@@ -25,7 +25,7 @@ export default {
   props: {
     mode: { type: String, required: false, default: '' },
     id: { type: String, required: false, default: '' },
-    cateId: { type: Number, required: false, default: undefined },
+    categoryId: { type: Number, required: false, default: undefined },
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
@@ -46,7 +46,7 @@ export default {
     this.load()
   },
   methods: {
-    submit () {
+    submitForm () {
       const OdmDetailBase = new Promise((resolve, reject) => {
         this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
           if (valid) resolve()
@@ -69,6 +69,8 @@ export default {
         .then(() => {
           console.log('验证通过,提交表单')
           if (this.mode === 'create') {
+            // const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
+            // const productCustomizeAttributeList = this.$refs.OdmDetailAttr.commmitInfo()
             this.create()
           } else {
             this.modify()
@@ -84,6 +86,7 @@ export default {
     create () {
 
     },
+
     modify () {
 
     },

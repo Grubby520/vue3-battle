@@ -90,9 +90,9 @@ export default {
       this.$set(this.cate, 'cateLabels', labelarr.join('>'))
     },
     save () {
-      const cateId = this.nodeKeys[3]
+      const categoryId = this.nodeKeys[3]
       if (this.nodeKeys && this.nodeKeys.length > 0) {
-        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, cateId: cateId } })
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId } })
       }
     }
   }

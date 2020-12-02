@@ -18,7 +18,7 @@ const RECOMMEND = {
   spuDataTemplate (formData) {
     return get(RECOMMENDURLS.spu_data_template, formData)
   },
-  // odm取消推品
+  // odm撤回
   cancelrcommend (info) {
     return put(RECOMMENDURLS.cancelrcommend, info)
   },
@@ -44,6 +44,9 @@ const RECOMMEND = {
   // 获得颜色的集合
   getColorList () {
     return get(RECOMMENDURLS.getColorList)
+  },
+  saveSubmit (params) {
+    return post(RECOMMENDURLS.saveSubmit, qs.stringify(params))
   }
 }
 export default RECOMMEND
