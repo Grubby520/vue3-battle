@@ -11,13 +11,13 @@ const RECOMMEND = {
     return del(`${RECOMMENDURLS.rcommenduel}/${id}`)
   },
   // 上传Spu数据
-  uploadSpuData (formData) {
-    return post(RECOMMENDURLS.upload_spu_data, formData)
-  },
+  // uploadSpuData (formData) {
+  //   return post(RECOMMENDURLS.upload_spu_data, formData)
+  // },
   // 下载SPU数据模板
-  spuDataTemplate (formData) {
-    return get(RECOMMENDURLS.spu_data_template, formData)
-  },
+  // spuDataTemplate (formData) {
+  //   return get(RECOMMENDURLS.spu_data_template, formData)
+  // },
   // odm撤回
   cancelrcommend (info) {
     return put(RECOMMENDURLS.cancelrcommend, info)
@@ -45,6 +45,10 @@ const RECOMMEND = {
   getColorList () {
     return get(RECOMMENDURLS.getColorList)
   },
+  save (params) {
+    return post(RECOMMENDURLS.rcommenduel, qs.stringify(params))
+  },
+  // 保存并提交
   saveSubmit (params) {
     return post(RECOMMENDURLS.saveSubmit, qs.stringify(params))
   },

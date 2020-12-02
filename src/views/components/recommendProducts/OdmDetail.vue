@@ -10,8 +10,8 @@
     <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
     <div class="odmDetail-btn">
       <el-button @click="cancel">取消</el-button>
-      <el-button @click="submitForm" type="primary">保存</el-button>
-      <el-button @click="submitForm" type="primary">提交</el-button>
+      <el-button @click="submitForm('create')" type="primary">保存</el-button>
+      <el-button @click="submitForm('submit')" type="primary">提交</el-button>
     </div>
   </div>
 </template>
@@ -20,6 +20,8 @@
 import OdmDetailBase from './OdmDetailBase'
 import OdmDetailAttr from './OdmDetailAttr'
 import OdmDetailProductAttr from './OdmDetailProductAttr'
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+
 export default {
   components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
   props: {
@@ -46,7 +48,7 @@ export default {
     this.load()
   },
   methods: {
-    submitForm () {
+    submitForm (status) {
       const OdmDetailBase = new Promise((resolve, reject) => {
         this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
           if (valid) resolve()
@@ -68,12 +70,16 @@ export default {
       Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
         .then(() => {
           console.log('验证通过,提交表单')
-          if (this.mode === 'create') {
-            // const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
-            // const productCustomizeAttributeList = this.$refs.OdmDetailAttr.commmitInfo()
-            this.create()
+          const params = []
+          if (status === 'create') {
+            // 保存
+            const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
+            const productSalesAttributeList = this.$refs.OdmDetailAttr.commmitInfo()
+            params.push(productBasicInfo, productSalesAttributeList)
+            this.create(params)
           } else {
-            this.modify()
+            // 保存提交
+            this.modify(params)
           }
         })
         .catch(err => {
@@ -83,12 +89,18 @@ export default {
     load () {
 
     },
-    create () {
-
+    create (params) {
+      RecommondApi.save(params)
+        .then(res => {
+          this.$router.back()
+        })
     },
 
-    modify () {
-
+    modify (params) {
+      RecommondApi.saveSubmit(params)
+        .then(res => {
+          this.$router.back()
+        })
     },
     cancel () {
       this.$router.push({ path: '/home/recommend-products/list', query: {} })

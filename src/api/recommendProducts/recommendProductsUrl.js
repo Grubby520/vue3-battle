@@ -12,7 +12,7 @@ const RECOMMENDURLS = {
   recommend: baseURL + '/product/pushed',
   // odm 撤回
   cancelrcommend: baseURL + '/product/revoke',
-  // odm删除 详情
+  // odm详情
   rcommenduel: baseURL + '/product',
   // odm 状态
   recommendstatus: baseURL + '/product/product-status',

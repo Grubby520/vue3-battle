@@ -22,7 +22,6 @@
             <span style="color: #ff0000;">（今日可发货）</span>
           </el-radio>
           <el-radio v-model="hasPattern" :label="false">期货</el-radio>
-          {{form.estimatedShippingTime}}
           <el-date-picker
             v-model="form.estimatedShippingTime"
             type="date"
@@ -110,7 +109,7 @@ export default {
     },
     commmitInfo () {
       if (this.hasPattern) {
-        // this.$set(this.from, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-M-D HH:mm'))
+        this.$set(this.from, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-M-D HH:mm'))
       }
       return this.form
     },
