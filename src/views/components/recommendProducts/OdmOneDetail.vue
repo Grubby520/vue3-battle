@@ -86,6 +86,7 @@ export default {
         })
 
         this.options = cataArr[0]
+        console.log('in this way', responses)
       })
     },
     change (nodekeys) {
@@ -103,7 +104,10 @@ export default {
       this.cateLabels = cate.join('>')
     },
     save () {
-      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: {} })
+      const cateId = this.nodeKeys[3]
+      if (this.nodeKeys && this.nodeKeys.length > 0) {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cateLabels, cateId: cateId } })
+      }
     }
   },
   watch: {

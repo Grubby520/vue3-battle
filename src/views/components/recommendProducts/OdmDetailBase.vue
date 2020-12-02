@@ -9,7 +9,7 @@
         label-width="130px"
         class="odmDetailBase-form-con"
       >
-        <el-form-item label="商品类目"></el-form-item>
+        <el-form-item label="商品类目">{{cateLabels}}</el-form-item>
         <el-form-item label="商品标题" prop="productName">
           <el-input
             v-if="isStatus"
@@ -72,7 +72,10 @@
 <script>
 export default {
   props: {
-    isStatus: { type: Boolean, required: false, default: false }
+    isStatus: { type: Boolean, required: false, default: false },
+    id: { type: String, required: false, default: '' },
+    cateId: { type: Number, required: false, default: undefined },
+    cateLabels: { type: String, required: false, default: '' }
   },
   data () {
     return {

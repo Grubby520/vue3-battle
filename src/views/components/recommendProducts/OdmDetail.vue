@@ -1,6 +1,12 @@
 <template>
   <div class="odmDetail">
-    <OdmDetailBase :isStatus="isStatus" ref="OdmDetailBase" />
+    {{cateLabels}}
+    <OdmDetailBase
+      :isStatus="isStatus"
+      ref="OdmDetailBase"
+      :cateId="cateId"
+      :cateLabels="cateLabels"
+    />
     <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
     <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
     <div class="odmDetail-btn">
@@ -19,7 +25,9 @@ export default {
   components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
   props: {
     mode: { type: String, required: false, default: '' },
-    id: { type: String, required: false, default: '' }
+    id: { type: String, required: false, default: '' },
+    cateId: { type: Number, required: false, default: undefined },
+    cateLabels: { type: String, required: false, default: '' }
   },
   data () {
     return {
