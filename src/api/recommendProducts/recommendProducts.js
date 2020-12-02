@@ -44,6 +44,14 @@ const RECOMMEND = {
   // 获得颜色的集合
   getColorList () {
     return get(RECOMMENDURLS.getColorList)
+  },
+  // 属性项列表,颜色 id:1、尺寸 id:2
+  getAttrList (id, params) {
+    return get(RECOMMENDURLS.getAttrList + id, params)
+  },
+  // 自定义属性
+  getMetadata (id) {
+    return get(`/products/metadata/${id}/metafileds`)
   }
 }
 export default RECOMMEND

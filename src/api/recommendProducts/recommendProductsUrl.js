@@ -1,4 +1,6 @@
 const baseURL = '/srm-goods-service'
+const productUrl = '/products'
+
 const RECOMMENDURLS = {
   // odm 列表页
   recommendproducts: baseURL + '/product/page-list',
@@ -21,7 +23,9 @@ const RECOMMENDURLS = {
   // 获得尺寸的集合
   getSizeList: 'http://152.136.21.21:8080/mock/5fc0c322fd2b28481fbeea82/srm/product/size',
   // 获得颜色的集合
-  getColorList: 'http://152.136.21.21:8080/mock/5fc0c322fd2b28481fbeea82/srm/product/color'
+  getColorList: 'http://152.136.21.21:8080/mock/5fc0c322fd2b28481fbeea82/srm/product/color',
+  // 属性项列表,颜色、尺寸
+  getAttrList: productUrl + '/attribute/list-term/'
 }
 
 export default RECOMMENDURLS
