@@ -351,6 +351,7 @@ export default {
     border-radius: 3px;
     transition: all 0.3s ease;
     position: relative;
+    box-sizing: border-box;
 
     &.active {
       border-color: #409eff;
