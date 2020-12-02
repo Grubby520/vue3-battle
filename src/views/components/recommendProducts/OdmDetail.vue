@@ -1,11 +1,10 @@
 <template>
-  <div class="odmDetail">
-    {{cateLabels}}
+  <div class="odmDetail" :class="{'view-container': false}">
     <OdmDetailBase
-      :isStatus="isStatus"
-      ref="OdmDetailBase"
       :cateId="cateId"
       :cateLabels="cateLabels"
+      :isStatus="isStatus"
+      ref="OdmDetailBase"
     />
     <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
     <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
@@ -101,6 +100,13 @@ export default {
   &-btn {
     text-align: center;
     margin: 20px;
+  }
+}
+
+.view-container {
+  pointer-events: none;
+  /deep/.el-input__inner {
+    border: 0;
   }
 }
 </style>
