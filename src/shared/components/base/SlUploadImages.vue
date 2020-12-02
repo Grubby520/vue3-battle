@@ -45,7 +45,9 @@
 <script>
 import CommonApi from '@api/api'
 import { put } from '@shared/http'
-import { downloadFile, fileToMd5 } from '@/shared/util'
+import { downloadFile } from '@/shared/util'
+import { fileToMd5 } from '@shared/util'
+console.log('fileToMd5', fileToMd5)
 export default {
   name: 'SlUploadImages',
   model: {
@@ -161,6 +163,7 @@ export default {
       CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
+          console.log('fileToMd5', fileToMd5)
           fileToMd5(file.file).then((md5) => {
             const IMAGES = this.imageUrls.filter(img => img.id)
             IMAGES.hash = md5
