@@ -1,5 +1,5 @@
 <template>
-  <div class="odmDetail">
+  <div class="odmDetail" :class="{'view-container': false}">
     <OdmDetailBase :isStatus="isStatus" />
     <OdmDetailAttr :isStatus="isStatus" />
     <OdmDetailProductAttr :isStatus="isStatus" />
@@ -45,5 +45,12 @@ export default {
 <style scoped lang="scss">
 .odmDetail {
   border: 1px solid #dcdfe6;
+}
+
+.view-container {
+  pointer-events: none;
+  /deep/.el-input__inner {
+    border: 0;
+  }
 }
 </style>
