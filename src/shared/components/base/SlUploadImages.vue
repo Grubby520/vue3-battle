@@ -16,24 +16,25 @@
     >
       <i slot="default" class="el-icon-plus"></i>
       <!-- 图片图标 -- 展示图片 -->
-      <div slot="file" slot-scope="{file}">
-        <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
-        <span class="el-upload-list__item-actions">
-          <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
-            <i class="el-icon-zoom-in"></i>
+      <template slot="file" slot-scope="{file}">
+        <div class="container">
+          <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
+          <span class="container-item-actions">
+            <span class="item-preview" @click="handlePictureCardPreview(file)">
+              <i class="el-icon-zoom-in"></i>
+            </span>
+            <span v-if="!disabled" class="item-delete" @click="handleDownload(file)">
+              <i class="el-icon-download"></i>
+            </span>
+            <span v-if="!disabled" class="item-delete" @click="handleRemove(file, fileList)">
+              <i class="el-icon-delete"></i>
+            </span>
           </span>
-          <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleDownload(file)">
-            <i class="el-icon-download"></i>
-          </span>
-          <span
-            v-if="!disabled"
-            class="el-upload-list__item-delete"
-            @click="handleRemove(file, fileList)"
-          >
-            <i class="el-icon-delete"></i>
-          </span>
-        </span>
-      </div>
+        </div>
+        <div class="container-freedom">
+          <slot name="content" :file="file"></slot>
+        </div>
+      </template>
     </el-upload>
     <!-- 预览图片 -->
     <el-dialog :visible.sync="dialogVisible" width="20%">
@@ -44,8 +45,7 @@
 <script>
 import CommonApi from '@api/api'
 import { put } from '@shared/http'
-
-import { downloadFile } from '@/shared/util'
+import { downloadFile, fileToMd5 } from '@/shared/util'
 export default {
   name: 'SlUploadImages',
   model: {
@@ -161,10 +161,14 @@ export default {
       CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
-          const IMAGES = this.imageUrls.filter(img => img.id)
-          IMAGES.push(res.data)
-          this.$emit('changeUploadImages', IMAGES)
-          this.uploadImages.push(res.data)
+          fileToMd5(file.file).then((md5) => {
+            const IMAGES = this.imageUrls.filter(img => img.id)
+            IMAGES.hash = md5
+            IMAGES.push(res.data)
+            console.log('IMAGES', IMAGES)
+            this.$emit('changeUploadImages', IMAGES)
+            this.uploadImages.push(res.data)
+          })
         })
     },
     gotoOss (images) {
@@ -189,7 +193,9 @@ export default {
 .uploadImage {
   /deep/.el-upload-list--picture-card .el-upload-list__item {
     width: 110px;
-    height: 110px;
+    height: unset;
+    border: 0;
+    outline-color: transparent; // 去掉点击图片黑色边框问题
   }
   /deep/.el-upload--picture-card {
     width: 110px;
@@ -197,6 +203,42 @@ export default {
   }
   /deep/.el-upload--picture-card {
     line-height: 110px;
+  }
+  .container {
+    border: 1px solid #c0ccda;
+    position: relative;
+    border-radius: 0.3rem;
+    height: 110px;
+    width: 110px;
+    box-sizing: border-box;
+    &-item-actions {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      color: #ffffff;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+    &:hover {
+      .container-item-actions {
+        visibility: visible;
+        background-color: rgba(0, 0, 0, 0.6);
+      }
+    }
+    &-freedom {
+      margin: 10px 0 !important;
+    }
+    &:hover {
+      .container-freedom {
+        visibility: visible;
+        background-color: unset;
+      }
+    }
   }
 }
 </style>

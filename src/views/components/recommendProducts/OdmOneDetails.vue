@@ -53,7 +53,6 @@ export default {
               item.leaf = true
             }
           })
-          console.log(list)
           this.options = list
         })
     },
