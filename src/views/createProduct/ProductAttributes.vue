@@ -179,6 +179,7 @@
 export default {
   name: 'ProductAttributes',
   props: {
+    // 同erp，获取自定义属性
     inData: {
       type: Array,
       default: () => {
