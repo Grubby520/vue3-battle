@@ -91,6 +91,8 @@ axiosInstance.interceptors.response.use(
           break
         case 404: err.message = '访问资源不存在(404)'
           break
+        case 429: err.message = '系统繁忙,请稍后重试'
+          break
         default: err.message = `连接出错(${err.response.status})!`
       }
     } else {

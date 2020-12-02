@@ -4,16 +4,34 @@
       <img src="@/assets/logo.png" alt="logo" />
     </div>
     <div class="right-module">
-      已有账户
-      <el-button type="text">快速登录</el-button>
+      <div v-if="!supplierStatusCode">
+        <span class="display-inline-block">已有账户</span>&nbsp;
+        <el-button type="text" @click="login">快速登录</el-button>
+      </div>
+      <div v-else>
+        <i class="el-icon-user-solid"></i>
+        <span class="display-inline-block">{{supplierName}}</span>&nbsp;
+        <el-button type="text" @click.native="signOut">退出登录</el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
+
 export default {
   name: 'RegisterHeader',
   props: {
+    supplierStatusCode: {
+      type: String,
+      default: ''
+    },
+    supplierName: {
+      type: String,
+      default: ''
+    }
   },
   data: () => {
     return {
@@ -23,10 +41,21 @@ export default {
   computed: {
 
   },
-  methods: {
-  },
   mounted: function () {
 
+  },
+  methods: {
+    ...userMapActions(['SIGN_OUT']),
+    login () {
+      this.$router.push('/login')
+    },
+    signOut () {
+      this.SIGN_OUT().then(res => {
+        if (res) {
+          this.login()
+        }
+      })
+    }
   }
 }
 </script>
