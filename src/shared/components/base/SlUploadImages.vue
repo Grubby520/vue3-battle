@@ -163,10 +163,9 @@ export default {
       CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
-          console.log('fileToMd5', fileToMd5)
           fileToMd5(file.file).then((md5) => {
             const IMAGES = this.imageUrls.filter(img => img.id)
-            IMAGES.hash = md5
+            res.data.hash = md5
             IMAGES.push(res.data)
             console.log('IMAGES', IMAGES)
             this.$emit('changeUploadImages', IMAGES)
