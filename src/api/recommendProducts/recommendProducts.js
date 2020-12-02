@@ -11,14 +11,14 @@ const RECOMMEND = {
     return del(`${RECOMMENDURLS.rcommenduel}/${id}`)
   },
   // 上传Spu数据
-  uploadSpuData (formData) {
-    return post(RECOMMENDURLS.upload_spu_data, formData)
-  },
+  // uploadSpuData (formData) {
+  //   return post(RECOMMENDURLS.upload_spu_data, formData)
+  // },
   // 下载SPU数据模板
-  spuDataTemplate (formData) {
-    return get(RECOMMENDURLS.spu_data_template, formData)
-  },
-  // odm取消推品
+  // spuDataTemplate (formData) {
+  //   return get(RECOMMENDURLS.spu_data_template, formData)
+  // },
+  // odm撤回
   cancelrcommend (info) {
     return put(RECOMMENDURLS.cancelrcommend, info)
   },
@@ -44,6 +44,21 @@ const RECOMMEND = {
   // 获得颜色的集合
   getColorList () {
     return get(RECOMMENDURLS.getColorList)
+  },
+  save (params) {
+    return post(RECOMMENDURLS.rcommenduel, qs.stringify(params))
+  },
+  // 保存并提交
+  saveSubmit (params) {
+    return post(RECOMMENDURLS.saveSubmit, qs.stringify(params))
+  },
+  // 属性项列表,颜色 id:1、尺寸 id:2
+  getAttrList (id, params) {
+    return get(RECOMMENDURLS.getAttrList + id, params)
+  },
+  // 自定义属性
+  getMetadata (id) {
+    return get(`/products/metadata/${id}/metafileds`)
   }
 }
 export default RECOMMEND

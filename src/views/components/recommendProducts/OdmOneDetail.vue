@@ -1,7 +1,13 @@
 <template>
   <div class="odmOneDetail">
     <p class="odmOneDetail-title">选择类目</p>
-    <el-cascader-panel ref="panel" :props="props" @change="change" v-model="nodeDates" />
+    <el-cascader-panel
+      ref="panel"
+      :props="props"
+      @change="change"
+      v-model="showNodes"
+      :options="options"
+    />
     <p class="odmOneDetail-des">当前选择分类：{{cateLabels}}</p>
     <div class="odmOneDetail-btn">
       <el-button @click="save" type="primary">确认</el-button>
@@ -20,40 +26,77 @@ const UrlList = [
 ]
 
 export default {
+
   components: {},
   data () {
+    const _this = this
     return {
+      mapData: [],
+      options: [],
+      showNodes: [3, 0, 0, 0],
       cateLabels: '',
-      nodeDates: [3, 0, 0, 1],
       props: {
         lazy: true,
         lazyLoad (node, resolve) {
           const { level } = node
-          console.log(11111)
           axios.get(UrlList[level])
             .then(res => {
+              _this.mapData.push(res.data.data)
               if (res && res.data && res.data.data) {
                 const nodes = res.data.data.map(item => ({
                   value: item.id,
                   label: item.label,
                   leaf: level > 2,
-                  length: res.data.data.length
+                  length: res.data.data.length,
+                  data: null
                 }))
                 resolve(nodes)
               }
             })
         }
-      }
+      },
+      middle: []
     }
   },
+  mounted () {
+    this.load()
+  },
   methods: {
+    load () {
+      const _this = this
+      let cataArr = []
+      let requestArray = []
+      _this.showNodes.forEach((key, index) => {
+        requestArray.push(axios.get(UrlList[index]))
+      })
+
+      Promise.all(requestArray).then((responses) => {
+        responses.forEach((response, index) => {
+          cataArr[index] = response.data.data
+        })
+        let nodes = JSON.parse(JSON.stringify(_this.showNodes))
+        nodes.splice(3, 1)
+        nodes.reverse().forEach((node, index) => {
+          const length = cataArr.length
+          cataArr[length - index - 2].forEach((data) => {
+            if (data.id === node) {
+              data.children = cataArr[length - index - 1]
+            }
+          })
+        })
+
+        this.options = cataArr[0]
+        console.log('in this way', responses)
+      })
+    },
     change (nodekeys) {
-      console.log(nodekeys)
       // 根据四级id获取每级符合条件的数据
       const nodesData = []
-      const mapData = [...this.$refs.panel.$data.menus]
+      if (this.mapData.length === 0) {
+        this.mapData = [...this.$refs.panel.$data.menus]
+      }
       nodekeys.forEach((node, index) => {
-        const nodes = mapData[index].find(key => node.id === key.id)
+        const nodes = this.mapData[index].find(key => node === key.value)
         nodesData.push(nodes)
       })
       // 当前选择分类数据
@@ -61,7 +104,19 @@ export default {
       this.cateLabels = cate.join('>')
     },
     save () {
-      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: {} })
+      const categoryId = this.nodeKeys[3]
+      if (this.nodeKeys && this.nodeKeys.length > 0) {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cateLabels, categoryId: categoryId } })
+      }
+    }
+  },
+  watch: {
+    options: {
+      handler (newVal) {
+        this.middle = newVal
+      },
+      deep: true,
+      immediate: true
     }
   }
 }

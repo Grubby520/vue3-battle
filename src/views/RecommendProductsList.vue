@@ -187,8 +187,7 @@ export default {
         })
     },
     cancel (row) {
-      const params = row.id
-      RecommondApi.cancelrcommend({ productIdList: [params] })
+      RecommondApi.cancelrcommend({ productId: row.id })
         .then(res => {
           this.$refs.listView.refresh()
           successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
@@ -198,7 +197,7 @@ export default {
         })
     },
     OdmDetail (status, row) {
-      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
+      this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { mode: status, id: row.id } })
     }
   }
 }

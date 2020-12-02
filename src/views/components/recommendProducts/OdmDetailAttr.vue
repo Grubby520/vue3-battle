@@ -41,7 +41,7 @@
 <script>
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import OdmDetailTable from './OdmDetailTable'
-import { numberValidator, emptyValidator, smallValidator } from '@shared/validate/index'
+import { numberValidator, emptyValidator } from '@shared/validate/index'
 export default {
   components: { OdmDetailTable },
   props: {
@@ -61,12 +61,8 @@ export default {
         size: []
       },
       rules: {
-        itemNo: [{ required: true, trigger: 'change' }],
-        weight: [numberValidator('请输入0-9999之间的数字', 'blur', true, 4), emptyValidator('预估重量不能为空')],
-        productionCycle: [numberValidator('请输入0-999之间的数字', 'blur', false, 3)],
-        currentStockAvailableDays: [numberValidator('请输入0-999之间的数字', 'blur', false, 3)],
-        stock: [numberValidator('请输入0-999999之间的数字', 'blur', false, 6)],
-        supplyPrice: [smallValidator(), emptyValidator('供货单价不能为空')]
+        sizeList: [{ required: true, trigger: 'change' }],
+        colorList: [numberValidator('请输入0-9999之间的数字', 'blur', true, 4), emptyValidator('预估重量不能为空')]
       }
     }
   },
@@ -88,6 +84,9 @@ export default {
     })
   },
   methods: {
+    commmitInfo () {
+      return this.form
+    }
   }
 }
 </script>

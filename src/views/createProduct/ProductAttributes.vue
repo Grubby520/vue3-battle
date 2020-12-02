@@ -58,6 +58,7 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-button type="primary" @click="changeCategoryID">改变CategoryId</el-button>
       <!-- 暂时屏蔽 勿删 -->
       <!-- <div class="custom-attribute">
                 <el-link type="primary" v-if="canUpdateFreestyle" @click="popupTemplateDialog">
@@ -176,30 +177,33 @@
 // import Product from '@/api/product'
 // import { createNamespacedHelpers } from 'vuex'
 // const { mapGetters, mapState } = createNamespacedHelpers('createProduct')
+import RecommendApi from '@api/recommendProducts/recommendProducts'
+
 export default {
   name: 'ProductAttributes',
   props: {
-    inData: {
-      type: Array,
-      default: () => {
-        // 数组内数据结构
-        // {
-        //     metadataId: null,
-        //     categoryId: null,
-        //     name: null,
-        //     defaultValue: null,
-        //     isList: null, // 是否是列表
-        //     isRequired: null, // 是否必填
-        //     multipleSelect: null, // 是否支持多选
-        //     dataType: null, // 0:数字 1:文本 2:布尔值
-        //     dataLength: null,
-        //     optionalDatas: [],
-        //     values: [],
-        //     relationIds: []
-        // }
-        return []
-      }
-    },
+    // 同erp，获取自定义属性
+    // inData: {
+    //   type: Array,
+    //   default: () => {
+    //     // 数组内数据结构
+    //     // {
+    //     //     metadataId: null,
+    //     //     categoryId: null,
+    //     //     name: null,
+    //     //     defaultValue: null,
+    //     //     isList: null, // 是否是列表
+    //     //     isRequired: null, // 是否必填
+    //     //     multipleSelect: null, // 是否支持多选
+    //     //     dataType: null, // 0:数字 1:文本 2:布尔值
+    //     //     dataLength: null,
+    //     //     optionalDatas: [],
+    //     //     values: [],
+    //     //     relationIds: []
+    //     // }
+    //     return []
+    //   }
+    // },
     // 能否更新
     canUpdate: {
       type: Boolean,
@@ -213,14 +217,16 @@ export default {
     categoryName: {
       type: String,
       default: ''
-    },
-    categoryId: {
-      type: [String, Number],
-      default: ''
     }
+    // categoryId: {
+    //   type: [String, Number],
+    //   default: ''
+    // }
   },
   data () {
     return {
+      categoryId: '',
+      inData: [],
       form: {
         metadatas: []
       },
@@ -256,6 +262,11 @@ export default {
     }
   },
   watch: {
+    categoryId (val) {
+      if (val) {
+        this.requestMetadata(val)
+      }
+    },
     inData: {
       handler: function (val) {
         val = JSON.parse(JSON.stringify(val))
@@ -283,6 +294,16 @@ export default {
   },
   components: {},
   methods: {
+    changeCategoryID () {
+      this.categoryId = 54
+    },
+    requestMetadata (categoryId) {
+      RecommendApi.getMetadata(categoryId).then(res => {
+        if (res.data) {
+          this.inData = res.data
+        }
+      })
+    },
     initItemValue (item) {
       // 多值情况
       if (item.multipleSelect && item.isList) {
@@ -369,6 +390,7 @@ export default {
           if (valid) {
             resolve(this.transferToSubmitData())
           } else {
+            this.$message.error('商品属性：请填写必填项')
             resolve(false)
           }
         })
