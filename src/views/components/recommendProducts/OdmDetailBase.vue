@@ -17,8 +17,8 @@
           <el-input clearable v-model.trim="form.itemNo" maxlength="100" placeholder="请输入供方货号" />
         </el-form-item>
         <el-form-item label="预计出货时间" prop="estimatedShippingTime">
-          <el-radio v-model="form.hasPattern" :label="true">
-            现
+          <el-radio v-model="form.hasPattern" :label="true" @input="resetValidate">
+            现货
             <span style="color: #ff0000;">（今日可发货）</span>
           </el-radio>
           <el-radio v-model="form.hasPattern" :label="false">期货</el-radio>
@@ -27,6 +27,7 @@
             type="date"
             placeholder="选择预计出货时间"
             value-format="yyyy-MM-dd HH:mm:ss"
+            :disabled="form.hasPattern"
             :picker-options="pickerOptions"
           ></el-date-picker>
         </el-form-item>
@@ -56,6 +57,7 @@
 </template>
 
 <script>
+import { isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -76,7 +78,7 @@ export default {
       rules: {
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
         itemNo: [{ required: true, message: '请输入供方货号', trigger: 'blur' }],
-        estimatedShippingTime: [{ required: true, message: '请选择预计出货时间', trigger: 'blur' }],
+        estimatedShippingTime: [this.ShippingTimeValidator()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
         remark: [{ required: true, message: '请输入商品备注', trigger: 'blur' }]
       },
@@ -94,7 +96,24 @@ export default {
 
   },
   methods: {
-
+    resetValidate () {
+      this.$refs.form.clearValidate('estimatedShippingTime')
+    },
+    ShippingTimeValidator () {
+      return {
+        validator: (rule, value, callback) => {
+          if (this.form.hasPattern) {
+            callback()
+          } else if (isEmpty(value)) {
+            callback(new Error('请选择预计出货时间'))
+          } else {
+            callback()
+          }
+        },
+        message: '请选择预计出货时间',
+        trigger: 'blur'
+      }
+    }
   }
 }
 </script>
