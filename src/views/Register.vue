@@ -1,37 +1,50 @@
 <template>
   <div class="register-container">
     <div class="header-container">
-      <RegisterHeader></RegisterHeader>
+      <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
     </div>
-    <div class="steps-container clearfix">
-      <h2 class="float-left font-wight-normal">商家入驻</h2>
-      <Steps :data="steps" :active="activeStep"></Steps>
-    </div>
-    <el-row>
-      <el-col class="register-content" :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
-        <keep-alive>
-          <component v-bind:is="currentStep"></component>
-        </keep-alive>
-        <div class="align-center">
-          <el-button v-if="activeStep === 1" type="primary">下一步</el-button>
-          <el-button v-if="activeStep === 2" type="primary">提交申请</el-button>
+    <div class="register-content-container">
+      <RegisterResult
+        v-if="showResult"
+        :supplierStatusCode="supplierStatusCode"
+        :supplierStatus="supplierStatus"
+      ></RegisterResult>
+      <template v-else>
+        <div class="steps-container clearfix">
+          <h2 class="float-left font-wight-normal">商家入驻</h2>
+          <Steps :data="steps" :active="activeStep"></Steps>
         </div>
-      </el-col>
-    </el-row>
+        <el-row>
+          <el-col class="register-content" :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
+            <keep-alive>
+              <component ref="currentComponent" v-bind:is="currentStep"></component>
+            </keep-alive>
+            <div class="align-center">
+              <el-button type="primary" @click="goStep()">{{stepText}}</el-button>
+              <el-button
+                v-if="activeStep === 2"
+                type="primary"
+                :loading="isLoading"
+                @click="register"
+              >提交申请</el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
-// import { createNamespacedHelpers } from 'vuex'
+import { createNamespacedHelpers } from 'vuex'
 import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
 import Steps from '@/views/components/register/Steps.vue'
 import Application from '@/views/components/register/Application.vue'
 import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
-// import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
+import RegisterResult from '@/views/components/register/RegisterResult.vue'
 import { valueToMd5 } from '@shared/util'
 import UserApi from '@api/user'
-import CommonApi from '@api/api.js'
-// const { mapState: registerMapState } = createNamespacedHelpers('register')
+const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'Register',
@@ -39,7 +52,8 @@ export default {
     RegisterHeader,
     Steps,
     Application,
-    AdditionalInfo
+    AdditionalInfo,
+    RegisterResult
   },
   data () {
     return {
@@ -55,23 +69,38 @@ export default {
         }
       ],
       activeStep: 1,
-      supplierTypeOptions: [],
-      supplierWayOptions: [],
-
       isLoading: false
     }
   },
   computed: {
+    ...userMapState(['supplierName', 'supplierStatusCode', 'supplierStatus']),
     currentStep () {
       let componentsMap = {
         1: 'Application',
         2: 'AdditionalInfo'
       }
       return componentsMap[this.activeStep]
+    },
+    stepText () {
+      let stepTextMap = {
+        1: '下一步',
+        2: '上一步'
+      }
+      return stepTextMap[this.activeStep]
+    },
+    showResult () {
+      return this.supplierStatusCode
     }
-    // ...registerMapState(['supplierName'])
+
   },
   methods: {
+    goStep () {
+      let stepMap = {
+        1: 2,
+        2: 1
+      }
+      this.activeStep = stepMap[this.activeStep]
+    },
     goBack () {
       this.$router.go(-1)
     },
@@ -101,13 +130,7 @@ export default {
     }
   },
   mounted () {
-    CommonApi.getDict({ dataCode: 'SUPPLY_TYPE' }).then(res => {
-      this.supplierTypeOptions = res.data || []
-    })
 
-    CommonApi.getDict({ dataCode: 'SUPPLY_WAY' }).then(res => {
-      this.supplierWayOptions = res.data || []
-    })
   }
 }
 </script>
@@ -138,11 +161,14 @@ export default {
   z-index: 100;
 }
 
+.register-content-container {
+  margin-top: 8rem;
+}
+
 .steps-container {
   position: relative;
   left: 50%;
   width: 50%;
-  margin-top: 8rem;
   transform: translateX(-40%);
 }
 

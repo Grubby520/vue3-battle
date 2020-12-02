@@ -114,13 +114,14 @@
         <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入运营手机号"></el-input>
       </el-form-item>
       <el-form-item label="运营QQ号码" prop="qq">
-        <el-input v-model="form.qq" maxlength="20" clearable placeholder="请输入QQ号码"></el-input>
+        <el-input v-model="form.qq" maxlength="150" clearable placeholder="请输入QQ号码"></el-input>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex'
 import {
   emptyValidator,
   passwordValidator,
@@ -129,39 +130,36 @@ import {
   businessLicenseNoValidator,
   transactionAamountValidator,
   emailValidator,
-  digitalValidator
+  qqValidator
 } from '@shared/validate'
+import CommonApi from '@api/api.js'
+const { mapState: registerMapState, mapActions: registerMapActions } = createNamespacedHelpers('register')
 
 export default {
   name: 'Application',
   props: {
-    data: {
-      type: Object,
-      default: () => ({})
-    }
   },
   data: () => {
     return {
       supplierTypeOptions: [],
       tradeTypeOptions: [],
       selfFactoryOptions: [],
-      supplierWayOptions: [],
       passwordType: 'text',
       form: {
-        supplierName: '', // 公司名称
+        supplierName: '',
         certificationNo: '', // 营业执照号
         supplyType: '', // 公司性质
-        address: [], // 公司地址
-        tradeType: '',
+        address: [],
+        tradeType: [],
         annualTurnoverAmount: null, // 年营业额
         selfFactory: null, // 是否自有工厂
         factoryDescription: '', // 工厂实力
         advantage: '',
-        userName: '', // 账号
+        userName: '',
         password: '',
         confirmPassword: '',
-        contactName: '', // 运营负责人
-        contactNumber: '', // 运营手机号
+        contactName: '',
+        contactNumber: '',
         qq: ''
       },
       rules: {
@@ -190,7 +188,7 @@ export default {
           emptyValidator('请选择是否自有工厂')
         ],
         userName: [
-          emptyValidator('请填写账户', 'blur'),
+          emptyValidator('请填写邮箱', 'blur'),
           emailValidator()
         ],
         password: [
@@ -210,24 +208,36 @@ export default {
           phoneNoValidator()
         ],
         qq: [
-          emptyValidator('请输入QQ号'),
-          digitalValidator()
+          qqValidator()
         ]
       }
     }
   },
+  computed: {
+    ...registerMapState(['application'])
+  },
   watch: {
-    data: {
+    application: {
       handler (val) {
         this.form = Object.assign(this.form, val)
       },
-      immediate: true
+      immediate: true,
+      deep: true
     }
   },
-  computed: {
-
+  mounted: function () {
+    CommonApi.getDict({ dataCode: 'SUPPLY_TYPE' }).then(data => {
+      this.supplierTypeOptions = data
+    })
+    CommonApi.getDict({ dataCode: 'TRADE_TYPE' }).then(data => {
+      this.tradeTypeOptions = data
+    })
+    CommonApi.getDict({ dataCode: 'YES_NO' }).then(data => {
+      this.selfFactoryOptions = data
+    })
   },
   methods: {
+    ...registerMapActions(['SET_APPLICATION']),
     passwordTypeChange () {
       this.passwordType = 'password'
     },
@@ -248,57 +258,14 @@ export default {
       return new Promise((resolve, reject) => {
         this.$refs.form.validate(valid => {
           if (valid) {
-            resolve()
+            this.SET_APPLICATION(JSON.parse(JSON.stringify(this.form)))
+            resolve(this.form)
           } else {
             reject(new Error(false))
           }
         })
       })
     }
-  },
-  mounted: function () {
-    this.supplierTypeOptions = [
-      {
-        label: '生产型',
-        value: 1
-      },
-      {
-        label: '贸易型',
-        value: 2
-      },
-      {
-        label: '淘宝个体',
-        value: 3
-      },
-      {
-        label: '个体工商户',
-        value: 4
-      }
-    ]
-    this.tradeTypeOptions = [
-      {
-        label: '加工',
-        value: 1
-      },
-      {
-        label: '批发',
-        value: 2
-      },
-      {
-        label: '零售',
-        value: 3
-      }
-    ]
-    this.selfFactoryOptions = [
-      {
-        label: '是',
-        value: true
-      },
-      {
-        label: '否',
-        value: false
-      }
-    ]
   }
 }
 </script>
