@@ -89,7 +89,7 @@
                 {{item.attrTermName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages v-model="item.images" :imageType="0">
+                <SlUploadImages v-model="item.images" :imageUrls="item.images" :imageType="0">
                   <div slot="content" slot-scope="{file}">
                     <el-button
                       :type="item.images.isMainImg ? 'primary' : ''"
@@ -414,7 +414,7 @@ export default {
           img.isMainImg = false
         }
       })
-      console.log(row.images)
+      console.log(file)
     }
   },
   watch: {

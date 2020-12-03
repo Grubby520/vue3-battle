@@ -25,7 +25,7 @@ export default {
   name: 'RegisterHeader',
   props: {
     supplierStatusCode: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     supplierName: {
