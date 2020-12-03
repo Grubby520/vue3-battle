@@ -51,7 +51,7 @@ const RECOMMEND = {
   },
   // 自定义属性
   getMetadata (id) {
-    return get(`/products/metadata/${id}/metafileds`)
+    return get(`/product-service/metadata/${id}/metafileds`)
   }
 }
 export default RECOMMEND

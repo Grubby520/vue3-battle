@@ -3,6 +3,7 @@
     <div class="container">
       <div>
         <div class="primary-header">销售属性</div>
+        <!-- 尺码、颜色表单 -->
         <el-form :model="form" :rules="rules" ref="form" label-width="120px">
           <el-form-item label="尺码" prop="sizes">
             <SlSelect
@@ -17,7 +18,7 @@
               isObj
               placeholder="请选择尺码"
               :disabled="false"
-              @change="validateFormItem"
+              @change="selectChange($event, 'size')"
             ></SlSelect>
           </el-form-item>
           <el-form-item label="颜色" prop="colors">
@@ -33,15 +34,20 @@
               isObj
               placeholder="请选择颜色"
               :disabled="false"
-              @change="validateFormItem"
+              @change="selectChange($event, 'color')"
             ></SlSelect>
           </el-form-item>
         </el-form>
+        <!-- 尺码、颜色表格 -->
         <div class="table-wrap">
-          <el-table :data="tableData" border style="width: 100%; margin-bottom: 1rem;">
-            <el-table-column prop="sizeLabel" label="尺码" width="160px" align="center"></el-table-column>
-            <el-table-column prop="colorLabel" label="颜色" width="160px" align="center"></el-table-column>
-            <el-table-column prop="price" label="供货价格（RMB）" min-width="220px" align="center">
+          <el-table
+            :data="productSalesAttributeList"
+            border
+            style="width: 100%; margin-bottom: 1rem;"
+          >
+            <el-table-column prop="sizeAttributeName" label="尺码" width="160px" align="center"></el-table-column>
+            <el-table-column prop="colorAttributeName" label="颜色" width="160px" align="center"></el-table-column>
+            <el-table-column prop="supplyPrice" label="供货价格（RMB）" min-width="220px" align="center">
               <template slot="header">
                 <p>
                   <span class="star-symble">*</span>供货价格（RMB）
@@ -49,19 +55,24 @@
               </template>
               <template v-slot="{row}">
                 <el-input
-                  v-model="row.price"
+                  v-model="row.supplyPrice"
                   v-slFormatNumber="{type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2}"
                 ></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="skuCode" label="商家SKU编码" min-width="220px" align="center">
+            <el-table-column
+              prop="supplierSkuCode"
+              label="商家SKU编码"
+              min-width="220px"
+              align="center"
+            >
               <template slot="header">
                 <p>
                   <span class="star-symble">*</span>商家SKU编码
                 </p>
               </template>
               <template v-slot="{row}">
-                <el-input v-model.trim="row.skuCode"></el-input>
+                <el-input v-model.trim="row.supplierSkuCode"></el-input>
               </template>
             </el-table-column>
             <el-table-column prop="weight" label="带包装重量（KG）" min-width="220px" align="center">
@@ -76,7 +87,7 @@
           <div class="error-tip">商品供货价：供货价为采购价，并非前台销售价，需低于平台价格（包括1688，淘宝等）。</div>
         </div>
       </div>
-
+      <!-- 商品图片 -->
       <div v-if="productImages && productImages.length">
         <div class="secondary-header">
           <span class="secondary-header--title">商品图片</span>
@@ -86,10 +97,17 @@
             <div class="product-images--item" :key="index">
               <div class="product-images--name">
                 <span class="star-symble">*</span>
-                {{item.attrTermName}}
+                {{item.colorAttributeName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages v-model="item.images"></SlUploadImages>
+                <SlUploadImages :imageUrls="item.images" :imageType="0">
+                  <div slot="content" slot-scope="{file}">
+                    <el-button
+                      :type="file.isMainImage ? 'primary' : ''"
+                      @click="setColorMainImg(item, file)"
+                    >设为颜色主图</el-button>
+                  </div>
+                </SlUploadImages>
               </div>
             </div>
           </template>
@@ -100,28 +118,42 @@
       </div>
 
       <el-button type="primary" @click="validateAll">校验销售属性</el-button>
-      <el-button type="primary" @click="changeCategoryID">改变CategoryId</el-button>
+      <el-button type="primary" @click="getSubmitData">获取提交值</el-button>
+      <div v-if="mode === 'view'" class="cover"></div>
     </div>
-
-    <ProductAttributes ref="customAttributesInfo" :canUpdate="true" :canView="false"></ProductAttributes>
   </div>
 </template>
 
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
-import ProductAttributes from '@/views/createProduct/ProductAttributes'
 
 export default {
   name: 'SalesAttributes',
   props: {
-    // categoryId: {
-    //   type: [String, Number],
-    //   default: ''
-    // }
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    },
+    productId: {
+      type: [String, Number],
+      default: ''
+    },
+    mode: {
+      type: String,
+      default: 'edit'
+    },
+    initialValue: {
+      type: Object,
+      default: function () {
+        return {
+          colorImageList: [],
+          productSalesAttributeList: []
+        }
+      }
+    }
   },
   data () {
     return {
-      categoryId: '',
       rules: {
         sizes: [
           { required: true, message: '尺码不能为空', trigger: ['blur', 'change'] }
@@ -134,125 +166,129 @@ export default {
         sizes: [],
         colors: []
       },
-      // 获取自定义属性,,metaFields由父组件传入，，接口获取
-      metaFields: [],
-      sizeOptions: [{ attrTermName: 'S', id: '1' }, { attrTermName: 'M', id: '2' }, { attrTermName: 'L', id: '3' }, { attrTermName: 'XL', id: '4' }, { attrTermName: 'XXL', id: '5' }],
-      colorOptions: [{ attrTermName: 'red', id: '1' }, { attrTermName: 'black', id: '2' }, { attrTermName: 'white', id: '3' }, { attrTermName: 'yellow', id: '4' }],
-      tableData: [],
+      preForm: {
+        sizes: [],
+        colors: []
+      },
+      sizeOptions: [],
+      colorOptions: [],
       productImages: [],
       sizeKeys: [],
-      colorKeys: []
+      colorKeys: [],
+      productSalesAttributeList: [
+        // {
+        //   id: 0,
+        //   productId: 0,
+        //   sizeAttributeId: 0,
+        //   sizeAttributeName: '',
+        //   colorAttributeId: 0,
+        //   colorAttributeName: '',
+        //   status: 0,
+        //   supplierSkuCode: '',
+        //   supplyPrice: 0,
+        //   weight: 0
+        // }
+      ],
+      colorImageList: {
+        // additionalProp1: [
+        //   {
+        //     colorAttributeId: 0,
+        //     createTime: '',
+        //     hash: '',
+        //     id: 0,
+        //     imageType: 0,
+        //     isMainImage: 0,
+        //     productId: 0,
+        //     src: '',
+        //     status: 0,
+        //     updateTime: ''
+        //   }
+        // ]
+      }
     }
   },
   components: {
-    ProductAttributes
+
   },
   mounted () {
-    this.metaFields = [
-      {
-        categoryId: 2,
-        dataLength: 200,
-        dataType: 1,
-        defaultValue: 'aa',
-        isList: false,
-        isRequired: false,
-        metadataId: 164,
-        multipleSelect: false,
-        name: '测试单值',
-        optionalDatas: [],
-        relationIds: [],
-        values: []
-      },
-      {
-        categoryId: 216,
-        dataLength: 200,
-        dataType: 1,
-        defaultValue: '',
-        isList: true,
-        isRequired: true,
-        metadataId: 154,
-        multipleSelect: false,
-        name: '测试1',
-        optionalDatas: [{ id: 307, valueCn: '66' }],
-        relationIds: [],
-        values: []
-      },
-      {
-        categoryId: 2,
-        dataLength: 200,
-        dataType: 0,
-        defaultValue: '',
-        isList: true,
-        isRequired: true,
-        metadataId: 96,
-        multipleSelect: false,
-        name: '测试0428',
-        optionalDatas: [{ id: 184, valueCn: '12' }],
-        relationIds: [],
-        values: []
-      },
-      {
-        categoryId: 2,
-        dataLength: 200,
-        dataType: 1,
-        defaultValue: '',
-        isList: true,
-        isRequired: true,
-        metadataId: 37,
-        multipleSelect: false,
-        name: '形状',
-        optionalDatas: [{ id: 78, valueCn: '圆形' }, { id: 79, valueCn: '方形' }],
-        relationIds: [],
-        values: []
-      },
-      {
-        categoryId: 2,
-        dataLength: 200,
-        dataType: 1,
-        defaultValue: '',
-        isList: true,
-        isRequired: true,
-        metadataId: 36,
-        multipleSelect: false,
-        name: '尺寸',
-        optionalDatas: [{ id: 76, valueCn: '大' }, { id: 77, valueCn: '小' }],
-        relationIds: [],
-        values: []
-      },
-      {
-        categoryId: 2,
-        dataLength: 200,
-        dataType: 1,
-        defaultValue: '白色',
-        isList: true,
-        isRequired: true,
-        metadataId: 35,
-        multipleSelect: false,
-        name: '颜色',
-        optionalDatas: [{ id: 75, valueCn: '白色' }, { id: 74, valueCn: '黑色' }],
-        relationIds: [],
-        values: []
-      }
-    ]
+    this.requestSizeList()
   },
   methods: {
-    requestInfo () {
-      this.clearContents()
-      this.requestSizeList()
-      this.requestColorList()
+    async initData () {
+      let sizeOptions = this.sizeOptions
+      let colorOptions = this.colorOptions
+      if (!sizeOptions.length || !colorOptions.length) {
+        const p1 = this.requestSizeList()
+        const p2 = this.requestColorList()
+        sizeOptions = await p1
+        colorOptions = await p2
+      }
+      let { productSalesAttributeList = [], colorImageList = [] } = this.initialValue
+      this.productSalesAttributeList = JSON.parse(JSON.stringify(productSalesAttributeList))
+      this.colorImageList = JSON.parse(JSON.stringify(colorImageList))
+      this.productSalesAttributeList.forEach(item => {
+        for (let i = 0; i < sizeOptions.length; i++) {
+          if (sizeOptions[i].id === item.sizeAttributeId) {
+            item.sizeAttributeName = sizeOptions[i].attrTermName
+            this.form.sizes.push({
+              attrTermName: sizeOptions[i].attrTermName,
+              id: sizeOptions[i].id
+            })
+            break
+          }
+        }
+        for (let j = 0; j < colorOptions.length; j++) {
+          if (colorOptions[j].id === item.colorAttributeId) {
+            item.colorAttributeName = colorOptions[j].attrTermName
+            this.form.colors.push({
+              attrTermName: colorOptions[j].attrTermName,
+              id: colorOptions[j].id
+            })
+            break
+          }
+        }
+      })
+      this.preForm = JSON.parse(JSON.stringify(this.form))
+      for (let [key, value] of Object.entries(this.colorImageList)) {
+        let colorAttributeName = ''
+        this.form.colors.map(color => {
+          if (color.id === key) {
+            colorAttributeName = color.attrTermName
+          }
+        })
+        this.productImages.push({
+          colorAttributeId: key,
+          colorAttributeName,
+          images: value
+        })
+      }
     },
     requestSizeList () {
-      RecommendApi.getAttrList(1, { categoryId: this.categoryId }).then(res => {
-        if (res.data) {
-          this.form.sizes = res.data.filter(item => item.state !== 'OFF')
-        }
+      return new Promise((resolve, reject) => {
+        RecommendApi.getAttrList(1, { categoryId: 54 }).then(res => {
+          if (res.data) {
+            this.sizeOptions = res.data.filter(item => item.state !== 'OFF')
+            resolve(this.sizeOptions)
+          } else {
+            reject(new Error('err'))
+          }
+        }).catch(err => {
+          reject(err)
+        })
       })
     },
     requestColorList () {
-      RecommendApi.getAttrList(2, { categoryId: this.categoryId }).then(res => {
-        if (res.data) {
-          this.form.colors = res.data.filter(item => item.state !== 'OFF')
-        }
+      return new Promise((resolve, reject) => {
+        RecommendApi.getAttrList(2, { categoryId: this.categoryId }).then(res => {
+          if (res.data) {
+            this.colorOptions = res.data.filter(item => item.state !== 'OFF')
+            resolve(this.colorOptions)
+          } else {
+            reject(new Error('err'))
+          }
+        }).catch(err => {
+          reject(err)
+        })
       })
     },
     clearContents () {
@@ -260,13 +296,25 @@ export default {
         sizes: [],
         colors: []
       }
-      this.tableData = []
+      this.preForm = {
+        sizes: [],
+        colors: []
+      }
+      this.productSalesAttributeList = []
       this.productImages = []
       this.sizeKeys = []
       this.colorKeys = []
       this.$refs.sizeSelect.handleClear()
       this.$refs.colorSelect.handleClear()
       this.$refs.form.clearValidate()
+    },
+    selectChange (e, attribute) {
+      this.validateFormItem()
+      let len = this.form[attribute + 's'].length || 0
+      let oldLen = this.preForm[attribute + 's'].length || 0
+      let handle = len - oldLen >= 0 ? 'add' : 'del'
+      this.generateTableData(handle, attribute)
+      this.preForm = JSON.parse(JSON.stringify(this.form))
     },
     generateTableData (handle, attribute) {
       if (handle === 'add') {
@@ -299,28 +347,35 @@ export default {
     handleAddTable (attribute, addItem) {
       this.form[attribute === 'size' ? 'colors' : 'sizes'].map(item => {
         let row = {
-          key: attribute === 'size' ? '' + addItem.id + item.id : '' + item.id + addItem.id,
-          sizeLabel: attribute === 'size' ? addItem.attrTermName : item.attrTermName,
-          sizeId: attribute === 'size' ? addItem.id : item.id,
-          colorLabel: attribute === 'size' ? item.attrTermName : addItem.attrTermName,
-          colorId: attribute === 'size' ? item.id : addItem.id,
-          price: '',
-          skuCode: '',
+          productId: this.productId,
+          sizeAttributeId: attribute === 'size' ? addItem.id : item.id,
+          sizeAttributeName: attribute === 'size' ? addItem.attrTermName : item.attrTermName,
+          colorAttributeId: attribute === 'size' ? item.id : addItem.id,
+          colorAttributeName: attribute === 'size' ? item.attrTermName : addItem.attrTermName,
+          supplierSkuCode: '',
+          supplyPrice: '',
           weight: ''
         }
-        this.tableData.push(row)
+        this.productSalesAttributeList.push(row)
+      })
+    },
+    handleAddProImg (addItem) {
+      this.productImages.push({
+        colorAttributeId: addItem.id,
+        colorAttributeName: addItem.attrTermName,
+        images: []
       })
     },
     removeAttrTag (val, attribute) {
-      for (let i = 0; i < this.tableData.length; i++) {
-        if (this.tableData[i][attribute + 'Id'] === val) {
-          this.tableData.splice(i, 1)
+      for (let i = 0; i < this.productSalesAttributeList.length; i++) {
+        if (this.productSalesAttributeList[i][attribute + 'AttributeId'] === val) {
+          this.productSalesAttributeList.splice(i, 1)
           i--
         }
       }
       if (attribute === 'color') {
         for (let j = 0; j < this.productImages.length; j++) {
-          if (this.productImages[j].colorId === val) {
+          if (this.productImages[j].colorAttributeId === val) {
             this.productImages.splice(j, 1)
             j--
           }
@@ -329,15 +384,12 @@ export default {
       let index = this[attribute + 'Keys'].findIndex(item => item === val)
       this[attribute + 'Keys'].splice(index, 1)
     },
-    handleAddProImg (addItem) {
-      this.productImages.push({
-        colorId: addItem.id,
-        attrTermName: addItem.attrTermName,
-        images: []
-      })
-    },
     validateAll () {
       this.validateAndGet().then(res => { }).catch(err => console.log(err))
+    },
+    validateFormItem () {
+      const p = this.validateForm()
+      p.then(res => { }).catch(err => console.log(err.message))
     },
     validateAndGet () {
       return new Promise((resolve, reject) => {
@@ -345,17 +397,12 @@ export default {
         const tablePromise = this.validateTableData()
         const imagePromise = this.validateProductImgs()
         Promise.all([formPromise, tablePromise, imagePromise]).then(res => {
-          console.log(this.form, this.tableData, this.productImages)
-          resolve(this.getAttrData())
+          resolve(this.getSubmitData())
         }).catch(err => {
           this.$message.error(err.message)
           reject(err)
         })
       })
-    },
-    validateFormItem () {
-      const p = this.validateForm()
-      p.then(res => { }).catch(err => console.log(err.message))
     },
     validateForm () {
       return new Promise((resolve, reject) => {
@@ -370,12 +417,12 @@ export default {
     },
     validateTableData () {
       return new Promise((resolve, reject) => {
-        this.tableData.map(item => {
+        this.productSalesAttributeList.map(item => {
           if (!item.price) {
-            reject(new Error(`销售属性：表格项 ${item.sizeLabel} / ${item.colorLabel} 供货价格未填写`))
+            reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 供货价格未填写`))
           }
           if (!item.skuCode) {
-            reject(new Error(`销售属性：表格项 ${item.sizeLabel} / ${item.colorLabel} 商家SKU编码未填写`))
+            reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 商家SKU编码未填写`))
           }
         })
         resolve()
@@ -391,39 +438,42 @@ export default {
         resolve()
       })
     },
-    getAttrData () {
-      let result = {
-        attrForm: this.form,
-        attrTable: this.tableData,
-        attrImages: this.productImages
+    getSubmitData () {
+      let colorImageList = {}
+      let productSalesAttributeList = []
+      this.productImages.map(item => {
+        colorImageList[item.colorAttributeId] = item.images
+      })
+      this.productSalesAttributeList.map(item => {
+        let li = JSON.parse(JSON.stringify(item))
+        delete li.sizeAttributeName
+        delete li.colorAttributeName
+        productSalesAttributeList.push(li)
+      })
+      console.log(productSalesAttributeList, colorImageList)
+      return {
+        productSalesAttributeList,
+        colorImageList
       }
-      return result
     },
-    changeCategoryID () {
-      this.categoryId = Math.floor(Math.random() * 100) + 1
+    setColorMainImg (row, file) {
+      row.images.forEach(img => {
+        if (img.name === file.name) {
+          this.$set(img, 'isMainImage', 1)
+        } else {
+          this.$set(img, 'isMainImage', 0)
+        }
+      })
     }
   },
   watch: {
-    categoryId (val) {
-      if (val) {
-        this.requestInfo()
-      }
-    },
-    'form.sizes': {
-      handler (val, oldVal) {
-        let len = val.length || 0
-        let oldLen = oldVal.length || 0
-        let handle = len - oldLen >= 0 ? 'add' : 'del'
-        this.generateTableData(handle, 'size')
-      }
-    },
-    'form.colors': {
-      handler (val, oldVal) {
-        let len = val.length || 0
-        let oldLen = oldVal.length || 0
-        let handle = len - oldLen >= 0 ? 'add' : 'del'
-        this.generateTableData(handle, 'color')
-      }
+    'initialValue': {
+      handler (val) {
+        console.log('----初始化销售属性数据-----')
+        this.initData()
+      },
+      deep: true,
+      immediate: true
     }
   }
 }
@@ -432,6 +482,15 @@ export default {
 <style scoped lang="scss">
 .container {
   padding: 2rem;
+  position: inherit;
+  .cover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 99;
+  }
   .table-wrap {
     margin: 0 0 1rem 12rem;
   }
