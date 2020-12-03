@@ -124,6 +124,7 @@ export default {
 
 .view-container {
   pointer-events: none;
+  cursor: not-allowed;
   /deep/.el-input__inner {
     border: 0;
   }

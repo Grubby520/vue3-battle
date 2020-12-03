@@ -19,8 +19,8 @@ const RECOMMEND = {
   //   return get(RECOMMENDURLS.spu_data_template, formData)
   // },
   // odm撤回
-  cancelrcommend (info) {
-    return put(RECOMMENDURLS.cancelrcommend, info)
+  cancelrcommend (id) {
+    return put(`${RECOMMENDURLS.cancelrcommend}/${id}`)
   },
   // odm 推品
   recommend (info) {
