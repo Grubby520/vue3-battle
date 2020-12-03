@@ -1,6 +1,5 @@
 <template>
   <div class="recommond">
-    <!-- {{query}} -->
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -11,9 +10,8 @@
     >
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
-        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" />
+        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" v-if="filterIsLoad" />
       </div>
-      <!-- <SlTreeSelect></SlTreeSelect> -->
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
@@ -52,6 +50,7 @@
 import { successNotify, errorNotify } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import Api from '@api/api.js'
 export default {
   data () {
     return {
@@ -64,17 +63,17 @@ export default {
       },
       category: undefined,
       query: {
-        categoryName: '',
+        categoryName: null,
         itemNo: '',
         status: ''
       },
       searchItems: [
         {
-          type: 'single-select',
+          default: null,
+          type: 'tree-select',
           label: '品类',
           name: 'categoryId',
           data: {
-            remoteUrl: RecommondUrl.recommendCategory,
             options: []
           }
         },
@@ -124,11 +123,27 @@ export default {
             updateTime: '更新'
           }
         }
-      ]
+      ],
+      // 搜索条件是否可以开始加载
+      filterIsLoad: false
     }
   },
-
+  mounted () {
+    this.initFilter()
+  },
   methods: {
+    /**
+     * 初始化筛选的基础数据
+     */
+    initFilter () {
+      Api.getTreeSelect().then((response) => {
+        if (response.success) {
+          this.searchItems[0].data.options = response.data
+        }
+      }).finally(() => {
+        this.filterIsLoad = true
+      })
+    },
     gotoPage (pageSize = 10, pageIndex = 1) {
       // this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
 

@@ -14,17 +14,13 @@ const COMMONAPI = {
       return data
     })
   },
+  // 预上传
+  generatePreUploadUrl (params) {
+    return post(URL.generatePreUploadUrl, params)
+  },
   // 分类树
   category () {
     return get(URL.categoryUrl)
-  },
-  // 预上传oss接口
-  getOssUrl (params) {
-    return post(URL.ossUrl, params)
-  },
-  // 预删除oss地址
-  deleteOssUrl (params) {
-    return get(URL.deleteOssUrl, params)
   }
 
 }

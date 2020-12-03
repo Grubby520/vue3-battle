@@ -10,5 +10,6 @@ export default {
   docDetails: baseURL + 'supplier/userId',
   docModify: baseURL + 'supplier',
   certificationNoExist: baseURL + 'supplier/certification/exist',
-  protocolConfirm: baseURL + 'supplier/agreement/confirm'
+  protocolConfirm: baseURL + 'supplier/agreement/confirm',
+  supplierDetail: baseURL + 'supplier/detail'
 }
