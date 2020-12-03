@@ -57,6 +57,11 @@ export default {
       },
       immediate: true
     },
+    modelVal: {
+      handler: function (newVal) {
+        this.value = newVal
+      }
+    },
     options: {
       handler: function (val, oldVal) {
         if (Array.isArray(val)) {

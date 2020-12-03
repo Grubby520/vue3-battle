@@ -41,7 +41,6 @@
 <script>
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import OdmDetailTable from './OdmDetailTable'
-import { numberValidator, emptyValidator } from '@shared/validate/index'
 export default {
   components: { OdmDetailTable },
   props: {
@@ -65,8 +64,8 @@ export default {
         size: []
       },
       rules: {
-        sizeList: [{ required: true, trigger: 'change' }],
-        colorList: [numberValidator('请输入0-9999之间的数字', 'blur', true, 4), emptyValidator('预估重量不能为空')]
+        sizeList: [{ required: true, message: '请选择尺寸', trigger: 'change' }],
+        colorList: [{ required: true, message: '请选择颜色', trigger: 'change' }]
       }
     }
   },

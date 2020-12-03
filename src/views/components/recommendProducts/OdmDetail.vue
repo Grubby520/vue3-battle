@@ -4,6 +4,7 @@
       :categoryId="categoryId"
       :cateLabels="cateLabels"
       :isStatus="isStatus"
+      :productBasicInfo="productBasicInfo"
       ref="OdmDetailBase"
     />
     <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
@@ -21,7 +22,6 @@ import OdmDetailBase from './OdmDetailBase'
 import OdmDetailAttr from './OdmDetailAttr'
 import OdmDetailProductAttr from './OdmDetailProductAttr'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-
 export default {
   components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
   props: {
@@ -36,7 +36,10 @@ export default {
   },
   data () {
     return {
-      ref: []
+      ref: [],
+      productBasicInfo: [],
+      productCustomizeAttributeList: [],
+      productSalesAttributeList: []
     }
   },
   computed: {
@@ -73,14 +76,16 @@ export default {
 
       Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
         .then(() => {
-          console.log('验证通过,提交表单')
-          const params = []
+          const params = {}
           if (status === 'create') {
             // 保存
             const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
-            const productSalesAttributeList = this.$refs.OdmDetailAttr.commmitInfo()
-            params.push(productBasicInfo, productSalesAttributeList)
-            this.create(params)
+            let data = {} // @todo:warning 详情数据，到时候替换
+            const dataBasicInfo = data.productBasicInfo
+            productBasicInfo.colorImageList = dataBasicInfo.colorImageList
+            productBasicInfo.productImageList = dataBasicInfo.productImageList
+            data.productBasicInfo = productBasicInfo
+            this.create(data)
           } else {
             // 保存提交
             this.modify(params)
@@ -91,7 +96,13 @@ export default {
         })
     },
     load () {
-
+      RecommondApi.recommendDetail(this.id)
+        .then(res => {
+          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
+          this.productBasicInfo = productBasicInfo
+          this.productCustomizeAttributeList = productCustomizeAttributeList
+          this.productSalesAttributeList = productSalesAttributeList
+        })
     },
     create (params) {
       RecommondApi.save(params)

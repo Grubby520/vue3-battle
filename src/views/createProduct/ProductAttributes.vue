@@ -58,7 +58,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-button type="primary" @click="changeCategoryID">改变CategoryId</el-button>
+      <el-button type="primary" @click="transferToSubmitDataForSrm">获取提交值</el-button>
       <!-- 暂时屏蔽 勿删 -->
       <!-- <div class="custom-attribute">
                 <el-link type="primary" v-if="canUpdateFreestyle" @click="popupTemplateDialog">
@@ -217,15 +217,24 @@ export default {
     categoryName: {
       type: String,
       default: ''
+    },
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    },
+    productId: {
+      type: [String, Number],
+      default: ''
+    },
+    initialValue: {
+      type: Array,
+      default: function () {
+        return []
+      }
     }
-    // categoryId: {
-    //   type: [String, Number],
-    //   default: ''
-    // }
   },
   data () {
     return {
-      categoryId: '',
       inData: [],
       form: {
         metadatas: []
@@ -239,7 +248,8 @@ export default {
         metadatas: []
       },
       templateAttrItems: [],
-      btnLoading: false
+      btnLoading: false,
+      emptyMetaFields: []
     }
   },
   computed: {
@@ -262,11 +272,6 @@ export default {
     }
   },
   watch: {
-    categoryId (val) {
-      if (val) {
-        this.requestMetadata(val)
-      }
-    },
     inData: {
       handler: function (val) {
         val = JSON.parse(JSON.stringify(val))
@@ -288,20 +293,48 @@ export default {
           JSON.stringify(this.form.metadatas)
         )
         // this.getAttributeTemp()
+      }
+    },
+    initialValue: {
+      handler: function (val) {
+        this.initData()
       },
       immediate: true
     }
   },
   components: {},
   methods: {
-    changeCategoryID () {
-      this.categoryId = 54
-    },
-    requestMetadata (categoryId) {
-      RecommendApi.getMetadata(categoryId).then(res => {
-        if (res.data) {
-          this.inData = res.data
+    async initData () {
+      let emptyMetaFields = this.emptyMetaFields
+      if (!emptyMetaFields.length) {
+        emptyMetaFields = await this.requestMetaFields()
+      }
+      let metaObj = {}
+      this.initialValue.map(item => {
+        if (item.customizeAttributeId) {
+          metaObj[item.customizeAttributeId] = item
         }
+      })
+      // inData改变，触发watch监听，之后逻辑与erp端一致
+      this.inData = emptyMetaFields.map(item => {
+        item.values = metaObj[item.metadataId] ? metaObj[item.metadataId].customizeAttributeValue : []
+        item.productId = metaObj[item.metadataId] ? metaObj[item.metadataId].productId : ''
+        item.id = metaObj[item.metadataId] ? metaObj[item.metadataId].id : ''
+        return item
+      })
+    },
+    requestMetaFields () {
+      return new Promise((resolve, reject) => {
+        RecommendApi.getMetadata(this.categoryId).then(res => {
+          if (res.data) {
+            this.resourceData = res.data
+            resolve(this.resourceData)
+          } else {
+            reject(new Error('err'))
+          }
+        }).catch(err => {
+          reject(err)
+        })
       })
     },
     initItemValue (item) {
@@ -367,13 +400,24 @@ export default {
         }
         delete ele['value']
 
+        // return {
+        //   metadataId: ele.metadataId,
+        //   relationIds: ele.relationIds,
+        //   valueCns: ele.values
+        // }
+        // srm:提交时的数据
         return {
-          metadataId: ele.metadataId,
-          relationIds: ele.relationIds,
-          valueCns: ele.values
+          categoryId: ele.categoryId,
+          customizeAttributeId: ele.metadataId,
+          customizeAttributeValue: ele.isList ? ele.relationIds : ele.values,
+          id: ele.id
         }
       })
       return data
+    },
+    transferToSubmitDataForSrm () {
+      let data = this.transferToSubmitData()
+      console.log(data)
     },
     hasDataChanged () {
       let originalDataStr = JSON.stringify(this.originalData)
@@ -509,27 +553,28 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.container {
-  padding: 2rem;
-}
 .container,
-.template-dialog /deep/ {
-  .el-form-item__label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  // 解决label过长星号放在后面被遮住的问题
-  .el-form-item {
-    &.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
-      content: '*';
-      margin-right: 4px;
-      color: #f00;
+.template-dialog {
+  padding: 2rem;
+  /deep/ .el-form {
+    .el-form-item__label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    &.is-required .el-form-item__label:after {
-      content: '';
+    // 解决label过长星号放在后面被遮住的问题
+    .el-form-item {
+      min-height: 4rem;
+      &.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
+        content: '*';
+        margin-right: 4px;
+        color: #f00;
+      }
+
+      &.is-required .el-form-item__label:after {
+        content: '';
+      }
     }
   }
 }

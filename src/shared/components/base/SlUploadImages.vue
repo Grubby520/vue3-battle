@@ -1,9 +1,8 @@
 <template>
   <div class="uploadImage">
     <!-- 上传图片 -->
-
     <el-upload
-      action="#"
+      action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
       ref="uploader"
       :disabled="disabled"
       list-type="picture-card"
@@ -16,6 +15,7 @@
       :before-upload="beforeUpload"
     >
       <i slot="default" class="el-icon-plus"></i>
+
       <!-- 图片图标 -- 展示图片 -->
       <template slot="file" slot-scope="{file}">
         <div class="container">
@@ -37,13 +37,16 @@
         </div>
       </template>
     </el-upload>
+
     <!-- 预览图片 -->
     <el-dialog :visible.sync="dialogVisible" width="20%">
       <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
 </template>
+
 <script>
+
 import CommonApi from '@api/api'
 import { put } from '@shared/http'
 import { downloadFile } from '@/shared/util'
@@ -54,11 +57,9 @@ export default {
     event: 'changeUploadImages'
   },
   props: {
-    // 需要回显图片地址参数url
+    // 需要回显图片数组
     imageUrls: { type: Array, required: false, default: () => { return [] } },
-    // 当图片类型为产品图片、尺码图片时需传入产品spu编码，当图片类型为资质图片需传入供应商营业执照编号
-    folder: { type: String, required: false, default: undefined },
-    // 0：产品图片，1：尺码图片, 2：供应商资质图片
+    // 0为商品图片 1为尺寸图片
     imageType: { type: Number, required: false, default: undefined },
     disabled: { type: Boolean, required: false, default: false }
   },
@@ -70,13 +71,15 @@ export default {
       uploadImages: [] // 预上传图片地址和上传的file
     }
   },
+
   watch: {
     // 监听回显图片
     'imageUrls': {
       handler (newValue) {
         this.fileList = newValue
-        this.$emit('changeUploadImages', this.imageUrls)
-      }
+      },
+      deep: true,
+      immediate: true
     }
   },
   mounted () {
@@ -101,6 +104,7 @@ export default {
         this.cancelUpload(file)
       }
     },
+
     limitSizes (file) {
       return new Promise((resolve, reject) => {
         const READER = new FileReader()
@@ -126,6 +130,7 @@ export default {
         }
       })
     },
+
     handleExceed () {
       this.$message.error(`上传图片不能超过20张!`)
     },
@@ -141,8 +146,8 @@ export default {
         this.fileList.push(file)
       }
     },
+
     handleRemove (file) {
-      // const _this = this
       this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -151,6 +156,7 @@ export default {
         this.cancelUpload(file)
       })
     },
+
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
@@ -161,35 +167,44 @@ export default {
     },
     uploadFile (file) {
       const PARAMS = { 'folder': 'dddd', 'fileName': file.file.name, 'contentType': file.file.type, 'fileType': this.imageType }
+
       // 获取预上传oss地址
-      CommonApi.getOssUrl(PARAMS)
+      CommonApi.generatePreUploadUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
-          this.uploadImages.push(res.data)
           fileToMd5(file.file).then((md5) => {
-            res.data.src = file.showUrl
+            const IMAGES = this.imageUrls.filter(img => img.id)
             res.data.hash = md5
+            IMAGES.push(res.data)
+            console.log('IMAGES', IMAGES)
+            this.$emit('changeUploadImages', IMAGES)
+            this.uploadImages.push(res.data)
+            this.gotoOss(res.data.preUploadUrl, file.file)
           })
         })
     },
-    gotoOss (images) {
+    gotoOss (preUploadUrl, file) {
       this.uploadImages.forEach(pre => {
         // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
-        put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
+        put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
           .then(res => {
           })
       })
     },
+
     cancelUpload (file) {
       // 取消上传文件
       this.$refs.uploader.abort(file)
       // 上传列表中删除取消文件
       this.fileList.splice(this.fileList.indexOf(file), 1)
     }
+
   }
 
 }
+
 </script>
+
 <style scoped lang="scss">
 .uploadImage {
   /deep/.el-upload-list--picture-card .el-upload-list__item {
@@ -198,13 +213,16 @@ export default {
     border: 0;
     outline-color: transparent; // 去掉点击图片黑色边框问题
   }
+
   /deep/.el-upload--picture-card {
     width: 110px;
     height: 110px;
   }
+
   /deep/.el-upload--picture-card {
     line-height: 110px;
   }
+
   .container {
     border: 1px solid #c0ccda;
     position: relative;
@@ -227,15 +245,18 @@ export default {
       transition: all 0.3s;
       object-fit: contain;
     }
+
     &:hover {
       .container-item-actions {
         visibility: visible;
         background-color: rgba(0, 0, 0, 0.6);
       }
     }
+
     &-freedom {
       margin: 10px 0 !important;
     }
+
     &:hover {
       .container-freedom {
         visibility: visible;

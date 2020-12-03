@@ -104,6 +104,6 @@ export const homeRoutes = [
       icon: 'el-icon-postcard',
       code: 'menu_my_info'
     },
-    component: () => import('@/views/createProduct/SalesAttributes.vue')
+    component: () => import('@/views/createProduct/index.vue')
   }
 ]

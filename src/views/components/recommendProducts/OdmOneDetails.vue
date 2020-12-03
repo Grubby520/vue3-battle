@@ -13,6 +13,10 @@
 import CommonApi from '@api/api'
 
 export default {
+  props: {
+    mode: { type: String, required: false, default: '' },
+    id: { type: String, required: false, default: '' }
+  },
   data () {
     return {
       options: [],
@@ -54,7 +58,7 @@ export default {
     },
     save () {
       const categoryId = this.nodeKeys[this.nodeKeys.length - 1]
-      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId } })
+      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId, mode: this.mode, id: this.id } })
     },
     showlabels (array, nodeKeys) {
       const labelarr = []
