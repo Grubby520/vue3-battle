@@ -8,12 +8,16 @@ export default {
     additionalInfo: {}
   },
   getters: {
+    certificationNo (state) {
+      return state.application.certificationNo
+    },
     getSubmitData (state) {
       let baseInfo = {}
       let bankInfo = {}
       let certification = {}
       // 基本信息转换
       let excludeKeys = ['certificationNo', 'confirmPassword']
+      baseInfo.supplierId = state.supplierId
       Object.keys(state.application).forEach(key => {
         if (!excludeKeys.includes(key)) {
           baseInfo[key] = state.application[key]
