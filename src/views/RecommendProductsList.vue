@@ -202,7 +202,7 @@ export default {
         })
     },
     cancel (row) {
-      RecommondApi.cancelrcommend({ productId: row.id })
+      RecommondApi.cancelrcommend(row.id)
         .then(res => {
           this.$refs.listView.refresh()
           successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
