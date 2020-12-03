@@ -1,8 +1,9 @@
 <template>
   <div class="uploadImage">
     <!-- 上传图片 -->
+
     <el-upload
-      action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
+      action="#"
       ref="uploader"
       :disabled="disabled"
       list-type="picture-card"
@@ -53,9 +54,11 @@ export default {
     event: 'changeUploadImages'
   },
   props: {
-    // 需要回显图片数组
+    // 需要回显图片地址参数url
     imageUrls: { type: Array, required: false, default: () => { return [] } },
-    // 0为商品图片 1为尺寸图片
+    // 当图片类型为产品图片、尺码图片时需传入产品spu编码，当图片类型为资质图片需传入供应商营业执照编号
+    folder: { type: String, required: false, default: undefined },
+    // 0：产品图片，1：尺码图片, 2：供应商资质图片
     imageType: { type: Number, required: false, default: undefined },
     disabled: { type: Boolean, required: false, default: false }
   },
@@ -72,9 +75,8 @@ export default {
     'imageUrls': {
       handler (newValue) {
         this.fileList = newValue
-      },
-      deep: true,
-      immediate: true
+        this.$emit('changeUploadImages', this.imageUrls)
+      }
     }
   },
   mounted () {
@@ -140,6 +142,7 @@ export default {
       }
     },
     handleRemove (file) {
+      // const _this = this
       this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -157,18 +160,15 @@ export default {
       downloadFile(file.url, file.name)
     },
     uploadFile (file) {
-      const PARAMS = { 'itemNo': 'aliyun', 'fileName': file.file.name, 'contentType': file.file.type, 'imageType': this.imageType }
+      const PARAMS = { 'folder': 'dddd', 'fileName': file.file.name, 'contentType': file.file.type, 'fileType': this.imageType }
       // 获取预上传oss地址
       CommonApi.getOssUrl(PARAMS)
         .then(res => {
           res.data.file = file.file
+          this.uploadImages.push(res.data)
           fileToMd5(file.file).then((md5) => {
-            const IMAGES = this.imageUrls.filter(img => img.id)
+            res.data.src = file.showUrl
             res.data.hash = md5
-            IMAGES.push(res.data)
-            console.log('IMAGES', IMAGES)
-            this.$emit('changeUploadImages', IMAGES)
-            this.uploadImages.push(res.data)
           })
         })
     },

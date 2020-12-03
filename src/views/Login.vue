@@ -26,6 +26,7 @@ import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
 import { valueToMd5 } from '@shared/util'
 const { mapActions: userMapActions, mapState: userMapState } = createNamespacedHelpers('user')
+const { mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
   name: 'Login',
@@ -50,10 +51,20 @@ export default {
   },
   computed: {
     ...mapState(['systemName']),
-    ...userMapState(['confirmAgreement', 'supplierStatusCode'])
+    ...userMapState(['confirmAgreement', 'supplierStatusCode']),
+    enterMainPage () {
+      return (this.confirmAgreement && this.supplierStatusCode === 2) || this.supplierStatusCode === 3
+    },
+    enterRegisterPage () {
+      return !this.confirmAgreement && this.supplierStatusCode === 2
+    }
+  },
+  mounted () {
+    this.RESET_USER_DATA()
   },
   methods: {
-    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO']),
+    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO', 'RESET_USER_DATA']),
+    ...registerMapMutations(['RESET_REGISTER_DATA']),
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
@@ -65,11 +76,15 @@ export default {
             if (res.success) {
               this.GET_USER_INFO().then(data => {
                 if (data) {
-                  if (!this.confirmAgreement || [0, 1, 5].includes(this.supplierStatusCode)) {
-                    this.$router.push('/register')
-                  } else {
-                    this.$router.push('home/my-file')
+                  if (this.enterMainPage) {
+                    this.$router.push('home/recommend-products/list')
+                    return
                   }
+                  if (this.enterRegisterPage) {
+                    this.$router.push('/register')
+                    return
+                  }
+                  this.$router.push('/notify')
                 }
               })
             }
@@ -80,6 +95,7 @@ export default {
       })
     },
     register () {
+      this.RESET_REGISTER_DATA()
       this.$router.push('register')
     }
   }

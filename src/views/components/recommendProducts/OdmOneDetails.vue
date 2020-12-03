@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
+import CommonApi from '@api/api'
 
 export default {
   data () {
@@ -43,8 +44,10 @@ export default {
   },
   methods: {
     load () {
-      axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
+      // axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
+      CommonApi.category()
         .then(res => {
+          debugger
           const list = res.data.data
           list.forEach(item => {
             if (item.children && item.children.length > 0) {
