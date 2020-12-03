@@ -225,6 +225,7 @@ export default {
       color: #ffffff;
       visibility: hidden;
       transition: all 0.3s;
+      object-fit: contain;
     }
     &:hover {
       .container-item-actions {
