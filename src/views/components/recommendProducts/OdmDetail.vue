@@ -1,14 +1,15 @@
 <template>
-  <div class="odmDetail" :class="{'view-container': false}">
-    <OdmDetailBase
-      :categoryId="categoryId"
-      :cateLabels="cateLabels"
-      :isStatus="isStatus"
-      :productBasicInfo="productBasicInfo"
-      ref="OdmDetailBase"
-    />
-    <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
-    <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
+  <div class="odmDetail">
+    <div :class="{'view-container': isStatus}">
+      <OdmDetailBase
+        :categoryId="categoryId"
+        :cateLabels="cateLabels"
+        :productBasicInfo="productBasicInfo"
+        ref="OdmDetailBase"
+      />
+      <OdmDetailAttr ref="OdmDetailAttr" />
+      <OdmDetailProductAttr ref="OdmDetailProductAttr" />
+    </div>
     <div class="odmDetail-btn">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
@@ -45,9 +46,9 @@ export default {
   computed: {
     isStatus () {
       if (this.mode !== 'view') {
-        return true
-      } else {
         return false
+      } else {
+        return true
       }
     }
   },
@@ -138,6 +139,12 @@ export default {
   cursor: not-allowed;
   /deep/.el-input__inner {
     border: 0;
+  }
+  /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
+    border: 0;
+  }
+  /deep/.el-textarea__inner {
+    border: 0 !important;
   }
 }
 </style>
