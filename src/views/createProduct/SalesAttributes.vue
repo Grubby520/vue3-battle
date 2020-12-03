@@ -100,7 +100,7 @@
                 {{item.colorAttributeName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages :imageUrls="item.images" :imageType="0">
+                <SlUploadImages v-model="item.images" :imageType="0">
                   <div slot="content" slot-scope="{file}">
                     <el-button
                       :type="file.isMainImage ? 'primary' : ''"
@@ -442,8 +442,9 @@ export default {
       let productSalesAttributeList = []
       this.productImages.map(item => {
         let val = item.images.map(img => {
+          console.log(img)
           return {
-            src: img.url,
+            src: img.src,
             colorAttributeId: item.colorAttributeId,
             hash: img.hash,
             id: img.id,
