@@ -4,6 +4,7 @@
       :categoryId="categoryId"
       :cateLabels="cateLabels"
       :isStatus="isStatus"
+      :productBasicInfo="productBasicInfo"
       ref="OdmDetailBase"
     />
     <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
@@ -35,7 +36,10 @@ export default {
   },
   data () {
     return {
-      ref: []
+      ref: [],
+      productBasicInfo: [],
+      productCustomizeAttributeList: [],
+      productSalesAttributeList: []
     }
   },
   computed: {
@@ -72,8 +76,8 @@ export default {
 
       Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
         .then(() => {
-          const params = []
-          if (status === 'submit') {
+          const params = {}
+          if (status === 'create') {
             // 保存
             const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
             let data = {} // @todo:warning 详情数据，到时候替换
@@ -92,7 +96,13 @@ export default {
         })
     },
     load () {
-
+      RecommondApi.recommendDetail(this.id)
+        .then(res => {
+          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
+          this.productBasicInfo = productBasicInfo
+          this.productCustomizeAttributeList = productCustomizeAttributeList
+          this.productSalesAttributeList = productSalesAttributeList
+        })
     },
     create (params) {
       RecommondApi.save(params)

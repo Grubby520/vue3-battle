@@ -34,6 +34,7 @@ const RECOMMEND = {
   modifyDetail (info) {
     return post(`${RECOMMENDURLS.rcommenduel}`, info)
   },
+  // 校验供应商货号是否已存在
   checkItem (itemNo) {
     return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
   },

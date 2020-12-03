@@ -16,6 +16,7 @@
       :disable-branch-nodes="true"
       :props="defaultProps"
       placeholder="请选择"
+      size="small"
     />
   </div>
 </template>
@@ -65,4 +66,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+/deep/.vue-treeselect__control {
+  height: 30px;
+}
 </style>
