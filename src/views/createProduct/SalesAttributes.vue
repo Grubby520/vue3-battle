@@ -100,7 +100,7 @@
                 {{item.colorAttributeName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages :imageUrls="item.images" :imageType="0">
+                <SlUploadImages v-model="item.images" :imageType="0">
                   <div slot="content" slot-scope="{file}">
                     <el-button
                       :type="file.isMainImage ? 'primary' : ''"
@@ -210,9 +210,7 @@ export default {
   components: {
 
   },
-  mounted () {
-    this.requestSizeList()
-  },
+  mounted () { },
   methods: {
     async initData () {
       let sizeOptions = this.sizeOptions
@@ -256,6 +254,7 @@ export default {
             colorAttributeName = color.attrTermName
           }
         })
+        value.url = value.src
         this.productImages.push({
           colorAttributeId: key,
           colorAttributeName,
@@ -442,7 +441,20 @@ export default {
       let colorImageList = {}
       let productSalesAttributeList = []
       this.productImages.map(item => {
-        colorImageList[item.colorAttributeId] = item.images
+        let val = item.images.map(img => {
+          console.log(img)
+          return {
+            src: img.src,
+            colorAttributeId: item.colorAttributeId,
+            hash: img.hash,
+            id: img.id,
+            imageType: img.imageType,
+            isMainImage: img.isMainImage || 0,
+            productId: this.productId,
+            status: img.status
+          }
+        })
+        colorImageList[item.colorAttributeId] = val
       })
       this.productSalesAttributeList.map(item => {
         let li = JSON.parse(JSON.stringify(item))
@@ -458,7 +470,7 @@ export default {
     },
     setColorMainImg (row, file) {
       row.images.forEach(img => {
-        if (img.name === file.name) {
+        if (img.uid === file.uid) {
           this.$set(img, 'isMainImage', 1)
         } else {
           this.$set(img, 'isMainImage', 0)
