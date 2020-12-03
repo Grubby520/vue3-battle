@@ -32,7 +32,7 @@
           </span>
         </div>
         <div class="container-freedom">
-          <slot name="content" :file="file"></slot>
+          <slot name="content" :file="fileList"></slot>
         </div>
       </template>
     </el-upload>
