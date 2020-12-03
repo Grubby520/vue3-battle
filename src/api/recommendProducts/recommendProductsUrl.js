@@ -1,5 +1,5 @@
 const baseURL = '/srm-goods-service'
-const productUrl = '/products'
+const productUrl = '/product-service'
 
 const RECOMMENDURLS = {
   // odm 列表页
