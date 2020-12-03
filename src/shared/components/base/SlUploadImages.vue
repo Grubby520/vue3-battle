@@ -32,7 +32,7 @@
           </span>
         </div>
         <div class="container-freedom">
-          <slot name="content" :file="fileList"></slot>
+          <slot name="content" :file="file"></slot>
         </div>
       </template>
     </el-upload>
@@ -225,6 +225,7 @@ export default {
       color: #ffffff;
       visibility: hidden;
       transition: all 0.3s;
+      object-fit: contain;
     }
     &:hover {
       .container-item-actions {
