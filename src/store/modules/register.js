@@ -15,13 +15,13 @@ export default {
       let excludeKeys = ['certificationNo', 'confirmPassword']
       Object.keys(state.application).forEach(key => {
         if (!excludeKeys.includes(key)) {
-          if (Array.isArray(state.application[key])) {
+          baseInfo[key] = state.application[key]
+          if (key === 'address') {
             baseInfo[key] = JSON.stringify(state.application[key])
-          } else {
-            baseInfo[key] = state.application[key]
-            if (key === 'password') {
-              baseInfo[key] = valueToMd5(state.application[key])
-            }
+          }
+
+          if (key === 'password') {
+            baseInfo[key] = valueToMd5(state.application[key])
           }
         }
       })
@@ -49,8 +49,45 @@ export default {
     }
   },
   mutations: {
+    RESET_REGISTER_DATA (state) {
+      state.application = {
+        supplierName: '',
+        certificationNo: '', // 营业执照号
+        supplyType: null, // 公司性质
+        address: [],
+        tradeType: [],
+        annualTurnoverAmount: null, // 年营业额
+        selfFactory: false, // 是否自有工厂
+        factoryDescription: '', // 工厂实力
+        advantage: '',
+        userName: '',
+        password: '',
+        confirmPassword: '',
+        contactName: '',
+        contactNumber: '',
+        contactQq: ''
+      }
+
+      state.additionalInfo = {
+        currency: null,
+        payeeCompany: '',
+        payee: '',
+        payeeIdCard: '',
+        payeePhone: '',
+        unionPayNo: '',
+        bank: '',
+        bankBranch: '',
+        bankAccount: '',
+        idCardImages: [],
+        certificationImage: [],
+        organizationImage: [],
+        taxRegisterImage: [],
+        companyShareholderImage: []
+      }
+    },
     SET_APPLICATION (state, application) {
       state.application = application
+      console.log(application)
     },
     SET_ADDITIONAL_INFO (state, additionalInfo) {
       state.additionalInfo = additionalInfo

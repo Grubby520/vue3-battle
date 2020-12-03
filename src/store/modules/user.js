@@ -8,6 +8,7 @@ export default {
     supplierStatus: '',
     supplierStatusCode: '',
     supplierName: '小王极简主义传媒有限公司',
+    supplierId: '',
     userName: '',
     isAdmin: false,
     confirmAgreement: false
@@ -17,16 +18,32 @@ export default {
   },
   mutations: {
     SET_USER_INFO (state, userInfo) {
-      state.permissions = userInfo.permissions
-      state.supplierStatus = userInfo.supplierStatus
-      state.supplierStatusCode = userInfo.supplierStatusCode
-      state.supplierName = userInfo.supplierName
-      state.userName = userInfo.userName
-      state.isAdmin = userInfo.isAdmin
-      state.confirmAgreement = userInfo.confirmAgreement
+      if (userInfo === null && Object.keys(userInfo).length === 0) {
+        state.permissions = []
+        state.supplierStatus = ''
+        state.supplierStatusCode = ''
+        state.supplierName = ''
+        state.supplierId = ''
+        state.userName = ''
+        state.isAdmin = false
+        state.confirmAgreement = false
+        return
+      }
+      Object.keys(userInfo).forEach(key => {
+        if (typeof userInfo[key] === 'object') {
+          state[key] = JSON.parse(JSON.stringify(userInfo[key]))
+        } else {
+          state[key] = userInfo[key]
+        }
+      })
     }
   },
   actions: {
+    RESET_USER_DATA ({ commit }) {
+      commit('SET_USER_INFO', {})
+      removeSessionItem('token')
+      removeSessionItem('userKey')
+    },
     AUTH_LOGIN ({ commit }, params) {
       return UserApi.authLogin(params).then((res) => {
         const { success, data } = res
@@ -37,13 +54,11 @@ export default {
         return res
       })
     },
-    SIGN_OUT ({ commit }) {
+    SIGN_OUT ({ commit, dispatch }) {
       return UserApi.logout().then((res) => {
         const { success } = res
         if (success) {
-          commit('SET_USER_INFO', {})
-          removeSessionItem('token')
-          removeSessionItem('userKey')
+          dispatch('RESET_USER_DATA')
           return res
         }
       })

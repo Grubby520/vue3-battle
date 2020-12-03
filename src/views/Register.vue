@@ -1,33 +1,28 @@
 <template>
   <div class="register-container">
-    <div class="header-container">
-      <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
-    </div>
+    <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
     <div class="register-content-container">
-      <RegisterResult v-if="showResult" :isSubmit="isSubmit"></RegisterResult>
-      <template v-else>
-        <div class="steps-container clearfix">
-          <h2 class="float-left font-wight-normal">商家入驻</h2>
-          <Steps :data="steps" :active="activeStep"></Steps>
-        </div>
-        <el-row>
-          <el-col class="register-content" :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
-            <keep-alive>
-              <component ref="currentComponent" v-bind:is="currentStep"></component>
-            </keep-alive>
-            <!-- 前两步才会有的结构 -->
-            <div v-if="activeStep <= 2" class="align-center">
-              <el-button type="primary" @click="goStep()">{{stepText}}</el-button>
-              <el-button
-                v-if="activeStep === 2"
-                type="primary"
-                :loading="isLoading"
-                @click="register"
-              >提交申请</el-button>
-            </div>
-          </el-col>
-        </el-row>
-      </template>
+      <div class="steps-container clearfix">
+        <h2 class="float-left font-wight-normal">商家入驻</h2>
+        <Steps :data="steps" :active="activeStep"></Steps>
+      </div>
+      <el-row>
+        <el-col class="register-content" :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
+          <keep-alive>
+            <component ref="currentComponent" v-bind:is="currentStep"></component>
+          </keep-alive>
+          <!-- 前两步才会有的结构 -->
+          <div v-if="activeStep <= 2" class="align-center">
+            <el-button type="primary" @click="goStep()">{{stepText}}</el-button>
+            <el-button
+              v-if="activeStep === 2"
+              type="primary"
+              :loading="isLoading"
+              @click="register"
+            >提交申请</el-button>
+          </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -38,11 +33,11 @@ import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
 import Steps from '@/views/components/register/Steps.vue'
 import Application from '@/views/components/register/Application.vue'
 import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
-import RegisterResult from '@/views/components/register/RegisterResult.vue'
 import Protocol from '@/views/components/register/Protocol.vue'
 import UserApi from '@api/user'
-const { mapState: userMapState } = createNamespacedHelpers('user')
-const { mapGetters: registerMapGetters } = createNamespacedHelpers('register')
+import { getSessionItem } from '@shared/util'
+const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
+const { mapGetters: registerMapGetters, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
   name: 'Register',
@@ -51,8 +46,7 @@ export default {
     Steps,
     Application,
     AdditionalInfo,
-    Protocol,
-    RegisterResult
+    Protocol
   },
   data () {
     return {
@@ -68,12 +62,11 @@ export default {
         }
       ],
       activeStep: 1,
-      isLoading: false,
-      isSubmit: false
+      isLoading: false
     }
   },
   computed: {
-    ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
+    ...userMapState(['supplierId', 'supplierName', 'supplierStatusCode', 'confirmAgreement']),
     ...registerMapGetters(['getSubmitData']),
     currentStep () {
       let componentsMap = {
@@ -92,13 +85,11 @@ export default {
         2: '上一步'
       }
       return stepTextMap[this.activeStep]
-    },
-    showResult () {
-      return [0, 1, 5].includes(this.supplierStatusCode) || this.isSubmit
     }
-
   },
   methods: {
+    ...userMapActions(['GET_USER_INFO']),
+    ...registerMapMutations(['SET_APPLICATION', 'SET_ADDITIONAL_INFO']),
     goStep () {
       let stepMap = {
         1: 2,
@@ -114,8 +105,48 @@ export default {
       }
       this.activeStep = stepMap[this.activeStep]
     },
-    goBack () {
-      this.$router.go(-1)
+    transformImageData (url) {
+      return {
+        url
+      }
+    },
+    transformBackData (data) {
+      let { baseInfo = {}, bankInfo = {}, certification = {} } = data
+      let application = {}
+      let additionalInfo = {}
+      // 申请入驻信息回填
+      application = {
+        address: baseInfo.address ? JSON.parse(baseInfo.address) : [],
+        tradeType: baseInfo.tradeType ? JSON.parse(baseInfo.tradeType) : [],
+        certificationNo: certification.certificationNo
+      }
+      Object.keys(baseInfo).forEach(key => {
+        if (!['address', 'tradeType'].includes(key)) {
+          application[key] = baseInfo[key]
+        }
+      })
+      // 资质信息回填
+      let idCardImages = []
+      if (certification.idCardBack) {
+        idCardImages.push(this.transformImageData(certification.idCardBack))
+      }
+      if (certification.idCardFront) {
+        idCardImages.push(this.transformImageData(certification.idCardFront))
+      }
+      additionalInfo = {
+        idCardImages
+      }
+      Object.keys(certification).forEach(key => {
+        if (!['idCardBack', 'idCardBack', 'certificationNo'].includes(key)) {
+          additionalInfo[key] = certification[key] ? [this.transformImageData(certification[key])] : []
+        }
+      })
+      Object.keys(bankInfo).forEach(key => {
+        additionalInfo[key] = bankInfo[key]
+      })
+
+      this.SET_APPLICATION(application)
+      this.SET_ADDITIONAL_INFO(additionalInfo)
     },
     register () {
       this.$refs.currentComponent.validate().then((data) => {
@@ -123,12 +154,12 @@ export default {
           this.isLoading = true
           UserApi.register(this.getSubmitData).then(res => {
             if (res.success) {
-              this.$message({
-                type: 'success',
-                message: '注册成功！',
-                duration: 2000
+              this.$router.push({
+                path: '/notify',
+                query: {
+                  isSubmit: true
+                }
               })
-              this.goBack()
             }
           }).finally(() => {
             this.isLoading = false
@@ -138,7 +169,17 @@ export default {
     }
   },
   mounted () {
-
+    if (getSessionItem('token')) {
+      this.GET_USER_INFO().then(res => {
+        if (res && this.supplierStatusCode === 5) {
+          UserApi.getSupplierDetail({ supplierId: this.supplierId }).then(res => {
+            if (res.success) {
+              this.transformBackData(res.data)
+            }
+          })
+        }
+      })
+    }
   }
 }
 </script>
@@ -159,14 +200,6 @@ export default {
   .el-cascader {
     display: block;
   }
-}
-
-.header-container {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: $color-white;
-  z-index: 100;
 }
 
 .register-content-container {

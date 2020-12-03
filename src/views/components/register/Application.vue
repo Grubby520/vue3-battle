@@ -198,13 +198,13 @@ export default {
           certificationNoExistValidator
         ],
         supplyType: [
-          emptyValidator('请选择供公司性质', ['blur', 'change'])
+          emptyValidator('请选择供公司性质')
         ],
         address: [
           emptyValidator('请选择公司地址', ['blur', 'change'])
         ],
         tradeType: [
-          emptyValidator('请选择交易类型', ['blur', 'change'])
+          emptyValidator('请选择交易类型')
         ],
         annualTurnoverAmount: [
           emptyValidator('请选择输入年交易额万元(￥)'),

@@ -11,7 +11,8 @@ const USER_API = {
   docDetails: () => get(URL.docDetails),
   docModify: (params) => post(URL.docModify, params),
   isCertificationNoExist: (params) => get(URL.certificationNoExist, params),
-  protocolConfirm: () => put(URL.protocolConfirm)
+  protocolConfirm: () => put(URL.protocolConfirm),
+  getSupplierDetail: (params) => get(URL.supplierDetail, params)
 }
 
 export default USER_API
