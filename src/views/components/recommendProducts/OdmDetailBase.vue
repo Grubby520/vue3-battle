@@ -57,6 +57,8 @@
 </template>
 
 <script>
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+
 import { isEmpty } from '@shared/util'
 export default {
   props: {
@@ -69,6 +71,20 @@ export default {
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
+    const productValidata = (rule, value, callback) => {
+      if (this.form.itemNo) {
+        RecommondApi.checkItem(this.form.itemNo)
+          .then(res => {
+            if (res.success) {
+              callback()
+            } else {
+              callback(new Error('同一个供应商下，供方SPU唯一'))
+            }
+          })
+      } else {
+        callback(new Error('不能为空'))
+      }
+    }
     return {
       hasPattern: false,
       form: {
@@ -90,7 +106,7 @@ export default {
       rules: {
         categoryId: [{ required: true }],
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
-        itemNo: [{ required: true, message: '请输入供方货号', trigger: 'blur' }],
+        itemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
         estimatedShippingTime: [this.ShippingTimeValidator()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
         remark: [{ required: true, message: '请输入商品备注', trigger: 'blur' }]
