@@ -1,5 +1,6 @@
 <template>
   <div class="uploadImage">
+    {{ossImages}}
     <!-- 上传图片 -->
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
@@ -67,7 +68,8 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      fileList: [] // 上传图片列表
+      fileList: [], // 上传图片列表
+      ossImages: []
     }
   },
 
@@ -174,9 +176,7 @@ export default {
           fileToMd5(file.file).then((md5) => {
             res.data.src = res.data.showUrl
             res.data.hash = md5
-            const IMAGES = this.imageUrls.filter(img => img.id)
-            IMAGES.push(res.data)
-            this.$emit('changeUploadImages', IMAGES)
+            this.ossImages.push(res.data)
             this.gotoOss(res.data.preUploadUrl, file.file)
           })
         })
@@ -185,7 +185,9 @@ export default {
       // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
       put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
         .then(res => {
-
+          const IMAGES = this.imageUrls.filter(img => img.id)
+          this.$emit('changeUploadImages', IMAGES)
+          IMAGES.push(...this.ossImages)
         })
     },
 
