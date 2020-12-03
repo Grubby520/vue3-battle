@@ -27,7 +27,11 @@ export default {
   props: {
     mode: { type: String, required: false, default: '' },
     id: { type: String, required: false, default: '' },
-    categoryId: { type: Number, required: false, default: undefined },
+    // 分类Id
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    },
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
