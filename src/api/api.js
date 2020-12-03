@@ -1,6 +1,6 @@
 // 用于声明调用接口的方法
 import URL from './url'
-import { get } from '@shared/http'
+import { get, post } from '@shared/http'
 import { yesOrNo } from './static'
 
 const COMMONAPI = {
@@ -20,7 +20,7 @@ const COMMONAPI = {
   },
   // 预上传oss接口
   getOssUrl (params) {
-    return get(URL.ossUrl, { ...params })
+    return post(URL.ossUrl, params)
   },
   // 预删除oss地址
   deleteOssUrl (params) {
