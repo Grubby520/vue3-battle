@@ -171,20 +171,20 @@ export default {
       tradeTypeOptions: [],
       selfFactoryOptions: [],
       form: {
-        supplierName: '小王极简主义传媒公司1',
-        certificationNo: '123123123123123124', // 营业执照号
-        supplyType: 0, // 公司性质
-        address: ['150000', '150500', '150522'],
-        tradeType: ['0'],
-        annualTurnoverAmount: 12, // 年营业额
-        selfFactory: true, // 是否自有工厂
-        factoryDescription: '很有实力', // 工厂实力
-        advantage: '很有优势',
-        userName: 'wanglei1@qq.com',
-        password: 'w1234567',
-        confirmPassword: 'w1234567',
-        contactName: 'wlei',
-        contactNumber: '13208060814',
+        supplierName: '',
+        certificationNo: '', // 营业执照号
+        supplyType: null, // 公司性质
+        address: [],
+        tradeType: [],
+        annualTurnoverAmount: null, // 年营业额
+        selfFactory: null, // 是否自有工厂
+        factoryDescription: '', // 工厂实力
+        advantage: '',
+        userName: '',
+        password: '',
+        confirmPassword: '',
+        contactName: '',
+        contactNumber: '',
         contactQq: ''
       },
       rules: {

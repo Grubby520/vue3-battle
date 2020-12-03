@@ -7,7 +7,7 @@ export default {
     permissions: [],
     supplierStatus: '',
     supplierStatusCode: '',
-    supplierName: '小王极简主义传媒有限公司',
+    supplierName: '',
     supplierId: '',
     userName: '',
     isAdmin: false,
@@ -18,7 +18,7 @@ export default {
   },
   mutations: {
     SET_USER_INFO (state, userInfo) {
-      if (userInfo === null && Object.keys(userInfo).length === 0) {
+      if (userInfo === null || Object.keys(userInfo).length === 0) {
         state.permissions = []
         state.supplierStatus = ''
         state.supplierStatusCode = ''

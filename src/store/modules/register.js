@@ -57,7 +57,7 @@ export default {
         address: [],
         tradeType: [],
         annualTurnoverAmount: null, // 年营业额
-        selfFactory: false, // 是否自有工厂
+        selfFactory: null, // 是否自有工厂
         factoryDescription: '', // 工厂实力
         advantage: '',
         userName: '',
