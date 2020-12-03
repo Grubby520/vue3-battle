@@ -1,6 +1,6 @@
 // 用于声明调用接口的方法
 import URL from './url'
-import { get } from '@shared/http'
+import { get, post } from '@shared/http'
 import { yesOrNo } from './static'
 
 const COMMONAPI = {
@@ -13,6 +13,9 @@ const COMMONAPI = {
       let data = res.data || []
       return data
     })
+  },
+  generatePreUploadUrl (params) {
+    return post(URL.generatePreUploadUrl, params)
   },
   // 分类树
   category () {
