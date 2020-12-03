@@ -13,8 +13,13 @@
         <el-form-item label="商品标题" prop="title">
           <el-input clearable v-model.trim="form.title" placeholder="请输入品牌名称+商品名称" maxlength="20" />
         </el-form-item>
-        <el-form-item label="供方货号" prop="itemNo">
-          <el-input clearable v-model.trim="form.itemNo" maxlength="100" placeholder="请输入供方货号" />
+        <el-form-item label="供方货号" prop="supplierItemNo">
+          <el-input
+            clearable
+            v-model.trim="form.supplierItemNo"
+            maxlength="100"
+            placeholder="请输入供方货号"
+          />
         </el-form-item>
         <el-form-item label="预计出货时间" prop="estimatedShippingTime">
           <el-radio v-model="hasPattern" :label="true" @input="changeToSpot">
@@ -77,7 +82,7 @@ export default {
         // 商品标题
         title: '',
         // 供方货号
-        itemNo: '',
+        supplierItemNo: '',
         // 预计出货类型
         // hasPattern: true,
         // 预计出货时间
@@ -90,7 +95,7 @@ export default {
       rules: {
         categoryId: [{ required: true }],
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
-        itemNo: [{ required: true, message: '请输入供方货号', trigger: 'blur' }],
+        supplierItemNo: [{ required: true, message: '请输入供方货号', trigger: 'blur' }],
         estimatedShippingTime: [this.ShippingTimeValidator()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
         remark: [{ required: true, message: '请输入商品备注', trigger: 'blur' }]
