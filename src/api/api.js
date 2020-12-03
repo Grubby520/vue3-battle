@@ -14,7 +14,7 @@ const COMMONAPI = {
       return data
     })
   },
-  // 分类
+  // 分类树
   category () {
     return get(URL.categoryUrl)
   },
@@ -25,9 +25,6 @@ const COMMONAPI = {
   // 预删除oss地址
   deleteOssUrl (params) {
     return get(URL.deleteOssUrl, params)
-  },
-  getTreeSelect () {
-    return get(URL.treeSelect)
   }
 
 }
