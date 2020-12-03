@@ -1,6 +1,7 @@
 <template>
   <div class="uploadImage">
     <!-- 上传图片 -->
+
     <el-upload
       action="#"
       ref="uploader"
@@ -74,9 +75,8 @@ export default {
     'imageUrls': {
       handler (newValue) {
         this.fileList = newValue
-      },
-      deep: true,
-      immediate: true
+        this.$emit('changeUploadImages', this.imageUrls)
+      }
     }
   },
   mounted () {
@@ -169,7 +169,6 @@ export default {
           fileToMd5(file.file).then((md5) => {
             res.data.src = file.showUrl
             res.data.hash = md5
-            this.$emit('changeUploadImages', this.imageUrls)
           })
         })
     },
