@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import CommonApi from '@api/api'
 
 export default {
   data () {
@@ -21,39 +21,22 @@ export default {
         value: 'id'
       },
       cate: {},
-      cateLabels: '',
-      showNodes: [3, 37, 40, 44]
+      showNodes: [3, 37]
     }
   },
-  created () {
 
-  },
-  watch: {
-    'nodekeys': {
-      handler (newValue) {
-
-      },
-      immediate: true,
-      deep: true
-    }
-
-  },
   mounted () {
     this.load()
   },
+
   methods: {
     load () {
-      axios.get('http://152.136.21.21:8080/mock/5fc46906fd2b28481fbeea8e/category/list')
+      CommonApi.category()
         .then(res => {
-          const list = res.data.data
-          list.forEach(item => {
-            if (item.children && item.children.length > 0) {
-              this.changeInitData(item.children)
-            } else {
-              item.leaf = true
-            }
-          })
+          const list = res.data
           this.options = list
+          this.changeInitData(list)
+          this.showlabels(this.options, this.showNodes)
         })
     },
     changeInitData (arr) {
@@ -61,12 +44,19 @@ export default {
         if (node.children && node.children.length > 0) {
           this.changeInitData(node.children)
         } else {
-          node.leaf = true
+          delete node.children
         }
       })
     },
     change (nodeKeys) {
       this.nodeKeys = nodeKeys
+      this.showlabels(this.options, nodeKeys)
+    },
+    save () {
+      const categoryId = this.nodeKeys[this.nodeKeys.length - 1]
+      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId } })
+    },
+    showlabels (array, nodeKeys) {
       const labelarr = []
       const labelkey = []
       // 原始数组map数组 [{"3|37" => "拖鞋-无二次工艺标签"}]
@@ -88,12 +78,6 @@ export default {
         labelarr.push(mapData.get(index > 0 ? labelkey.join('|') : labelkey.join('')))
       })
       this.$set(this.cate, 'cateLabels', labelarr.join('>'))
-    },
-    save () {
-      const categoryId = this.nodeKeys[3]
-      if (this.nodeKeys && this.nodeKeys.length > 0) {
-        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId } })
-      }
     }
   }
 }
