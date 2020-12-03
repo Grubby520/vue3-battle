@@ -3,6 +3,7 @@ import { valueToMd5 } from '@shared/util'
 export default {
   namespaced: true,
   state: {
+    supplierId: '',
     application: {},
     additionalInfo: {}
   },
@@ -50,6 +51,7 @@ export default {
   },
   mutations: {
     RESET_REGISTER_DATA (state) {
+      state.supplierId = ''
       state.application = {
         supplierName: '',
         certificationNo: '', // 营业执照号
@@ -87,10 +89,12 @@ export default {
     },
     SET_APPLICATION (state, application) {
       state.application = application
-      console.log(application)
     },
     SET_ADDITIONAL_INFO (state, additionalInfo) {
       state.additionalInfo = additionalInfo
+    },
+    SET_SUPPLIER_ID (state, supplierId) {
+      state.supplierId = supplierId
     }
   },
   actions: {

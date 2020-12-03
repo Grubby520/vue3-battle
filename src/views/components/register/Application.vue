@@ -154,7 +154,7 @@ export default {
 
     let certificationNoExistValidator = {
       validator: (rule, value, callback) => {
-        UserApi.isCertificationNoExist({ certificationNo: value }).then(res => {
+        UserApi.isCertificationNoExist({ certificationNo: value, supplierId: this.supplierId }).then(res => {
           if (res.data) {
             callback(new Error('营业执照号已存在'))
           } else {
@@ -241,7 +241,7 @@ export default {
     }
   },
   computed: {
-    ...registerMapState(['application']),
+    ...registerMapState(['application', 'supplierId']),
     passwordType () {
       return this.form.password ? 'password' : this.$passwordType
     }

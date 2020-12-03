@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     ...userMapActions(['GET_USER_INFO']),
-    ...registerMapMutations(['SET_APPLICATION', 'SET_ADDITIONAL_INFO']),
+    ...registerMapMutations(['SET_APPLICATION', 'SET_ADDITIONAL_INFO', 'SET_SUPPLIER_ID']),
     goStep () {
       let stepMap = {
         1: 2,
@@ -180,6 +180,7 @@ export default {
     if (getSessionItem('token')) {
       this.GET_USER_INFO().then(res => {
         if (res && this.supplierStatusCode === 5) {
+          this.SET_SUPPLIER_ID(this.supplierId)
           UserApi.getSupplierDetail({ supplierId: this.supplierId }).then(res => {
             if (res.success) {
               this.transformBackData(res.data)
