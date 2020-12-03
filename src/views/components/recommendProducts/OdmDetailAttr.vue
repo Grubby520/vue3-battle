@@ -41,11 +41,14 @@
 <script>
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import OdmDetailTable from './OdmDetailTable'
-import { numberValidator, emptyValidator } from '@shared/validate/index'
 export default {
   components: { OdmDetailTable },
   props: {
-    isStatus: { type: Boolean, required: false, default: false }
+    // 分类Id
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    }
   },
   data () {
     return {
@@ -61,8 +64,8 @@ export default {
         size: []
       },
       rules: {
-        sizeList: [{ required: true, trigger: 'change' }],
-        colorList: [numberValidator('请输入0-9999之间的数字', 'blur', true, 4), emptyValidator('预估重量不能为空')]
+        sizeList: [{ required: true, message: '请选择尺寸', trigger: 'change' }],
+        colorList: [{ required: true, message: '请选择颜色', trigger: 'change' }]
       }
     }
   },
@@ -70,20 +73,28 @@ export default {
 
   },
   mounted () {
-    const getColorList = RecommondApi.getColorList()
-    const getSizeList = RecommondApi.getSizeList()
-    Promise.all([getSizeList, getColorList]).then((responses) => {
-      const sizeResponse = responses[0]
-      const colorResponse = responses[1]
-      if (sizeResponse.success) {
-        this.options.size = sizeResponse.data
-      }
-      if (colorResponse.success) {
-        this.options.color = colorResponse.data
-      }
-    })
+    this.initOptionsData()
   },
   methods: {
+    /**
+     * 初始化界面下拉数据
+     */
+    initOptionsData () {
+      const categoryId = this.categoryId
+      // 尺寸属性集合
+      const getSizeList = RecommondApi.getAttrList(1, { categoryId: categoryId })
+      // 颜色属性集合
+      const getColorList = RecommondApi.getAttrList(2, { categoryId: categoryId })
+      Promise.all([getSizeList, getColorList]).then((responses) => {
+        responses.forEach((response, index) => {
+          if (response.success) {
+            const data = response.data
+            if (index === 0) this.options.size = data
+            if (index === 1) this.options.color = data
+          }
+        })
+      })
+    },
     commmitInfo () {
       return this.form
     }

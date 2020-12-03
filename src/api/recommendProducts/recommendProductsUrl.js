@@ -20,10 +20,6 @@ const RECOMMENDURLS = {
   recommendCategory: baseURL + '/category/list',
   // 校验货号是否存在
   checkItem: baseURL + '/product/item-no-is-exist',
-  // 获得尺寸的集合
-  getSizeList: 'http://152.136.21.21:8080/mock/5fc0c322fd2b28481fbeea82/srm/product/size',
-  // 获得颜色的集合
-  getColorList: 'http://152.136.21.21:8080/mock/5fc0c322fd2b28481fbeea82/srm/product/color',
   saveSubmit: baseURL + '/product/save-and-submit',
   // 属性项列表,颜色、尺寸
   getAttrList: productUrl + '/attribute/list-term/'

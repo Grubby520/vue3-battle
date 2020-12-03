@@ -1,17 +1,19 @@
 <template>
-  <div class="register-header clearfix">
-    <div class="left-module">
-      <img src="@/assets/logo.png" alt="logo" />
-    </div>
-    <div class="right-module">
-      <div v-if="!supplierStatusCode && supplierStatusCode!== 0">
-        <span class="display-inline-block">已有账户</span>&nbsp;
-        <el-button type="text" @click="login">快速登录</el-button>
+  <div class="header-container">
+    <div class="register-header clearfix">
+      <div class="left-module">
+        <img src="@/assets/logo.png" alt="logo" />
       </div>
-      <div v-else>
-        <i class="el-icon-user-solid"></i>
-        <span class="display-inline-block">{{supplierName}}</span>&nbsp;
-        <el-button type="text" @click.native="signOut">退出登录</el-button>
+      <div class="right-module">
+        <div v-if="!supplierStatusCode && supplierStatusCode!== 0">
+          <span class="display-inline-block">已有账户</span>&nbsp;
+          <el-button type="text" @click="login">快速登录</el-button>
+        </div>
+        <div v-else>
+          <i class="el-icon-user-solid"></i>
+          <span class="display-inline-block">{{supplierName}}</span>&nbsp;
+          <el-button type="text" @click.native="signOut">退出登录</el-button>
+        </div>
       </div>
     </div>
   </div>
@@ -62,6 +64,13 @@ export default {
 
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
+.header-container {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: $color-white;
+  z-index: 100;
+}
 
 .register-header {
   position: relative;

@@ -21,13 +21,16 @@ import OdmDetailBase from './OdmDetailBase'
 import OdmDetailAttr from './OdmDetailAttr'
 import OdmDetailProductAttr from './OdmDetailProductAttr'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-
 export default {
   components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
   props: {
     mode: { type: String, required: false, default: '' },
     id: { type: String, required: false, default: '' },
-    categoryId: { type: Number, required: false, default: undefined },
+    // 分类Id
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    },
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
@@ -69,14 +72,16 @@ export default {
 
       Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
         .then(() => {
-          console.log('验证通过,提交表单')
           const params = []
-          if (status === 'create') {
+          if (status === 'submit') {
             // 保存
             const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
-            const productSalesAttributeList = this.$refs.OdmDetailAttr.commmitInfo()
-            params.push(productBasicInfo, productSalesAttributeList)
-            this.create(params)
+            let data = {} // @todo:warning 详情数据，到时候替换
+            const dataBasicInfo = data.productBasicInfo
+            productBasicInfo.colorImageList = dataBasicInfo.colorImageList
+            productBasicInfo.productImageList = dataBasicInfo.productImageList
+            data.productBasicInfo = productBasicInfo
+            this.create(data)
           } else {
             // 保存提交
             this.modify(params)
@@ -120,6 +125,7 @@ export default {
 
 .view-container {
   pointer-events: none;
+  cursor: not-allowed;
   /deep/.el-input__inner {
     border: 0;
   }

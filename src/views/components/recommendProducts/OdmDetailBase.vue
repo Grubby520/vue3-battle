@@ -9,15 +9,20 @@
         label-width="130px"
         class="odmDetailBase-form-con"
       >
-        <el-form-item label="商品类目">{{cateLabels}}</el-form-item>
+        <el-form-item label="商品类目" prop="categoryId">{{cateLabels}}</el-form-item>
         <el-form-item label="商品标题" prop="title">
           <el-input clearable v-model.trim="form.title" placeholder="请输入品牌名称+商品名称" maxlength="20" />
         </el-form-item>
-        <el-form-item label="供方货号" prop="itemNo">
-          <el-input clearable v-model.trim="form.itemNo" maxlength="100" placeholder="请输入供方货号" />
+        <el-form-item label="供方货号" prop="supplierItemNo">
+          <el-input
+            clearable
+            v-model.trim="form.supplierItemNo"
+            maxlength="100"
+            placeholder="请输入供方货号"
+          />
         </el-form-item>
         <el-form-item label="预计出货时间" prop="estimatedShippingTime">
-          <el-radio v-model="hasPattern" :label="true" @input="resetValidate">
+          <el-radio v-model="hasPattern" :label="true" @input="changeToSpot">
             现货
             <span style="color: #ff0000;">（今日可发货）</span>
           </el-radio>
@@ -57,22 +62,43 @@
 </template>
 
 <script>
-// import { isEmpty } from '@shared/util'
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+
+import { isEmpty } from '@shared/util'
 export default {
   props: {
-    isStatus: { type: Boolean, required: false, default: false },
     id: { type: String, required: false, default: '' },
-    categoryId: { type: Number, required: false, default: undefined },
+    // 分类Id
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    },
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
+    const productValidata = (rule, value, callback) => {
+      if (this.form.itemNo) {
+        RecommondApi.checkItem(this.form.itemNo)
+          .then(res => {
+            if (res.success) {
+              callback()
+            } else {
+              callback(new Error('同一个供应商下，供方SPU唯一'))
+            }
+          })
+      } else {
+        callback(new Error('不能为空'))
+      }
+    }
     return {
-      hasPattern: true,
+      hasPattern: false,
       form: {
+        // 分类编号
+        categoryId: this.categoryId,
         // 商品标题
         title: '',
         // 供方货号
-        itemNo: '',
+        supplierItemNo: '',
         // 预计出货类型
         // hasPattern: true,
         // 预计出货时间
@@ -80,12 +106,12 @@ export default {
         // 商品描述
         description: '',
         // 商品备注
-        remark: '',
-        categoryId: this.categoryId
+        remark: ''
       },
       rules: {
+        categoryId: [{ required: true }],
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
-        itemNo: [{ required: true, message: '请输入供方货号', trigger: 'blur' }],
+        supplierItemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
         estimatedShippingTime: [this.ShippingTimeValidator()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
         remark: [{ required: true, message: '请输入商品备注', trigger: 'blur' }]
@@ -104,25 +130,27 @@ export default {
 
   },
   methods: {
-    resetValidate () {
+    changeToSpot () {
+      this.form.estimatedShippingTime = ''
       this.$refs.form.clearValidate('estimatedShippingTime')
     },
     commmitInfo () {
       if (this.hasPattern) {
-        this.$set(this.from, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-M-D HH:mm'))
+        this.$set(this.form, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-MM-DD'))
       }
       return this.form
     },
     ShippingTimeValidator () {
       return {
+        required: true,
         validator: (rule, value, callback) => {
-          // if (this.hasPattern) {
-          //   callback()
-          // } else if (isEmpty(value)) {
-          //   callback(new Error('请选择预计出货时间'))
-          // } else {
-          //   callback()
-          // }
+          if (this.hasPattern) {
+            callback()
+          } else if (isEmpty(value)) {
+            callback(new Error('请选择预计出货时间'))
+          } else {
+            callback()
+          }
         },
         message: '请选择预计出货时间',
         trigger: 'blur'

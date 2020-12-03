@@ -32,6 +32,16 @@
               ></SlSingleSelect>
             </el-form-item>
           </template>
+          <!-- 树型下拉 -->
+          <template v-else-if="item.type === 'tree-select'">
+            <el-form-item
+              :label="item.label"
+              :prop="item.name"
+              :class="{'block':item.data.isBlock}"
+            >
+              <SlTreeSelect v-model="form[item.name]" :options="options[item.name]"></SlTreeSelect>
+            </el-form-item>
+          </template>
         </el-col>
       </el-row>
     </el-form>
@@ -73,7 +83,11 @@ export default {
   },
   created () {
     this.items.forEach(item => {
-      this.$set(this.form, item.name, item.isMultivalued ? [] : '')
+      /// 判断入参是否有设置默认值。
+      /// 若有就取传入的默认值。
+      /// 若没有，则根据是否是多选设置默认值。
+      const defaultValue = item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
+      this.$set(this.form, item.name, defaultValue)
       if (item.data && item.data.options) {
         this.$set(this.options, item.name, item.data.options)
       }

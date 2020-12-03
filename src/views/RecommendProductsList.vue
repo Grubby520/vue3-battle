@@ -1,6 +1,5 @@
 <template>
   <div class="recommond">
-    <!-- {{query}} -->
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -11,9 +10,8 @@
     >
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
-        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" />
+        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" v-if="filterIsLoad" />
       </div>
-      <!-- <SlTreeSelect></SlTreeSelect> -->
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
@@ -52,6 +50,7 @@
 import { successNotify, errorNotify } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import CommonApi from '@api/api.js'
 export default {
   data () {
     return {
@@ -64,17 +63,17 @@ export default {
       },
       category: undefined,
       query: {
-        categoryName: '',
+        categoryName: null,
         itemNo: '',
         status: ''
       },
       searchItems: [
         {
-          type: 'single-select',
+          default: null,
+          type: 'tree-select',
           label: '品类',
           name: 'categoryId',
           data: {
-            remoteUrl: RecommondUrl.recommendCategory,
             options: []
           }
         },
@@ -124,11 +123,41 @@ export default {
             updateTime: '更新'
           }
         }
-      ]
+      ],
+      // 搜索条件是否可以开始加载
+      filterIsLoad: false
     }
   },
-
+  mounted () {
+    this.initFilter()
+  },
   methods: {
+    /**
+     * 初始化筛选的基础数据
+     */
+    initFilter () {
+      CommonApi.category().then((response) => {
+        if (response.success) {
+          let data = response.data
+          this.shakingTree(data)
+          this.searchItems[0].data.options = data
+        }
+      }).finally(() => {
+        this.filterIsLoad = true
+      })
+    },
+    /**
+     * 对树的数据进行加工
+     */
+    shakingTree (treeData) {
+      treeData.forEach((node) => {
+        if (node.children && node.children.length > 0) {
+          this.shakingTree(node.children)
+        } else {
+          delete node.children
+        }
+      })
+    },
     gotoPage (pageSize = 10, pageIndex = 1) {
       // this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
 
@@ -187,7 +216,7 @@ export default {
         })
     },
     cancel (row) {
-      RecommondApi.cancelrcommend({ productId: row.id })
+      RecommondApi.cancelrcommend(row.id)
         .then(res => {
           this.$refs.listView.refresh()
           successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
