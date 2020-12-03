@@ -54,6 +54,9 @@ export default {
     ...userMapState(['confirmAgreement', 'supplierStatusCode']),
     enterMainPage () {
       return (this.confirmAgreement && this.supplierStatusCode === 2) || this.supplierStatusCode === 3
+    },
+    enterRegisterPage () {
+      return !this.confirmAgreement && this.supplierStatusCode === 2
     }
   },
   mounted () {
@@ -74,10 +77,14 @@ export default {
               this.GET_USER_INFO().then(data => {
                 if (data) {
                   if (this.enterMainPage) {
-                    this.$router.push('home/list')
-                  } else {
-                    this.$router.push('/notify')
+                    this.$router.push('home/recommend-products/list')
+                    return
                   }
+                  if (this.enterRegisterPage) {
+                    this.$router.push('/register')
+                    return
+                  }
+                  this.$router.push('/notify')
                 }
               })
             }

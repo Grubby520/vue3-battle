@@ -74,9 +74,7 @@ export default {
         2: 'AdditionalInfo',
         3: 'Protocol'
       }
-      if (!this.confirmAgreement && this.supplierStatusCode === 1) {
-        return 'Protocol'
-      }
+
       return componentsMap[this.activeStep]
     },
     stepText () {
@@ -85,6 +83,16 @@ export default {
         2: '上一步'
       }
       return stepTextMap[this.activeStep]
+    }
+  },
+  watch: {
+    confirmAgreement: {
+      handler (val) {
+        if (!this.confirmAgreement && this.supplierStatusCode === 2) {
+          this.activeStep = 3
+        }
+      },
+      immediate: true
     }
   },
   methods: {

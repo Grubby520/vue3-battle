@@ -194,7 +194,7 @@ export default {
       this.isLoading = true
       UserApi.protocolConfirm().then(res => {
         if (res.success) {
-          this.$router.push('home/list')
+          this.$router.push('home/recommend-products/list')
         }
       }).finally(() => {
         this.isLoading = false
