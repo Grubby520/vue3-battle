@@ -89,7 +89,14 @@
                 {{item.attrTermName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages v-model="item.images"></SlUploadImages>
+                <SlUploadImages v-model="item.images" :imageType="0">
+                  <div slot="content" slot-scope="{file}">
+                    <el-button
+                      :type="item.images.isMainImg ? 'primary' : ''"
+                      @click="setColorMainImg(item, file)"
+                    >设为颜色主图</el-button>
+                  </div>
+                </SlUploadImages>
               </div>
             </div>
           </template>
@@ -102,14 +109,11 @@
       <el-button type="primary" @click="validateAll">校验销售属性</el-button>
       <el-button type="primary" @click="changeCategoryID">改变CategoryId</el-button>
     </div>
-
-    <ProductAttributes ref="customAttributesInfo" :canUpdate="true" :canView="false"></ProductAttributes>
   </div>
 </template>
 
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
-import ProductAttributes from '@/views/createProduct/ProductAttributes'
 
 export default {
   name: 'SalesAttributes',
@@ -145,7 +149,7 @@ export default {
     }
   },
   components: {
-    ProductAttributes
+
   },
   mounted () {
     this.metaFields = [
@@ -401,6 +405,16 @@ export default {
     },
     changeCategoryID () {
       this.categoryId = Math.floor(Math.random() * 100) + 1
+    },
+    setColorMainImg (row, file) {
+      row.images.forEach(img => {
+        if (img.file.uid === file.uid) {
+          img.isMainImg = true
+        } else {
+          img.isMainImg = false
+        }
+      })
+      console.log(row.images)
     }
   },
   watch: {
