@@ -1,5 +1,6 @@
 <template>
   <div class="uploadImage">
+    {{ossImages}}
     <!-- 上传图片 -->
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
@@ -68,7 +69,7 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片地址和上传的file
+      ossImages: []
     }
   },
 
@@ -173,23 +174,21 @@ export default {
         .then(res => {
           res.data.file = file.file
           fileToMd5(file.file).then((md5) => {
-            const IMAGES = this.imageUrls.filter(img => img.id)
+            res.data.src = res.data.showUrl
             res.data.hash = md5
-            IMAGES.push(res.data)
-            console.log('IMAGES', IMAGES)
-            this.$emit('changeUploadImages', IMAGES)
-            this.uploadImages.push(res.data)
+            this.ossImages.push(res.data)
             this.gotoOss(res.data.preUploadUrl, file.file)
           })
         })
     },
     gotoOss (preUploadUrl, file) {
-      this.uploadImages.forEach(pre => {
-        // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
-        put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
-          .then(res => {
-          })
-      })
+      // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
+      put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
+        .then(res => {
+          const IMAGES = this.imageUrls.filter(img => img.id)
+          this.$emit('changeUploadImages', IMAGES)
+          IMAGES.push(...this.ossImages)
+        })
     },
 
     cancelUpload (file) {

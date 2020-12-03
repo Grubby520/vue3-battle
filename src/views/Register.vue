@@ -13,6 +13,7 @@
           </keep-alive>
           <!-- 前两步才会有的结构 -->
           <div v-if="activeStep <= 2" class="align-center">
+            <el-button v-if="activeStep === 1" @click="toLogin()">{{$t('button.cancelText')}}</el-button>
             <el-button type="primary" @click="goStep()">{{stepText}}</el-button>
             <el-button
               v-if="activeStep === 2"
@@ -112,6 +113,11 @@ export default {
         return
       }
       this.activeStep = stepMap[this.activeStep]
+    },
+    toLogin () {
+      this.$router.push({
+        path: '/login'
+      })
     },
     transformImageData (url) {
       return {
