@@ -67,8 +67,7 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片地址和上传的file
+      fileList: [] // 上传图片列表
     }
   },
 
@@ -173,23 +172,21 @@ export default {
         .then(res => {
           res.data.file = file.file
           fileToMd5(file.file).then((md5) => {
-            const IMAGES = this.imageUrls.filter(img => img.id)
+            res.data.src = res.data.showUrl
             res.data.hash = md5
+            const IMAGES = this.imageUrls.filter(img => img.id)
             IMAGES.push(res.data)
-            console.log('IMAGES', IMAGES)
             this.$emit('changeUploadImages', IMAGES)
-            this.uploadImages.push(res.data)
             this.gotoOss(res.data.preUploadUrl, file.file)
           })
         })
     },
     gotoOss (preUploadUrl, file) {
-      this.uploadImages.forEach(pre => {
-        // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
-        put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
-          .then(res => {
-          })
-      })
+      // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
+      put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
+        .then(res => {
+
+        })
     },
 
     cancelUpload (file) {
