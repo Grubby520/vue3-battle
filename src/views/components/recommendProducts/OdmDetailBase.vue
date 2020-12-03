@@ -60,9 +60,12 @@
 // import { isEmpty } from '@shared/util'
 export default {
   props: {
-    isStatus: { type: Boolean, required: false, default: false },
     id: { type: String, required: false, default: '' },
-    categoryId: { type: Number, required: false, default: undefined },
+    // 分类Id
+    categoryId: {
+      type: [String, Number],
+      default: ''
+    },
     cateLabels: { type: String, required: false, default: '' }
   },
   data () {
