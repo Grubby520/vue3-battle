@@ -38,11 +38,11 @@ const RECOMMEND = {
     return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
   },
   save (params) {
-    return post(RECOMMENDURLS.rcommenduel, qs.stringify(params))
+    return post(RECOMMENDURLS.rcommenduel, params)
   },
   // 保存并提交
   saveSubmit (params) {
-    return post(RECOMMENDURLS.saveSubmit, qs.stringify(params))
+    return post(RECOMMENDURLS.saveSubmit, params)
   },
   // 属性项列表,颜色 id:1、尺寸 id:2
   getAttrList (id, params) {

@@ -50,7 +50,7 @@
 import { successNotify, errorNotify } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-import Api from '@api/api.js'
+import CommonApi from '@api/api.js'
 export default {
   data () {
     return {
@@ -136,12 +136,26 @@ export default {
      * 初始化筛选的基础数据
      */
     initFilter () {
-      Api.getTreeSelect().then((response) => {
+      CommonApi.category().then((response) => {
         if (response.success) {
-          this.searchItems[0].data.options = response.data
+          let data = response.data
+          this.shakingTree(data)
+          this.searchItems[0].data.options = data
         }
       }).finally(() => {
         this.filterIsLoad = true
+      })
+    },
+    /**
+     * 对树的数据进行加工
+     */
+    shakingTree (treeData) {
+      treeData.forEach((node) => {
+        if (node.children && node.children.length > 0) {
+          this.shakingTree(node.children)
+        } else {
+          delete node.children
+        }
       })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
