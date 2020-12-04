@@ -86,7 +86,6 @@ export default {
         })
 
         this.options = cataArr[0]
-        console.log('in this way', responses)
       })
     },
     change (nodekeys) {

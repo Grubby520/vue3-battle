@@ -98,8 +98,7 @@ export default {
       const productCustomizeAttributeList = this.$refs.saleAttributesInfo.getSubmitData()
       Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
         .then((res) => {
-          const { productBasicInfo, saleAttributesInfo, productSalesAttributeList } = res
-          console.log('ress', res)
+          const { productBasicInfo, saleAttributesInfo } = res
           const params = {}
           if (status === 'create') {
             // 保存
@@ -107,7 +106,6 @@ export default {
             const dataBasicInfo = productBasicInfo
             productBasicInfo.colorImageList = saleAttributesInfo.colorImageList
             productBasicInfo.productImageList = dataBasicInfo.productSalesAttributeList
-            console.log('productSalesAttributeList', productSalesAttributeList)
             // data.productBasicInfo = productBasicInfo
             // this.create(data)
           } else {
@@ -115,8 +113,7 @@ export default {
             this.modify(params)
           }
         })
-        .catch(err => {
-          console.log('验证失败', err)
+        .catch(() => {
         })
     },
     load () {
