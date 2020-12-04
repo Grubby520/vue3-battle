@@ -86,6 +86,14 @@ export default {
             tip: '图片高宽比例仅支持1:1或4:3',
             scales: [1, 4 / 3]
           }
+        },
+        {
+          type: 'ppi',
+          message: `图片高宽均不能超过4096像素`,
+          meta: {
+            width: 4096,
+            height: 4096
+          }
         }
       ]
     }
@@ -134,14 +142,6 @@ export default {
           message: `图片格式不正确,仅支持${this.accept.join()}`,
           meta: {
             accept: this.accept
-          }
-        },
-        {
-          type: 'ppi',
-          message: `图片高宽均不能超过4096像素`,
-          meta: {
-            width: 4096,
-            height: 4096
           }
         }
       ]
