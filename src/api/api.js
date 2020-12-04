@@ -19,8 +19,8 @@ const COMMONAPI = {
     return post(URL.generatePreUploadUrl, params)
   },
   // 分类树
-  category () {
-    return get(URL.categoryUrl)
+  category (params) {
+    return get(URL.categoryUrl, params)
   }
 
 }
