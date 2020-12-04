@@ -59,7 +59,7 @@ export default {
       ref: [],
       initSaleAttr: {},
       productBasicInfo: {},
-      productCustomizeAttributeList: {},
+      productCustomizeAttributeList: [],
       productSalesAttributeList: {}
     }
   },
@@ -100,7 +100,7 @@ export default {
       const _this = this
       RecommondApi.recommendDetail(this.id)
         .then(res => {
-          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
+          const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
           const { productImageList } = productBasicInfo
           Object.keys(productImageList).forEach(image => {
             const images = productImageList[image]
@@ -114,7 +114,7 @@ export default {
           // 基本属性回显
           if (productBasicInfo) _this.productBasicInfo = productBasicInfo
           // 商品属性回显
-          if (productCustomizeAttributeList && productCustomizeAttributeList.length > 0) _this.initSaleAttr = productCustomizeAttributeList
+          if (productCustomizeAttributeList && productCustomizeAttributeList.length > 0) _this.productCustomizeAttributeList = productCustomizeAttributeList
         })
     },
     create (params) {

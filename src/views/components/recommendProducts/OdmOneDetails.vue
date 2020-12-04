@@ -15,7 +15,8 @@ import CommonApi from '@api/api'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
-    id: { type: String, required: false, default: '' }
+    id: { type: [Number, String], required: false, default: '' },
+    categoryId: { type: [Number, String], required: false, default: undefined }
   },
   data () {
     return {
@@ -28,27 +29,48 @@ export default {
       showNodes: []
     }
   },
-
-  mounted () {
+  created () {
     this.load()
+      .then((res) => {
+        this.showCateLables(res, this.categoryId)
+      })
   },
-
+  watch: {
+    'categoryId': {
+      handler (newValue) {
+        // debugger
+        // this.load()
+        // this.showCateLables(this.options, this.categoryId)
+      }
+      // immediate: true
+    }
+  },
   methods: {
     load () {
-      CommonApi.category({ type: 1 })
+      return CommonApi.category({ type: 1 })
         .then(res => {
           const list = res.data
           this.options = list
           this.changeInitData(list)
           this.showlabels(this.options, this.showNodes)
+          return list
         })
     },
-    changeInitData (arr) {
+    changeInitData (arr, id) {
       arr.forEach(node => {
         if (node.children && node.children.length > 0) {
           this.changeInitData(node.children)
         } else {
           delete node.children
+        }
+      })
+    },
+    showCateLables (arr, id) {
+      arr.forEach(cate => {
+        if (cate.id !== id) {
+          this.showCateLables(cate.children, id)
+        } else {
+          this.showNodes.push(cate.id)
         }
       })
     },

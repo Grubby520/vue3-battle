@@ -55,18 +55,8 @@ export const homeRoutes = [
           icon: '',
           notMenu: true
         },
-        props: route => { return { id: route.query.id, mode: route.query.mode } },
+        props: route => { return { id: route.query.id, mode: route.query.mode, categoryId: route.query.categoryId } },
         component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
-      },
-      {
-        path: 'Maintain',
-        name: 'ODM推品',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        props: route => { return { id: route.query.id, mode: route.query.mode } },
-        component: () => import('@/views/components/recommendProducts/Maintain.vue')
       },
       {
         path: 'import-spu',
