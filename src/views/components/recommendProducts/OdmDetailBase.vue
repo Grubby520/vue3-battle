@@ -117,7 +117,8 @@ export default {
         // 商品备注
         remark: '',
         categoryName: '',
-        supplyType: undefined
+        supplyType: undefined,
+        id: this.id
       },
       rules: {
         categoryId: [{ required: true }],
@@ -146,6 +147,7 @@ export default {
       handler (newValue) {
         for (let key of Object.keys(newValue)) {
           if (Object.prototype.hasOwnProperty.call(this.form, key)) {
+            this.form = newValue
             this.form[key] = newValue[key]
             if (newValue.supplyType !== 0) {
               this.hasPattern = false
@@ -170,14 +172,15 @@ export default {
         this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.hasPattern) {
-              _this.$set(this.form, 'estimatedShippingTime', _this.$moment(new Date()).format('YYYY-MM-DD'))
+              _this.$set(_this.form, 'estimatedShippingTime', _this.$moment(new Date()).format('YYYY-MM-DD'))
               _this.form.supplyType = 0
             } else {
               _this.form.supplyType = 1
             }
             const label = _this.cateLabels.split('>')
             _this.form.categoryName = label[label.length - 1]
-            resolve({ 'productBasicInfo': _this.form })
+            Object.assign(this.productBasicInfo, _this.form)
+            resolve({ 'productBasicInfo': this.productBasicInfo })
           } else {
             reject(new Error())
           }
