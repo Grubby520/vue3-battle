@@ -39,7 +39,7 @@ export default {
       // colorImageList: {},
       initSaleAttr: {
         productSalesAttributeList: [],
-        colorImageList: {}
+        productImageList: {}
       },
       productCustomizeAttributeList: [
         {
