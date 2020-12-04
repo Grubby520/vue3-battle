@@ -227,9 +227,9 @@ export default {
       default: ''
     },
     initialValue: {
-      type: Array,
+      type: Object,
       default: function () {
-        return []
+        return {}
       }
     }
   },

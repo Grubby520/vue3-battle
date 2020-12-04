@@ -9,7 +9,10 @@
         label-width="130px"
         class="odmDetailBase-form-con"
       >
-        <el-form-item label="商品类目" prop="categoryId">{{cateLabels}}</el-form-item>
+        <el-form-item
+          label="商品类目"
+          prop="categoryId"
+        >{{cateLabels ? cateLabels :this.form.categoryName }}</el-form-item>
         <el-form-item label="商品标题" prop="title">
           <el-input clearable v-model.trim="form.title" placeholder="请输入品牌名称+商品名称" maxlength="20" />
         </el-form-item>
@@ -38,6 +41,7 @@
         </el-form-item>
         <el-form-item label="商品描述" prop="description">
           <el-input
+            v-if="!isStatus"
             type="textarea"
             rows="5"
             clearable
@@ -46,15 +50,18 @@
             v-model.trim="form.description"
             placeholder="描述提示：1.务必填写完整的100%面料成分比：例如90%棉、5%氨纶、5%涤纶；2.制作工艺及功能特点、设计创意等。"
           />
+          <p v-else>{{form.description}}</p>
         </el-form-item>
         <el-form-item label="商品备注" prop="remark">
           <el-input
+            v-if="!isStatus"
             type="textarea"
             rows="5"
             clearable
             v-model.trim="form.remark"
             placeholder="描述提示：1.最终商品是否包含图片上的配饰；2.包装后产品重量。3.包装后产品体积 长*宽*高。"
           />
+          <p v-else>{{form.remark}}</p>
         </el-form-item>
       </el-form>
     </div>
@@ -68,7 +75,8 @@ import { isEmpty } from '@shared/util'
 export default {
   props: {
     id: { type: String, required: false, default: '' },
-    productBasicInfo: { type: Array, required: false, default: () => [] },
+    isStatus: { type: Boolean, required: false, default: false },
+    productBasicInfo: { type: Object, required: false, default: () => { } },
     // 分类Id
     categoryId: {
       type: [String, Number],
@@ -139,6 +147,11 @@ export default {
         for (let key of Object.keys(newValue)) {
           if (Object.prototype.hasOwnProperty.call(this.form, key)) {
             this.form[key] = newValue[key]
+            if (newValue.supplyType !== 0) {
+              this.hasPattern = false
+            } else {
+              this.hasPattern = true
+            }
           }
         }
         this.form.categoryId = this.categoryId
@@ -195,11 +208,11 @@ export default {
 .odmDetailBase {
   margin-bottom: 1rem;
   &-title {
-    font-size: 1.5rem;
+    padding: 0 20px;
     font-weight: bold;
-    color: #a9aaac;
+    font-size: 1.8rem;
     line-height: 4rem;
-    margin-left: 3rem;
+    margin-bottom: 2rem;
   }
   &-form {
     border-top: 1px solid #dcdfe6;

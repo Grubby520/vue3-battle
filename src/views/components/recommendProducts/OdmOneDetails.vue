@@ -53,7 +53,6 @@ export default {
       })
     },
     change (nodeKeys) {
-      console.log('nodeKeys', nodeKeys)
       this.nodeKeys = nodeKeys
       this.showlabels(this.options, nodeKeys)
     },
