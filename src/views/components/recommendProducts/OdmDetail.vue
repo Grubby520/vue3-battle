@@ -7,8 +7,23 @@
         :productBasicInfo="productBasicInfo"
         ref="OdmDetailBase"
       />
-      <OdmDetailAttr ref="OdmDetailAttr" />
-      <OdmDetailProductAttr ref="OdmDetailProductAttr" />
+      <!-- <OdmDetailAttr ref="OdmDetailAttr" />
+      <OdmDetailProductAttr ref="OdmDetailProductAttr" />-->
+      <SalesAttributes
+        ref="saleAttributesInfo"
+        :mode="mode"
+        :categoryId="categoryId"
+        :productId="productId"
+        :initialValue="initSaleAttr"
+      ></SalesAttributes>
+      <ProductAttributes
+        ref="customAttributesInfo"
+        :canUpdate="true"
+        :canView="false"
+        :categoryId="categoryId"
+        :productId="productId"
+        :initialValue="productCustomizeAttributeList"
+      ></ProductAttributes>
     </div>
     <div class="odmDetail-btn">
       <el-button @click="cancel">取消</el-button>
@@ -20,11 +35,20 @@
 
 <script>
 import OdmDetailBase from './OdmDetailBase'
-import OdmDetailAttr from './OdmDetailAttr'
-import OdmDetailProductAttr from './OdmDetailProductAttr'
+// import OdmDetailAttr from './OdmDetailAttr'
+// import OdmDetailProductAttr from './OdmDetailProductAttr'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import SalesAttributes from '@/views/createProduct/SalesAttributes'
+import ProductAttributes from '@/views/createProduct/ProductAttributes'
+
 export default {
-  components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
+  components: {
+    OdmDetailBase,
+    // OdmDetailAttr,
+    // OdmDetailProductAttr,
+    SalesAttributes,
+    ProductAttributes
+  },
   props: {
     mode: { type: String, required: false, default: '' },
     id: { type: String, required: false, default: '' },
