@@ -96,7 +96,7 @@
         ></UploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
-      <el-form-item label="组织结构代码证" prop="organizationImage">
+      <el-form-item label="组织机构代码证" prop="organizationImage">
         <UploadImages
           ref="organizationImageRef"
           v-model="form.organizationImage"
