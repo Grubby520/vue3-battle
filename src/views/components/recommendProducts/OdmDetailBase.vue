@@ -68,6 +68,7 @@ import { isEmpty } from '@shared/util'
 export default {
   props: {
     id: { type: String, required: false, default: '' },
+    productBasicInfo: { type: Array, required: false, default: () => [] },
     // 分类Id
     categoryId: {
       type: [String, Number],
@@ -106,7 +107,8 @@ export default {
         // 商品描述
         description: '',
         // 商品备注
-        remark: ''
+        remark: '',
+        categoryName: ''
       },
       rules: {
         categoryId: [{ required: true }],
@@ -127,7 +129,16 @@ export default {
 
   },
   mounted () {
-
+    const label = this.cateLabels.split('>')
+    this.form.categoryName = label[label.length - 1]
+  },
+  watch: {
+    'productBasicInfo': {
+      handler (newValue) {
+        this.form = newValue
+      },
+      immediate: true
+    }
   },
   methods: {
     changeToSpot () {
@@ -138,6 +149,8 @@ export default {
       if (this.hasPattern) {
         this.$set(this.form, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-MM-DD'))
       }
+      const label = this.cateLabels.split('>')
+      this.form.categoryName = label[label.length - 1]
       return this.form
     },
     ShippingTimeValidator () {

@@ -76,7 +76,8 @@
         <UploadImages
           ref="idCardImagesRef"
           v-model="form.idCardImages"
-          :imageType="0"
+          :folder="certificationNo"
+          :imageType="2"
           :imgNumber="2"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
@@ -87,7 +88,8 @@
         <UploadImages
           ref="certificationImageRef"
           v-model="form.certificationImage"
-          :imageType="0"
+          :folder="certificationNo"
+          :imageType="2"
           :imgNumber="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
@@ -98,7 +100,8 @@
         <UploadImages
           ref="organizationImageRef"
           v-model="form.organizationImage"
-          :imageType="0"
+          :folder="certificationNo"
+          :imageType="2"
           :imgNumber="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
@@ -109,7 +112,8 @@
         <UploadImages
           ref="taxRegisterImageRef"
           v-model="form.taxRegisterImage"
-          :imageType="0"
+          :folder="certificationNo"
+          :imageType="2"
           :imgNumber="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
@@ -120,7 +124,8 @@
         <UploadImages
           ref="companyShareholderImageRef"
           v-model="form.companyShareholderImage"
-          :imageType="0"
+          :folder="certificationNo"
+          :imageType="2"
           :imgNumber="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
@@ -143,7 +148,7 @@ import {
   idCardValidator,
   bankCardNumberValidator
 } from '@shared/validate'
-const { mapState: registerMapState, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
+const { mapState: registerMapState, mapMutations: registerMapMutations, mapGetters: registerMapGetters } = createNamespacedHelpers('register')
 
 export default {
   name: 'AdditionalInfo',
@@ -180,17 +185,18 @@ export default {
         unionPayNo: [emptyValidator('请输入位银行联行号'), digitalValidator(), charLimitValidator('银行联行号是12位数字', 12, 12)],
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
-        bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()]
-        // idCardImages: [emptyValidator('请上传身份证证件图片')],
-        // certificationImage: [emptyValidator('请上传营业执照图片')],
-        // organizationImage: [emptyValidator('请上传组织结构代码证件图片')],
-        // taxRegisterImage: [emptyValidator('请上传税务登记证件图片')],
-        // companyShareholderImage: [emptyValidator('请上传企业股东证件图片')]
+        bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
+        idCardImages: [emptyValidator('请上传身份证证件图片')],
+        certificationImage: [emptyValidator('请上传营业执照图片')],
+        organizationImage: [emptyValidator('请上传组织结构代码证件图片')],
+        taxRegisterImage: [emptyValidator('请上传税务登记证件图片')],
+        companyShareholderImage: [emptyValidator('请上传企业股东证件图片')]
       }
     }
   },
   computed: {
-    ...registerMapState(['additionalInfo'])
+    ...registerMapState(['additionalInfo']),
+    ...registerMapGetters(['certificationNo'])
   },
   watch: {
     additionalInfo: {

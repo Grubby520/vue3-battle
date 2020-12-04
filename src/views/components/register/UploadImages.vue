@@ -17,7 +17,13 @@
       <i slot="default" class="el-icon-plus"></i>
       <!-- 图片图标 -- 展示图片 -->
       <div slot="file" slot-scope="{file}">
-        <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
+        <div class="loading-module" v-loading="file.loading"></div>
+        <img
+          class="el-upload-list__item-thumbnail"
+          :src="file.url"
+          @load="imgLoad(file)"
+          @error="imgError($event,file)"
+        />
         <span v-if="tools.length > 0" class="el-upload-list__item-actions">
           <span
             v-if="tools.includes('zoom')"
@@ -46,8 +52,7 @@
   </div>
 </template>
 <script>
-import CommonApi from '@api/api'
-import { put } from '@shared/http'
+import { mapActions } from 'vuex'
 import { downloadFile, asyncSome } from '@/shared/util'
 
 export default {
@@ -59,6 +64,7 @@ export default {
   props: {
     images: { type: Array, default: () => [] }, // [{name:'',url:'',...}]
     imageType: { type: Number, required: false, default: undefined }, // 0：商品图片 1：尺寸图片 2：资质信息
+    folder: { type: String, default: undefined }, // 文件夹标识,便于oss分目录存储
     disabled: { type: Boolean, required: false, default: false },
     accept: { type: Array, required: false, default: () => { return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp'] } },
     imgNumber: { type: Number, required: false, default: 200 },
@@ -88,22 +94,32 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      fileList: [], // 上传图片列表
-      uploadImages: [] // 预上传图片地址和上传的file
+      fileList: []
     }
   },
   watch: {
-    images: {
-      handler (val) {
-        this.fileList = val
-      },
-      deep: true,
-      immediate: true
-    }
   },
   mounted () {
+    this.fileList = JSON.parse(JSON.stringify(this.images))
   },
   methods: {
+    ...mapActions('oss', [
+      'GET_UPLOAD_API',
+      'UPLOAD_FILE'
+    ]),
+    imgLoad (file) {
+      this.$set(file, 'loading', false)
+    },
+    imgError (evt, file) {
+      if (file.url) {
+        this.$set(file, 'loading', true)
+      }
+      setTimeout(() => {
+        if (evt.target && file.url) {
+          evt.target.src = file.url
+        }
+      }, 500)
+    },
     beforeUpload (file) {
       this.limitsHandler(file)
     },
@@ -226,31 +242,33 @@ export default {
       downloadFile(file.url, file.name)
     },
     uploadFile (req) {
-      let params = { 'itemNo': 'aliyun', 'fileName': req.file.name, 'contentType': req.file.type, 'imageType': this.imageType }
+      let params = { fileName: req.file.name, contentType: req.file.type, fileType: this.imageType, folder: this.folder }
       // 获取预上传oss地址
-      CommonApi.getOssUrl(params)
+      this.GET_UPLOAD_API(params)
         .then(res => {
-          let uploadImgParam = {
-            ...res.data,
-            file: req.file
+          if (res) {
+            let { data = {} } = res
+            let file = req.file
+            let imgs = []
+
+            this.UPLOAD_FILE({
+              ...data,
+              file
+            })
+              .then(res => {
+                this.fileList.forEach(image => {
+                  if (image.name === file.name) {
+                    image.url = data.showUrl
+                  }
+                  imgs.push({
+                    name: image.name,
+                    url: image.url
+                  })
+                })
+                this.$emit('imagesChange', imgs)
+              })
           }
-          let imgs = [...this.images]
-          imgs.push({
-            ...res.data
-          })
-          // 获取图片真实链接
-          // ------
-          this.uploadImages.push(uploadImgParam)
         })
-    },
-    uploadToOss () {
-      this.uploadImages.forEach(pre => {
-        // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
-        put(pre.preUploadUrl, pre.file, { headers: { 'Content-Type': pre.contentType } })
-          .then(res => {
-            // this.$emit('imagesChange', [])
-          })
-      })
     },
     cancelUpload (file) {
       this.$refs.uploader.abort(file)
@@ -261,6 +279,12 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+.loading-module {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
 .uploadImage {
   /deep/.el-upload-list--picture-card .el-upload-list__item {
     width: 110px;

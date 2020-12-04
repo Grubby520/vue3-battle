@@ -34,6 +34,7 @@ const RECOMMEND = {
   modifyDetail (info) {
     return post(`${RECOMMENDURLS.rcommenduel}`, info)
   },
+  // 校验供应商货号是否已存在
   checkItem (itemNo) {
     return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
   },
@@ -50,7 +51,7 @@ const RECOMMEND = {
   },
   // 自定义属性
   getMetadata (id) {
-    return get(`/products/metadata/${id}/metafileds`)
+    return get(`/product-service/metadata/${id}/metafileds`)
   }
 }
 export default RECOMMEND

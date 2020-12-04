@@ -1,13 +1,30 @@
 <template>
-  <div class="odmDetail" :class="{'view-container': false}">
-    <OdmDetailBase
-      :categoryId="categoryId"
-      :cateLabels="cateLabels"
-      :isStatus="isStatus"
-      ref="OdmDetailBase"
-    />
-    <OdmDetailAttr :isStatus="isStatus" ref="OdmDetailAttr" />
-    <OdmDetailProductAttr :isStatus="isStatus" ref="OdmDetailProductAttr" />
+  <div class="odmDetail">
+    <div :class="{'view-container': isStatus}">
+      <OdmDetailBase
+        :categoryId="categoryId"
+        :cateLabels="cateLabels"
+        :productBasicInfo="productBasicInfo"
+        ref="OdmDetailBase"
+      />
+      <!-- <OdmDetailAttr ref="OdmDetailAttr" />
+      <OdmDetailProductAttr ref="OdmDetailProductAttr" />-->
+      <SalesAttributes
+        ref="saleAttributesInfo"
+        :mode="mode"
+        :categoryId="categoryId"
+        :productId="productId"
+        :initialValue="initSaleAttr"
+      ></SalesAttributes>
+      <ProductAttributes
+        ref="customAttributesInfo"
+        :canUpdate="true"
+        :canView="false"
+        :categoryId="categoryId"
+        :productId="productId"
+        :initialValue="productCustomizeAttributeList"
+      ></ProductAttributes>
+    </div>
     <div class="odmDetail-btn">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
@@ -18,11 +35,20 @@
 
 <script>
 import OdmDetailBase from './OdmDetailBase'
-import OdmDetailAttr from './OdmDetailAttr'
-import OdmDetailProductAttr from './OdmDetailProductAttr'
+// import OdmDetailAttr from './OdmDetailAttr'
+// import OdmDetailProductAttr from './OdmDetailProductAttr'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import SalesAttributes from '@/views/createProduct/SalesAttributes'
+import ProductAttributes from '@/views/createProduct/ProductAttributes'
+
 export default {
-  components: { OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr },
+  components: {
+    OdmDetailBase,
+    // OdmDetailAttr,
+    // OdmDetailProductAttr,
+    SalesAttributes,
+    ProductAttributes
+  },
   props: {
     mode: { type: String, required: false, default: '' },
     id: { type: String, required: false, default: '' },
@@ -35,15 +61,18 @@ export default {
   },
   data () {
     return {
-      ref: []
+      ref: [],
+      productBasicInfo: [],
+      productCustomizeAttributeList: [],
+      productSalesAttributeList: []
     }
   },
   computed: {
     isStatus () {
       if (this.mode !== 'view') {
-        return true
-      } else {
         return false
+      } else {
+        return true
       }
     }
   },
@@ -72,8 +101,8 @@ export default {
 
       Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
         .then(() => {
-          const params = []
-          if (status === 'submit') {
+          const params = {}
+          if (status === 'create') {
             // 保存
             const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
             let data = {} // @todo:warning 详情数据，到时候替换
@@ -92,7 +121,13 @@ export default {
         })
     },
     load () {
-
+      RecommondApi.recommendDetail(this.id)
+        .then(res => {
+          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
+          this.productBasicInfo = productBasicInfo
+          this.productCustomizeAttributeList = productCustomizeAttributeList
+          this.productSalesAttributeList = productSalesAttributeList
+        })
     },
     create (params) {
       RecommondApi.save(params)
@@ -128,6 +163,12 @@ export default {
   cursor: not-allowed;
   /deep/.el-input__inner {
     border: 0;
+  }
+  /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
+    border: 0;
+  }
+  /deep/.el-textarea__inner {
+    border: 0 !important;
   }
 }
 </style>
