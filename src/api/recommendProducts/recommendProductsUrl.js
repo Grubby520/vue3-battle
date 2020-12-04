@@ -19,7 +19,7 @@ const RECOMMENDURLS = {
   // odm 分类
   recommendCategory: baseURL + '/category/list',
   // 校验货号是否存在
-  checkItem: baseURL + '/product/item-no-is-exist',
+  checkItem: baseURL + '/product/supplier-item-no-is-exist',
   saveSubmit: baseURL + '/product/save-and-submit',
   // 属性项列表,颜色、尺寸
   getAttrList: productUrl + '/attribute/list-term/'

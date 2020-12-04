@@ -13,7 +13,7 @@
         ref="saleAttributesInfo"
         :mode="mode"
         :categoryId="categoryId"
-        :productId="productId"
+        :productId="id"
         :initialValue="initSaleAttr"
       ></SalesAttributes>
       <ProductAttributes
@@ -21,7 +21,7 @@
         :canUpdate="true"
         :canView="false"
         :categoryId="categoryId"
-        :productId="productId"
+        :productId="id"
         :initialValue="productCustomizeAttributeList"
       ></ProductAttributes>
     </div>
@@ -62,6 +62,7 @@ export default {
   data () {
     return {
       ref: [],
+      initSaleAttr: [],
       productBasicInfo: [],
       productCustomizeAttributeList: [],
       productSalesAttributeList: []
@@ -88,13 +89,13 @@ export default {
       })
 
       const OdmDetailAttr = new Promise((resolve, reject) => {
-        this.$refs['OdmDetailAttr'].$refs['form'].validate(valid => {
+        this.$refs['saleAttributesInfo'].$refs['form'].validate(valid => {
           if (valid) resolve()
         })
       })
 
       const OdmDetailProductAttr = new Promise((resolve, reject) => {
-        this.$refs['OdmDetailProductAttr'].$refs['form'].validate(valid => {
+        this.$refs['customAttributesInfo'].$refs['form'].validate(valid => {
           if (valid) resolve()
         })
       })
@@ -125,7 +126,8 @@ export default {
         .then(res => {
           const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
           this.productBasicInfo = productBasicInfo
-          this.productCustomizeAttributeList = productCustomizeAttributeList
+          // this.productCustomizeAttributeList = productCustomizeAttributeList
+          this.initSaleAttr = productCustomizeAttributeList
           this.productSalesAttributeList = productSalesAttributeList
         })
     },
