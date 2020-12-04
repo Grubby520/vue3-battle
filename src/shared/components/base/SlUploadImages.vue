@@ -86,9 +86,9 @@ export default {
       default: ''
     },
     limit: {
-      type: String,
+      type: Number,
       required: false,
-      default: ''
+      default: 100
     },
     accept: {
       type: String,

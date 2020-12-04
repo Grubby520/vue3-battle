@@ -159,7 +159,7 @@ export default {
       type: Object,
       default: function () {
         return {
-          colorImageList: [],
+          productImageList: [],
           productSalesAttributeList: []
         }
       }
@@ -202,7 +202,7 @@ export default {
         //   weight: 0
         // }
       ],
-      colorImageList: {
+      productImageList: {
         // additionalProp1: [
         //   {
         //     colorAttributeId: 0,
@@ -234,9 +234,9 @@ export default {
         sizeOptions = await p1
         colorOptions = await p2
       }
-      let { productSalesAttributeList = [], colorImageList = [] } = this.initialValue
+      let { productSalesAttributeList = [], productImageList = [] } = this.initialValue
       this.productSalesAttributeList = JSON.parse(JSON.stringify(productSalesAttributeList))
-      this.colorImageList = JSON.parse(JSON.stringify(colorImageList))
+      this.productImageList = JSON.parse(JSON.stringify(productImageList))
       this.productSalesAttributeList.forEach(item => {
         for (let i = 0; i < sizeOptions.length; i++) {
           if (sizeOptions[i].id === item.sizeAttributeId) {
@@ -260,7 +260,7 @@ export default {
         }
       })
       this.preForm = JSON.parse(JSON.stringify(this.form))
-      for (let [key, value] of Object.entries(this.colorImageList)) {
+      for (let [key, value] of Object.entries(this.productImageList)) {
         let colorAttributeName = ''
         this.form.colors.map(color => {
           if (color.id === key) {
@@ -451,7 +451,7 @@ export default {
       })
     },
     getSubmitData () {
-      let colorImageList = {}
+      let productImageList = {}
       let productSalesAttributeList = []
       this.productImages.map(item => {
         let val = item.images.map(img => {
@@ -467,7 +467,7 @@ export default {
             status: img.status
           }
         })
-        colorImageList[item.colorAttributeId] = val
+        productImageList[item.colorAttributeId] = val
       })
       this.productSalesAttributeList.map(item => {
         let li = JSON.parse(JSON.stringify(item))
@@ -475,10 +475,10 @@ export default {
         delete li.colorAttributeName
         productSalesAttributeList.push(li)
       })
-      console.log(productSalesAttributeList, colorImageList)
+      console.log(productSalesAttributeList, productImageList)
       return {
         productSalesAttributeList,
-        colorImageList
+        productImageList
       }
     },
     setColorMainImg (row, file) {
