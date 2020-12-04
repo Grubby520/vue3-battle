@@ -4,6 +4,7 @@
       <OdmDetailBase
         :categoryId="categoryId"
         :cateLabels="cateLabels"
+        :isStatus="isStatus"
         :productBasicInfo="productBasicInfo"
         ref="OdmDetailBase"
       />
@@ -23,7 +24,7 @@
         :initialValue="productCustomizeAttributeList"
       ></ProductAttributes>
     </div>
-    <div class="odmDetail-btn">
+    <div class="odmDetail-btn" v-if="!isStatus">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
       <el-button @click="submitForm('submit')" type="primary">提交</el-button>
@@ -58,7 +59,7 @@ export default {
       ref: [],
       initSaleAttr: {},
       productBasicInfo: {},
-      productCustomizeAttributeList: {},
+      productCustomizeAttributeList: [],
       productSalesAttributeList: {}
     }
   },
@@ -76,67 +77,57 @@ export default {
   },
   methods: {
     submitForm (status) {
-      // const OdmDetailBase = new Promise((resolve, reject) => {
-      //   this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
-      //     if (valid) resolve()
-      //   })
-      // })
-
-      // const OdmDetailAttr = new Promise((resolve, reject) => {
-      //   this.$refs['saleAttributesInfo'].$refs['form'].validate(valid => {
-      //     if (valid) resolve()
-      //   })
-      // })
-
-      // const OdmDetailProductAttr = new Promise((resolve, reject) => {
-      //   this.$refs['customAttributesInfo'].$refs['form'].validate(valid => {
-      //     if (valid) resolve()
-      //   })
-      // })
       const OdmDetailBase = this.$refs.OdmDetailBase.commmitInfo()
       const initSaleAttr = this.$refs.saleAttributesInfo.validateAndGet()
       const productCustomizeAttributeList = this.$refs.saleAttributesInfo.getSubmitData()
       Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
         .then((res) => {
-          const { productBasicInfo, saleAttributesInfo } = res
-          const params = {}
+          const [{ productBasicInfo }, { productImageList }, { productSalesAttributeList }] = res
+          let data = {}
+          data.productBasicInfo = productBasicInfo
+          data.productBasicInfo.productImageList = productImageList
+          data.productSalesAttributeList = productSalesAttributeList
           if (status === 'create') {
-            // 保存
-            // let data = {} // @todo:warning 详情数据，到时候替换
-            const dataBasicInfo = productBasicInfo
-            productBasicInfo.colorImageList = saleAttributesInfo.colorImageList
-            productBasicInfo.productImageList = dataBasicInfo.productSalesAttributeList
-            // data.productBasicInfo = productBasicInfo
-            // this.create(data)
+            this.create(data)
           } else {
-            // 保存提交
-            this.modify(params)
+            this.submit(data)
           }
         })
         .catch(() => {
         })
     },
     load () {
+      const _this = this
       RecommondApi.recommendDetail(this.id)
         .then(res => {
-          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
-          this.productBasicInfo = productBasicInfo
-          // this.productCustomizeAttributeList = productCustomizeAttributeList
-          this.initSaleAttr = productCustomizeAttributeList
-          this.productSalesAttributeList = productSalesAttributeList
+          const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
+          const { productImageList } = productBasicInfo
+          Object.keys(productImageList).forEach(image => {
+            const images = productImageList[image]
+            images.forEach(item => { item.url = item.src })
+          })
+          // 销售属性回显
+          if (productSalesAttributeList && productSalesAttributeList.length > 0) {
+            this.initSaleAttr.productSalesAttributeList = productSalesAttributeList
+            this.initSaleAttr.productImageList = productImageList
+          }
+          // 基本属性回显
+          if (productBasicInfo) _this.productBasicInfo = productBasicInfo
+          // 商品属性回显
+          if (productCustomizeAttributeList && productCustomizeAttributeList.length > 0) _this.productCustomizeAttributeList = productCustomizeAttributeList
         })
     },
     create (params) {
       RecommondApi.save(params)
         .then(res => {
-          this.$router.back()
+          this.$router.push({ path: '/home/recommend-products/list', query: {} })
         })
     },
 
-    modify (params) {
+    submit (params) {
       RecommondApi.saveSubmit(params)
         .then(res => {
-          this.$router.back()
+          this.$router.push({ path: '/home/recommend-products/list', query: {} })
         })
     },
     cancel () {
@@ -160,12 +151,31 @@ export default {
   cursor: not-allowed;
   /deep/.el-input__inner {
     border: 0;
+    &::placeholder {
+      color: #fff;
+    }
   }
   /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
     border: 0;
   }
   /deep/.el-textarea__inner {
     border: 0 !important;
+  }
+
+  /deep/.stl-big-data-select .selected-tags.disabled[data-v-05976cfe] {
+    background-color: #fff;
+  }
+  /deep/.el-input.is-disabled .el-input__inner {
+    background-color: #fff;
+  }
+  /deep/.el-input__count {
+    display: none;
+  }
+  /deep/.el-input__prefix {
+    display: none;
+  }
+  /deep/.el-icon-arrow-down {
+    display: none;
   }
 }
 </style>

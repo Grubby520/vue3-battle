@@ -76,7 +76,7 @@
                 <el-input v-model.trim="row.supplierSkuCode" :disabled="mode === 'view'"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="weight" label="带包装重量（KG）" min-width="220px" align="center">
+            <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
               <template v-slot="{row}">
                 <el-input
                   v-model="row.weight"
@@ -129,10 +129,6 @@
         <div class="error-tip">1.商品图片必须为商品整体图，图片比例：1：1(正方形）或者4：3,宽高值最大尺寸4096px-4096px,大小不超过4M；</div>
         <div class="error-tip">2.颜色图片建议从正面、侧面、背面，细节各个维度展示商品。每个SKU至少上传4张图片；</div>
       </div>
-
-      <el-button type="primary" @click="validateAll">校验销售属性</el-button>
-      <el-button type="primary" @click="getSubmitData">获取提交值</el-button>
-      <!-- <div v-if="mode === 'view'" class="cover"></div> -->
     </div>
   </div>
 </template>
@@ -234,12 +230,12 @@ export default {
         sizeOptions = await p1
         colorOptions = await p2
       }
-      let { productSalesAttributeList = [], productImageList = [] } = this.initialValue
+      let { productSalesAttributeList = [], productImageList = {} } = this.initialValue
       this.productSalesAttributeList = JSON.parse(JSON.stringify(productSalesAttributeList))
       this.productImageList = JSON.parse(JSON.stringify(productImageList))
       this.productSalesAttributeList.forEach(item => {
         for (let i = 0; i < sizeOptions.length; i++) {
-          if (sizeOptions[i].id === item.sizeAttributeId) {
+          if (sizeOptions[i].id === +item.sizeAttributeId) {
             item.sizeAttributeName = sizeOptions[i].attrTermName
             this.form.sizes.push({
               attrTermName: sizeOptions[i].attrTermName,
@@ -249,7 +245,7 @@ export default {
           }
         }
         for (let j = 0; j < colorOptions.length; j++) {
-          if (colorOptions[j].id === item.colorAttributeId) {
+          if (colorOptions[j].id === +item.colorAttributeId) {
             item.colorAttributeName = colorOptions[j].attrTermName
             this.form.colors.push({
               attrTermName: colorOptions[j].attrTermName,
@@ -263,7 +259,7 @@ export default {
       for (let [key, value] of Object.entries(this.productImageList)) {
         let colorAttributeName = ''
         this.form.colors.map(color => {
-          if (color.id === key) {
+          if (color.id === +key) {
             colorAttributeName = color.attrTermName
           }
         })
@@ -459,14 +455,11 @@ export default {
             src: img.src,
             colorAttributeId: item.colorAttributeId,
             hash: img.hash,
-            id: img.id,
-            imageType: img.imageType,
             isMainImage: img.isMainImage || 0,
-            productId: this.productId,
-            status: img.status
+            productId: this.productId
           }
         })
-        productImageList[item.colorAttributeId] = val
+        productImageList['' + item.colorAttributeId] = val
       })
       this.productSalesAttributeList.map(item => {
         let li = JSON.parse(JSON.stringify(item))

@@ -58,7 +58,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-button type="primary" @click="transferToSubmitDataForSrm">获取提交值</el-button>
+
       <!-- 暂时屏蔽 勿删 -->
       <!-- <div class="custom-attribute">
                 <el-link type="primary" v-if="canUpdateFreestyle" @click="popupTemplateDialog">
