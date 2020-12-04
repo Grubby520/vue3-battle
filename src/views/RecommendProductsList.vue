@@ -198,11 +198,11 @@ export default {
       const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.itemNo
       RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
         .then(() => {
-          successNotify(this, `供方货号：${ITEMNOALL}推品成功`)
+          successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
           this.$refs.listView.refresh()
         })
         .catch(() => {
-          errorNotify(this, `供方货号：${ITEMNOALL}推品失败`)
+          errorNotify(this, `供方货号：${ITEMNOALL}提交失败`)
         })
     },
     deleteProduct (row) {
@@ -219,14 +219,18 @@ export default {
       RecommondApi.cancelrcommend(row.id)
         .then(res => {
           this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
+          successNotify(this, `供方货号：${row.itemNo}取消成功`)
         })
         .catch(() => {
-          errorNotify(this, `供方货号：${row.itemNo}取消推品失败`)
+          errorNotify(this, `供方货号：${row.itemNo}取消失败`)
         })
     },
     OdmDetail (status, row) {
-      this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { mode: status, id: row.id } })
+      if (status === 'view') {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
+      } else {
+        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { mode: status, id: row.id } })
+      }
     }
   }
 }
