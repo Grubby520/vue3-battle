@@ -76,43 +76,22 @@ export default {
   },
   methods: {
     submitForm (status) {
-      // const OdmDetailBase = new Promise((resolve, reject) => {
-      //   this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
-      //     if (valid) resolve()
-      //   })
-      // })
-
-      // const OdmDetailAttr = new Promise((resolve, reject) => {
-      //   this.$refs['saleAttributesInfo'].$refs['form'].validate(valid => {
-      //     if (valid) resolve()
-      //   })
-      // })
-
-      // const OdmDetailProductAttr = new Promise((resolve, reject) => {
-      //   this.$refs['customAttributesInfo'].$refs['form'].validate(valid => {
-      //     if (valid) resolve()
-      //   })
-      // })
       const OdmDetailBase = this.$refs.OdmDetailBase.commmitInfo()
       const initSaleAttr = this.$refs.saleAttributesInfo.validateAndGet()
       const productCustomizeAttributeList = this.$refs.saleAttributesInfo.getSubmitData()
       Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
         .then((res) => {
-          const { productBasicInfo, saleAttributesInfo, productSalesAttributeList } = res
-          console.log('ress', res)
-          const params = {}
+          const [{ productBasicInfo }, { productImageList }, { productSalesAttributeList }] = res
+          let data = {} // @todo:warning 详情数据，到时候替换
+          data.productBasicInfo = productBasicInfo
+          data.productBasicInfo.productImageList = productImageList
+          data.productSalesAttributeList = productSalesAttributeList
           if (status === 'create') {
             // 保存
-            // let data = {} // @todo:warning 详情数据，到时候替换
-            const dataBasicInfo = productBasicInfo
-            productBasicInfo.colorImageList = saleAttributesInfo.colorImageList
-            productBasicInfo.productImageList = dataBasicInfo.productSalesAttributeList
-            console.log('productSalesAttributeList', productSalesAttributeList)
-            // data.productBasicInfo = productBasicInfo
-            // this.create(data)
+            this.create(data)
           } else {
             // 保存提交
-            this.modify(params)
+            this.submit(data)
           }
         })
         .catch(err => {
@@ -123,20 +102,21 @@ export default {
       RecommondApi.recommendDetail(this.id)
         .then(res => {
           const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
-          this.productBasicInfo = productBasicInfo
+          if (this.productBasicInfo && this.productBasicInfo.length > 0) this.productBasicInfo = productBasicInfo
           // this.productCustomizeAttributeList = productCustomizeAttributeList
-          this.initSaleAttr = productCustomizeAttributeList
-          this.productSalesAttributeList = productSalesAttributeList
+          if (this.productCustomizeAttributeList && this.productCustomizeAttributeList.length > 0) this.initSaleAttr = productCustomizeAttributeList
+          if (this.productSalesAttributeList && this.productSalesAttributeList.length > 0) this.productSalesAttributeList = productSalesAttributeList
         })
     },
     create (params) {
+      debugger
       RecommondApi.save(params)
         .then(res => {
           this.$router.back()
         })
     },
 
-    modify (params) {
+    submit (params) {
       RecommondApi.saveSubmit(params)
         .then(res => {
           this.$router.back()

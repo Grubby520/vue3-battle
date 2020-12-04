@@ -35,8 +35,7 @@ export default {
 
   methods: {
     load () {
-      CommonApi.category()
-        // CommonApi.category({ type: 1 })
+      CommonApi.category({ type: 1 })
         .then(res => {
           const list = res.data
           this.options = list
@@ -54,6 +53,7 @@ export default {
       })
     },
     change (nodeKeys) {
+      console.log('nodeKeys', nodeKeys)
       this.nodeKeys = nodeKeys
       this.showlabels(this.options, nodeKeys)
     },
