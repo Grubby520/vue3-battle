@@ -417,10 +417,10 @@ export default {
     validateTableData () {
       return new Promise((resolve, reject) => {
         this.productSalesAttributeList.map(item => {
-          if (!item.price) {
+          if (!item.supplyPrice) {
             reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 供货价格未填写`))
           }
-          if (!item.skuCode) {
+          if (!item.supplierSkuCode) {
             reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 商家SKU编码未填写`))
           }
         })
@@ -431,7 +431,7 @@ export default {
       return new Promise((resolve, reject) => {
         this.productImages.map(item => {
           if (!item.images.length) {
-            reject(new Error(`商品图片：请上传 ${item.attrTermName} 属性的图片`))
+            reject(new Error(`商品图片：请上传 ${item.colorAttributeName} 属性的图片`))
           }
         })
         resolve()
