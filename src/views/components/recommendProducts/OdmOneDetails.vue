@@ -32,18 +32,11 @@ export default {
   created () {
     this.load()
       .then((res) => {
-        this.showCateLables(res, this.categoryId)
+        if (this.mode === 'modify') {
+          const notes = this.showCateLables(res, this.categoryId, [])
+          this.showNodes = notes.reverse()
+        }
       })
-  },
-  watch: {
-    'categoryId': {
-      handler (newValue) {
-        // debugger
-        // this.load()
-        // this.showCateLables(this.options, this.categoryId)
-      }
-      // immediate: true
-    }
   },
   methods: {
     load () {
@@ -65,14 +58,17 @@ export default {
         }
       })
     },
-    showCateLables (arr, id) {
+    showCateLables (arr, id, notes) {
       arr.forEach(cate => {
-        if (cate.id !== id) {
-          this.showCateLables(cate.children, id)
-        } else {
-          this.showNodes.push(cate.id)
+        if (cate.id === parseInt(id)) {
+          notes.push(cate.id)
+          return false
+        } else if (cate.children && cate.children.length > 0) {
+          this.showCateLables(cate.children, id, notes)
+          notes.push(cate.id)
         }
       })
+      return notes
     },
     change (nodeKeys) {
       this.nodeKeys = nodeKeys
