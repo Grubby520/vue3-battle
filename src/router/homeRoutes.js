@@ -77,14 +77,5 @@ export const homeRoutes = [
         component: () => import('@/views/ImportProductImgs')
       }
     ]
-  },
-  {
-    path: 'createProduct',
-    name: '创建产品',
-    meta: {
-      icon: 'el-icon-postcard',
-      code: 'menu_my_info'
-    },
-    component: () => import('@/views/createProduct/index.vue')
   }
 ]
