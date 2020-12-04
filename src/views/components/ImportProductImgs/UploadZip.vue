@@ -12,6 +12,7 @@
       :before-remove="beforeRemove"
       :before-upload="beforeUpload"
       :on-remove="onRemove"
+      :accept="accept"
       class="upload-zip"
       drag
       multiple
@@ -27,8 +28,10 @@
           <el-progress :percentage="file.percentage" />
         </div>
         <div class="progress-explain">
-          <p>{{file.status === 'uploading' ? '上传中' : '上传成功'}}</p>
-          <p>已经上传{{file.percentage}}%</p>
+          <p v-if="file.status === 'uploading'">上传中</p>
+          <p v-if="file.status === 'uploading'">已上传{{file.percentage}}%</p>
+          <p v-if="file.status === 'success'">成功：{{file.raw.successCount}}</p>
+          <p v-if="file.status === 'success'">失败：{{file.raw.failCount}}</p>
         </div>
       </div>
     </el-upload>
@@ -52,7 +55,7 @@ export default {
     },
     size: {
       type: Number,
-      default: 80
+      default: 200
     }
   },
   data: function () {
@@ -68,6 +71,17 @@ export default {
     }
   },
   methods: {
+    async httpRequest (elParams) {
+      elParams.file.status = 'uploading'
+      elParams.file.percentage = 0
+      elParams.onProgress({ percent: 0 }, elParams.file)
+      // 获取上传地址
+      let preVo = await this.preUploadAction({ fileName: elParams.file.name, contentType: elParams.file.type }, elParams)
+      // 上传云
+      await this.ossUploadAction(preVo, elParams)
+      // 入库
+      this.afterUploadAction({ productId: preVo.productId, fileName: elParams.file.name }, elParams)
+    },
     preUploadAction (params, elParams) {
       return new Promise((resolve, reject) => {
         ImportProductApi.preUploadAction(params).then(res => {
@@ -77,60 +91,54 @@ export default {
             resolve(data.imageImportVO)
           } else {
             this.uploadingCount--
-            elParams.onError()
+            elParams.onError(data && data.baseCheckVO && data.baseCheckVO.message ? (elParams.file.name + data.baseCheckVO.message) : `${elParams.file.name}上传失败`)
             reject(new Error('预检请求失败'))
           }
         }).catch(err => {
           this.uploadingCount--
+          elParams.onError(`${elParams.file.name}上传失败`)
           reject(err)
         })
       })
     },
-    httpRequest (elParams) {
-      elParams.file.status = 'uploading'
-      elParams.file.percentage = 0
-      elParams.onProgress({ percent: 0 }, elParams.file)
-      const file = elParams.file
-      this.preUploadAction({ fileName: file.name, contentType: file.type }, elParams).then(res => {
+    ossUploadAction (params, elParams) {
+      return new Promise((resolve, reject) => {
         let config = {
           timeout: 8 * 60 * 1000,
           headers: {
-            'Content-Type': file.type
+            'Content-Type': elParams.file.type
           },
           onUploadProgress: function (ev) {
-            ev.percent = 20
+            let percent = 20
             if (ev.total > 0) {
-              ev.percent = Math.floor(ev.loaded / ev.total * 100 * 0.6) + 20
+              percent = Math.floor(ev.loaded / ev.total * 100 * 0.6) + 20
             }
-            elParams.onProgress({ percent: ev.percent }, elParams.file)
+            elParams.onProgress({ percent }, elParams.file)
           }
         }
-        ImportProductApi.ossUploadAction(res.url, file, config).then((response) => {
-          elParams.onProgress({ percent: 80 }, elParams.file)
-          this.afterUploadAction({ productId: res.productId, fileName: file.name }, elParams)
-        }).catch((error) => {
+        ImportProductApi.ossUploadAction(params.url, elParams.file, config).then(res => {
+          resolve()
+        }).catch(error => {
           this.uploadingCount--
-          elParams.onError(error)
           let timeout = String(error).indexOf('timeout') > -1
           if (timeout) {
-            this.$message({
-              type: 'error',
-              message: '上传文件超时，请检查网络或调整文件大小',
-              duration: 15000
-            })
+            elParams.onError('上传文件超时，请检查网络或调整文件大小')
+          } else {
+            elParams.onError(error)
           }
+          reject(error)
         })
-      }).catch(err => {
-        elParams.onError(err)
       })
     },
     afterUploadAction (params, elParams) {
       ImportProductApi.afterUploadAction(params).then(res => {
         if (res.success) {
+          elParams.file.successCount = res.data.successCount
+          elParams.file.failCount = res.data.failCount
           elParams.onProgress({ percent: 100 }, elParams.file)
           elParams.onSuccess()
         } else {
-          elParams.onError()
+          elParams.onError(elParams.file.name + res.message || `${elParams.file.name}上传失败`)
         }
       }).catch(err => {
         elParams.onError(err)
@@ -139,7 +147,7 @@ export default {
       })
     },
     beforeUpload (file) {
-      // const isOverSize = file.size / 1024 / 1024 > this.size
+      const isOverSize = file.size / 1024 / 1024 > this.size
       if (this.uploadingCount >= this.limit) {
         this.$message({
           type: 'error',
@@ -148,13 +156,6 @@ export default {
         })
         return false
       }
-      // // 上传文件大小限制
-      // if (isOverSize) {
-      //   this.$message.error(
-      //     `${file.name}超出限制大小，大小不能超过 ${this.size}MB`
-      //   )
-      //   return false
-      // }
       // 上传文件类型限制
       if (this.accept.indexOf(this.getFileType(file.name)) === -1) {
         this.$message({
@@ -162,6 +163,13 @@ export default {
           message: `${file.name}文件类型错误，请选择以${this.accept}为结尾的文件`,
           duration: 15000
         })
+        return false
+      }
+      // 上传文件大小限制
+      if (isOverSize) {
+        this.$message.error(
+          `${file.name}超出限制大小，大小不能超过 ${this.size}MB`
+        )
         return false
       }
       this.uploadingCount++
@@ -172,7 +180,7 @@ export default {
     onError (error, file, fileList) {
       this.$message({
         type: 'error',
-        message: `${file.name}上传失败！`,
+        message: typeof error === 'string' ? error : `${file.name}上传失败！`,
         duration: 15000
       })
     },

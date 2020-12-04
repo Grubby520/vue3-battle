@@ -38,7 +38,37 @@ export const homeRoutes = [
         component: () => import('@/views/RecommendProductsList.vue')
       },
       {
-        path: 'maintain',
+        path: 'odmDetail',
+        name: 'ODM推品',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        props: route => { return { id: route.query.id, mode: route.query.mode, categoryId: route.query.categoryId, cateLabels: route.query.cateLabels } },
+        component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
+      },
+      {
+        path: 'OdmOneDetail',
+        name: 'ODM推品',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        props: route => { return { id: route.query.id, mode: route.query.mode } },
+        component: () => import('@/views/components/recommendProducts/OdmOneDetail.vue')
+      },
+      {
+        path: 'OdmOneDetails',
+        name: 'ODM推品',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        props: route => { return { id: route.query.id, mode: route.query.mode } },
+        component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
+      },
+      {
+        path: 'Maintain',
         name: 'ODM推品',
         meta: {
           icon: '',
@@ -68,12 +98,12 @@ export const homeRoutes = [
     ]
   },
   {
-    path: 'supplier-list',
-    name: '供应商列表',
+    path: 'createProduct',
+    name: '创建产品',
     meta: {
-      icon: 'el-icon-user',
-      code: 'menu_supplier_list'
+      icon: 'el-icon-postcard',
+      code: 'menu_my_info'
     },
-    component: () => import('@/views/SupplierList.vue')
+    component: () => import('@/views/createProduct/index.vue')
   }
 ]

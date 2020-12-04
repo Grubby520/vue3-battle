@@ -10,22 +10,37 @@
     >
       <div slot="search">
         <!-- 搜索区域包含搜索和重置按钮 -->
-        <SlSearchForm v-model="query" :items="searchItems" />
+        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" v-if="filterIsLoad" />
       </div>
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
-        <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
-        <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
+        <el-button type="primary" @click="OdmDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
-      <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
-        <div slot="operation" slot-scope="{row}">
-          <span @click="maintain(row,'modify')" class="btn" v-if="row.productStatus !==2">维护</span>
-          <span type="text" @click="maintain(row,'view')" class="btn">查看</span>
-          <span type="text" @click="recommon(row)" class="btn" v-if="row.productStatus===0">推品</span>
-          <span type="text" @click="deleteProduct(row)" class="btn" v-if="row.productStatus===0">删除</span>
-          <span type="text" @click="cancel(row)" class="btn" v-if="row.productStatus===1">取消推品</span>
+      <SlTable
+        ref="table"
+        :tableData="tableData"
+        :columns="columns"
+        v-model="selections"
+        :selectionsDisabled="selectionsDisabled"
+        :tooltip="false"
+      >
+        <div slot="operation" slot-scope="{row}" class="operate">
+          <el-button
+            @click="OdmDetail('modify',row)"
+            type="text"
+            v-if="[0, 1].includes(row.productStatus)"
+          >编辑</el-button>
+          <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
+          <el-button
+            type="text"
+            @click="recommon(row)"
+            v-if="row.productStatus===0"
+            :disabled="!row.coverImageUrl"
+          >提交</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
+          <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -35,28 +50,30 @@
 import { successNotify, errorNotify } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import CommonApi from '@api/api.js'
 export default {
   data () {
     return {
       tableData: [],
       selections: [], // 复选框数据
+      selectionsDisabled: [],
       page: {
         pageIndex: 1,
         total: 0
       },
       category: undefined,
       query: {
-        categoryName: '',
+        categoryName: null,
         itemNo: '',
         status: ''
       },
       searchItems: [
         {
-          type: 'single-select',
+          default: null,
+          type: 'tree-select',
           label: '品类',
           name: 'categoryId',
           data: {
-            remoteUrl: RecommondUrl.recommendCategory,
             options: []
           }
         },
@@ -87,6 +104,10 @@ export default {
           label: '品类'
         },
         {
+          prop: 'description',
+          label: '商品描述'
+        },
+        {
           prop: 'supplyPrice',
           label: '供货价（元）'
         },
@@ -98,33 +119,70 @@ export default {
           prop: 'skuCode',
           label: '创建时间/更新时间',
           pre: {
-            createTimes: '创建',
-            updateTimes: '更新'
+            createTime: '创建',
+            updateTime: '更新'
           }
         }
-      ]
+      ],
+      // 搜索条件是否可以开始加载
+      filterIsLoad: false
     }
   },
-
+  mounted () {
+    this.initFilter()
+  },
   methods: {
+    /**
+     * 初始化筛选的基础数据
+     */
+    initFilter () {
+      CommonApi.category({ type: 1 }).then((response) => {
+        if (response.success) {
+          let data = response.data
+          this.shakingTree(data)
+          this.searchItems[0].data.options = data
+        }
+      }).finally(() => {
+        this.filterIsLoad = true
+      })
+    },
+    /**
+     * 对树的数据进行加工
+     */
+    shakingTree (treeData) {
+      treeData.forEach((node) => {
+        if (node.children && node.children.length > 0) {
+          this.shakingTree(node.children)
+        } else {
+          delete node.children
+        }
+      })
+    },
     gotoPage (pageSize = 10, pageIndex = 1) {
+      // this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
+
       const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
+          list.forEach(data => {
+            if (data.description.length > 30) {
+              data.description = data.description.substring(0, 30) + '...'
+            }
+          })
           this.tableData = list
           this.$refs.listView.loading = false
-          list.forEach(item => {
-            item.createTimes = this.$moment(item.createTime).format('YYYY-M-D HH:mm')
-            item.updateTimes = this.$moment(item.updateTime).format('YYYY-M-D HH:mm')
-          })
+          // 待推品以为的状态置灰
+          this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
           this.page.total = total
         })
     },
     reset () {
-      this.query.categoryName = ''
-      this.query.itemNo = ''
-      this.query.status = ''
+      // this.query.categoryName = ''
+      // this.query.itemNo = ''
+      // this.query.status = ''
+      // this.$refs.reset.reset()
+      this.$refs.searchForm.reset()
       // 更新列表
       this.$refs.listView.refresh()
     },
@@ -140,11 +198,11 @@ export default {
       const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.itemNo
       RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
         .then(() => {
-          successNotify(this, `供方货号：${ITEMNOALL}推品成功`)
+          successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
           this.$refs.listView.refresh()
         })
         .catch(() => {
-          errorNotify(this, `供方货号：${ITEMNOALL}推品失败`)
+          errorNotify(this, `供方货号：${ITEMNOALL}提交失败`)
         })
     },
     deleteProduct (row) {
@@ -158,29 +216,22 @@ export default {
         })
     },
     cancel (row) {
-      const params = row.id
-      RecommondApi.cancelrcommend({ productIdList: [params] })
+      RecommondApi.cancelrcommend(row.id)
         .then(res => {
           this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
+          successNotify(this, `供方货号：${row.itemNo}取消成功`)
         })
         .catch(() => {
-          errorNotify(this, `供方货号：${row.itemNo}取消推品失败`)
+          errorNotify(this, `供方货号：${row.itemNo}取消失败`)
         })
     },
-    maintain (row, status) {
-      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status, id: row.id } })
-    },
-    uploadSpu () {
-      this.$router.push({ path: '/home/recommend-products/import-spu' })
-    },
-    uploadImages () {
-      this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
+    OdmDetail (status, row) {
+      if (status === 'view') {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
+      } else {
+        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { mode: status, id: row.id } })
+      }
     }
   }
 }
 </script>
-<style lang="scss" scoped>
-.recommond {
-}
-</style>

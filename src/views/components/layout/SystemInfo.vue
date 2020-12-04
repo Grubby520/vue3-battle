@@ -10,7 +10,7 @@ export default {
   props: {
 
   },
-  data: () => {
+  data () {
     return {
 
     }

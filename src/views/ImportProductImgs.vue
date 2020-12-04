@@ -43,7 +43,6 @@
 
 <script>
 import UploadZip from '@/views/components/ImportProductImgs/UploadZip.vue'
-import { confirmBox } from '@shared/util/messageUI'
 
 export default {
   name: 'ImportProductImgs',
@@ -62,11 +61,12 @@ export default {
   },
   beforeRouteLeave (to, from, next) {
     if (this.uploadStatus !== 'done') {
-      confirmBox(this, '有文件正在上传中，确认跳转至其它页面吗？').then(res => {
-        next()
-      }).catch(res => {
-        next(false)
+      this.$message({
+        type: 'error',
+        message: '有文件正在上传中，不能离开当前页面，请等待...',
+        duration: 5000
       })
+      next(false)
     } else {
       next()
     }

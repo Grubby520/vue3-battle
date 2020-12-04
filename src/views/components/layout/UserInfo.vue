@@ -14,7 +14,7 @@ export default {
   name: 'UserInfo',
   props: {
   },
-  data: () => {
+  data () {
     return {
 
     }

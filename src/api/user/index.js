@@ -5,17 +5,15 @@ const USER_API = {
   authLogin: (params) => post(URL.authLogin, params),
   modifyPassword: (params) => post(URL.modifyPassword, params),
   register: (params) => post(URL.register, params),
+  registerUpdate: (params) => post(URL.registerUpdate, params),
   getUserInfo: () => get(URL.userInfo),
   logout: () => get(URL.logout, {}, { addLoading: true }),
   resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true }),
-  getList: (params) => post(URL.list, params),
-  getSupplierStatus: () => get(URL.statusList),
-  frozen: (params) => put(URL.frozen, params, { addLoading: true }),
-  cancelFrozen: (params) => put(URL.cancelFrozen, params, { addLoading: true }),
-  audit: (params) => put(URL.judgeMent, params),
-  access: (params) => put(URL.access, params, { addLoading: true }),
   docDetails: () => get(URL.docDetails),
-  docModify: (params) => post(URL.docModify, params)
+  docModify: (params) => post(URL.docModify, params),
+  isCertificationNoExist: (params) => get(URL.certificationNoExist, params),
+  protocolConfirm: () => put(URL.protocolConfirm),
+  getSupplierDetail: (params) => get(URL.supplierDetail, params)
 }
 
 export default USER_API

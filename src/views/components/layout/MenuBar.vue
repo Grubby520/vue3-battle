@@ -56,7 +56,7 @@ export default {
     Submenu,
     MenuItem
   },
-  data: () => {
+  data () {
     return {
 
     }
