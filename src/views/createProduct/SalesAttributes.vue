@@ -92,7 +92,13 @@
       <!-- 商品图片 -->
       <div v-if="productImages && productImages.length">
         <div class="secondary-header">
-          <span class="secondary-header--title">商品图片</span>
+          <span class="secondary-header--title">
+            商品图片
+            <span
+              class="error-tip"
+              style="font-weight: normal;margin-left: 20px;"
+            >若产品主体超出预览图规范框，则代表该商品不符合规范-仅限产品平铺图，模特图可考虑整体效果。</span>
+          </span>
         </div>
         <div class="product-images">
           <template v-for="(item, index) in productImages">
@@ -102,7 +108,12 @@
                 {{item.colorAttributeName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages v-model="item.images" :imageType="0" :disabled="mode === 'view'">
+                <SlUploadImages
+                  v-model="item.images"
+                  :imageType="0"
+                  :limit="100"
+                  :disabled="mode === 'view'"
+                >
                   <div slot="content" slot-scope="{file}">
                     <el-button
                       :type="file.isMainImage ? 'primary' : ''"
