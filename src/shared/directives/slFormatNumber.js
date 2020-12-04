@@ -15,7 +15,8 @@ formatNumber.install = Vue => {
           switch (param.type) {
             case 'integer': this.setInteger(param); break
             case 'gold': this.setGold(param); break
-            default: console.log('暂不支持此格式化方式'); break
+            default:
+              break
           }
         },
         setInteger: function (param) {

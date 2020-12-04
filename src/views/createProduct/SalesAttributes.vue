@@ -397,11 +397,11 @@ export default {
       this[attribute + 'Keys'].splice(index, 1)
     },
     validateAll () {
-      this.validateAndGet().then(res => { }).catch(err => console.log(err))
+      this.validateAndGet().then(res => { }).catch(() => { })
     },
     validateFormItem () {
       const p = this.validateForm()
-      p.then(res => { }).catch(err => console.log(err.message))
+      p.then(res => { }).catch(() => { })
     },
     validateAndGet () {
       return new Promise((resolve, reject) => {
@@ -455,7 +455,6 @@ export default {
       let productSalesAttributeList = []
       this.productImages.map(item => {
         let val = item.images.map(img => {
-          console.log(img)
           return {
             src: img.src,
             colorAttributeId: item.colorAttributeId,
@@ -475,7 +474,6 @@ export default {
         delete li.colorAttributeName
         productSalesAttributeList.push(li)
       })
-      console.log(productSalesAttributeList, productImageList)
       return {
         productSalesAttributeList,
         productImageList
@@ -494,7 +492,6 @@ export default {
   watch: {
     'initialValue': {
       handler (val) {
-        console.log('----初始化销售属性数据-----')
         this.initData()
       },
       deep: true,
