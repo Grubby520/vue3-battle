@@ -76,7 +76,7 @@
                 <el-input v-model.trim="row.supplierSkuCode" :disabled="mode === 'view'"></el-input>
               </template>
             </el-table-column>
-            <el-table-column prop="weight" label="带包装重量（KG）" min-width="220px" align="center">
+            <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
               <template v-slot="{row}">
                 <el-input
                   v-model="row.weight"
@@ -129,10 +129,6 @@
         <div class="error-tip">1.商品图片必须为商品整体图，图片比例：1：1(正方形）或者4：3,宽高值最大尺寸4096px-4096px,大小不超过4M；</div>
         <div class="error-tip">2.颜色图片建议从正面、侧面、背面，细节各个维度展示商品。每个SKU至少上传4张图片；</div>
       </div>
-
-      <el-button type="primary" @click="validateAll">校验销售属性</el-button>
-      <el-button type="primary" @click="getSubmitData">获取提交值</el-button>
-      <!-- <div v-if="mode === 'view'" class="cover"></div> -->
     </div>
   </div>
 </template>
