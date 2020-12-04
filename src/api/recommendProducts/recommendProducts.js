@@ -22,7 +22,7 @@ const RECOMMEND = {
   cancelrcommend (id) {
     return put(`${RECOMMENDURLS.cancelrcommend}/${id}`)
   },
-  // odm 推品
+  // odm 提交
   recommend (info) {
     return put(RECOMMENDURLS.recommend, info)
   },

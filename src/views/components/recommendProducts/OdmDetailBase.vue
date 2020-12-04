@@ -78,8 +78,8 @@ export default {
   },
   data () {
     const productValidata = (rule, value, callback) => {
-      if (this.form.itemNo) {
-        RecommondApi.checkItem(this.form.itemNo)
+      if (this.form.supplierItemNo) {
+        RecommondApi.checkItem(this.form.supplierItemNo)
           .then(res => {
             if (res.success) {
               callback()
@@ -95,7 +95,7 @@ export default {
       hasPattern: false,
       form: {
         // 分类编号
-        categoryId: this.categoryId,
+        categoryId: '',
         // 商品标题
         title: '',
         // 供方货号
@@ -135,7 +135,12 @@ export default {
   watch: {
     'productBasicInfo': {
       handler (newValue) {
-        this.form = newValue
+        for (let key of Object.keys(newValue)) {
+          if (this.form.hasOwnProperty(key)) {
+            this.form[key] = newValue[key]
+          }
+        }
+        this.form.categoryId = this.categoryId
       },
       immediate: true
     }
