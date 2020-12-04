@@ -158,7 +158,6 @@ export default {
       const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
-          console.log(res.data)
           const { list, total } = res.data
           list.forEach(data => {
             if (data.description.length > 30) {
