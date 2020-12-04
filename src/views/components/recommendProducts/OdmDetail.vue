@@ -4,6 +4,7 @@
       <OdmDetailBase
         :categoryId="categoryId"
         :cateLabels="cateLabels"
+        :isStatus="isStatus"
         :productBasicInfo="productBasicInfo"
         ref="OdmDetailBase"
       />
@@ -23,7 +24,7 @@
         :initialValue="productCustomizeAttributeList"
       ></ProductAttributes>
     </div>
-    <div class="odmDetail-btn">
+    <div class="odmDetail-btn" v-if="!isStatus">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
       <el-button @click="submitForm('submit')" type="primary">提交</el-button>
@@ -58,7 +59,7 @@ export default {
       ref: [],
       initSaleAttr: {},
       productBasicInfo: {},
-      productCustomizeAttributeList: {},
+      productCustomizeAttributeList: [],
       productSalesAttributeList: {}
     }
   },
@@ -82,15 +83,13 @@ export default {
       Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
         .then((res) => {
           const [{ productBasicInfo }, { productImageList }, { productSalesAttributeList }] = res
-          let data = {} // @todo:warning 详情数据，到时候替换
+          let data = {}
           data.productBasicInfo = productBasicInfo
           data.productBasicInfo.productImageList = productImageList
           data.productSalesAttributeList = productSalesAttributeList
           if (status === 'create') {
-            // 保存
             this.create(data)
           } else {
-            // 保存提交
             this.submit(data)
           }
         })
@@ -98,27 +97,37 @@ export default {
         })
     },
     load () {
+      const _this = this
       RecommondApi.recommendDetail(this.id)
         .then(res => {
-          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
-          if (this.productBasicInfo && this.productBasicInfo.length > 0) this.productBasicInfo = productBasicInfo
-          // this.productCustomizeAttributeList = productCustomizeAttributeList
-          if (this.productCustomizeAttributeList && this.productCustomizeAttributeList.length > 0) this.initSaleAttr = productCustomizeAttributeList
-          if (this.productSalesAttributeList && this.productSalesAttributeList.length > 0) this.productSalesAttributeList = productSalesAttributeList
+          const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
+          const { productImageList } = productBasicInfo
+          Object.keys(productImageList).forEach(image => {
+            const images = productImageList[image]
+            images.forEach(item => { item.url = item.src })
+          })
+          // 销售属性回显
+          if (productSalesAttributeList && productSalesAttributeList.length > 0) {
+            this.initSaleAttr.productSalesAttributeList = productSalesAttributeList
+            this.initSaleAttr.productImageList = productImageList
+          }
+          // 基本属性回显
+          if (productBasicInfo) _this.productBasicInfo = productBasicInfo
+          // 商品属性回显
+          if (productCustomizeAttributeList && productCustomizeAttributeList.length > 0) _this.productCustomizeAttributeList = productCustomizeAttributeList
         })
     },
     create (params) {
-      debugger
       RecommondApi.save(params)
         .then(res => {
-          this.$router.back()
+          this.$router.push({ path: '/home/recommend-products/list', query: {} })
         })
     },
 
     submit (params) {
       RecommondApi.saveSubmit(params)
         .then(res => {
-          this.$router.back()
+          this.$router.push({ path: '/home/recommend-products/list', query: {} })
         })
     },
     cancel () {
@@ -142,12 +151,31 @@ export default {
   cursor: not-allowed;
   /deep/.el-input__inner {
     border: 0;
+    &::placeholder {
+      color: #fff;
+    }
   }
   /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
     border: 0;
   }
   /deep/.el-textarea__inner {
     border: 0 !important;
+  }
+
+  /deep/.stl-big-data-select .selected-tags.disabled[data-v-05976cfe] {
+    background-color: #fff;
+  }
+  /deep/.el-input.is-disabled .el-input__inner {
+    background-color: #fff;
+  }
+  /deep/.el-input__count {
+    display: none;
+  }
+  /deep/.el-input__prefix {
+    display: none;
+  }
+  /deep/.el-icon-arrow-down {
+    display: none;
   }
 }
 </style>

@@ -14,7 +14,7 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量推品</el-button>
+        <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
         <el-button type="primary" @click="OdmDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
@@ -93,10 +93,10 @@ export default {
           prop: 'productName',
           label: '商品信息',
           width: '300',
-          isInImg: 'coverImageUrl',
+          isInImg: 'src',
           pre: {
-            productName: '商品名称',
-            itemNo: '供方货号'
+            title: '商品名称',
+            supplierItemNo: '供方货号'
           }
         },
         {
@@ -106,10 +106,6 @@ export default {
         {
           prop: 'description',
           label: '商品描述'
-        },
-        {
-          prop: 'supplyPrice',
-          label: '供货价（元）'
         },
         {
           prop: 'productStatusName',
@@ -159,16 +155,17 @@ export default {
       })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
-      // this.tableData = [{ id: '333', 'productName': 'eeerr', 'categoryName': 'rtrtt', 'supplyPrice': 1, 'productStatusName': '111111' }]
-
       const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
+          console.log(res.data)
           const { list, total } = res.data
           list.forEach(data => {
             if (data.description.length > 30) {
               data.description = data.description.substring(0, 30) + '...'
             }
+            const categoryNameLast = data.categoryName.split('>')
+            data.categoryName = categoryNameLast[categoryNameLast.length - 1]
           })
           this.tableData = list
           this.$refs.listView.loading = false
@@ -209,10 +206,10 @@ export default {
       RecommondApi.deleteRecommed(row.id)
         .then(res => {
           this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}删除推品成功`)
+          successNotify(this, `供方货号：${row.itemNo}删除成功`)
         })
         .catch(res => {
-          errorNotify(this, `供方货号：${row.itemNo}删除推品失败`)
+          errorNotify(this, `供方货号：${row.itemNo}删除失败`)
         })
     },
     cancel (row) {
@@ -229,7 +226,7 @@ export default {
       if (status === 'view') {
         this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
       } else {
-        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { mode: status, id: row.id } })
+        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { categoryId: row.categoryId, mode: status, id: row.id } })
       }
     }
   }

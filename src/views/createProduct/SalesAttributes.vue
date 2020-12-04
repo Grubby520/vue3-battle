@@ -234,7 +234,7 @@ export default {
         sizeOptions = await p1
         colorOptions = await p2
       }
-      let { productSalesAttributeList = [], productImageList = [] } = this.initialValue
+      let { productSalesAttributeList = [], productImageList = {} } = this.initialValue
       this.productSalesAttributeList = JSON.parse(JSON.stringify(productSalesAttributeList))
       this.productImageList = JSON.parse(JSON.stringify(productImageList))
       this.productSalesAttributeList.forEach(item => {
