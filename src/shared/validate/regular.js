@@ -14,5 +14,5 @@ export const smallReg = /^((([^0][0-9]+|0)\.([0-9]{1,6}))$)|^(([1-9]+)\.([0-9]{1
 // 营业执照号15位或18位
 export const businessLicenseNoReg = /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/
 // 根据ISO标准,银行卡长度一般在13-19位,首位不为0
-export const bankCardNumberReg = /[1-9]\d{12,18}/
+export const bankCardNumberReg = /^[1-9]\d{12,18}$/
 export const qqReg = /^[1-9][0-9]{4,14}$/
