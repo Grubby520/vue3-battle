@@ -166,7 +166,8 @@ export default {
       this.$refs.currentComponent.validate().then((data) => {
         if (data) {
           this.isLoading = true
-          UserApi.register(this.getSubmitData).then(res => {
+          let apiMethod = this.supplierId ? 'registerUpdate' : 'register'
+          UserApi[apiMethod](this.getSubmitData).then(res => {
             if (res.success) {
               this.$router.push({
                 path: '/notify',

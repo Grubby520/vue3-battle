@@ -8,10 +8,7 @@
           {{supplierStatusText}}&nbsp;&nbsp;
           <el-button v-if="notPassed" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
         </div>
-        <b v-if="isSubmit">
-          您的申请已成功提交&nbsp;&nbsp;
-          <el-button type="text" @click.native="toLogin">返回登录界面</el-button>
-        </b>
+        <b v-if="isSubmit">您的申请已成功提交</b>
       </div>
     </div>
   </div>
@@ -58,9 +55,6 @@ export default {
     ...userMapActions(['GET_USER_INFO']),
     toRegister () {
       this.$router.push('/register')
-    },
-    toLogin () {
-      this.$router.push('/login')
     }
   },
   mounted () {
