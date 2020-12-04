@@ -23,7 +23,7 @@ export default {
     },
     UPLOAD_FILE ({ commit, dispatch }, params) {
       let { preUploadUrl, file } = params
-      put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
+      return put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
         .then(res => {
           return res
         })
