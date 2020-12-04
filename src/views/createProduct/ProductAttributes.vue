@@ -416,8 +416,8 @@ export default {
       return data
     },
     transferToSubmitDataForSrm () {
-      let data = this.transferToSubmitData()
-      console.log(data)
+      // let data = this.transferToSubmitData()
+      // console.log(data)
     },
     hasDataChanged () {
       let originalDataStr = JSON.stringify(this.originalData)
