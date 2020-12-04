@@ -136,7 +136,7 @@ export default {
      * 初始化筛选的基础数据
      */
     initFilter () {
-      CommonApi.category().then((response) => {
+      CommonApi.category({ type: 1 }).then((response) => {
         if (response.success) {
           let data = response.data
           this.shakingTree(data)

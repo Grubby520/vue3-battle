@@ -7,8 +7,6 @@
         :productBasicInfo="productBasicInfo"
         ref="OdmDetailBase"
       />
-      <!-- <OdmDetailAttr ref="OdmDetailAttr" />
-      <OdmDetailProductAttr ref="OdmDetailProductAttr" />-->
       <SalesAttributes
         ref="saleAttributesInfo"
         :mode="mode"
@@ -35,8 +33,6 @@
 
 <script>
 import OdmDetailBase from './OdmDetailBase'
-// import OdmDetailAttr from './OdmDetailAttr'
-// import OdmDetailProductAttr from './OdmDetailProductAttr'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import SalesAttributes from '@/views/createProduct/SalesAttributes'
 import ProductAttributes from '@/views/createProduct/ProductAttributes'
@@ -44,8 +40,6 @@ import ProductAttributes from '@/views/createProduct/ProductAttributes'
 export default {
   components: {
     OdmDetailBase,
-    // OdmDetailAttr,
-    // OdmDetailProductAttr,
     SalesAttributes,
     ProductAttributes
   },

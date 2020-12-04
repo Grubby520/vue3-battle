@@ -18,6 +18,7 @@
             value="id"
             label="attrTermName"
             multiple
+            @change="validate('sizeList')"
           ></sl-select>
         </el-form-item>
 
@@ -30,6 +31,7 @@
             value="id"
             label="attrTermName"
             multiple
+            @change="validate('colorList')"
           ></sl-select>
         </el-form-item>
         <OdmDetailTable></OdmDetailTable>
@@ -97,6 +99,13 @@ export default {
     },
     commmitInfo () {
       return this.form
+    },
+    /**
+     * 重置校验
+     * @param {String} prop 检验的属性
+     */
+    validate (prop) {
+      this.$refs.form.validateField(prop)
     }
   }
 }
