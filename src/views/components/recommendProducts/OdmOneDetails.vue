@@ -25,7 +25,7 @@ export default {
         value: 'id'
       },
       cate: {},
-      showNodes: [3, 37]
+      showNodes: []
     }
   },
 
@@ -36,6 +36,7 @@ export default {
   methods: {
     load () {
       CommonApi.category()
+        // CommonApi.category({ type: 1 })
         .then(res => {
           const list = res.data
           this.options = list

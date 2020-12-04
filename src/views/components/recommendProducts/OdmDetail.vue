@@ -56,10 +56,10 @@ export default {
   data () {
     return {
       ref: [],
-      initSaleAttr: [],
-      productBasicInfo: [],
-      productCustomizeAttributeList: [],
-      productSalesAttributeList: []
+      initSaleAttr: {},
+      productBasicInfo: {},
+      productCustomizeAttributeList: {},
+      productSalesAttributeList: {}
     }
   },
   computed: {
@@ -76,36 +76,40 @@ export default {
   },
   methods: {
     submitForm (status) {
-      const OdmDetailBase = new Promise((resolve, reject) => {
-        this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
-          if (valid) resolve()
-        })
-      })
+      // const OdmDetailBase = new Promise((resolve, reject) => {
+      //   this.$refs['OdmDetailBase'].$refs['form'].validate(valid => {
+      //     if (valid) resolve()
+      //   })
+      // })
 
-      const OdmDetailAttr = new Promise((resolve, reject) => {
-        this.$refs['saleAttributesInfo'].$refs['form'].validate(valid => {
-          if (valid) resolve()
-        })
-      })
+      // const OdmDetailAttr = new Promise((resolve, reject) => {
+      //   this.$refs['saleAttributesInfo'].$refs['form'].validate(valid => {
+      //     if (valid) resolve()
+      //   })
+      // })
 
-      const OdmDetailProductAttr = new Promise((resolve, reject) => {
-        this.$refs['customAttributesInfo'].$refs['form'].validate(valid => {
-          if (valid) resolve()
-        })
-      })
-
-      Promise.all([OdmDetailBase, OdmDetailAttr, OdmDetailProductAttr])
-        .then(() => {
+      // const OdmDetailProductAttr = new Promise((resolve, reject) => {
+      //   this.$refs['customAttributesInfo'].$refs['form'].validate(valid => {
+      //     if (valid) resolve()
+      //   })
+      // })
+      const OdmDetailBase = this.$refs.OdmDetailBase.commmitInfo()
+      const initSaleAttr = this.$refs.saleAttributesInfo.validateAndGet()
+      const productCustomizeAttributeList = this.$refs.saleAttributesInfo.getSubmitData()
+      Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
+        .then((res) => {
+          const { productBasicInfo, saleAttributesInfo, productSalesAttributeList } = res
+          console.log('ress', res)
           const params = {}
           if (status === 'create') {
             // 保存
-            const productBasicInfo = this.$refs.OdmDetailBase.commmitInfo()
-            let data = {} // @todo:warning 详情数据，到时候替换
-            const dataBasicInfo = data.productBasicInfo
-            productBasicInfo.colorImageList = dataBasicInfo.colorImageList
-            productBasicInfo.productImageList = dataBasicInfo.productImageList
-            data.productBasicInfo = productBasicInfo
-            this.create(data)
+            // let data = {} // @todo:warning 详情数据，到时候替换
+            const dataBasicInfo = productBasicInfo
+            productBasicInfo.colorImageList = saleAttributesInfo.colorImageList
+            productBasicInfo.productImageList = dataBasicInfo.productSalesAttributeList
+            console.log('productSalesAttributeList', productSalesAttributeList)
+            // data.productBasicInfo = productBasicInfo
+            // this.create(data)
           } else {
             // 保存提交
             this.modify(params)

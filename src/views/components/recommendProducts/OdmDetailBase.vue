@@ -108,7 +108,8 @@ export default {
         description: '',
         // 商品备注
         remark: '',
-        categoryName: ''
+        categoryName: '',
+        supplyType: undefined
       },
       rules: {
         categoryId: [{ required: true }],
@@ -136,7 +137,7 @@ export default {
     'productBasicInfo': {
       handler (newValue) {
         for (let key of Object.keys(newValue)) {
-          if (this.form.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(this.form, key)) {
             this.form[key] = newValue[key]
           }
         }
@@ -151,12 +152,23 @@ export default {
       this.$refs.form.clearValidate('estimatedShippingTime')
     },
     commmitInfo () {
-      if (this.hasPattern) {
-        this.$set(this.form, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-MM-DD'))
-      }
-      const label = this.cateLabels.split('>')
-      this.form.categoryName = label[label.length - 1]
-      return this.form
+      return new Promise((resolve, reject) => {
+        this.$refs['form'].validate((valid) => {
+          if (valid) {
+            if (this.hasPattern) {
+              this.$set(this.form, 'estimatedShippingTime', this.$moment(new Date()).format('YYYY-MM-DD'))
+              this.form.supplyType = 0
+            } else {
+              this.form.supplyType = 1
+            }
+            const label = this.cateLabels.split('>')
+            this.form.categoryName = label[label.length - 1]
+            resolve({ 'productBasicInfo': this.form })
+          } else {
+            resolve(false)
+          }
+        })
+      })
     },
     ShippingTimeValidator () {
       return {
