@@ -164,7 +164,7 @@ export const businessLicenseNoValidator = function (errorMsg = '', trigger = 'bl
 
 // 交易额
 export const transactionAamountValidator = function (errorMsg = '', trigger = 'blur') {
-  let transactionAamountReg = /^(([1-9][0-9]{1,7}|0)|([1-9][0-9]{1,7}|0).([0-9]{1,2}))$/
+  let transactionAamountReg = /^(([1-9][0-9]{0,7}|0)|([1-9][0-9]{0,7}|0).([0-9]{1,2}))$/
   return {
     validator: generateFormItemValidator(transactionAamountReg, errorMsg),
     message: errorMsg,
