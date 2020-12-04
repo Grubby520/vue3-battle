@@ -17,7 +17,7 @@
               clearable
               isObj
               placeholder="请选择尺码"
-              :disabled="false"
+              :disabled="mode === 'view'"
               @change="selectChange($event, 'size')"
             ></SlSelect>
           </el-form-item>
@@ -33,7 +33,7 @@
               clearable
               isObj
               placeholder="请选择颜色"
-              :disabled="false"
+              :disabled="mode === 'view'"
               @change="selectChange($event, 'color')"
             ></SlSelect>
           </el-form-item>
@@ -57,6 +57,7 @@
                 <el-input
                   v-model="row.supplyPrice"
                   v-slFormatNumber="{type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2}"
+                  :disabled="mode === 'view'"
                 ></el-input>
               </template>
             </el-table-column>
@@ -72,7 +73,7 @@
                 </p>
               </template>
               <template v-slot="{row}">
-                <el-input v-model.trim="row.supplierSkuCode"></el-input>
+                <el-input v-model.trim="row.supplierSkuCode" :disabled="mode === 'view'"></el-input>
               </template>
             </el-table-column>
             <el-table-column prop="weight" label="带包装重量（KG）" min-width="220px" align="center">
@@ -80,6 +81,7 @@
                 <el-input
                   v-model="row.weight"
                   v-slFormatNumber="{type: 'integer', max: 999999, compareLength: true, includeZero:true}"
+                  :disabled="mode === 'view'"
                 ></el-input>
               </template>
             </el-table-column>
@@ -100,7 +102,7 @@
                 {{item.colorAttributeName}}
               </div>
               <div class="product-images--picture">
-                <SlUploadImages v-model="item.images" :imageType="0">
+                <SlUploadImages v-model="item.images" :imageType="0" :disabled="mode === 'view'">
                   <div slot="content" slot-scope="{file}">
                     <el-button
                       :type="file.isMainImage ? 'primary' : ''"
@@ -119,7 +121,7 @@
 
       <el-button type="primary" @click="validateAll">校验销售属性</el-button>
       <el-button type="primary" @click="getSubmitData">获取提交值</el-button>
-      <div v-if="mode === 'view'" class="cover"></div>
+      <!-- <div v-if="mode === 'view'" class="cover"></div> -->
     </div>
   </div>
 </template>
