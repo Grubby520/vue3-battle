@@ -459,7 +459,8 @@ export default {
             src: img.src,
             colorAttributeId: item.colorAttributeId,
             hash: img.hash,
-            isMainImage: img.isMainImage || 0
+            isMainImage: img.isMainImage || 0,
+            productId: this.productId
           }
         })
         productImageList['' + item.colorAttributeId] = val
