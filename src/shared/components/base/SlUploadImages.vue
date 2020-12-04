@@ -1,6 +1,6 @@
 <template>
   <div class="uploadImage">
-    {{ossImages}}
+    <!-- {{images}} -->
     <!-- 上传图片 -->
     <el-upload
       action="http://srm-storage-test.oss-cn-shanghai.aliyuncs.com"
@@ -55,9 +55,11 @@ import { fileToMd5 } from '@shared/util'
 export default {
   name: 'SlUploadImages',
   model: {
+    prop: 'images',
     event: 'changeUploadImages'
   },
   props: {
+    images: { type: Array, required: false, default: () => { return [] } },
     // 需要回显图片数组
     imageUrls: { type: Array, required: false, default: () => { return [] } },
     // 0为商品图片 1为尺寸图片
@@ -68,14 +70,14 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      fileList: [], // 上传图片列表
+      fileList: this.images, // 上传图片列表
       ossImages: []
     }
   },
 
   watch: {
     // 监听回显图片
-    'imageUrls': {
+    'images': {
       handler (newValue) {
         this.fileList = newValue
       },
@@ -84,6 +86,7 @@ export default {
     }
   },
   mounted () {
+    this.$emit('imageUrls')
   },
   methods: {
     async beforeUpload (file) {
@@ -149,12 +152,15 @@ export default {
     },
 
     handleRemove (file) {
+      console.log('remove', file)
       this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.cancelUpload(file)
+        const filImages = this.images.filter(img => img.name !== file.name)
+        this.$emit('changeUploadImages', filImages)
       })
     },
 
@@ -172,10 +178,14 @@ export default {
       // 获取预上传oss地址
       CommonApi.generatePreUploadUrl(PARAMS)
         .then(res => {
+          console.log(res.data)
           res.data.file = file.file
           fileToMd5(file.file).then((md5) => {
             res.data.src = res.data.showUrl
+            res.data.url = res.data.showUrl
             res.data.hash = md5
+            res.data.name = file.file.name
+            res.data.imageType = this.imageType
             this.ossImages.push(res.data)
             this.gotoOss(res.data.preUploadUrl, file.file)
           })
@@ -185,7 +195,7 @@ export default {
       // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
       put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
         .then(res => {
-          const IMAGES = this.imageUrls.filter(img => img.id)
+          const IMAGES = this.images.filter(img => img.id)
           this.$emit('changeUploadImages', IMAGES)
           IMAGES.push(...this.ossImages)
         })
@@ -221,7 +231,12 @@ export default {
   /deep/.el-upload--picture-card {
     line-height: 110px;
   }
-
+  /deep/ .el-upload-list__item {
+    transition: none !important; // 取消动画效果
+  }
+  /deep/.el-upload-list__item.is-ready {
+    display: none; // 图片闪烁问题
+  }
   .container {
     border: 1px solid #c0ccda;
     position: relative;

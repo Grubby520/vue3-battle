@@ -8,8 +8,8 @@ const RECOMMENDURLS = {
   spu_data_template: baseURL + '/template/getTemplateUrl?code=IMPORT_SPU',
   // 上传SPU数据 post
   upload_spu_data: baseURL + '/product/importSpu',
-  // odm推品
-  recommend: baseURL + '/product/pushed',
+  // odm提交
+  recommend: baseURL + '/product/submit',
   // odm 撤回
   cancelrcommend: baseURL + '/product/revoke',
   // odm详情
@@ -19,7 +19,7 @@ const RECOMMENDURLS = {
   // odm 分类
   recommendCategory: baseURL + '/category/list',
   // 校验货号是否存在
-  checkItem: baseURL + '/product/item-no-is-exist',
+  checkItem: baseURL + '/product/supplier-item-no-is-exist',
   saveSubmit: baseURL + '/product/save-and-submit',
   // 属性项列表,颜色、尺寸
   getAttrList: productUrl + '/attribute/list-term/'
