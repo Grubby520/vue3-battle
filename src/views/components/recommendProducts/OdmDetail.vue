@@ -94,8 +94,7 @@ export default {
             this.submit(data)
           }
         })
-        .catch(err => {
-          console.log('验证失败', err)
+        .catch(() => {
         })
     },
     load () {

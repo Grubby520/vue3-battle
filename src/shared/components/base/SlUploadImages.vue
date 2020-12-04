@@ -193,7 +193,6 @@ export default {
       // 获取预上传oss地址
       CommonApi.generatePreUploadUrl(PARAMS)
         .then(res => {
-          console.log(res.data)
           res.data.file = file.file
           fileToMd5(file.file).then((md5) => {
             res.data.uid = file.file.uid
@@ -203,7 +202,6 @@ export default {
             res.data.name = file.file.name
             res.data.imageType = this.imageType
             this.ossImages.push(res.data)
-            console.log(res.data)
             this.gotoOss(res.data.preUploadUrl, file.file)
           })
         })

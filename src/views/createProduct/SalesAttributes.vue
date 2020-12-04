@@ -239,7 +239,7 @@ export default {
       this.productImageList = JSON.parse(JSON.stringify(productImageList))
       this.productSalesAttributeList.forEach(item => {
         for (let i = 0; i < sizeOptions.length; i++) {
-          if (sizeOptions[i].id === item.sizeAttributeId) {
+          if (sizeOptions[i].id === +item.sizeAttributeId) {
             item.sizeAttributeName = sizeOptions[i].attrTermName
             this.form.sizes.push({
               attrTermName: sizeOptions[i].attrTermName,
@@ -249,7 +249,7 @@ export default {
           }
         }
         for (let j = 0; j < colorOptions.length; j++) {
-          if (colorOptions[j].id === item.colorAttributeId) {
+          if (colorOptions[j].id === +item.colorAttributeId) {
             item.colorAttributeName = colorOptions[j].attrTermName
             this.form.colors.push({
               attrTermName: colorOptions[j].attrTermName,
@@ -263,7 +263,7 @@ export default {
       for (let [key, value] of Object.entries(this.productImageList)) {
         let colorAttributeName = ''
         this.form.colors.map(color => {
-          if (color.id === key) {
+          if (color.id === +key) {
             colorAttributeName = color.attrTermName
           }
         })
@@ -397,11 +397,11 @@ export default {
       this[attribute + 'Keys'].splice(index, 1)
     },
     validateAll () {
-      this.validateAndGet().then(res => { }).catch(err => console.log(err))
+      this.validateAndGet().then(res => { }).catch(() => { })
     },
     validateFormItem () {
       const p = this.validateForm()
-      p.then(res => { }).catch(err => console.log(err.message))
+      p.then(res => { }).catch(() => { })
     },
     validateAndGet () {
       return new Promise((resolve, reject) => {
@@ -455,7 +455,6 @@ export default {
       let productSalesAttributeList = []
       this.productImages.map(item => {
         let val = item.images.map(img => {
-          console.log(img)
           return {
             src: img.src,
             colorAttributeId: item.colorAttributeId,
@@ -467,7 +466,7 @@ export default {
             status: img.status
           }
         })
-        productImageList[item.colorAttributeId] = val
+        productImageList['' + item.colorAttributeId] = val
       })
       this.productSalesAttributeList.map(item => {
         let li = JSON.parse(JSON.stringify(item))
@@ -475,7 +474,6 @@ export default {
         delete li.colorAttributeName
         productSalesAttributeList.push(li)
       })
-      console.log(productSalesAttributeList, productImageList)
       return {
         productSalesAttributeList,
         productImageList
@@ -494,7 +492,6 @@ export default {
   watch: {
     'initialValue': {
       handler (val) {
-        console.log('----初始化销售属性数据-----')
         this.initData()
       },
       deep: true,
