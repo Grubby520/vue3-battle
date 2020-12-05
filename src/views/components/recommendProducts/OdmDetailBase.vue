@@ -159,15 +159,18 @@ export default {
         const keys = Object.keys(newValue)
         if (keys.length > 0) {
           for (let key of keys) {
+            // 判断传入的数据是否都是当前页面需要的参数
             if (Object.prototype.hasOwnProperty.call(this.form, key)) {
               this.form = newValue
               this.form[key] = newValue[key]
             }
           }
+          console.log('eee', newValue.supplyType)
           if (newValue.supplyType !== 0) {
             this.hasPattern = false
             this.$set(this.form, 'estimatedShippingDate', this.$moment(newValue.estimatedShippingDate).format('YYYY-MM-DD HH:mm:ss'))
           } else {
+            this.$set(this.form, 'estimatedShippingDate', '')
             this.hasPattern = true
           }
         }
@@ -197,6 +200,7 @@ export default {
             }
             const label = _this.cateLabels.split('>')
             _this.form.categoryName = label[label.length - 1]
+            // 返回数据包含页面需要使用数据form 和传入所有数据
             Object.assign(this.productBasicInfo, _this.form)
             resolve({ 'productBasicInfo': this.productBasicInfo })
           } else {
