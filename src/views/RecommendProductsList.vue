@@ -9,7 +9,7 @@
       class="recommonPar"
     >
       <div slot="search">
-        <!-- 搜索区域包含搜索和重置按钮 -->
+        <!-- 搜索区域search包含搜索和重置按钮 -->
         <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" v-if="filterIsLoad" />
       </div>
       <el-divider />
@@ -33,12 +33,7 @@
             v-if="[0, 1].includes(row.productStatus)"
           >编辑</el-button>
           <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
-          <el-button
-            type="text"
-            @click="recommon(row)"
-            v-if="row.productStatus===0"
-            :disabled="!row.coverImageUrl"
-          >提交</el-button>
+          <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
         </div>
@@ -158,27 +153,23 @@ export default {
       const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
-          console.log(res.data)
           const { list, total } = res.data
           list.forEach(data => {
             if (data.description.length > 30) {
               data.description = data.description.substring(0, 30) + '...'
             }
+            // 列表品类name
             const categoryNameLast = data.categoryName.split('>')
             data.categoryName = categoryNameLast[categoryNameLast.length - 1]
           })
           this.tableData = list
           this.$refs.listView.loading = false
-          // 待推品以为的状态置灰
+          // 待推品复选框置灰数据
           this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
           this.page.total = total
         })
     },
     reset () {
-      // this.query.categoryName = ''
-      // this.query.itemNo = ''
-      // this.query.status = ''
-      // this.$refs.reset.reset()
       this.$refs.searchForm.reset()
       // 更新列表
       this.$refs.listView.refresh()
