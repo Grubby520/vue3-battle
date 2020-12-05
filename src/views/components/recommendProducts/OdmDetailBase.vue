@@ -192,6 +192,7 @@ export default {
               _this.form.supplyType = 0
             } else {
               // 期货
+              _this.form.estimatedShippingDate = _this.form.estimatedShippingDate.split(' ')[0]
               _this.form.supplyType = 1
             }
             const label = _this.cateLabels.split('>')
