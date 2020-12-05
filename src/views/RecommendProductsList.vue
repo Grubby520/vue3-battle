@@ -42,7 +42,7 @@
   </div>
 </template>
 <script>
-import { successNotify, errorNotify } from '@shared/util'
+import { successNotify, errorNotify, confirmBox } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import CommonApi from '@api/api.js'
@@ -59,7 +59,7 @@ export default {
       category: undefined,
       query: {
         categoryName: null,
-        itemNo: '',
+        supplierItemNo: '',
         status: ''
       },
       searchItems: [
@@ -72,7 +72,7 @@ export default {
             options: []
           }
         },
-        { type: 'input', label: '供方货号', name: 'itemNo' },
+        { type: 'input', label: '供方货号', name: 'supplierItemNo' },
         {
           type: 'single-select',
           label: '状态',
@@ -159,8 +159,10 @@ export default {
               data.description = data.description.substring(0, 30) + '...'
             }
             // 列表品类name
-            const categoryNameLast = data.categoryName.split('>')
-            data.categoryName = categoryNameLast[categoryNameLast.length - 1]
+            if (data.categoryName) {
+              const categoryNameLast = data.categoryName.split('>')
+              data.categoryName = categoryNameLast[categoryNameLast.length - 1]
+            }
           })
           this.tableData = list
           this.$refs.listView.loading = false
@@ -179,45 +181,55 @@ export default {
       // 批量推品
       const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
       // 批量图品供方货号
-      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.itemNo), []).join(',')
+      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
       // 判断批量推品还是单独推品
       const PUSHPRODUCTS = SELECTIONARR && SELECTIONARR.length > 0 ? SELECTIONARR : [row.id]
       // 批量推品供方货号和单独供方货号
-      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.itemNo
-      RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
+      confirmBox(this, '是否提交商品', '')
         .then(() => {
-          successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
-          this.$refs.listView.refresh()
-        })
-        .catch(() => {
-          errorNotify(this, `供方货号：${ITEMNOALL}提交失败`)
+          RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+            .then(() => {
+              successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
+              this.$refs.listView.refresh()
+            })
+            .catch(() => {
+              errorNotify(this, `供方货号：${ITEMNOALL}提交失败`)
+            })
         })
     },
     deleteProduct (row) {
-      RecommondApi.deleteRecommed(row.id)
-        .then(res => {
-          this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}删除成功`)
-        })
-        .catch(res => {
-          errorNotify(this, `供方货号：${row.itemNo}删除失败`)
+      confirmBox(this, '是否删除商品', '')
+        .then(() => {
+          RecommondApi.deleteRecommed(row.id)
+            .then(res => {
+              this.gotoPage()
+              successNotify(this, `供方货号：${row.supplierItemNo}删除成功`)
+            })
+            .catch(res => {
+              errorNotify(this, `供方货号：${row.supplierItemNo}删除失败`)
+            })
         })
     },
     cancel (row) {
-      RecommondApi.cancelrcommend(row.id)
-        .then(res => {
-          this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}取消成功`)
-        })
-        .catch(() => {
-          errorNotify(this, `供方货号：${row.itemNo}取消失败`)
+      confirmBox(this, '是否取消提交', '')
+        .then(() => {
+          RecommondApi.cancelrcommend(row.id)
+            .then(res => {
+              this.$refs.listView.refresh()
+              successNotify(this, `供方货号：${row.supplierItemNo}取消提交成功`)
+            })
+            .catch(() => {
+              errorNotify(this, `供方货号：${row.supplierItemNo}取消提交失败`)
+            })
         })
     },
     OdmDetail (status, row) {
-      if (status === 'view') {
-        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
+      const { id, categoryId, supplierItemNo } = row
+      if (status !== 'create') {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: id, categoryId: categoryId, supplierItemNo: supplierItemNo } })
       } else {
-        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { categoryId: row.categoryId, mode: status, id: row.id } })
+        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { categoryId: categoryId, mode: status, id: id, supplierItemNo: supplierItemNo } })
       }
     }
   }

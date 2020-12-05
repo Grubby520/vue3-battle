@@ -6,6 +6,7 @@
         :cateLabels="cateLabels"
         :isStatus="isStatus"
         :productBasicInfo="productBasicInfo"
+        :supplierItemNo="supplierItemNo"
         ref="OdmDetailBase"
       />
       <SalesAttributes
@@ -48,13 +49,14 @@ export default {
   },
   props: {
     mode: { type: String, required: false, default: '' },
-    id: { type: String, required: false, default: '' },
+    id: { type: [String, Number], required: false, default: '' },
     // 分类Id
     categoryId: {
       type: [String, Number],
       default: ''
     },
-    cateLabels: { type: String, required: false, default: '' }
+    cateLabels: { type: String, required: false, default: '' },
+    supplierItemNo: { type: String, required: false, default: '' }
   },
   data () {
     return {
@@ -171,7 +173,7 @@ export default {
   /deep/.el-input__inner {
     border: 0;
     &::placeholder {
-      color: #fff;
+      color: #fff !important;
     }
   }
   /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
@@ -179,6 +181,9 @@ export default {
   }
   /deep/.el-textarea__inner {
     border: 0 !important;
+    &::placeholder {
+      color: #fff !important;
+    }
   }
 
   /deep/.stl-big-data-select .selected-tags.disabled[data-v-05976cfe] {

@@ -14,7 +14,12 @@
           prop="categoryId"
         >{{cateLabels ? cateLabels :this.form.categoryName }}</el-form-item>
         <el-form-item label="商品标题" prop="title">
-          <el-input clearable v-model.trim="form.title" placeholder="请输入品牌名称+商品名称" maxlength="20" />
+          <el-input
+            clearable
+            v-model.trim="form.title"
+            placeholder="1.商品标题：品牌名称+商品名称。2.标题字数仅限20个字以内"
+            maxlength="20"
+          />
         </el-form-item>
         <el-form-item label="供方货号" prop="supplierItemNo">
           <el-input
@@ -52,11 +57,13 @@
           />
           <p v-else>{{form.description}}</p>
         </el-form-item>
-        <el-form-item label="商品备注" prop="remark">
+        <el-form-item label="商品备注">
           <el-input
             v-if="!isStatus"
             type="textarea"
             rows="5"
+            maxlength="500"
+            show-word-limit
             clearable
             v-model.trim="form.remark"
             placeholder="描述提示：1.最终商品是否包含图片上的配饰；2.包装后产品重量。3.包装后产品体积 长*宽*高。"
@@ -82,17 +89,19 @@ export default {
       type: [String, Number],
       default: ''
     },
-    cateLabels: { type: String, required: false, default: '' }
+    cateLabels: { type: String, required: false, default: '' },
+    supplierItemNo: { type: String, required: false, default: '' }
   },
   data () {
     const productValidata = (rule, value, callback) => {
-      if (this.form.supplierItemNo) {
-        RecommondApi.checkItem(this.form.supplierItemNo)
+      const _this = this
+      if (this.form.supplierItemNo && this.form.supplierItem !== this.supplierItemNo) {
+        RecommondApi.checkItem(_this.form.supplierItemNo)
           .then(res => {
-            if (res.success) {
-              callback()
-            } else {
+            if (res.data) {
               callback(new Error('同一个供应商下，供方SPU唯一'))
+            } else {
+              callback()
             }
           })
       } else {
@@ -125,8 +134,7 @@ export default {
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
         supplierItemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
         estimatedShippingTime: [this.ShippingTimeValidator()],
-        description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
-        remark: [{ required: true, message: '请输入商品备注', trigger: 'blur' }]
+        description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
         disabledDate (time) {
@@ -214,8 +222,7 @@ export default {
     padding: 0 20px;
     font-weight: bold;
     font-size: 1.8rem;
-    line-height: 4rem;
-    margin-bottom: 2rem;
+    line-height: 5rem;
   }
   &-form {
     border-top: 1px solid #dcdfe6;
