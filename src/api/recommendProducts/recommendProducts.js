@@ -1,10 +1,10 @@
 import { get, del, put, post } from '@shared/http'
 import RECOMMENDURLS from './recommendProductsUrl'
-import qs from 'qs'
+// import qs from 'qs'
 const RECOMMEND = {
   // odm推品列表
   getRecommedList ({ ...params }) {
-    return post(RECOMMENDURLS.recommendproducts, qs.stringify(params))
+    return post(RECOMMENDURLS.recommendproducts, params)
   },
   // odm 推品删除
   deleteRecommed (id) {

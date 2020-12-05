@@ -159,8 +159,10 @@ export default {
               data.description = data.description.substring(0, 30) + '...'
             }
             // 列表品类name
-            const categoryNameLast = data.categoryName.split('>')
-            data.categoryName = categoryNameLast[categoryNameLast.length - 1]
+            if (data.categoryName) {
+              const categoryNameLast = data.categoryName.split('>')
+              data.categoryName = categoryNameLast[categoryNameLast.length - 1]
+            }
           })
           this.tableData = list
           this.$refs.listView.loading = false
