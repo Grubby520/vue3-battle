@@ -19,8 +19,8 @@
       <ProductAttributes
         v-if="!loading"
         ref="customAttributesInfo"
-        :canUpdate="true"
-        :canView="false"
+        :canUpdate="mode !=='view'"
+        :canView="mode ==='view'"
         :categoryId="categoryId"
         :productId="id"
         :initialValue="productCustomizeAttributeList"
@@ -101,14 +101,13 @@ export default {
         })
     },
     load () {
-      if (this.isStatus === 'view') {
+      if (this.mode === 'view') {
         this.loading = false
         return
       }
       const _this = this
       RecommondApi.recommendDetail(this.id)
         .then(res => {
-          // debugger
           const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
           const { productImageList } = productBasicInfo
           Object.keys(productImageList).forEach(image => {
@@ -136,10 +135,19 @@ export default {
     },
 
     submit (params) {
-      RecommondApi.saveSubmit(params)
-        .then(res => {
-          this.$router.push({ path: '/home/recommend-products/list', query: {} })
-        })
+      if (!this.id) {
+        // 创建产品调用的保存提交
+        RecommondApi.saveSubmit(params)
+          .then(res => {
+            this.$router.push({ path: '/home/recommend-products/list', query: {} })
+          })
+      } else {
+        // 编辑状态调用的列表的提交接口
+        RecommondApi.recommend({ productIdList: [this.id] })
+          .then(() => {
+            this.$router.push({ path: '/home/recommend-products/list', query: {} })
+          })
+      }
     },
     cancel () {
       this.$router.push({ path: '/home/recommend-products/list', query: {} })
