@@ -75,7 +75,7 @@ export default {
       this.showlabels(this.options, nodeKeys)
     },
     save () {
-      const categoryId = this.nodeKeys[this.nodeKeys.length - 1]
+      const categoryId = this.nodeKeys.length > 0 ? this.nodeKeys[this.nodeKeys.length - 1] : this.categoryId
       this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId, mode: this.mode, id: this.id } })
     },
     showlabels (array, nodeKeys) {

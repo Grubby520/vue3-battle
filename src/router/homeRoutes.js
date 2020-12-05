@@ -10,15 +10,15 @@ export const homeRoutes = [
     },
     component: () => import('@/views/Index.vue')
   },
-  {
-    path: 'my-file',
-    name: '我的档案',
-    meta: {
-      icon: 'el-icon-postcard',
-      code: 'menu_my_info'
-    },
-    component: () => import('@/views/MyFile.vue')
-  },
+  // {
+  //   path: 'my-file',
+  //   name: '我的档案',
+  //   meta: {
+  //     icon: 'el-icon-postcard',
+  //     code: 'menu_my_info'
+  //   },
+  //   component: () => import('@/views/MyFile.vue')
+  // },
   {
     path: 'recommend-products',
     name: '商品管理',

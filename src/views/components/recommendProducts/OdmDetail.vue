@@ -9,6 +9,7 @@
         ref="OdmDetailBase"
       />
       <SalesAttributes
+        v-if="!loading"
         ref="saleAttributesInfo"
         :mode="mode"
         :categoryId="categoryId"
@@ -16,6 +17,7 @@
         :initialValue="initSaleAttr"
       ></SalesAttributes>
       <ProductAttributes
+        v-if="!loading"
         ref="customAttributesInfo"
         :canUpdate="true"
         :canView="false"
@@ -60,7 +62,8 @@ export default {
       initSaleAttr: {},
       productBasicInfo: {},
       productCustomizeAttributeList: [],
-      productSalesAttributeList: {}
+      productSalesAttributeList: {},
+      loading: true
     }
   },
   computed: {
@@ -79,14 +82,15 @@ export default {
     submitForm (status) {
       const OdmDetailBase = this.$refs.OdmDetailBase.commmitInfo()
       const initSaleAttr = this.$refs.saleAttributesInfo.validateAndGet()
-      const productCustomizeAttributeList = this.$refs.saleAttributesInfo.getSubmitData()
+      const productCustomizeAttributeList = this.$refs.customAttributesInfo.getSubmitData()
+      let data = {}
       Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
         .then((res) => {
-          const [{ productBasicInfo }, { productImageList }, { productSalesAttributeList }] = res
-          let data = {}
+          const [{ productBasicInfo }, { productImageList, productSalesAttributeList }, productCustomizeAttributeList] = res
           data.productBasicInfo = productBasicInfo
           data.productBasicInfo.productImageList = productImageList
           data.productSalesAttributeList = productSalesAttributeList
+          data.productCustomizeAttributeList = productCustomizeAttributeList
           if (status === 'create') {
             this.create(data)
           } else {
@@ -97,9 +101,14 @@ export default {
         })
     },
     load () {
+      if (this.isStatus === 'view') {
+        this.loading = false
+        return
+      }
       const _this = this
       RecommondApi.recommendDetail(this.id)
         .then(res => {
+          // debugger
           const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
           const { productImageList } = productBasicInfo
           Object.keys(productImageList).forEach(image => {
@@ -108,13 +117,15 @@ export default {
           })
           // 销售属性回显
           if (productSalesAttributeList && productSalesAttributeList.length > 0) {
-            this.initSaleAttr.productSalesAttributeList = productSalesAttributeList
-            this.initSaleAttr.productImageList = productImageList
+            _this.initSaleAttr.productSalesAttributeList = productSalesAttributeList
+            _this.initSaleAttr.productImageList = productImageList
           }
           // 基本属性回显
           if (productBasicInfo) _this.productBasicInfo = productBasicInfo
           // 商品属性回显
           if (productCustomizeAttributeList && productCustomizeAttributeList.length > 0) _this.productCustomizeAttributeList = productCustomizeAttributeList
+        }).finally(() => {
+          this.loading = false
         })
     },
     create (params) {
