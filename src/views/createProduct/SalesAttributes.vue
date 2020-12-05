@@ -164,6 +164,7 @@ export default {
   },
   data () {
     return {
+      attrType: [],
       rules: {
         sizes: [
           { required: true, message: '尺码不能为空', trigger: ['blur', 'change'] }
@@ -204,6 +205,7 @@ export default {
       let sizeOptions = this.sizeOptions
       let colorOptions = this.colorOptions
       if (!sizeOptions.length || !colorOptions.length) {
+        await this.requestAllByUser()
         const p1 = this.requestSizeList()
         const p2 = this.requestColorList()
         sizeOptions = await p1
@@ -256,9 +258,27 @@ export default {
         })
       }
     },
+    requestAllByUser () {
+      return new Promise((resolve, reject) => {
+        let params = {
+          type: 'NEW_ATTRIBUTE'
+        }
+        RecommendApi.allByUser(params).then(res => {
+          if (res.data) {
+            this.attrType = res.data
+            resolve()
+          } else {
+            reject(new Error('err'))
+          }
+        }).catch(err => {
+          reject(err)
+        })
+      })
+    },
     requestSizeList () {
       return new Promise((resolve, reject) => {
-        RecommendApi.getAttrList(2, { categoryId: this.categoryId }).then(res => {
+        let typeId = this.attrType.filter(item => item.attrEngName === 'Size')[0].id
+        RecommendApi.getAttrList(typeId, { categoryId: this.categoryId }).then(res => {
           if (res.data) {
             this.sizeOptions = res.data.filter(item => item.state !== 'OFF')
             resolve(this.sizeOptions)
@@ -272,7 +292,8 @@ export default {
     },
     requestColorList () {
       return new Promise((resolve, reject) => {
-        RecommendApi.getAttrList(1, { categoryId: this.categoryId }).then(res => {
+        let typeId = this.attrType.filter(item => item.attrEngName === 'Color')[0].id
+        RecommendApi.getAttrList(typeId, { categoryId: this.categoryId }).then(res => {
           if (res.data) {
             this.colorOptions = res.data.filter(item => item.state !== 'OFF')
             resolve(this.colorOptions)
@@ -426,6 +447,17 @@ export default {
         this.productImages.map(item => {
           if (!item.images.length) {
             reject(new Error(`商品图片：请上传 ${item.colorAttributeName} 属性的图片`))
+          } else {
+            let hasMainImage = false
+            for (let i = 0; i < item.images.length; i++) {
+              if (item.images[i].isMainImage === 1) {
+                hasMainImage = true
+                break
+              }
+            }
+            if (!hasMainImage) {
+              reject(new Error(`商品图片：请设置 ${item.colorAttributeName} 属性的颜色主图`))
+            }
           }
         })
         resolve()
