@@ -514,7 +514,7 @@ export default {
 
 <style scoped lang="scss">
 .container {
-  padding: 2rem;
+  padding: 0 2rem;
   position: inherit;
   .cover {
     position: absolute;

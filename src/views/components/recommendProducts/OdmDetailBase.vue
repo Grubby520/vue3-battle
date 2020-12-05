@@ -219,8 +219,7 @@ export default {
     padding: 0 20px;
     font-weight: bold;
     font-size: 1.8rem;
-    line-height: 4rem;
-    margin-bottom: 2rem;
+    line-height: 5rem;
   }
   &-form {
     border-top: 1px solid #dcdfe6;
