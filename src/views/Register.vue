@@ -172,7 +172,7 @@ export default {
               this.$router.push({
                 path: '/notify',
                 query: {
-                  isSubmit: true
+                  msg: 'submit'
                 }
               })
             }

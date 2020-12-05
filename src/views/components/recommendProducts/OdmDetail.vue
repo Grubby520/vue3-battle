@@ -48,7 +48,7 @@ export default {
   },
   props: {
     mode: { type: String, required: false, default: '' },
-    id: { type: String, required: false, default: '' },
+    id: { type: [String, Number], required: false, default: '' },
     // 分类Id
     categoryId: {
       type: [String, Number],

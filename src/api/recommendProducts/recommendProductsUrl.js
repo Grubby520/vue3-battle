@@ -22,7 +22,9 @@ const RECOMMENDURLS = {
   checkItem: baseURL + '/product/supplier-item-no-is-exist',
   saveSubmit: baseURL + '/product/save-and-submit',
   // 属性项列表,颜色、尺寸
-  getAttrList: productUrl + '/attribute/list-term/'
+  getAttrList: productUrl + '/attribute/list-term/',
+  // 根据用户获取颜色尺寸id
+  allByUser: productUrl + '/attribute/all_by_user/'
 }
 
 export default RECOMMENDURLS

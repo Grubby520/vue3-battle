@@ -14,7 +14,12 @@
           prop="categoryId"
         >{{cateLabels ? cateLabels :this.form.categoryName }}</el-form-item>
         <el-form-item label="商品标题" prop="title">
-          <el-input clearable v-model.trim="form.title" placeholder="请输入品牌名称+商品名称" maxlength="20" />
+          <el-input
+            clearable
+            v-model.trim="form.title"
+            placeholder="1.商品标题：品牌名称+商品名称。2.标题字数仅限20个字以内"
+            maxlength="20"
+          />
         </el-form-item>
         <el-form-item label="供方货号" prop="supplierItemNo">
           <el-input
@@ -216,8 +221,7 @@ export default {
     padding: 0 20px;
     font-weight: bold;
     font-size: 1.8rem;
-    line-height: 4rem;
-    margin-bottom: 2rem;
+    line-height: 5rem;
   }
   &-form {
     border-top: 1px solid #dcdfe6;
