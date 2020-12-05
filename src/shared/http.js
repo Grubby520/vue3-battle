@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 import { merge, getSessionItem, errorMessageTip, errorNotify } from '@shared/util'
 
 // 存储http错误状态信息
@@ -93,7 +94,9 @@ axiosInstance.interceptors.response.use(
           break
         case 505: err.message = `HTTP版本不受支持`
           break
-        case 401: err.message = `访问资源未授权`
+        case 401: err.message = `访问资源未授权,请登录后操作`
+          store.dispatch('user/RESET_USER_DATA')
+          router.push('/login')
           break
         case 404: err.message = `访问资源不存在`
           break
