@@ -160,8 +160,8 @@ export default {
             }
             // 列表品类name
             if (data.categoryName) {
-              const categoryNameLast = data.categoryName.split('>')
-              data.categoryName = categoryNameLast[categoryNameLast.length - 1]
+              const cateName = data.categoryName.split('>')
+              data.categoryName = cateName.join('/')
             }
           })
           this.tableData = list

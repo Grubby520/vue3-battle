@@ -11,6 +11,7 @@ export function confirmBox (context, msg, title = '提示', type = 'warning') {
   return context.$confirm(msg, title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    dangerouslyUseHTMLString: true,
     type
   })
 }
