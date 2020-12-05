@@ -94,18 +94,21 @@ export default {
   },
   data () {
     const productValidata = (rule, value, callback) => {
-      const _this = this
-      if (this.form.supplierItemNo && this.form.supplierItem !== this.supplierItemNo) {
-        RecommondApi.checkItem(_this.form.supplierItemNo)
-          .then(res => {
-            if (res.data) {
-              callback(new Error('同一个供应商下，供方SPU唯一'))
-            } else {
-              callback()
-            }
-          })
+      if (!value) {
+        callback(new Error('供方货号不能为空'))
       } else {
-        callback(new Error('不能为空'))
+        if (value === this.supplierItemNo) {
+          callback()
+        } else {
+          RecommondApi.checkItem(value)
+            .then(res => {
+              if (res.data) {
+                callback(new Error('同一个供应商下，供方SPU唯一'))
+              } else {
+                callback()
+              }
+            })
+        }
       }
     }
     return {
