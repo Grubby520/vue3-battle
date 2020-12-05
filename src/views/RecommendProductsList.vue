@@ -91,7 +91,7 @@ export default {
           isInImg: 'src',
           pre: {
             title: '商品名称',
-            supplierItemNo: '供方货号'
+            itemNo: '供方货号'
           }
         },
         {
@@ -196,7 +196,7 @@ export default {
     deleteProduct (row) {
       RecommondApi.deleteRecommed(row.id)
         .then(res => {
-          this.$refs.listView.refresh()
+          this.gotoPage()
           successNotify(this, `供方货号：${row.itemNo}删除成功`)
         })
         .catch(res => {
@@ -214,8 +214,8 @@ export default {
         })
     },
     OdmDetail (status, row) {
-      if (status === 'view') {
-        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id } })
+      if (status !== 'create') {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: row.id, categoryId: row.categoryId } })
       } else {
         this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { categoryId: row.categoryId, mode: status, id: row.id } })
       }

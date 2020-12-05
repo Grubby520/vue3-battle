@@ -30,7 +30,7 @@ export const homeRoutes = [
     children: [
       {
         path: 'list',
-        name: 'ODM推品列表',
+        name: '创建产品',
         meta: {
           icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
