@@ -4,11 +4,11 @@
     <div class="register-result align-center">
       <span class="el-icon-success"></span>
       <div>
-        <div v-if="supplierStatusText && !isSubmit" class="display-inline-block">
+        <div v-if="supplierStatusText && !isSubmitMsg" class="display-inline-block">
           {{supplierStatusText}}&nbsp;&nbsp;
           <el-button v-if="notPassed" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
         </div>
-        <b v-if="isSubmit">您的申请已成功提交</b>
+        <b v-if="isSubmitMsg">您的申请已成功提交</b>
       </div>
     </div>
   </div>
@@ -17,8 +17,8 @@
 <script>
 import { createNamespacedHelpers } from 'vuex'
 import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
-import { getSessionItem } from '@shared/util'
-const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
+import { getSessionItem, isEmpty } from '@shared/util'
+const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 
 export default {
   name: 'Notify',
@@ -33,8 +33,9 @@ export default {
   },
   computed: {
     ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
-    isSubmit () {
-      return this.$route.query.isSubmit
+    ...userMapGetters(['enterMainPage']),
+    isSubmitMsg () {
+      return this.$route.query.msg === 'submit'
     },
     notPassed () {
       return this.supplierStatusCode === 5
@@ -51,17 +52,31 @@ export default {
       return text
     }
   },
+  mounted () {
+    if (getSessionItem('token')) {
+      // 刷新页面的场景下确保界面数据正常
+      this.GET_USER_INFO().then(data => {
+        if (data) {
+          if (this.enterMainPage) {
+            this.$router.push('home/recommend-products/list')
+          }
+          if (!isEmpty(this.supplierStatusCode)) {
+            this.$router.replace({
+              path: '/notify',
+              query: {}
+            }).catch(() => { })
+          }
+        }
+      })
+    }
+  },
   methods: {
     ...userMapActions(['GET_USER_INFO']),
     toRegister () {
       this.$router.push('/register')
     }
-  },
-  mounted () {
-    if (getSessionItem('token')) {
-      this.GET_USER_INFO()
-    }
   }
+
 }
 </script>
 
