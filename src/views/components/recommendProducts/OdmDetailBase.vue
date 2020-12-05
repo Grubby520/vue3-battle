@@ -165,7 +165,6 @@ export default {
               this.form[key] = newValue[key]
             }
           }
-          console.log('eee', newValue.supplyType)
           if (newValue.supplyType !== 0) {
             this.hasPattern = false
             this.$set(this.form, 'estimatedShippingDate', this.$moment(newValue.estimatedShippingDate).format('YYYY-MM-DD HH:mm:ss'))
