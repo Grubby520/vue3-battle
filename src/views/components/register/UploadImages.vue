@@ -12,7 +12,6 @@
       :http-request="uploadFile"
       :on-exceed="handleExceed"
       :on-change="onChange"
-      :before-upload="beforeUpload"
     >
       <i slot="default" class="el-icon-plus"></i>
       <!-- 图片图标 -- 展示图片 -->
@@ -128,8 +127,47 @@ export default {
         }
       }, 500)
     },
+    handleExceed () {
+      this.$message.error(`上传图片不能超过${this.imgNumber}张!`)
+    },
+    onChange (file, fileList) {
+      this.fileList.push(file)
+    },
+    uploadFile (req) {
+      this.beforeUpload(req.file).then(hasError => {
+        if (!hasError) {
+          this.callUpload(req.file)
+        }
+      })
+    },
+    getUploadUrl (file) {
+      let params = { fileName: file.name, contentType: file.type, fileType: this.imageType, folder: this.folder }
+      // 获取预上传oss地址
+      return this.GET_UPLOAD_API(params)
+        .then(res => {
+          if (res) {
+            return res
+          }
+        })
+    },
+    callUpload (file) {
+      this.getUploadUrl(file).then(res => {
+        if (res) {
+          let { data = {} } = res
+          this.UPLOAD_FILE({
+            ...data,
+            file
+          })
+            .then(res => {
+              let tempFile = this.fileList.find(item => item.name === file.name)
+              tempFile.url = data.showUrl
+              this.emitImageChange()
+            })
+        }
+      })
+    },
     beforeUpload (file) {
-      this.limitsHandler(file)
+      return this.limitsHandler(file)
     },
     limitsHandler (file) {
       let defaultLimits = [
@@ -170,12 +208,11 @@ export default {
         }
         if (isError) {
           this.$message.error(message)
-          this.cancelUpload(file)
+          this.deleteFile(file)
         }
         return isError
       }
-
-      asyncSome(allLimits, someFilter)
+      return asyncSome(allLimits, someFilter)
     },
     limitRepeat (file) {
       return this.fileList.filter(item => item.name === file.name).length > 1
@@ -219,19 +256,13 @@ export default {
         }
       })
     },
-    handleExceed () {
-      this.$message.error(`上传图片不能超过${this.imgNumber}张!`)
-    },
-    onChange (file, fileList) {
-      this.fileList.push(file)
-    },
     handleRemove (file) {
       this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.cancelUpload(file)
+        this.deleteFile(file)
       })
     },
     handlePictureCardPreview (file) {
@@ -241,38 +272,20 @@ export default {
     handleDownload (file) {
       downloadFile(file.url, file.name)
     },
-    uploadFile (req) {
-      let params = { fileName: req.file.name, contentType: req.file.type, fileType: this.imageType, folder: this.folder }
-      // 获取预上传oss地址
-      this.GET_UPLOAD_API(params)
-        .then(res => {
-          if (res) {
-            let { data = {} } = res
-            let file = req.file
-            let imgs = []
-
-            this.UPLOAD_FILE({
-              ...data,
-              file
-            })
-              .then(res => {
-                this.fileList.forEach(image => {
-                  if (image.name === file.name) {
-                    image.url = data.showUrl
-                  }
-                  imgs.push({
-                    name: image.name,
-                    url: image.url
-                  })
-                })
-                this.$emit('imagesChange', imgs)
-              })
-          }
-        })
+    deleteFile (file) {
+      let index = this.fileList.findIndex(item => item.uid === file.uid)
+      this.fileList.splice(index, 1)
+      this.emitImageChange()
     },
-    cancelUpload (file) {
-      this.$refs.uploader.abort(file)
-      this.fileList.splice(this.fileList.indexOf(file), 1)
+    emitImageChange () {
+      let imgs = []
+      this.fileList.forEach(image => {
+        imgs.push({
+          name: image.name,
+          url: image.url
+        })
+      })
+      this.$emit('imagesChange', imgs)
     }
   }
 
@@ -289,6 +302,12 @@ export default {
   /deep/.el-upload-list--picture-card .el-upload-list__item {
     width: 110px;
     height: 110px;
+    & > div {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      line-height: 1;
+    }
   }
   /deep/.el-upload--picture-card {
     width: 110px;
