@@ -52,7 +52,7 @@
           />
           <p v-else>{{form.description}}</p>
         </el-form-item>
-        <el-form-item label="商品备注" prop="remark">
+        <el-form-item label="商品备注">
           <el-input
             v-if="!isStatus"
             type="textarea"
@@ -125,8 +125,7 @@ export default {
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
         supplierItemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
         estimatedShippingTime: [this.ShippingTimeValidator()],
-        description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
-        remark: [{ required: true, message: '请输入商品备注', trigger: 'blur' }]
+        description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
         disabledDate (time) {

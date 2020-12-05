@@ -59,7 +59,7 @@ export default {
       category: undefined,
       query: {
         categoryName: null,
-        itemNo: '',
+        supplierItemNo: '',
         status: ''
       },
       searchItems: [
@@ -72,7 +72,7 @@ export default {
             options: []
           }
         },
-        { type: 'input', label: '供方货号', name: 'itemNo' },
+        { type: 'input', label: '供方货号', name: 'supplierItemNo' },
         {
           type: 'single-select',
           label: '状态',
@@ -91,7 +91,7 @@ export default {
           isInImg: 'src',
           pre: {
             title: '商品名称',
-            itemNo: '供方货号'
+            supplierItemNo: '供方货号'
           }
         },
         {
@@ -179,11 +179,11 @@ export default {
       // 批量推品
       const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
       // 批量图品供方货号
-      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.itemNo), []).join(',')
+      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
       // 判断批量推品还是单独推品
       const PUSHPRODUCTS = SELECTIONARR && SELECTIONARR.length > 0 ? SELECTIONARR : [row.id]
       // 批量推品供方货号和单独供方货号
-      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.itemNo
+      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
       RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
         .then(() => {
           successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
@@ -197,20 +197,20 @@ export default {
       RecommondApi.deleteRecommed(row.id)
         .then(res => {
           this.gotoPage()
-          successNotify(this, `供方货号：${row.itemNo}删除成功`)
+          successNotify(this, `供方货号：${row.supplierItemNo}删除成功`)
         })
         .catch(res => {
-          errorNotify(this, `供方货号：${row.itemNo}删除失败`)
+          errorNotify(this, `供方货号：${row.supplierItemNo}删除失败`)
         })
     },
     cancel (row) {
       RecommondApi.cancelrcommend(row.id)
         .then(res => {
           this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}取消成功`)
+          successNotify(this, `供方货号：${row.supplierItemNo}取消成功`)
         })
         .catch(() => {
-          errorNotify(this, `供方货号：${row.itemNo}取消失败`)
+          errorNotify(this, `供方货号：${row.supplierItemNo}取消失败`)
         })
     },
     OdmDetail (status, row) {
