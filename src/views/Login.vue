@@ -25,7 +25,7 @@
 import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
 import { valueToMd5 } from '@shared/util'
-const { mapActions: userMapActions, mapState: userMapState } = createNamespacedHelpers('user')
+const { mapActions: userMapActions, mapState: userMapState, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 const { mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
@@ -52,12 +52,7 @@ export default {
   computed: {
     ...mapState(['systemName']),
     ...userMapState(['confirmAgreement', 'supplierStatusCode']),
-    enterMainPage () {
-      return (this.confirmAgreement && this.supplierStatusCode === 2) || this.supplierStatusCode === 3
-    },
-    enterRegisterPage () {
-      return !this.confirmAgreement && this.supplierStatusCode === 2
-    }
+    ...userMapGetters(['enterMainPage', 'enterRegisterPage'])
   },
   mounted () {
     this.RESET_USER_DATA()
