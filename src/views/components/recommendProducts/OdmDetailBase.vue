@@ -89,12 +89,13 @@ export default {
       type: [String, Number],
       default: ''
     },
-    cateLabels: { type: String, required: false, default: '' }
+    cateLabels: { type: String, required: false, default: '' },
+    supplierItemNo: { type: String, required: false, default: '' }
   },
   data () {
     const productValidata = (rule, value, callback) => {
       const _this = this
-      if (this.form.supplierItemNo) {
+      if (this.form.supplierItemNo && this.form.supplierItem !== this.supplierItemNo) {
         RecommondApi.checkItem(_this.form.supplierItemNo)
           .then(res => {
             if (res.data) {

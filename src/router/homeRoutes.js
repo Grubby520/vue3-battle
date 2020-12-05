@@ -44,7 +44,15 @@ export const homeRoutes = [
           icon: '',
           notMenu: true
         },
-        props: route => { return { id: route.query.id, mode: route.query.mode, categoryId: route.query.categoryId, cateLabels: route.query.cateLabels } },
+        props: route => {
+          return {
+            id: route.query.id,
+            mode: route.query.mode,
+            categoryId: route.query.categoryId,
+            cateLabels: route.query.cateLabels,
+            supplierItemNo: route.query.supplierItemNo
+          }
+        },
         component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
       },
 
