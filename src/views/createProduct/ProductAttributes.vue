@@ -1,7 +1,7 @@
 <template>
   <!-- 从erp创建产品的‘产品自定义属性’组件拷贝而来 -->
   <div class="container">
-    <div class="primary-header">商品属性</div>
+    <div v-if="form.metadatas.length" class="primary-header">商品属性</div>
     <el-form :model="form" ref="submitForm" label-width="100px">
       <el-row :gutter="8">
         <el-col :span="6" v-for="(item,itemIndex) in form.metadatas" :key="item.metadataId">
@@ -183,6 +183,7 @@ export default {
         item.values = metaObj[item.metadataId] ? metaObj[item.metadataId].customizeAttributeValue : []
         item.productId = metaObj[item.metadataId] ? metaObj[item.metadataId].productId : ''
         item.id = metaObj[item.metadataId] ? metaObj[item.metadataId].id : ''
+        item.status = metaObj[item.metadataId] ? metaObj[item.metadataId].status : ''
         return item
       })
     },
@@ -271,8 +272,10 @@ export default {
         return {
           categoryId: ele.categoryId,
           customizeAttributeId: ele.metadataId,
-          customizeAttributeValue: ele.isList ? ele.relationIds : ele.values,
-          id: ele.id
+          customizeAttributeValue: ele.values,
+          id: ele.id,
+          productId: ele.productId,
+          status: ele.status
         }
       })
       return data

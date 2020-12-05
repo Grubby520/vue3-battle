@@ -33,12 +33,7 @@
             v-if="[0, 1].includes(row.productStatus)"
           >编辑</el-button>
           <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
-          <el-button
-            type="text"
-            @click="recommon(row)"
-            v-if="row.productStatus===0"
-            :disabled="!row.coverImageUrl"
-          >提交</el-button>
+          <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
         </div>

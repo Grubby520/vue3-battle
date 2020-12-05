@@ -3,6 +3,7 @@
     <div class="container">
       <div>
         <div class="primary-header">销售属性</div>
+        <!-- {{initialValue}} -->
         <!-- 尺码、颜色表单 -->
         <el-form :model="form" :rules="rules" ref="form" label-width="120px">
           <el-form-item label="尺码" prop="sizes">
@@ -222,6 +223,12 @@ export default {
   mounted () { },
   methods: {
     async initData () {
+      this.form = {
+        sizes: [],
+        colors: []
+      }
+      this.sizeKeys = []
+      this.colorKeys = []
       let sizeOptions = this.sizeOptions
       let colorOptions = this.colorOptions
       if (!sizeOptions.length || !colorOptions.length) {
@@ -237,20 +244,26 @@ export default {
         for (let i = 0; i < sizeOptions.length; i++) {
           if (sizeOptions[i].id === +item.sizeAttributeId) {
             item.sizeAttributeName = sizeOptions[i].attrTermName
-            this.form.sizes.push({
-              attrTermName: sizeOptions[i].attrTermName,
-              id: sizeOptions[i].id
-            })
+            if (!this.sizeKeys.includes(sizeOptions[i].id)) {
+              this.form.sizes.push({
+                attrTermName: sizeOptions[i].attrTermName,
+                id: sizeOptions[i].id
+              })
+              this.sizeKeys.push(sizeOptions[i].id)
+            }
             break
           }
         }
         for (let j = 0; j < colorOptions.length; j++) {
           if (colorOptions[j].id === +item.colorAttributeId) {
             item.colorAttributeName = colorOptions[j].attrTermName
-            this.form.colors.push({
-              attrTermName: colorOptions[j].attrTermName,
-              id: colorOptions[j].id
-            })
+            if (!this.colorKeys.includes(colorOptions[j].id)) {
+              this.form.colors.push({
+                attrTermName: colorOptions[j].attrTermName,
+                id: colorOptions[j].id
+              })
+              this.colorKeys.push(colorOptions[j].id)
+            }
             break
           }
         }
@@ -376,14 +389,14 @@ export default {
     },
     removeAttrTag (val, attribute) {
       for (let i = 0; i < this.productSalesAttributeList.length; i++) {
-        if (this.productSalesAttributeList[i][attribute + 'AttributeId'] === val) {
+        if (+this.productSalesAttributeList[i][attribute + 'AttributeId'] === val) {
           this.productSalesAttributeList.splice(i, 1)
           i--
         }
       }
       if (attribute === 'color') {
         for (let j = 0; j < this.productImages.length; j++) {
-          if (this.productImages[j].colorAttributeId === val) {
+          if (+this.productImages[j].colorAttributeId === val) {
             this.productImages.splice(j, 1)
             j--
           }
@@ -456,7 +469,8 @@ export default {
             colorAttributeId: item.colorAttributeId,
             hash: img.hash,
             isMainImage: img.isMainImage || 0,
-            productId: this.productId
+            productId: this.productId,
+            id: img.id
           }
         })
         productImageList['' + item.colorAttributeId] = val
