@@ -57,6 +57,8 @@
             v-if="!isStatus"
             type="textarea"
             rows="5"
+            maxlength="500"
+            show-word-limit
             clearable
             v-model.trim="form.remark"
             placeholder="描述提示：1.最终商品是否包含图片上的配饰；2.包装后产品重量。3.包装后产品体积 长*宽*高。"
@@ -86,13 +88,14 @@ export default {
   },
   data () {
     const productValidata = (rule, value, callback) => {
+      const _this = this
       if (this.form.supplierItemNo) {
-        RecommondApi.checkItem(this.form.supplierItemNo)
+        RecommondApi.checkItem(_this.form.supplierItemNo)
           .then(res => {
-            if (res.success) {
-              callback()
-            } else {
+            if (res.data) {
               callback(new Error('同一个供应商下，供方SPU唯一'))
+            } else {
+              callback()
             }
           })
       } else {

@@ -13,7 +13,7 @@
       :options="options"
       :multiple="false"
       :flat="false"
-      :disable-branch-nodes="true"
+      :disable-branch-nodes="false"
       :props="defaultProps"
       placeholder="请选择"
       size="small"
