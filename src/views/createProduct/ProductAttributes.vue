@@ -286,7 +286,7 @@ export default {
 
       return originalDataStr !== upToDateDataStr
     },
-    getSubmitData (isDraft = true) {
+    getSubmitData (isDraft = false) {
       if (isDraft) {
         return Promise.resolve(this.transferToSubmitData())
       }
