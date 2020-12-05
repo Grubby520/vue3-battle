@@ -9,7 +9,7 @@
       class="recommonPar"
     >
       <div slot="search">
-        <!-- 搜索区域包含搜索和重置按钮 -->
+        <!-- 搜索区域search包含搜索和重置按钮 -->
         <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" v-if="filterIsLoad" />
       </div>
       <el-divider />
@@ -158,21 +158,18 @@ export default {
             if (data.description.length > 30) {
               data.description = data.description.substring(0, 30) + '...'
             }
+            // 列表品类name
             const categoryNameLast = data.categoryName.split('>')
             data.categoryName = categoryNameLast[categoryNameLast.length - 1]
           })
           this.tableData = list
           this.$refs.listView.loading = false
-          // 待推品以为的状态置灰
+          // 待推品复选框置灰数据
           this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
           this.page.total = total
         })
     },
     reset () {
-      // this.query.categoryName = ''
-      // this.query.itemNo = ''
-      // this.query.status = ''
-      // this.$refs.reset.reset()
       this.$refs.searchForm.reset()
       // 更新列表
       this.$refs.listView.refresh()
