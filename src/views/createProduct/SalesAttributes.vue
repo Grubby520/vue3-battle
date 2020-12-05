@@ -278,7 +278,7 @@ export default {
     requestSizeList () {
       return new Promise((resolve, reject) => {
         let typeId = this.attrType[1].id
-        RecommendApi.getAttrList(typeId, { categoryId: this.categoryId }).then(res => {
+        RecommendApi.getAttrList(typeId, { categoryId: this.categoryId, type: 'NEW_ATTRIBUTE' }).then(res => {
           if (res.data) {
             this.sizeOptions = res.data.filter(item => item.state !== 'OFF')
             resolve(this.sizeOptions)
@@ -293,7 +293,7 @@ export default {
     requestColorList () {
       return new Promise((resolve, reject) => {
         let typeId = this.attrType[0].id
-        RecommendApi.getAttrList(typeId, { categoryId: this.categoryId }).then(res => {
+        RecommendApi.getAttrList(typeId, { categoryId: this.categoryId, type: 'NEW_ATTRIBUTE' }).then(res => {
           if (res.data) {
             this.colorOptions = res.data.filter(item => item.state !== 'OFF')
             resolve(this.colorOptions)
