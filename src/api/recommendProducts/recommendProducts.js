@@ -52,6 +52,10 @@ const RECOMMEND = {
   // 自定义属性
   getMetadata (id) {
     return get(`/product-service/metadata/${id}/metafileds`)
+  },
+  // 根据用户获取颜色尺寸id
+  allByUser (params) {
+    return get(RECOMMENDURLS.allByUser, params)
   }
 }
 export default RECOMMEND
