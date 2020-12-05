@@ -156,7 +156,7 @@ export default {
       type: Object,
       default: function () {
         return {
-          productImageList: [],
+          productImageList: {},
           productSalesAttributeList: []
         }
       }
@@ -185,36 +185,8 @@ export default {
       productImages: [],
       sizeKeys: [],
       colorKeys: [],
-      productSalesAttributeList: [
-        // {
-        //   id: 0,
-        //   productId: 0,
-        //   sizeAttributeId: 0,
-        //   sizeAttributeName: '',
-        //   colorAttributeId: 0,
-        //   colorAttributeName: '',
-        //   status: 0,
-        //   supplierSkuCode: '',
-        //   supplyPrice: 0,
-        //   weight: 0
-        // }
-      ],
-      productImageList: {
-        // additionalProp1: [
-        //   {
-        //     colorAttributeId: 0,
-        //     createTime: '',
-        //     hash: '',
-        //     id: 0,
-        //     imageType: 0,
-        //     isMainImage: 0,
-        //     productId: 0,
-        //     src: '',
-        //     status: 0,
-        //     updateTime: ''
-        //   }
-        // ]
-      }
+      productSalesAttributeList: [],
+      productImageList: {}
     }
   },
   components: {

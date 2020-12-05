@@ -101,7 +101,7 @@ export default {
         })
     },
     load () {
-      if (this.isStatus === 'view') {
+      if (this.mode === 'create') {
         this.loading = false
         return
       }
