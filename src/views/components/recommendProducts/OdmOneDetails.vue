@@ -26,14 +26,16 @@ export default {
         value: 'id'
       },
       cate: {},
-      showNodes: []
+      showNodes: [],
+      isLeaf: false
     }
   },
   created () {
     this.load()
       .then((res) => {
         if (this.mode === 'modify') {
-          const notes = this.showCateLables(res, this.categoryId, [])
+          let treeLeader = { isLeaf: false }
+          const notes = this.showCateLables(res, this.categoryId, treeLeader)
           this.showNodes = notes.reverse()
         }
       })
@@ -58,25 +60,36 @@ export default {
         }
       })
     },
-    showCateLables (arr, id, notes) {
+    showCateLables (arr, id, treeLeader) {
+      if (treeLeader.isLeaf) return false
       arr.forEach(cate => {
         if (cate.id === parseInt(id)) {
-          notes.push(cate.id)
+          treeLeader.isLeaf = true
           return false
         } else if (cate.children && cate.children.length > 0) {
-          this.showCateLables(cate.children, id, notes)
-          notes.push(cate.id)
+          this.showCateLables(cate.children, id, treeLeader)
         }
       })
-      return notes
     },
     change (nodeKeys) {
-      this.nodeKeys = nodeKeys
       this.showlabels(this.options, nodeKeys)
+      this.checkIsLeaf(nodeKeys)
+    },
+    checkIsLeaf (nodeKeys) {
+      let treeLeader = { isLeaf: false }
+      this.showCateLables(this.options, nodeKeys[nodeKeys.length - 1], treeLeader)
+      this.isLeaf = treeLeader.isLeaf
+      if (treeLeader.isLeaf) {
+        this.nodeKeys = nodeKeys
+      }
     },
     save () {
-      const categoryId = this.nodeKeys.length > 0 ? this.nodeKeys[this.nodeKeys.length - 1] : this.categoryId
-      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId, mode: this.mode, id: this.id } })
+      if (this.isLeaf) {
+        const categoryId = this.nodeKeys.length > 0 ? this.nodeKeys[this.nodeKeys.length - 1] : this.categoryId
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId, mode: this.mode, id: this.id } })
+      } else {
+        this.$message.error('请选择完整的类目！')
+      }
     },
     showlabels (array, nodeKeys) {
       const labelarr = []
