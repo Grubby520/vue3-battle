@@ -100,8 +100,7 @@ export default {
     return {
       dialogImageUrl: '',
       dialogVisible: false,
-      fileList: this.images, // 上传图片列表
-      ossImages: []
+      fileList: this.images // 上传图片列表
     }
   },
 
@@ -145,13 +144,13 @@ export default {
           var image = new Image()
           image.src = event.target.result
           image.onload = function () {
-            const WIDTH = image.width
-            const HEIGHT = image.height
-            switch (WIDTH < 4096 && HEIGHT < 4096) {
-              case WIDTH / HEIGHT === 1:
+            const width = image.width
+            const height = image.height
+            switch (width < 4096 && height < 4096) {
+              case width / height === 1:
                 resolve(true)
                 break
-              case WIDTH / HEIGHT === 4 / 3:
+              case width / height === 4 / 3:
                 resolve(true)
                 break
               default:
@@ -193,26 +192,25 @@ export default {
       // 获取预上传oss地址
       CommonApi.generatePreUploadUrl(PARAMS)
         .then(res => {
-          res.data.file = file.file
+          const fileInfo = file.file
+          const data = res.data
+          data.file = fileInfo
+          data.uid = fileInfo.uid
+          data.name = fileInfo.name
+          data.src = res.data.showUrl
+          data.url = res.data.showUrl
+          data.imageType = this.imageType
           fileToMd5(file.file).then((md5) => {
-            res.data.uid = file.file.uid
-            res.data.src = res.data.showUrl
-            res.data.url = res.data.showUrl
-            res.data.hash = md5
-            res.data.name = file.file.name
-            res.data.imageType = this.imageType
-            this.ossImages.push(res.data)
-            this.gotoOss(res.data.preUploadUrl, file.file)
+            data.hash = md5
+            this.gotoOss(data.preUploadUrl, fileInfo, data)
           })
         })
     },
-    gotoOss (preUploadUrl, file) {
+    gotoOss (preUploadUrl, file, data) {
       // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
       put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
         .then(res => {
-          const IMAGES = this.images.filter(img => img.id)
-          this.$emit('changeUploadImages', IMAGES)
-          IMAGES.push(...this.ossImages)
+          this.$emit('changeUploadImages', [...this.images, data])
         })
     }
   }
