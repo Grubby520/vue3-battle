@@ -30,7 +30,6 @@ export const homeRoutes = [
     children: [
       {
         path: 'list',
-        name: '创建产品',
         meta: {
           icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
@@ -39,7 +38,7 @@ export const homeRoutes = [
       },
       {
         path: 'odmDetail',
-        name: 'ODM推品',
+        name: '创建产品',
         meta: {
           icon: '',
           notMenu: true
@@ -50,6 +49,7 @@ export const homeRoutes = [
             mode: route.query.mode,
             categoryId: route.query.categoryId,
             cateLabels: route.query.cateLabels,
+            categoryLevel: route.query.categoryLevel,
             supplierItemNo: route.query.supplierItemNo
           }
         },
@@ -58,12 +58,17 @@ export const homeRoutes = [
 
       {
         path: 'OdmOneDetails',
-        name: 'ODM推品',
         meta: {
-          icon: '',
+          icon: '创建产品',
           notMenu: true
         },
-        props: route => { return { id: route.query.id, mode: route.query.mode, categoryId: route.query.categoryId } },
+        props: route => {
+          return {
+            id: route.query.id,
+            mode: route.query.mode,
+            categoryId: route.query.categoryId
+          }
+        },
         component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
       },
       {

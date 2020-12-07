@@ -26,7 +26,8 @@ export default {
         value: 'id'
       },
       cate: {},
-      isLeaf: false
+      isLeaf: false,
+      categoryLevel: ''
     }
   },
   created () {
@@ -41,7 +42,7 @@ export default {
           this.changeInitData(list)
         })
     },
-    changeInitData (arr, id) {
+    changeInitData (arr) {
       // 删除树形数组最后一级children为空的字段
       arr.forEach(node => {
         if (node.children && node.children.length > 0) {
@@ -56,6 +57,7 @@ export default {
       arr.forEach(cate => {
         if (cate.id === parseInt(id)) {
           treeLeader.isLeaf = true
+          this.categoryLevel = cate.path
           return false
         } else if (cate.children && cate.children.length > 0) {
           this.showCateLables(cate.children, id, treeLeader)
@@ -77,7 +79,17 @@ export default {
     save () {
       if (this.isLeaf) {
         const categoryId = this.nodeKeys.length > 0 ? this.nodeKeys[this.nodeKeys.length - 1] : this.categoryId
-        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId, mode: this.mode, id: this.id } })
+        this.$router.push({
+          path: '/home/recommend-products/OdmDetail',
+          query: {
+            cateLabels: this.cate.cateLabels,
+            categoryId: categoryId,
+            categoryLevel: this.categoryLevel,
+            mode: this.mode,
+            id: this.id
+          }
+        }
+        )
       } else {
         this.$message.error('请选择完整的类目！')
       }
