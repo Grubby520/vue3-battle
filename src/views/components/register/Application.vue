@@ -142,6 +142,7 @@ import {
 import CommonApi from '@api/api.js'
 import UserApi from '@api/user'
 const { mapState: registerMapState, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
+const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'Application',
@@ -255,7 +256,8 @@ export default {
     }
   },
   computed: {
-    ...registerMapState(['application', 'supplierId', 'userId']),
+    ...registerMapState(['application', 'supplierId']),
+    ...userMapState(['userId']),
     passwordType () {
       return this.form.password ? 'password' : this.$passwordType
     }
