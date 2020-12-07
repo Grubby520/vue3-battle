@@ -8,7 +8,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    systemName: 'Starlink供应商平台',
+    systemName: '马上发商家系统',
     loadingInstance: null,
     loadingCount: 0, // 用于计算请求的次数
     breadcrumbs: [],
