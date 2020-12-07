@@ -66,6 +66,7 @@ axiosInstance.interceptors.response.use(
         case '500003': // 数据冲突
         case '500004': // 超出最大限制
         case '900001':
+        case '200017': // feign调用失败
           errorMessageTip(error.message)
           break
       }
