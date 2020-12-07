@@ -113,6 +113,7 @@
                   v-model="item.images"
                   :imageType="0"
                   :limit="100"
+                  :multiple="true"
                   :disabled="mode === 'view'"
                 >
                   <div slot="content" slot-scope="{file}">
