@@ -112,10 +112,6 @@ export default {
         .then(res => {
           const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
           const { productImageList } = productBasicInfo
-          Object.keys(productImageList).forEach(image => {
-            const images = productImageList[image]
-            images.forEach(item => { item.url = item.src })
-          })
           // 销售属性回显
           if (productSalesAttributeList && productSalesAttributeList.length > 0) {
             _this.initSaleAttr.productSalesAttributeList = productSalesAttributeList

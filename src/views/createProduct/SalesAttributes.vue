@@ -3,7 +3,6 @@
     <div class="container">
       <div>
         <div class="primary-header">销售属性</div>
-        <!-- {{initialValue}} -->
         <!-- 尺码、颜色表单 -->
         <el-form :model="form" :rules="rules" ref="form" label-width="120px">
           <el-form-item label="尺码" prop="sizes">
@@ -113,6 +112,7 @@
                   v-model="item.images"
                   :imageType="0"
                   :limit="100"
+                  :multiple="true"
                   :disabled="mode === 'view'"
                 >
                   <div slot="content" slot-scope="{file}">
