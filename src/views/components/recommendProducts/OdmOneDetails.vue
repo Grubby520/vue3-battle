@@ -1,7 +1,7 @@
 <template>
   <div class="odmOneDetails">
     <p class="odmOneDetails-title">选择类目</p>
-    <el-cascader-panel :options="options" :props="panelProps" @change="change" v-model="showNodes"></el-cascader-panel>
+    <el-cascader-panel :options="options" :props="panelProps" @change="change" />
     <p class="odmOneDetails-des">当前选择分类：{{cate.cateLabels}}</p>
     <div class="odmOneDetails-btn">
       <el-button @click="save" type="primary">确认</el-button>
@@ -26,30 +26,24 @@ export default {
         value: 'id'
       },
       cate: {},
-      showNodes: []
+      isLeaf: false,
+      categoryLevel: ''
     }
   },
   created () {
     this.load()
-      .then((res) => {
-        if (this.mode === 'modify') {
-          const notes = this.showCateLables(res, this.categoryId, [])
-          this.showNodes = notes.reverse()
-        }
-      })
   },
   methods: {
     load () {
-      return CommonApi.category({ type: 1 })
+      CommonApi.category({ type: 1 })
         .then(res => {
           const list = res.data
           this.options = list
           this.changeInitData(list)
-          this.showlabels(this.options, this.showNodes)
-          return list
         })
     },
-    changeInitData (arr, id) {
+    changeInitData (arr) {
+      // 删除树形数组最后一级children为空的字段
       arr.forEach(node => {
         if (node.children && node.children.length > 0) {
           this.changeInitData(node.children)
@@ -58,25 +52,47 @@ export default {
         }
       })
     },
-    showCateLables (arr, id, notes) {
+    showCateLables (arr, id, treeLeader) {
+      if (treeLeader.isLeaf) return false
       arr.forEach(cate => {
         if (cate.id === parseInt(id)) {
-          notes.push(cate.id)
+          treeLeader.isLeaf = true
+          this.categoryLevel = cate.path
           return false
         } else if (cate.children && cate.children.length > 0) {
-          this.showCateLables(cate.children, id, notes)
-          notes.push(cate.id)
+          this.showCateLables(cate.children, id, treeLeader)
         }
       })
-      return notes
     },
     change (nodeKeys) {
-      this.nodeKeys = nodeKeys
       this.showlabels(this.options, nodeKeys)
+      this.checkIsLeaf(nodeKeys)
+    },
+    checkIsLeaf (nodeKeys) {
+      let treeLeader = { isLeaf: false }
+      this.showCateLables(this.options, nodeKeys[nodeKeys.length - 1], treeLeader)
+      this.isLeaf = treeLeader.isLeaf
+      if (treeLeader.isLeaf) {
+        this.nodeKeys = nodeKeys
+      }
     },
     save () {
-      const categoryId = this.nodeKeys.length > 0 ? this.nodeKeys[this.nodeKeys.length - 1] : this.categoryId
-      this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { cateLabels: this.cate.cateLabels, categoryId: categoryId, mode: this.mode, id: this.id } })
+      if (this.isLeaf) {
+        const categoryId = this.nodeKeys.length > 0 ? this.nodeKeys[this.nodeKeys.length - 1] : this.categoryId
+        this.$router.push({
+          path: '/home/recommend-products/OdmDetail',
+          query: {
+            cateLabels: this.cate.cateLabels,
+            categoryId: categoryId,
+            categoryLevel: this.categoryLevel,
+            mode: this.mode,
+            id: this.id
+          }
+        }
+        )
+      } else {
+        this.$message.error('请选择完整的类目！')
+      }
     },
     showlabels (array, nodeKeys) {
       const labelarr = []
@@ -107,7 +123,6 @@ export default {
 
 <style scoped lang="scss">
 .odmOneDetails {
-  // text-align: center;
   /deep/.el-cascader-node.in-active-path,
   .el-cascader-node.is-active,
   .el-cascader-node.is-selectable.in-checked-path {

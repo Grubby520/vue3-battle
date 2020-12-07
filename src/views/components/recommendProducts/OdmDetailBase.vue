@@ -29,14 +29,14 @@
             placeholder="请输入供方货号"
           />
         </el-form-item>
-        <el-form-item label="预计出货时间" prop="estimatedShippingTime">
+        <el-form-item label="预计出货时间" prop="estimatedShippingDate">
           <el-radio v-model="hasPattern" :label="true" @input="changeToSpot">
             现货
             <span style="color: #ff0000;">（今日可发货）</span>
           </el-radio>
           <el-radio v-model="hasPattern" :label="false">期货</el-radio>
           <el-date-picker
-            v-model="form.estimatedShippingTime"
+            v-model="form.estimatedShippingDate"
             type="date"
             placeholder="选择预计出货时间"
             value-format="yyyy-MM-dd HH:mm:ss"
@@ -94,18 +94,21 @@ export default {
   },
   data () {
     const productValidata = (rule, value, callback) => {
-      const _this = this
-      if (this.form.supplierItemNo && this.form.supplierItem !== this.supplierItemNo) {
-        RecommondApi.checkItem(_this.form.supplierItemNo)
-          .then(res => {
-            if (res.data) {
-              callback(new Error('同一个供应商下，供方SPU唯一'))
-            } else {
-              callback()
-            }
-          })
+      if (!value) {
+        callback(new Error('供方货号不能为空'))
       } else {
-        callback(new Error('不能为空'))
+        if (value === this.supplierItemNo) {
+          callback()
+        } else {
+          RecommondApi.checkItem(value)
+            .then(res => {
+              if (res.data) {
+                callback(new Error('同一个供应商下，供方SPU唯一'))
+              } else {
+                callback()
+              }
+            })
+        }
       }
     }
     return {
@@ -120,7 +123,7 @@ export default {
         // 预计出货类型
         // hasPattern: true,
         // 预计出货时间
-        estimatedShippingTime: '',
+        estimatedShippingDate: '',
         // 商品描述
         description: '',
         // 商品备注
@@ -133,7 +136,7 @@ export default {
         categoryId: [{ required: true }],
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
         supplierItemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
-        estimatedShippingTime: [this.ShippingTimeValidator()],
+        estimatedShippingDate: [this.ShippingTimeValidator()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
@@ -153,15 +156,21 @@ export default {
   watch: {
     'productBasicInfo': {
       handler (newValue) {
-        for (let key of Object.keys(newValue)) {
-          if (Object.prototype.hasOwnProperty.call(this.form, key)) {
-            this.form = newValue
-            this.form[key] = newValue[key]
-            if (newValue.supplyType !== 0) {
-              this.hasPattern = false
-            } else {
-              this.hasPattern = true
+        const keys = Object.keys(newValue)
+        if (keys.length > 0) {
+          for (let key of keys) {
+            // 判断传入的数据是否都是当前页面需要的参数
+            if (Object.prototype.hasOwnProperty.call(this.form, key)) {
+              this.form = newValue
+              this.form[key] = newValue[key]
             }
+          }
+          if (newValue.supplyType !== 0) {
+            this.hasPattern = false
+            this.$set(this.form, 'estimatedShippingDate', this.$moment(newValue.estimatedShippingDate).format('YYYY-MM-DD HH:mm:ss'))
+          } else {
+            this.$set(this.form, 'estimatedShippingDate', '')
+            this.hasPattern = true
           }
         }
         this.form.categoryId = this.categoryId
@@ -171,8 +180,8 @@ export default {
   },
   methods: {
     changeToSpot () {
-      this.form.estimatedShippingTime = ''
-      this.$refs.form.clearValidate('estimatedShippingTime')
+      this.form.estimatedShippingDate = ''
+      this.$refs.form.clearValidate('estimatedShippingDate')
     },
     commmitInfo () {
       const _this = this
@@ -180,13 +189,17 @@ export default {
         this.$refs['form'].validate((valid) => {
           if (valid) {
             if (this.hasPattern) {
-              _this.$set(_this.form, 'estimatedShippingTime', _this.$moment(new Date()).format('YYYY-MM-DD'))
+              // 现货
+              _this.$set(_this.form, 'estimatedShippingDate', _this.$moment(new Date()).format('YYYY-MM-DD'))
               _this.form.supplyType = 0
             } else {
+              // 期货
+              _this.form.estimatedShippingDate = _this.form.estimatedShippingDate.split(' ')[0]
               _this.form.supplyType = 1
             }
             const label = _this.cateLabels.split('>')
             _this.form.categoryName = label[label.length - 1]
+            // 返回数据包含页面需要使用数据form 和传入所有数据
             Object.assign(this.productBasicInfo, _this.form)
             resolve({ 'productBasicInfo': this.productBasicInfo })
           } else {

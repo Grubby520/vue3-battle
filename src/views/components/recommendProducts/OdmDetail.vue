@@ -55,6 +55,7 @@ export default {
       type: [String, Number],
       default: ''
     },
+    categoryLevel: { type: String, required: false, default: '' },
     cateLabels: { type: String, required: false, default: '' },
     supplierItemNo: { type: String, required: false, default: '' }
   },
@@ -90,6 +91,7 @@ export default {
         .then((res) => {
           const [{ productBasicInfo }, { productImageList, productSalesAttributeList }, productCustomizeAttributeList] = res
           data.productBasicInfo = productBasicInfo
+          data.productBasicInfo.categoryLevel = this.categoryLevel
           data.productBasicInfo.productImageList = productImageList
           data.productSalesAttributeList = productSalesAttributeList
           data.productCustomizeAttributeList = productCustomizeAttributeList
@@ -112,10 +114,6 @@ export default {
         .then(res => {
           const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
           const { productImageList } = productBasicInfo
-          Object.keys(productImageList).forEach(image => {
-            const images = productImageList[image]
-            images.forEach(item => { item.url = item.src })
-          })
           // 销售属性回显
           if (productSalesAttributeList && productSalesAttributeList.length > 0) {
             _this.initSaleAttr.productSalesAttributeList = productSalesAttributeList

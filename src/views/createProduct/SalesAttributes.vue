@@ -3,7 +3,6 @@
     <div class="container">
       <div>
         <div class="primary-header">销售属性</div>
-        <!-- {{initialValue}} -->
         <!-- 尺码、颜色表单 -->
         <el-form :model="form" :rules="rules" ref="form" label-width="120px">
           <el-form-item label="尺码" prop="sizes">
@@ -113,6 +112,7 @@
                   v-model="item.images"
                   :imageType="0"
                   :limit="100"
+                  :multiple="true"
                   :disabled="mode === 'view'"
                 >
                   <div slot="content" slot-scope="{file}">
@@ -445,11 +445,14 @@ export default {
     validateProductImgs () {
       return new Promise((resolve, reject) => {
         this.productImages.map(item => {
-          if (!item.images.length) {
+          const LENGTH = item.images.length >>> 0
+          if (LENGTH === 0) {
             reject(new Error(`商品图片：请上传 ${item.colorAttributeName} 属性的图片`))
+          } else if (LENGTH < 4) {
+            reject(new Error(`商品图片：请上传至少4张 ${item.colorAttributeName} 属性的图片`))
           } else {
             let hasMainImage = false
-            for (let i = 0; i < item.images.length; i++) {
+            for (let i = 0; i < LENGTH; i++) {
               if (item.images[i].isMainImage === 1) {
                 hasMainImage = true
                 break

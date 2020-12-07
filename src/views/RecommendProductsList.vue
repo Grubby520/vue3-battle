@@ -30,7 +30,7 @@
           <el-button
             @click="OdmDetail('modify',row)"
             type="text"
-            v-if="[0, 1].includes(row.productStatus)"
+            v-if="[0].includes(row.productStatus)"
           >编辑</el-button>
           <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
           <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
@@ -160,8 +160,8 @@ export default {
             }
             // 列表品类name
             if (data.categoryName) {
-              const categoryNameLast = data.categoryName.split('>')
-              data.categoryName = categoryNameLast[categoryNameLast.length - 1]
+              const cateName = data.categoryName.split('>')
+              data.categoryName = cateName.join('/')
             }
           })
           this.tableData = list

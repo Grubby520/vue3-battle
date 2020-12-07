@@ -11,6 +11,7 @@ export function confirmBox (context, msg, title = '提示', type = 'warning') {
   return context.$confirm(msg, title, {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    dangerouslyUseHTMLString: true,
     type
   })
 }
@@ -29,7 +30,7 @@ export function successNotify (context, msg, useHtml = false, duration = 4500) {
 export function errorNotify (context, msg, useHtml = false, duration = 4500) {
   let notify = context ? context['$notify'] : Notification
   notify({
-    title: '失败',
+    title: '系统错误',
     message: msg,
     type: 'error',
     dangerouslyUseHTMLString: useHtml,
