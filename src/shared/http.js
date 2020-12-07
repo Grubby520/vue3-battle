@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
-import { merge, getSessionItem, errorMessageTip, errorNotify } from '@shared/util'
+import { merge, getCookie, errorMessageTip, errorNotify } from '@shared/util'
 
 // 存储http错误状态信息
 let httpErrorCache = {}
@@ -20,8 +20,8 @@ const axiosInstance = axios.create({
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
-  const token = getSessionItem('token')
-  const userKey = getSessionItem('userKey')
+  const token = getCookie('token')
+  const userKey = getCookie('userKey')
 
   if (config.headers['addLoading']) {
     store.dispatch('OPEN_LOADING', true)
