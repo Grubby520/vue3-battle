@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import { errorNotify } from '@shared/util'
 import OdmDetailBase from './OdmDetailBase'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import SalesAttributes from '@/views/createProduct/SalesAttributes'
@@ -130,7 +131,7 @@ export default {
     create (params) {
       RecommondApi.save(params)
         .then(res => {
-          this.$router.push({ path: '/home/recommend-products/list', query: {} })
+          this.$router.push({ path: '/home/recommend-products/list' })
         })
     },
 
@@ -139,18 +140,23 @@ export default {
         // 创建产品调用的保存提交
         RecommondApi.saveSubmit(params)
           .then(res => {
-            this.$router.push({ path: '/home/recommend-products/list', query: {} })
+            this.$router.push({ path: '/home/recommend-products/list' })
           })
       } else {
         // 编辑状态调用的列表的提交接口
         RecommondApi.recommend({ productIdList: [this.id] })
           .then(() => {
-            this.$router.push({ path: '/home/recommend-products/list', query: {} })
+            this.$router.back()
+          })
+          .catch((error) => {
+            if (error.error === '100002') {
+              errorNotify(this, `账号在别处登录`)
+            }
           })
       }
     },
     cancel () {
-      this.$router.push({ path: '/home/recommend-products/list', query: {} })
+      this.$router.push({ path: '/home/recommend-products/list' })
     }
   }
 }
