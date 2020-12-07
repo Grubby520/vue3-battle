@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import NProgress from 'nprogress' // Progress 进度条
 import { routes } from './routes'
 import store from '../store'
+import { getLocalStorageItem, getCookie } from '@shared/util'
 
 Vue.use(VueRouter)
 
@@ -14,6 +15,21 @@ const router = new VueRouter({
 
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
+  // 白名单路由,不登录就可以访问
+  let whiteRoutes = ['/login', '/register', '/notify']
+  const HAS_TOKEN = getCookie('token')
+  const IS_WHITE_ROUTE = whiteRoutes.some(path => to.path.indexOf(path) !== -1)
+
+  if (!HAS_TOKEN) {
+    NProgress.start()
+    if (IS_WHITE_ROUTE) {
+      next()
+    } else {
+      next('/login')
+    }
+    return
+  }
+
   if (to.path.includes('/home')) {
     // 根据路由生成面包屑数据
     let paths = to.matched.filter(ele => { return ele.path !== '/home' })
@@ -22,19 +38,9 @@ router.beforeEach((to, from, next) => {
         path: ele.path.replace(/(?<=\/)(:\w+)(?=\/)?/, function (w) {
           return to.params[w.replace(':', '')]
         }),
-        label: ele.name
+        label: ele.meta.alias ? ele.meta.alias : ele.name
       }
     })
-
-    // 补充非菜单路由页的面包屑数据
-    if (to.meta.notMenu) {
-      if (from.name) {
-        breadcrumbs.splice(breadcrumbs.length - 1, 0, {
-          path: from.fullPath,
-          label: from.name
-        })
-      }
-    }
     store.commit('SET_BREADCRUMBS', breadcrumbs)
   }
 
@@ -46,7 +52,7 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   if (to.path.includes('/home')) {
     if (to.meta.notMenu) {
-      store.commit('SET_ACTIVE_PATH', from.path)
+      store.commit('SET_ACTIVE_PATH', store.state.activePath || getLocalStorageItem('activePath'))
     } else {
       store.commit('SET_ACTIVE_PATH', to.path)
     }

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Loading } from 'element-ui'
 import { loadModules } from './loadModules'
+import { setLocalStorageItem } from '@shared/util'
 const modules = loadModules()
 
 Vue.use(Vuex)
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     },
     SET_ACTIVE_PATH (state, activePath) {
       state.activePath = activePath
+      setLocalStorageItem('activePath', activePath)
     },
     SET_MENU_COLLAPSE (state, menuCollapse) {
       state.menuCollapse = menuCollapse
