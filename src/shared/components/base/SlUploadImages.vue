@@ -5,10 +5,12 @@
       action="#"
       ref="uploader"
       :disabled="disabled"
+      :multiple="multiple"
       list-type="picture-card"
       :accept="accept"
       :file-list="fileList"
       :limit="limit"
+      :on-success="onSuccess"
       :http-request="uploadFile"
       :on-exceed="handleExceed"
       :before-upload="beforeUpload"
@@ -18,7 +20,7 @@
       <!-- 图片图标 -- 展示图片 -->
       <template slot="file" slot-scope="{file}">
         <div class="container">
-          <img class="el-upload-list__item-thumbnail" :src="file.url" alt />
+          <img class="el-upload-list__item-thumbnail" :src="file.src" alt />
           <span class="container-item-actions">
             <span class="item-preview" @click="handlePictureCardPreview(file)">
               <i class="el-icon-zoom-in"></i>
@@ -94,6 +96,12 @@ export default {
       type: String,
       required: false,
       default: 'image/png, image/jpeg, image/jpg, image/bmp'
+    },
+    // 同时上传多张图
+    multiple: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
@@ -118,16 +126,19 @@ export default {
     beforeUpload (file) {
       return new Promise(async (resolve, reject) => {
         // 上传支持的大小
-        const LIMITM = file.size / 1024 / 1024 <= 4
+        const limitm = file.size / 1024 / 1024 <= 4
         // 图片宽高比
-        const LIMITSIZE = await this.limitSizes(file)
-        if (!LIMITM) {
+        const limitsize = await this.limitSizes(file)
+        // hash校验相同的图片
+        const isHash = await this.addMd5(file)
+        file.hash = isHash
+        if (!limitm) {
           reject(new Error(this.$message.error('上传图片大小不能超过 4MB!')))
         } else if (this.accept.indexOf(file.type) === -1) {
           reject(new Error(this.$message.error('上传图片格式不正确!')))
-        } else if (!LIMITSIZE) {
+        } else if (!limitsize) {
           reject(new Error(this.$message.error('请上传1:1或者4:3,宽高值最大尺寸为4096px-4096px的图片!')))
-        } else if (this.fileList.some(item => item.name === file.name)) {
+        } else if (this.fileList.some(item => item.hash === file.hash)) {
           reject(new Error(this.$message.error('不能上传相同的图片!')))
         } else {
           resolve(true)
@@ -160,7 +171,11 @@ export default {
         }
       })
     },
-
+    addMd5 (file) {
+      return fileToMd5(file).then((md5) => {
+        return md5
+      })
+    },
     handleExceed () {
       this.$message.error(`上传图片不能超过${this.limit}张!`)
     },
@@ -186,9 +201,15 @@ export default {
       // 下载oss和本地图片下载到本地
       downloadFile(file.url, file.name)
     },
+    onSuccess (response, file) {
+      // 内部图片通过src字段渲染
+      file.src = file.url
+      delete file.url
+    },
     uploadFile (file) {
+      // 自定上传需要手动触发on-success方法
+      file.onSuccess()
       const PARAMS = { 'folder': this.folder, 'fileName': file.file.name, 'contentType': file.file.type, 'fileType': this.imageType }
-
       // 获取预上传oss地址
       CommonApi.generatePreUploadUrl(PARAMS)
         .then(res => {
@@ -197,15 +218,13 @@ export default {
           data.file = fileInfo
           data.uid = fileInfo.uid
           data.name = fileInfo.name
-          data.src = res.data.showUrl
-          data.url = res.data.showUrl
+          data.src = data.showUrl
           data.imageType = this.imageType
-          fileToMd5(file.file).then((md5) => {
-            data.hash = md5
-            this.gotoOss(data.preUploadUrl, fileInfo, data)
-          })
+          data.hash = fileInfo.hash
+          this.gotoOss(data.preUploadUrl, fileInfo, data)
         })
     },
+
     gotoOss (preUploadUrl, file, data) {
       // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
       put(preUploadUrl, file, { headers: { 'Content-Type': file.type } })
