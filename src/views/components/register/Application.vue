@@ -165,6 +165,19 @@ export default {
       trigger: 'blur'
     }
 
+    let isUserNameExistValidator = {
+      validator: (rule, value, callback) => {
+        UserApi.isUserNameExist({ userName: value, userId: this.userId }).then(res => {
+          if (res.data) {
+            callback(new Error('邮箱已存在'))
+          } else {
+            callback()
+          }
+        })
+      },
+      trigger: 'blur'
+    }
+
     return {
       $passwordType: 'text',
       supplierTypeOptions: [],
@@ -215,7 +228,8 @@ export default {
         ],
         userName: [
           emptyValidator('请填写邮箱', 'blur'),
-          emailValidator()
+          emailValidator(),
+          isUserNameExistValidator
         ],
         password: [
           emptyValidator('请输入密码'),
@@ -241,7 +255,7 @@ export default {
     }
   },
   computed: {
-    ...registerMapState(['application', 'supplierId']),
+    ...registerMapState(['application', 'supplierId', 'userId']),
     passwordType () {
       return this.form.password ? 'password' : this.$passwordType
     }
