@@ -17,7 +17,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex'
 import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
-import { getSessionItem, isEmpty } from '@shared/util'
+import { getCookie, isEmpty } from '@shared/util'
 const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 
 export default {
@@ -53,7 +53,7 @@ export default {
     }
   },
   mounted () {
-    if (getSessionItem('token')) {
+    if (getCookie('token')) {
       // 刷新页面的场景下确保界面数据正常
       this.GET_USER_INFO().then(data => {
         if (data) {

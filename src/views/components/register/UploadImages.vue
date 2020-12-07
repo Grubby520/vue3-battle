@@ -1,5 +1,5 @@
 <template>
-  <div class="uploadImage">
+  <div class="upload-image" :class="{'hide-upload':hideUpload}">
     <!-- 上传图片 -->
     <el-upload
       action="null"
@@ -102,6 +102,11 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       fileList: []
+    }
+  },
+  computed: {
+    hideUpload () {
+      return this.imgNumber > 0 && this.imgNumber === this.fileList.length
     }
   },
   watch: {
@@ -298,7 +303,13 @@ export default {
   width: 100%;
 }
 
-.uploadImage {
+.hide-upload /deep/ {
+  .el-upload {
+    display: none;
+  }
+}
+
+.upload-image {
   /deep/.el-upload-list--picture-card .el-upload-list__item {
     width: 110px;
     height: 110px;

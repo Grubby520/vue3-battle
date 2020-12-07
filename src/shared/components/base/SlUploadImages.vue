@@ -64,13 +64,7 @@ export default {
       required: false,
       default: () => { return [] }
     },
-    // 需要回显图片数组
-    imageUrls: {
-      type: Array,
-      required: false,
-      default: () => { return [] }
-    },
-    // 0为商品图片 1为尺寸图片
+    // 0为商品图片 1为尺寸图片 2供应商资质图片
     imageType: {
       type: Number,
       required: false,
