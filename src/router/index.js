@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import NProgress from 'nprogress' // Progress 进度条
 import { routes } from './routes'
 import store from '../store'
-import { getLocalStorageItem } from '@shared/util'
+import { getLocalStorageItem, getCookie } from '@shared/util'
 
 Vue.use(VueRouter)
 
@@ -15,6 +15,21 @@ const router = new VueRouter({
 
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
+  // 白名单路由,不登录就可以访问
+  let whiteRoutes = ['/login', '/register', '/notify']
+  const HAS_TOKEN = getCookie('token')
+  const IS_WHITE_ROUTE = whiteRoutes.some(path => to.path.indexOf(path) !== -1)
+
+  if (!HAS_TOKEN) {
+    NProgress.start()
+    if (IS_WHITE_ROUTE) {
+      next()
+    } else {
+      next('/login')
+    }
+    return
+  }
+
   if (to.path.includes('/home')) {
     // 根据路由生成面包屑数据
     let paths = to.matched.filter(ele => { return ele.path !== '/home' })
