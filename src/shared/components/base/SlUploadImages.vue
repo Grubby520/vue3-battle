@@ -151,15 +151,12 @@ export default {
           image.onload = function () {
             const width = image.width
             const height = image.height
-            switch (width < 4096 && height < 4096) {
-              case width / height === 1:
+            if (width < 4096 && height < 4096) {
+              if (width / height === 1 || width / height === 4 / 3) {
                 resolve(true)
-                break
-              case width / height === 4 / 3:
-                resolve(true)
-                break
-              default:
+              } else {
                 resolve(false)
+              }
             }
           }
         }
