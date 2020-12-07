@@ -36,7 +36,7 @@ import Application from '@/views/components/register/Application.vue'
 import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
 import Protocol from '@/views/components/register/Protocol.vue'
 import UserApi from '@api/user'
-import { getSessionItem } from '@shared/util'
+import { getCookie } from '@shared/util'
 const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
 const { mapGetters: registerMapGetters, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
@@ -184,7 +184,7 @@ export default {
     }
   },
   mounted () {
-    if (getSessionItem('token')) {
+    if (getCookie('token')) {
       this.GET_USER_INFO().then(res => {
         if (res && this.supplierStatusCode === 5) {
           this.SET_SUPPLIER_ID(this.supplierId)

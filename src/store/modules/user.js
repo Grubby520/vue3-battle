@@ -1,4 +1,4 @@
-import { setSessionItem, removeSessionItem } from '@shared/util'
+import { setCookie, removeCookie } from '@shared/util'
 import UserApi from '@api/user'
 
 export default {
@@ -46,15 +46,15 @@ export default {
   actions: {
     RESET_USER_DATA ({ commit }) {
       commit('SET_USER_INFO', {})
-      removeSessionItem('token')
-      removeSessionItem('userKey')
+      removeCookie('token')
+      removeCookie('userKey')
     },
     AUTH_LOGIN ({ commit }, params) {
       return UserApi.authLogin(params).then((res) => {
         const { success, data } = res
         if (success) {
-          setSessionItem('token', data.token)
-          setSessionItem('userKey', data.userKey)
+          setCookie('token', data.token)
+          setCookie('userKey', data.userKey)
         }
         return res
       })
