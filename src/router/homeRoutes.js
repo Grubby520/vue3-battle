@@ -32,6 +32,7 @@ export const homeRoutes = [
         path: 'list',
         name: '创建产品',
         meta: {
+          alias: '商品列表',
           icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
         },
@@ -40,7 +41,7 @@ export const homeRoutes = [
       {
         path: 'odmDetail',
         meta: {
-          name: '创建产品',
+          alias: '创建产品',
           icon: '',
           notMenu: true
         },
@@ -60,7 +61,7 @@ export const homeRoutes = [
       {
         path: 'OdmOneDetails',
         meta: {
-          name: '创建产品',
+          alias: '创建产品',
           icon: '',
           notMenu: true
         },
