@@ -142,6 +142,8 @@ export default {
      */
     shakingTree (treeData) {
       treeData.forEach((node) => {
+        // 将树的id换成path
+        node.id = node.path
         if (node.children && node.children.length > 0) {
           this.shakingTree(node.children)
         } else {
@@ -150,7 +152,13 @@ export default {
       })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
-      const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
+      let requestParams = { ...this.query }
+      // 将分类过滤取值赋给[categoryIdLevel]，[categoryId]取level的最后一级
+      const path = requestParams.categoryId || ''
+      requestParams.categoryIdLevel = path
+      requestParams.categoryId = path.split(',').reverse()[0]
+
+      const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
