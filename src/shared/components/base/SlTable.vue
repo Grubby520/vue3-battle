@@ -42,11 +42,11 @@
                   <div class="tableData-col-con">
                     <div v-for="(pr, ins) in item.pre" :key="pr">
                       <span>{{ pr }}:</span>
-                      <span>{{format(scope.row[ins]) }}</span>
+                      <span>{{scope.row[ins] }}</span>
                     </div>
                   </div>
                 </div>
-                <div v-else class="tableData-col-text">{{format(scope.row[item.prop]) }}</div>
+                <div v-else class="tableData-col-text">{{scope.row[item.prop] }}</div>
               </el-col>
             </el-row>
           </div>
@@ -102,14 +102,6 @@ export default {
         }
       })
       return mark <= 0
-    },
-    format (val) {
-      // 值如果是时间格式转化为时间格式
-      if (isNaN(val) && !isNaN(Date.parse(val))) {
-        return this.$moment(val).format('YYYY-M-D HH:mm')
-      } else {
-        return val
-      }
     }
   }
 }

@@ -151,6 +151,7 @@ export default {
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
+      this.tableData = []
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
