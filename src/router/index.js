@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import NProgress from 'nprogress' // Progress 进度条
 import { routes } from './routes'
 import store from '../store'
+import { getLocalStorageItem } from '@shared/util'
 
 Vue.use(VueRouter)
 
@@ -22,19 +23,9 @@ router.beforeEach((to, from, next) => {
         path: ele.path.replace(/(?<=\/)(:\w+)(?=\/)?/, function (w) {
           return to.params[w.replace(':', '')]
         }),
-        label: ele.name
+        label: ele.meta.alias ? ele.meta.alias : ele.name
       }
     })
-
-    // 补充非菜单路由页的面包屑数据
-    if (to.meta.notMenu) {
-      if (from.name) {
-        breadcrumbs.splice(breadcrumbs.length - 1, 0, {
-          path: from.fullPath,
-          label: from.name
-        })
-      }
-    }
     store.commit('SET_BREADCRUMBS', breadcrumbs)
   }
 
@@ -46,7 +37,7 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   if (to.path.includes('/home')) {
     if (to.meta.notMenu) {
-      store.commit('SET_ACTIVE_PATH', from.path)
+      store.commit('SET_ACTIVE_PATH', store.state.activePath || getLocalStorageItem('activePath'))
     } else {
       store.commit('SET_ACTIVE_PATH', to.path)
     }
