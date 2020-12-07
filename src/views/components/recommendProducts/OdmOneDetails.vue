@@ -36,7 +36,6 @@ export default {
         if (this.mode === 'modify') {
           let treeLeader = { isLeaf: false }
           const notes = this.showCateLables(res, this.categoryId, treeLeader)
-          console.log(treeLeader.isLeaf)
           this.showNodes = notes.reverse()
         }
       })
