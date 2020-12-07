@@ -194,12 +194,12 @@ export default {
     },
 
     handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
+      this.dialogImageUrl = file.src
       this.dialogVisible = true
     },
     handleDownload (file) {
       // 下载oss和本地图片下载到本地
-      downloadFile(file.url, file.name)
+      downloadFile(file.src, file.name)
     },
     onSuccess (response, file) {
       // 内部图片通过src字段渲染

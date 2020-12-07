@@ -1,7 +1,7 @@
 <template>
   <div class="odmOneDetails">
     <p class="odmOneDetails-title">选择类目</p>
-    <el-cascader-panel :options="options" :props="panelProps" @change="change" v-model="showNodes"></el-cascader-panel>
+    <el-cascader-panel :options="options" :props="panelProps" @change="change" />
     <p class="odmOneDetails-des">当前选择分类：{{cate.cateLabels}}</p>
     <div class="odmOneDetails-btn">
       <el-button @click="save" type="primary">确认</el-button>
@@ -26,32 +26,23 @@ export default {
         value: 'id'
       },
       cate: {},
-      showNodes: [],
       isLeaf: false
     }
   },
   created () {
     this.load()
-      .then((res) => {
-        if (this.mode === 'modify') {
-          let treeLeader = { isLeaf: false }
-          const notes = this.showCateLables(res, this.categoryId, treeLeader)
-          this.showNodes = notes.reverse()
-        }
-      })
   },
   methods: {
     load () {
-      return CommonApi.category({ type: 1 })
+      CommonApi.category({ type: 1 })
         .then(res => {
           const list = res.data
           this.options = list
           this.changeInitData(list)
-          this.showlabels(this.options, this.showNodes)
-          return list
         })
     },
     changeInitData (arr, id) {
+      // 删除树形数组最后一级children为空的字段
       arr.forEach(node => {
         if (node.children && node.children.length > 0) {
           this.changeInitData(node.children)
@@ -120,7 +111,6 @@ export default {
 
 <style scoped lang="scss">
 .odmOneDetails {
-  // text-align: center;
   /deep/.el-cascader-node.in-active-path,
   .el-cascader-node.is-active,
   .el-cascader-node.is-selectable.in-checked-path {
