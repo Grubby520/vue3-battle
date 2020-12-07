@@ -59,7 +59,8 @@ export const homeRoutes = [
       {
         path: 'OdmOneDetails',
         meta: {
-          icon: '创建产品',
+          name: '创建产品',
+          icon: '',
           notMenu: true
         },
         props: route => {
