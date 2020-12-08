@@ -70,7 +70,13 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="银行卡号" prop="bankAccount">
-        <el-input v-model="form.bankAccount" clearable placeholder="请输入银行卡号"></el-input>
+        <el-input
+          v-model="form.bankAccount"
+          clearable
+          placeholder="请输入银行卡号"
+          show-word-limit
+          maxlength="19"
+        ></el-input>
       </el-form-item>
       <el-form-item label="法人身份证" prop="idCardImages">
         <UploadImages
