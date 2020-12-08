@@ -76,7 +76,7 @@
                 <el-input
                   v-model.trim="row.supplierSkuCode"
                   :disabled="mode === 'view'"
-                  maxlength="128"
+                  maxlength="50"
                 ></el-input>
               </template>
             </el-table-column>

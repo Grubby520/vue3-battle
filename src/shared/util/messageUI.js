@@ -27,10 +27,10 @@ export function successNotify (context, msg, useHtml = false, duration = 4500) {
   })
 }
 
-export function errorNotify (context, msg, useHtml = false, duration = 4500) {
+export function errorNotify (context, msg, useHtml = false, duration = 4500, title = '系统错误') {
   let notify = context ? context['$notify'] : Notification
   notify({
-    title: '系统错误',
+    title: title,
     message: msg,
     type: 'error',
     dangerouslyUseHTMLString: useHtml,
