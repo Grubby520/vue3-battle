@@ -157,6 +157,8 @@ export default {
               } else {
                 resolve(false)
               }
+            } else {
+              resolve(false)
             }
           }
         }
