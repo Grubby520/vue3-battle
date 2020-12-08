@@ -9,9 +9,9 @@
           <span class="display-inline-block">已有账户</span>&nbsp;
           <el-button type="text" @click="login">快速登录</el-button>
         </div>
-        <div v-else>
+        <div class="logined-module" v-else>
           <i class="el-icon-user-solid"></i>
-          <span class="display-inline-block">{{supplierName}}</span>&nbsp;
+          <span class="text-name display-inline-block text-overflow mr-1rem">{{supplierName}}</span>
           <el-button type="text" @click.native="signOut">退出登录</el-button>
         </div>
       </div>
@@ -89,10 +89,22 @@ export default {
 
   .right-module {
     float: right;
-    margin-right: 20%;
+    margin-right: 10%;
     & /deep/ {
       .el-button--text {
         font-size: 1.4rem;
+      }
+    }
+
+    & .logined-module {
+      display: flex;
+      .el-icon-user-solid {
+        line-height: inherit;
+        margin-right: 0.2em;
+      }
+
+      .text-name {
+        max-width: 20em;
       }
     }
   }

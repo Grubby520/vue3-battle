@@ -73,7 +73,11 @@
                 </p>
               </template>
               <template v-slot="{row}">
-                <el-input v-model.trim="row.supplierSkuCode" :disabled="mode === 'view'"></el-input>
+                <el-input
+                  v-model.trim="row.supplierSkuCode"
+                  :disabled="mode === 'view'"
+                  maxlength="128"
+                ></el-input>
               </template>
             </el-table-column>
             <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
