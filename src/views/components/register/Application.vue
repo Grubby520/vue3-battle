@@ -5,6 +5,7 @@
       class="reset-autofill"
       :model="form"
       :rules="rules"
+      :validate-on-rule-change="false"
       label-width="12rem"
       label-position="left"
     >
@@ -116,7 +117,7 @@
         <el-input
           v-model="form.contactName"
           minlength="2"
-          maxlength="50"
+          maxlength="20"
           clearable
           show-word-limit
           placeholder="请输入运营负责人"
@@ -134,6 +135,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
+import { scrollToElFormElement } from '@shared/util'
 import {
   emptyValidator,
   passwordValidator,
@@ -234,7 +236,7 @@ export default {
           emptyValidator('请选择是否自有工厂')
         ],
         userName: [
-          emptyValidator('请填写邮箱', 'blur'),
+          emptyValidator('请填写邮箱'),
           emailValidator(),
           isUserNameExistValidator
         ],
@@ -249,7 +251,7 @@ export default {
         ],
         contactName: [
           emptyValidator('请输入运营联系人'),
-          charLimitValidator('长度在 2 到 50 个字符', 2, 50)
+          charLimitValidator('长度在 2 到 20 个字符', 2, 20)
         ],
         contactNumber: [
           emptyValidator('请输入运营手机号'),
@@ -272,6 +274,9 @@ export default {
     application: {
       handler (val) {
         this.form = Object.assign(this.form, val)
+        if (val.selfFactory) {
+          this.addFactoryDescriptionValidators()
+        }
       },
       immediate: true,
       deep: true
@@ -294,14 +299,8 @@ export default {
       this.$passwordType = 'password'
     },
     selfFactoryChange (val) {
-      let factoryDescriptionValidators = [
-        emptyValidator('请描述工厂实力')
-      ]
       if (val) {
-        this.$set(this.rules, 'factoryDescription', factoryDescriptionValidators)
-        setTimeout(() => {
-          this.$refs.form.clearValidate()
-        }, 0)
+        this.addFactoryDescriptionValidators()
       } else {
         delete this.rules['factoryDescription']
       }
@@ -313,10 +312,17 @@ export default {
             this.SET_APPLICATION(JSON.parse(JSON.stringify(this.form)))
             resolve(this.form)
           } else {
+            scrollToElFormElement(this.$refs.form.$el, -50)
             resolve(false)
           }
         })
       })
+    },
+    addFactoryDescriptionValidators () {
+      let factoryDescriptionValidators = [
+        emptyValidator('请描述工厂实力')
+      ]
+      this.$set(this.rules, 'factoryDescription', factoryDescriptionValidators)
     }
   }
 }
