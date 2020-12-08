@@ -45,7 +45,7 @@
       </div>
     </el-upload>
     <!-- 预览图片 -->
-    <el-dialog :visible.sync="dialogVisible">
+    <el-dialog :visible.sync="dialogVisible" :append-to-body="true">
       <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
