@@ -58,7 +58,6 @@ export function scrollToTop (top = 0, offset = 0) {
 
 export function scrollToElFormElement (elForm, offset = 0) {
   let firstErrorItem = elForm.querySelectorAll('.el-form-item.is-error')[0]
-  console.log(firstErrorItem)
   if (firstErrorItem) {
     let boxModel = firstErrorItem.getBoundingClientRect()
     let scrollTop =
