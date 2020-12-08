@@ -64,7 +64,6 @@ export default {
       },
       category: undefined,
       query: {
-        categoryName: null,
         supplierItemNo: '',
         status: ''
       },
