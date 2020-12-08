@@ -124,3 +124,7 @@
     box-shadow: 0 0 0px 1000px $color-white inset !important;
   }
 }
+// notify英文折行
+.el-notification__content p {
+  word-break: break-all;
+}
