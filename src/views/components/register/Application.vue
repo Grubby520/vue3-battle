@@ -10,7 +10,13 @@
     >
       <SlContentTitle text="基础信息" line></SlContentTitle>
       <el-form-item label="公司名称" prop="supplierName">
-        <el-input v-model="form.supplierName" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
+        <el-input
+          v-model="form.supplierName"
+          maxlength="100"
+          clearable
+          placeholder="请填写公司名称"
+          show-word-limit
+        ></el-input>
       </el-form-item>
       <el-form-item label="营业执照号" prop="certificationNo">
         <el-input
