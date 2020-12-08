@@ -2,7 +2,7 @@
   <div class="sl-single-select">
     <el-select
       v-model="value"
-      placeholder="请选择"
+      :placeholder="label"
       clearable
       @change="selectChange"
       style="width:100%"
@@ -38,6 +38,10 @@ export default {
     options: {
       type: Array,
       default: () => []
+    },
+    label: {
+      type: String,
+      default: '请选择'
     }
   },
   data () {
