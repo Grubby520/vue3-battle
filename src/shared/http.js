@@ -14,7 +14,7 @@ baseURL = useProxy ? '/api' : baseURL
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
-  timeout: 3000,
+  timeout: 110 * 1000,
   headers: {}
 })
 

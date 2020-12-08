@@ -45,7 +45,7 @@
           >{{item.label}}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="年交易额" prop="annualTurnoverAmount">
+      <el-form-item label="年交易额(万元)" prop="annualTurnoverAmount">
         <el-input v-model="form.annualTurnoverAmount" clearable placeholder="万元(￥)"></el-input>
       </el-form-item>
       <el-form-item label="是否自有工厂" prop="selfFactory">

@@ -167,7 +167,11 @@ export default {
   border: 1px solid #dcdfe6;
   &-btn {
     text-align: center;
-    margin: 20px;
+    position: sticky;
+    bottom: 0;
+    z-index: 999;
+    padding: 2rem 0;
+    background: white;
   }
 }
 

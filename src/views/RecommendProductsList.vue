@@ -14,8 +14,8 @@
           v-model="query"
           :items="searchItems"
           :labelWidth="20"
-          v-if="filterIsLoad"
           ref="searchForm"
+          v-if="filterIsLoad"
         />
       </div>
       <el-divider />
