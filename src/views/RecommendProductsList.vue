@@ -205,12 +205,13 @@ export default {
       confirmBox(this, '是否提交商品', '')
         .then(() => {
           RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
-            .then(() => {
-              successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
-              this.$refs.listView.refresh()
-            })
-            .catch(() => {
-              errorNotify(this, `供方货号：${ITEMNOALL}提交失败`)
+            .then((res) => {
+              if (res.success) {
+                successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
+                this.$refs.listView.refresh()
+              } else {
+                errorNotify(this, `供方货号：${ITEMNOALL},${res.error.message}`, true, 4500, '')
+              }
             })
         })
     },
@@ -219,11 +220,12 @@ export default {
         .then(() => {
           RecommondApi.deleteRecommed(row.id)
             .then(res => {
-              this.gotoPage()
-              successNotify(this, `供方货号：${row.supplierItemNo}删除成功`)
-            })
-            .catch(res => {
-              errorNotify(this, `供方货号：${row.supplierItemNo}删除失败`)
+              if (res.success) {
+                this.gotoPage()
+                successNotify(this, `供方货号：${row.supplierItemNo}删除成功`)
+              } else {
+                errorNotify(this, `供方货号：${row.supplierItemNo},${res.error.message}`, false, 4500, '')
+              }
             })
         })
     },
@@ -232,11 +234,12 @@ export default {
         .then(() => {
           RecommondApi.cancelrcommend(row.id)
             .then(res => {
-              this.$refs.listView.refresh()
-              successNotify(this, `供方货号：${row.supplierItemNo}取消提交成功`)
-            })
-            .catch(() => {
-              errorNotify(this, `供方货号：${row.supplierItemNo}取消提交失败`)
+              if (res.success) {
+                this.$refs.listView.refresh()
+                successNotify(this, `供方货号：${row.supplierItemNo}取消提交成功`)
+              } else {
+                errorNotify(this, `供方货号：${row.supplierItemNo},${res.error.message}`, false, 4500, '')
+              }
             })
         })
     },
