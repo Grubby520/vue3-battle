@@ -15,7 +15,7 @@
       :flat="false"
       :disable-branch-nodes="false"
       :props="defaultProps"
-      placeholder="请选择"
+      :placeholder="label"
       size="small"
     />
   </div>
@@ -39,6 +39,10 @@ export default {
     options: {
       type: Array,
       default: () => []
+    },
+    label: {
+      type: String,
+      default: '请选择'
     }
   },
   data () {

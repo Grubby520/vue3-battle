@@ -10,7 +10,13 @@
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm v-model="query" :items="searchItems" ref="searchForm" v-if="filterIsLoad" />
+        <SlSearchForm
+          v-model="query"
+          :items="searchItems"
+          :labelWidth="20"
+          v-if="filterIsLoad"
+          ref="searchForm"
+        />
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -67,15 +73,17 @@ export default {
           default: null,
           type: 'tree-select',
           label: '品类',
+          isLabel: true,
           name: 'categoryId',
           data: {
             options: []
           }
         },
-        { type: 'input', label: '供方货号', name: 'supplierItemNo' },
+        { type: 'input', label: '供方货号', name: 'supplierItemNo', isLabel: true },
         {
           type: 'single-select',
           label: '状态',
+          isLabel: true,
           name: 'productStatus',
           data: {
             remoteUrl: RecommondUrl.recommendstatus,
