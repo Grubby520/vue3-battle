@@ -6,6 +6,7 @@
       ref="uploader"
       list-type="picture-card"
       :disabled="disabled"
+      :multiple="multiple"
       :limit="imgNumber"
       :accept="accept.join()"
       :file-list="fileList"
@@ -61,13 +62,46 @@ export default {
     prop: 'images'
   },
   props: {
-    images: { type: Array, default: () => [] }, // [{name:'',url:'',...}]
-    imageType: { type: Number, required: false, default: undefined }, // 0：商品图片 1：尺寸图片 2：资质信息
-    folder: { type: String, default: undefined }, // 文件夹标识,便于oss分目录存储
-    disabled: { type: Boolean, required: false, default: false },
-    accept: { type: Array, required: false, default: () => { return ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp'] } },
-    imgNumber: { type: Number, required: false, default: 200 },
-    tools: { type: Array, default: () => ['zoom', 'download', 'delete'] },
+    // [{name:'',url:'',...}]
+    images: {
+      type: Array,
+      default: () => []
+    },
+    // 0：商品图片 1：尺寸图片 2：资质信息
+    imageType: {
+      type: Number,
+      required: false,
+      default: undefined
+    },
+    // 文件夹标识,便于oss分目录存储
+    folder: {
+      type: String,
+      default: undefined
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    multiple: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    accept: {
+      type: Array,
+      required: false,
+      default: () => ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp']
+    },
+    imgNumber: {
+      type: Number,
+      required: false,
+      default: 200
+    },
+    tools: {
+      type: Array,
+      default: () => ['zoom', 'download', 'delete']
+    },
     limits: {
       type: Array,
       default: () => [
