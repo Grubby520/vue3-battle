@@ -207,7 +207,7 @@ export default {
           RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
             .then((res) => {
               if (res.success) {
-                successNotify(this, `供方货号：${ITEMNOALL}提交成功`)
+                successNotify(this, `供方货号：${ITEMNOALL}提交成功`, true)
                 this.$refs.listView.refresh()
               } else {
                 errorNotify(this, `供方货号：${ITEMNOALL},${res.error.message}`, true, 4500, '')
