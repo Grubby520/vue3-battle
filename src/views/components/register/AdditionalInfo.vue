@@ -24,7 +24,7 @@
       <el-form-item label="收款方姓名" prop="payee">
         <el-input
           v-model="form.payee"
-          maxlength="50"
+          maxlength="20"
           clearable
           placeholder="请输入收款人姓名"
           show-word-limit
@@ -186,7 +186,7 @@ export default {
       rules: {
         currency: [emptyValidator('请选择币种')],
         payeeCompany: [emptyValidator('请输入收款单位全称')],
-        payee: [emptyValidator('请输入收款人姓名'), charLimitValidator('长度在 2 到 50 个字符', 2, 50)],
+        payee: [emptyValidator('请输入收款人姓名'), charLimitValidator('长度在 2 到 20 个字符', 2, 20)],
         payeeIdCard: [emptyValidator('请输入身份证号'), idCardValidator()],
         payeePhone: [emptyValidator('请输入收款人手机号'), phoneNoValidator()],
         unionPayNo: [emptyValidator('请输入位银行联行号'), digitalValidator(), charLimitValidator('银行联行号是12位数字', 12, 12)],
