@@ -20,11 +20,7 @@
       </header>
       <div class="page-breadcrumb">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item
-            v-for="(item, index) in breadcrumbs"
-            :key="index"
-            :to="{ path: item.path }"
-          >{{item.label}}</el-breadcrumb-item>
+          <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">{{item.label}}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <div class="page-content">

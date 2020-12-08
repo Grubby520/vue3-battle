@@ -142,6 +142,7 @@ import {
 import CommonApi from '@api/api.js'
 import UserApi from '@api/user'
 const { mapState: registerMapState, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
+const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'Application',
@@ -157,6 +158,19 @@ export default {
         UserApi.isCertificationNoExist({ certificationNo: value, supplierId: this.supplierId }).then(res => {
           if (res.data) {
             callback(new Error('营业执照号已存在'))
+          } else {
+            callback()
+          }
+        })
+      },
+      trigger: 'blur'
+    }
+
+    let isUserNameExistValidator = {
+      validator: (rule, value, callback) => {
+        UserApi.isUserNameExist({ userName: value, userId: this.userId }).then(res => {
+          if (res.data) {
+            callback(new Error('邮箱已存在'))
           } else {
             callback()
           }
@@ -215,7 +229,8 @@ export default {
         ],
         userName: [
           emptyValidator('请填写邮箱', 'blur'),
-          emailValidator()
+          emailValidator(),
+          isUserNameExistValidator
         ],
         password: [
           emptyValidator('请输入密码'),
@@ -242,6 +257,7 @@ export default {
   },
   computed: {
     ...registerMapState(['application', 'supplierId']),
+    ...userMapState(['userId']),
     passwordType () {
       return this.form.password ? 'password' : this.$passwordType
     }
