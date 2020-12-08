@@ -40,6 +40,7 @@ export const homeRoutes = [
       },
       {
         path: 'odmDetail',
+        name: '产品详情',
         meta: {
           alias: '创建产品',
           icon: '',
@@ -60,6 +61,7 @@ export const homeRoutes = [
 
       {
         path: 'OdmOneDetails',
+        name: '分类选择',
         meta: {
           alias: '创建产品',
           icon: '',
