@@ -444,8 +444,10 @@ export default {
     },
     validateProductImgs () {
       return new Promise((resolve, reject) => {
+        let total = 0
         this.productImages.map(item => {
           const LENGTH = item.images.length >>> 0
+          total += LENGTH
           if (LENGTH === 0) {
             reject(new Error(`商品图片：请上传 ${item.colorAttributeName} 属性的图片`))
           } else if (LENGTH < 4) {
@@ -463,6 +465,9 @@ export default {
             }
           }
         })
+        if (total > 100) {
+          reject(new Error(`商品图片：各颜色属性图片之和不能超过100张`))
+        }
         resolve()
       })
     },

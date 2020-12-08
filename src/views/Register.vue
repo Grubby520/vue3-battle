@@ -36,7 +36,7 @@ import Application from '@/views/components/register/Application.vue'
 import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
 import Protocol from '@/views/components/register/Protocol.vue'
 import UserApi from '@api/user'
-import { getCookie } from '@shared/util'
+import { getCookie, scrollToTop } from '@shared/util'
 const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
 const { mapGetters: registerMapGetters, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
@@ -108,11 +108,13 @@ export default {
         this.$refs.currentComponent.validate().then((data) => {
           if (data) {
             this.activeStep = stepMap[this.activeStep]
+            scrollToTop()
           }
         })
         return
       }
       this.activeStep = stepMap[this.activeStep]
+      scrollToTop()
     },
     toLogin () {
       this.$router.push({

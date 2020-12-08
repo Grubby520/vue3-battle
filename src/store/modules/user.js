@@ -10,6 +10,7 @@ export default {
     supplierName: '',
     supplierId: '',
     userName: '',
+    userId: '',
     isAdmin: false,
     confirmAgreement: false // 是否确认了协议
   },
@@ -30,6 +31,7 @@ export default {
         state.supplierName = ''
         state.supplierId = ''
         state.userName = ''
+        state.userId = ''
         state.isAdmin = false
         state.confirmAgreement = false
         return

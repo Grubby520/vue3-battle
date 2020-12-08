@@ -9,6 +9,7 @@ const USER_API = {
   getUserInfo: () => get(URL.userInfo),
   logout: () => get(URL.logout, {}, { addLoading: true }),
   resetPassword: (params) => get(URL.resetPassword, params, { addLoading: true }),
+  isUserNameExist: (params) => get(URL.userNameExist, params),
   docDetails: () => get(URL.docDetails),
   docModify: (params) => post(URL.docModify, params),
   isCertificationNoExist: (params) => get(URL.certificationNoExist, params),

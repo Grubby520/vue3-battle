@@ -8,6 +8,7 @@ export default {
   userInfo: baseURL + 'user/info',
   logout: baseURL + 'user/logout',
   resetPassword: baseURL + 'user/newPassword',
+  userNameExist: baseURL + 'user/user-name/exist',
   docDetails: baseURL + 'supplier/userId',
   docModify: baseURL + 'supplier',
   certificationNoExist: baseURL + 'supplier/certification/exist',
