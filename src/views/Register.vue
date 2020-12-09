@@ -174,7 +174,7 @@ export default {
               this.$router.push({
                 path: '/notify',
                 query: {
-                  msg: 'submit'
+                  msgType: 'register-submit-success'
                 }
               })
             }
@@ -186,7 +186,8 @@ export default {
     }
   },
   mounted () {
-    if (getCookie('token')) {
+    let isInit = this.$route.query.init // 用于区分是首次注册还是审核拒绝后的再次注册
+    if (getCookie('token') && !isInit) {
       this.GET_USER_INFO().then(res => {
         if (res && this.supplierStatusCode === 5) {
           this.SET_SUPPLIER_ID(this.supplierId)

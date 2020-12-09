@@ -1,7 +1,13 @@
 <template>
   <div class="odmOneDetails">
     <p class="odmOneDetails-title">选择类目</p>
-    <el-cascader-panel :options="options" :props="panelProps" @change="change" />
+    <el-cascader-panel
+      :options="options"
+      :props="panelProps"
+      @change="change"
+      @expand-change="expandChange"
+      ref="cascader"
+    />
     <p class="odmOneDetails-des">当前选择分类：{{cate.cateLabels}}</p>
     <div class="odmOneDetails-btn">
       <el-button @click="save" type="primary">确认</el-button>
@@ -14,7 +20,7 @@ import CommonApi from '@api/api'
 
 export default {
   props: {
-    mode: { type: String, required: false, default: '' },
+    mode: { type: String, required: false, default: 'create' },
     id: { type: [Number, String], required: false, default: '' },
     categoryId: { type: [Number, String], required: false, default: undefined }
   },
@@ -26,7 +32,6 @@ export default {
         value: 'id'
       },
       cate: {},
-      isLeaf: false,
       categoryLevel: ''
     }
   },
@@ -37,9 +42,8 @@ export default {
     load () {
       CommonApi.category({ type: 1 })
         .then(res => {
-          const list = res.data
-          this.options = list
-          this.changeInitData(list)
+          this.options = res.data
+          this.changeInitData(res.data)
         })
     },
     changeInitData (arr) {
@@ -52,21 +56,14 @@ export default {
         }
       })
     },
-    showCateLables (arr, id, treeLeader) {
-      if (treeLeader.isLeaf) return false
-      arr.forEach(cate => {
-        if (cate.id === parseInt(id)) {
-          treeLeader.isLeaf = true
-          this.categoryLevel = cate.path
-          return false
-        } else if (cate.children && cate.children.length > 0) {
-          this.showCateLables(cate.children, id, treeLeader)
-        }
-      })
-    },
+
     change (nodeKeys) {
       this.showlabels(this.options, nodeKeys)
       this.checkIsLeaf(nodeKeys)
+    },
+    expandChange () {
+      // 如果没有选中最后一节点不允许跳转
+      this.isLeaf = false
     },
     checkIsLeaf (nodeKeys) {
       let treeLeader = { isLeaf: false }
@@ -75,6 +72,19 @@ export default {
       if (treeLeader.isLeaf) {
         this.nodeKeys = nodeKeys
       }
+    },
+    showCateLables (arr, id, treeLeader) {
+      if (treeLeader.isLeaf) return false
+      arr.forEach(cate => {
+        if (cate.id === parseInt(id)) {
+          // 最后一级节点
+          treeLeader.isLeaf = true
+          this.categoryLevel = cate.path
+          return false
+        } else if (cate.children && cate.children.length > 0) {
+          this.showCateLables(cate.children, id, treeLeader)
+        }
+      })
     },
     save () {
       if (this.isLeaf) {
@@ -123,16 +133,27 @@ export default {
 
 <style scoped lang="scss">
 .odmOneDetails {
-  /deep/.el-cascader-node.in-active-path,
-  .el-cascader-node.is-active,
-  .el-cascader-node.is-selectable.in-checked-path {
-    color: #fff;
-    background-color: #409eff;
+  /deep/.el-cascader-node.is-active {
+    // 最后一级设置
+    color: unset;
+    font-weight: unset;
+    &:focus {
+      color: #fff;
+      background-color: #409eff;
+    }
   }
-  /deep/.is-active {
+
+  // /deep/.el-cascader-node.is-active {
+  //   color: unset;
+  //   font-weight: unset;
+  // }
+
+  /deep/ .in-active-path {
+    // 父级设置
+    background-color: #86c1ff;
     color: #fff;
-    background-color: #409eff;
   }
+
   /deep/.el-cascader-node__prefix {
     display: none;
   }
@@ -149,7 +170,7 @@ export default {
   }
   &-title {
     font-size: 18px;
-    color: #409eff;
+    // color: #409eff;
     font-weight: bold;
     margin: 20px 80px;
   }

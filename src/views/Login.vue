@@ -81,7 +81,7 @@ export default {
                     this.$router.push('/register')
                     return
                   }
-                  this.$router.push('/notify')
+                  this.$router.push('/registerProgress')
                 }
               })
             }
@@ -93,7 +93,12 @@ export default {
     },
     register () {
       this.RESET_REGISTER_DATA()
-      this.$router.push('register')
+      this.$router.push({
+        path: '/register',
+        query: {
+          init: true
+        }
+      })
     }
   }
 }

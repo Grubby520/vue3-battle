@@ -1,25 +1,17 @@
 <template>
   <div class="notify-container">
-    <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
-    <div class="register-result align-center">
+    <RegisterHeader></RegisterHeader>
+    <div class="notify-content align-center">
       <span class="el-icon-success"></span>
       <div>
-        <div v-if="supplierStatusText && !isSubmitMsg" class="display-inline-block">
-          {{supplierStatusText}}&nbsp;&nbsp;
-          <el-button v-if="notPassed" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
-        </div>
-        <b v-if="isSubmitMsg">您的申请已成功提交</b>
+        <b v-if="'register-submit-success' === notifyModel.msgType">{{notifyModel.msgContent}}</b>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex'
 import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
-import { getCookie, isEmpty } from '@shared/util'
-const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
-
 export default {
   name: 'Notify',
   components: {
@@ -32,49 +24,25 @@ export default {
     }
   },
   computed: {
-    ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
-    ...userMapGetters(['enterMainPage']),
-    isSubmitMsg () {
-      return this.$route.query.msg === 'submit'
-    },
-    notPassed () {
-      return this.supplierStatusCode === 5
-    },
-    supplierStatusText () {
-      let text = ''
-      if ([0, 1].includes(this.supplierStatusCode)) {
-        text = '正在审核中'
+    notifyModel () {
+      let msgType = this.$route.query.msgType
+      let model = {}
+      switch (msgType) {
+        case 'register-submit-success':
+          model = {
+            msgType,
+            msgContent: '您的申请已成功提交'
+          }
+          break
       }
-
-      if (this.supplierStatusCode === 5) {
-        text = '审核未通过'
-      }
-      return text
+      return model
     }
   },
   mounted () {
-    if (getCookie('token')) {
-      // 刷新页面的场景下确保界面数据正常
-      this.GET_USER_INFO().then(data => {
-        if (data) {
-          if (this.enterMainPage) {
-            this.$router.push('home/recommend-products/list')
-          }
-          if (!isEmpty(this.supplierStatusCode)) {
-            this.$router.replace({
-              path: '/notify',
-              query: {}
-            }).catch(() => { })
-          }
-        }
-      })
-    }
+
   },
   methods: {
-    ...userMapActions(['GET_USER_INFO']),
-    toRegister () {
-      this.$router.push('/register')
-    }
+
   }
 
 }
@@ -96,7 +64,7 @@ export default {
   color: $color-success;
 }
 
-.register-result {
+.notify-content {
   margin-top: 8rem;
   padding-top: 6em;
 }
