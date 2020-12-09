@@ -228,8 +228,8 @@ export default {
             this.SET_ADDITIONAL_INFO(JSON.parse(JSON.stringify(this.form)))
             resolve(this.form)
           } else {
-            scrollToElFormElement(this.$refs.form.$el, -50)
             resolve(false)
+            scrollToElFormElement(this.$refs.form.$el, -50)
           }
         })
       })
