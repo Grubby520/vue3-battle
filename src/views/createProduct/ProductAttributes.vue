@@ -296,7 +296,7 @@ export default {
             resolve(this.transferToSubmitData())
           } else {
             this.$message.error('商品属性：请填写必填项')
-            reject(new Error('商品属性：请填写必填项'))
+            reject(new Error('customAttributesInfo'))
           }
         })
       })
