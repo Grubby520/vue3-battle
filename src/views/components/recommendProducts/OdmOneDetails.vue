@@ -20,7 +20,7 @@ import CommonApi from '@api/api'
 
 export default {
   props: {
-    mode: { type: String, required: false, default: '' },
+    mode: { type: String, required: false, default: 'create' },
     id: { type: [Number, String], required: false, default: '' },
     categoryId: { type: [Number, String], required: false, default: undefined }
   },
