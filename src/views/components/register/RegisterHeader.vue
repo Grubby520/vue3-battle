@@ -2,7 +2,7 @@
   <div class="header-container">
     <div class="register-header clearfix">
       <div class="left-module">
-        <img src="@/assets/logo.png" alt="logo" />
+        <img src="@/assets/register-logo.png" alt="logo" />
       </div>
       <div class="right-module">
         <div v-if="!supplierStatusCode && supplierStatusCode!== 0">
@@ -82,7 +82,7 @@ export default {
     float: left;
     margin-left: 20%;
     img {
-      height: 3.5rem;
+      height: 5rem;
       vertical-align: middle;
     }
   }

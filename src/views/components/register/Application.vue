@@ -161,6 +161,19 @@ export default {
       return this.form.password && this.form.password !== this.form.confirmPassword
     })
 
+    // let supplierNameExistValidator = {
+    //   validator: (rule, value, callback) => {
+    //     UserApi.isSupplierNameExist({ supplierName: value, supplierId: this.supplierId }).then(res => {
+    //       if (res.data) {
+    //         callback(new Error('公司名已存在'))
+    //       } else {
+    //         callback()
+    //       }
+    //     })
+    //   },
+    //   trigger: 'blur'
+    // }
+
     let certificationNoExistValidator = {
       validator: (rule, value, callback) => {
         UserApi.isCertificationNoExist({ certificationNo: value, supplierId: this.supplierId }).then(res => {
@@ -213,6 +226,7 @@ export default {
         supplierName: [
           emptyValidator('请填写公司名称'),
           charLimitValidator('字符长度不能超过100', 1, 100)
+          // supplierNameExistValidator
         ],
         certificationNo: [
           emptyValidator('请填写公司营业执照号'),
@@ -312,8 +326,8 @@ export default {
             this.SET_APPLICATION(JSON.parse(JSON.stringify(this.form)))
             resolve(this.form)
           } else {
-            scrollToElFormElement(this.$refs.form.$el, -50)
             resolve(false)
+            scrollToElFormElement(this.$refs.form.$el, -50)
           }
         })
       })

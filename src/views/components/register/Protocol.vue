@@ -163,6 +163,7 @@
             </ol>
           </li>
         </ol>
+        <h1 class="font-size-20 mt-1rem">附则：供应商合作管理规定(成衣型供应链条)</h1>
       </article>
     </section>
     <footer>

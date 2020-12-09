@@ -15,6 +15,9 @@ export default {
       let baseInfo = {}
       let bankInfo = {}
       let certification = {}
+      let getSensitivePictureUrl = function (url) {
+        return url ? url.split('?')[0] : url
+      }
       // 基本信息转换
       let excludeKeys = ['certificationNo', 'confirmPassword']
       Object.keys(state.application).forEach(key => {
@@ -38,12 +41,12 @@ export default {
       })
       // 资质信息转换
       certification['certificationNo'] = state.application.certificationNo
-      certification['certificationImage'] = state.additionalInfo.certificationImage[0] ? state.additionalInfo.certificationImage[0].url : ''
-      certification['idCardFront'] = state.additionalInfo.idCardImages[0] ? state.additionalInfo.idCardImages[0].url : ''
-      certification['idCardBack'] = state.additionalInfo.idCardImages[1] ? state.additionalInfo.idCardImages[1].url : ''
-      certification['organizationImage'] = state.additionalInfo.organizationImage[0] ? state.additionalInfo.organizationImage[0].url : ''
-      certification['taxRegisterImage'] = state.additionalInfo.taxRegisterImage[0] ? state.additionalInfo.taxRegisterImage[0].url : ''
-      certification['companyShareholderImage'] = state.additionalInfo.companyShareholderImage[0] ? state.additionalInfo.companyShareholderImage[0].url : ''
+      certification['certificationImage'] = state.additionalInfo.certificationImage[0] ? getSensitivePictureUrl(state.additionalInfo.certificationImage[0].url) : ''
+      certification['idCardFront'] = state.additionalInfo.idCardImages[0] ? getSensitivePictureUrl(state.additionalInfo.idCardImages[0].url) : ''
+      certification['idCardBack'] = state.additionalInfo.idCardImages[1] ? getSensitivePictureUrl(state.additionalInfo.idCardImages[1].url) : ''
+      certification['organizationImage'] = state.additionalInfo.organizationImage[0] ? getSensitivePictureUrl(state.additionalInfo.organizationImage[0].url) : ''
+      certification['taxRegisterImage'] = state.additionalInfo.taxRegisterImage[0] ? getSensitivePictureUrl(state.additionalInfo.taxRegisterImage[0].url) : ''
+      certification['companyShareholderImage'] = state.additionalInfo.companyShareholderImage[0] ? getSensitivePictureUrl(state.additionalInfo.companyShareholderImage[0].url) : ''
 
       return {
         baseInfo,

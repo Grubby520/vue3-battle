@@ -1,5 +1,10 @@
 <template>
-  <h1 class="system-info">{{menuCollapse?'SRM':systemName}}</h1>
+  <h1 class="system-info" :class="{'collapse':menuCollapse}">
+    <template v-if="menuCollapse">
+      <img src="@/assets/home-short-logo.png" alt="logo" />
+    </template>
+    <img v-else src="@/assets/home-logo.png" alt="logo" />
+  </h1>
 </template>
 
 <script>
@@ -29,9 +34,19 @@ export default {
 <style scoped lang="scss">
 @import '@assets/scss/_fn.scss';
 .system-info {
-  line-height: pxToRem(50px);
+  height: 5rem;
+  line-height: 5rem;
+  padding-left: 10%;
   color: #fff;
-  text-align: center;
   background-color: #357ca5;
+
+  img {
+    height: 100%;
+  }
+
+  &.collapse {
+    text-align: center;
+    padding-left: 0;
+  }
 }
 </style>

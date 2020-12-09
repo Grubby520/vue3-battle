@@ -29,10 +29,25 @@ export const homeRoutes = [
     component: ParentMenuRoute,
     children: [
       {
-        path: 'list',
+        path: 'OdmOneDetails',
         name: '创建产品',
         meta: {
-          alias: '商品列表',
+          icon: 'el-icon-paperclip',
+          code: 'menu_create_product'
+        },
+        props: route => {
+          return {
+            id: route.query.id,
+            mode: route.query.mode,
+            categoryId: route.query.categoryId
+          }
+        },
+        component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
+      },
+      {
+        path: 'list',
+        name: '商品列表',
+        meta: {
           icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
         },
@@ -40,6 +55,7 @@ export const homeRoutes = [
       },
       {
         path: 'odmDetail',
+        name: '产品详情',
         meta: {
           alias: '创建产品',
           icon: '',
@@ -56,23 +72,6 @@ export const homeRoutes = [
           }
         },
         component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
-      },
-
-      {
-        path: 'OdmOneDetails',
-        meta: {
-          alias: '创建产品',
-          icon: '',
-          notMenu: true
-        },
-        props: route => {
-          return {
-            id: route.query.id,
-            mode: route.query.mode,
-            categoryId: route.query.categoryId
-          }
-        },
-        component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
       },
       {
         path: 'import-spu',

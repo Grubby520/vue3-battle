@@ -1,7 +1,9 @@
 <template>
   <div class="sl-login-container">
     <div class="sl-login">
-      <h3 class="sl-login-title">{{systemName}}</h3>
+      <h3 class="sl-login-title">
+        <img src="@/assets/login-logo.png" alt="logo" />
+      </h3>
       <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
           <span class="el-icon-s-custom form-item-icon"></span>
@@ -91,7 +93,12 @@ export default {
     },
     register () {
       this.RESET_REGISTER_DATA()
-      this.$router.push('register')
+      this.$router.push({
+        path: '/register',
+        query: {
+          init: true
+        }
+      })
     }
   }
 }
@@ -139,6 +146,9 @@ $boxShadowColor: rgba(0, 0, 0, 0.7);
   color: $color-white;
   letter-spacing: 0.2em;
   text-align: center;
+  img {
+    height: 12rem;
+  }
 }
 
 .sl-login {
