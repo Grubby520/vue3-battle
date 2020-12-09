@@ -93,7 +93,12 @@ export default {
     },
     register () {
       this.RESET_REGISTER_DATA()
-      this.$router.push('register')
+      this.$router.push({
+        path: '/register',
+        query: {
+          init: true
+        }
+      })
     }
   }
 }

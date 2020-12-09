@@ -33,7 +33,7 @@ export default {
   },
   computed: {
     ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
-    ...userMapGetters(['enterMainPage']),
+    ...userMapGetters(['enterMainPage', 'enterRegisterPage']),
     isSubmitMsg () {
       return this.$route.query.msg === 'submit'
     },
@@ -59,6 +59,11 @@ export default {
         if (data) {
           if (this.enterMainPage) {
             this.$router.push('home/recommend-products/list')
+            return
+          }
+          if (this.enterRegisterPage) {
+            this.$router.push('/register')
+            return
           }
           if (!isEmpty(this.supplierStatusCode)) {
             this.$router.replace({
