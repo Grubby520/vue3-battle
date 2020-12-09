@@ -326,8 +326,8 @@ export default {
             this.SET_APPLICATION(JSON.parse(JSON.stringify(this.form)))
             resolve(this.form)
           } else {
-            scrollToElFormElement(this.$refs.form.$el, -50)
             resolve(false)
+            scrollToElFormElement(this.$refs.form.$el, -50)
           }
         })
       })

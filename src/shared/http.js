@@ -76,11 +76,13 @@ axiosInstance.interceptors.response.use(
   },
   err => {
     let errorStatus
+    let errorData
     store.dispatch('CLOSE_LOADING')
     store.commit('SET_LOADING_COUNT', 0)
     // 错误处理
     if (err && err.response) {
       errorStatus = err.response.status
+      errorData = err.response.data
       switch (errorStatus) {
         case 500:
           err.message = `服务器错误`
@@ -95,7 +97,8 @@ axiosInstance.interceptors.response.use(
           break
         case 505: err.message = `HTTP版本不受支持`
           break
-        case 401: err.message = `访问资源未授权,请登录后操作`
+        case 401:
+          err.message = errorData.error.message
           store.dispatch('user/RESET_USER_DATA')
           router.push('/login')
           break
@@ -103,9 +106,8 @@ axiosInstance.interceptors.response.use(
           break
         case 429: err.message = `系统繁忙,请稍后重试`
           break
-        default: err.message = `连接出错`
+        default: err.message = `网络错误`
       }
-      err.message = err.message + `(${errorStatus})`
     } else {
       err.message = '连接服务器失败!'
     }
