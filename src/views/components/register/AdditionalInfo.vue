@@ -184,7 +184,7 @@ export default {
         companyShareholderImage: []
       },
       rules: {
-        currency: [emptyValidator('请选择币种')],
+        currency: [emptyValidator('请选择币种', ['blur', 'change'])],
         payeeCompany: [emptyValidator('请输入收款单位全称')],
         payee: [emptyValidator('请输入收款人姓名'), charLimitValidator('长度在 2 到 20 个字符', 2, 20)],
         payeeIdCard: [emptyValidator('请输入身份证号'), idCardValidator()],
@@ -193,11 +193,11 @@ export default {
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
-        idCardImages: [emptyValidator('请上传身份证证件图片')],
-        certificationImage: [emptyValidator('请上传营业执照图片')],
-        organizationImage: [emptyValidator('请上传组织结构代码证件图片')],
-        taxRegisterImage: [emptyValidator('请上传税务登记证件图片')],
-        companyShareholderImage: [emptyValidator('请上传企业股东证件图片')]
+        idCardImages: [emptyValidator('请上传身份证证件图片', 'change')],
+        certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
+        organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
+        taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
+        companyShareholderImage: [emptyValidator('请上传企业股东证件图片', 'change')]
       }
     }
   },

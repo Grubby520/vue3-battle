@@ -16,7 +16,7 @@ const router = new VueRouter({
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
   // 白名单路由,不登录就可以访问
-  let whiteRoutes = ['/login', '/register', '/notify']
+  let whiteRoutes = ['/login', '/register', '/registerProgress', '/notify']
   const HAS_TOKEN = getCookie('token')
   const IS_WHITE_ROUTE = whiteRoutes.some(path => to.path.indexOf(path) !== -1)
 
