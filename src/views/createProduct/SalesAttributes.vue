@@ -418,7 +418,7 @@ export default {
           resolve(this.getSubmitData())
         }).catch(err => {
           this.$message.error(err.message)
-          reject(err)
+          reject(new Error('saleAttributesInfo'))
         })
       })
     },
