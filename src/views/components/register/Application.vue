@@ -68,7 +68,7 @@
         <el-input
           type="textarea"
           :rows="4"
-          placeholder="请输入内容"
+          placeholder="人数、月产能多少件"
           v-model="form.factoryDescription"
           maxlength="100"
           show-word-limit
@@ -78,7 +78,7 @@
         <el-input
           type="textarea"
           :rows="6"
-          placeholder="请输入内容"
+          placeholder="若有店铺请在此附上店铺链接"
           v-model="form.advantage"
           maxlength="500"
           show-word-limit
@@ -234,20 +234,20 @@ export default {
           certificationNoExistValidator
         ],
         supplyType: [
-          emptyValidator('请选择供公司性质')
+          emptyValidator('请选择供公司性质', ['blur', 'change'])
         ],
         address: [
           emptyValidator('请选择公司地址', ['blur', 'change'])
         ],
         tradeType: [
-          emptyValidator('请选择交易类型')
+          emptyValidator('请选择交易类型', ['blur', 'change'])
         ],
         annualTurnoverAmount: [
           emptyValidator('请选择输入年交易额万元(￥)'),
           transactionAamountValidator('输入有误,请输入0.00-99999999.99之间的数值')
         ],
         selfFactory: [
-          emptyValidator('请选择是否自有工厂')
+          emptyValidator('请选择是否自有工厂', ['blur', 'change'])
         ],
         userName: [
           emptyValidator('请填写邮箱'),
