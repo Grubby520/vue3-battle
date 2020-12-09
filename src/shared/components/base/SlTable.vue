@@ -41,7 +41,7 @@
                 <div v-if="item.pre" :class="{'tableData-col-pre' : !item.isInImg && item.pre }">
                   <div class="tableData-col-con">
                     <div v-for="(pr, ins) in item.pre" :key="pr">
-                      <span>{{ pr }}:</span>
+                      <span v-if="scope.row[ins]">{{ pr}}:</span>
                       <span>{{scope.row[ins] }}</span>
                     </div>
                   </div>
