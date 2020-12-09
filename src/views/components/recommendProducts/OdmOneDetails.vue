@@ -65,6 +65,10 @@ export default {
       this.checkIsLeaf(nodeKeys)
     },
     expandChange (val) {
+      // 清除节点
+      this.$refs.cascader.clearCheckedNodes()
+      // 设置为空可以让节点不高亮显示
+      this.$refs.cascader.activePath = []
       // 如果没有选中最后一节点不允许跳转
       this.isLeaf = false
       if (val.length === 0) this.checkIsLeaf(this.cascaderIds)
