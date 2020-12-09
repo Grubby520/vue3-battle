@@ -98,7 +98,8 @@ export default {
           isInImg: 'src',
           pre: {
             title: '商品名称',
-            supplierItemNo: '供方货号'
+            supplierItemNo: '供方货号',
+            erpSpuCode: 'SPU'
           }
         },
         {
