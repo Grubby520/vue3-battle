@@ -61,7 +61,6 @@ export default {
     },
 
     change (nodeKeys) {
-      console.log('nodeKeys', nodeKeys)
       this.showlabels(this.options, nodeKeys)
       this.checkIsLeaf(nodeKeys)
     },
