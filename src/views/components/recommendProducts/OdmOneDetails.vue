@@ -2,6 +2,7 @@
   <div class="odmOneDetails">
     <p class="odmOneDetails-title">选择类目</p>
     <el-cascader-panel
+      v-model="cascaderIds"
       :options="options"
       :props="panelProps"
       @change="change"
@@ -28,11 +29,13 @@ export default {
     return {
       options: [],
       nodeKeys: [],
+      cascaderIds: [],
       panelProps: {
         value: 'id'
       },
       cate: {},
-      categoryLevel: ''
+      categoryLevel: '',
+      isLeaf: false
     }
   },
   created () {
@@ -61,9 +64,10 @@ export default {
       this.showlabels(this.options, nodeKeys)
       this.checkIsLeaf(nodeKeys)
     },
-    expandChange () {
+    expandChange (val) {
       // 如果没有选中最后一节点不允许跳转
       this.isLeaf = false
+      if (val.length === 0) this.checkIsLeaf(this.cascaderIds)
     },
     checkIsLeaf (nodeKeys) {
       let treeLeader = { isLeaf: false }
@@ -133,30 +137,30 @@ export default {
 
 <style scoped lang="scss">
 .odmOneDetails {
-  /deep/.el-cascader-node.is-active {
-    // 最后一级设置
-    color: unset;
-    font-weight: unset;
-    &:focus {
-      color: #fff;
-      background-color: #409eff;
-    }
-  }
+  // /deep/.el-cascader-node.is-active {
+  //   // 最后一级设置
+  //   color: unset;
+  //   font-weight: unset;
+  //   &:focus {
+  //     color: #fff;
+  //     background-color: #409eff;
+  //   }
+  // }
 
   // /deep/.el-cascader-node.is-active {
   //   color: unset;
   //   font-weight: unset;
   // }
 
-  /deep/ .in-active-path {
-    // 父级设置
-    background-color: #86c1ff;
-    color: #fff;
-  }
+  // /deep/ .in-active-path {
+  //   // 父级设置
+  //   background-color: #86c1ff;
+  //   color: #fff;
+  // }
 
-  /deep/.el-cascader-node__prefix {
-    display: none;
-  }
+  // /deep/.el-cascader-node__prefix {
+  //   display: none;
+  // }
   /deep/.el-cascader-panel {
     height: 500px;
     width: 90%;
