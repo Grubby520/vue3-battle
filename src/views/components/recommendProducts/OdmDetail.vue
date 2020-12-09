@@ -102,7 +102,8 @@ export default {
             this.submit(data)
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          this.setScrollTop(err.message)
         })
     },
     load () {
@@ -131,7 +132,13 @@ export default {
     create (params) {
       RecommondApi.save(params)
         .then(res => {
-          this.$router.push({ path: '/home/recommend-products/list' })
+          if (res.success) {
+            this.$router.push({ path: '/home/recommend-products/list' })
+          } else {
+            if (res.error && res.error.message) {
+              this.$message.error(res.error.message)
+            }
+          }
         })
     },
 
@@ -140,13 +147,25 @@ export default {
         // 创建产品调用的保存提交
         RecommondApi.saveSubmit(params)
           .then(res => {
-            this.$router.push({ path: '/home/recommend-products/list' })
+            if (res.success) {
+              this.$router.push({ path: '/home/recommend-products/list' })
+            } else {
+              if (res.error && res.error.message) {
+                this.$message.error(res.error.message)
+              }
+            }
           })
       } else {
         // 编辑状态调用的列表的提交接口
         RecommondApi.recommend({ productIdList: [this.id] })
-          .then(() => {
-            this.$router.back()
+          .then((res) => {
+            if (res.success) {
+              this.$router.back()
+            } else {
+              if (res.error && res.error.message) {
+                this.$message.error(res.error.message)
+              }
+            }
           })
           .catch((error) => {
             if (error.error === '100002') {
@@ -157,6 +176,10 @@ export default {
     },
     cancel () {
       this.$router.push({ path: '/home/recommend-products/list' })
+    },
+    setScrollTop (ref) {
+      let offsetTop = this.$refs[ref].$el.offsetTop
+      document.getElementsByClassName('page-content')[0].scrollTop = offsetTop - 110
     }
   }
 }
