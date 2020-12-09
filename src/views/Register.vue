@@ -174,7 +174,7 @@ export default {
               this.$router.push({
                 path: '/notify',
                 query: {
-                  msg: 'submit'
+                  msgType: 'register-submit-success'
                 }
               })
             }

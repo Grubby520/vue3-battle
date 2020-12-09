@@ -81,7 +81,7 @@ export default {
                     this.$router.push('/register')
                     return
                   }
-                  this.$router.push('/notify')
+                  this.$router.push('/registerProgress')
                 }
               })
             }
