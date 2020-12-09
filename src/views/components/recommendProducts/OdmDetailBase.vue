@@ -203,7 +203,10 @@ export default {
             Object.assign(this.productBasicInfo, _this.form)
             resolve({ 'productBasicInfo': this.productBasicInfo })
           } else {
-            reject(new Error())
+            setTimeout(() => {
+              this.$message.error('基本信息：请填写必填项')
+            })
+            reject(new Error('OdmDetailBase'))
           }
         })
       })
