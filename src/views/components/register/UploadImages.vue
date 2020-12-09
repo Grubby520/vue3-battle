@@ -325,6 +325,10 @@ export default {
         })
       })
       this.$emit('imagesChange', imgs)
+      // 用于表单验证change事件捕获
+      if (this.$parent) {
+        this.$parent.$emit('el.form.change')
+      }
     }
   }
 
