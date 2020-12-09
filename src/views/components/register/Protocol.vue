@@ -164,11 +164,13 @@
           </li>
         </ol>
         <h1 class="font-size-20 mt-1rem">附则：供应商合作管理规定(成衣型供应链条)</h1>
+        <div class="align-center">
+          <el-checkbox v-model="checked">我已仔细阅读并同意协议</el-checkbox>
+        </div>
       </article>
     </section>
     <footer>
-      <el-checkbox class="mr-1rem" v-model="checked">我已阅读知晓</el-checkbox>
-      <el-button type="primary" :disabled="!checked" :loading="isLoading" @click="protocolSubmit">确认</el-button>
+      <el-button type="primary" :disabled="!checked" :loading="isLoading" @click="protocolSubmit">签约</el-button>
     </footer>
   </article>
 </template>
@@ -217,9 +219,7 @@ export default {
   margin-bottom: 1em;
   line-height: 2;
   max-height: calc(100vh - 300px);
-  border-radius: 0.5em;
   box-shadow: 0 0 1rem #ccc;
-  background-color: #fafafa;
   overflow: auto;
   & ol :not(.root) li {
     margin-left: 1em;
