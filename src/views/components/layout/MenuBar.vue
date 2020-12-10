@@ -9,21 +9,14 @@
       :text-color="textColor"
       :active-text-color="activeTextColor"
     >
-      <template v-for="(item,index) in menus">
-        <MenuItem
-          :key="'menu-'+index"
-          v-if="!item.children || item.children.length === 0"
-          :menuItem="item"
-        ></MenuItem>
-        <Submenu :key="'submenu-'+index" v-else :submenu="item"></Submenu>
-      </template>
+      <Submenu :submenus="menus"></Submenu>
     </el-menu>
   </div>
 </template>
 
 <script>
 import Submenu from './Submenu'
-import MenuItem from './MenuItem'
+
 export default {
   name: 'MenuBar',
   props: {
@@ -53,10 +46,9 @@ export default {
     }
   },
   components: {
-    Submenu,
-    MenuItem
+    Submenu
   },
-  data: () => {
+  data () {
     return {
 
     }
@@ -70,9 +62,24 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.menu-bar {
+.menu-bar /deep/ {
   .el-menu {
     border: none;
+  }
+  // 以下样式处理 element菜单报 Maximum call stack size exceeded错的折中处理
+  .el-menu--collapse > div > .el-submenu > .el-submenu__title span {
+    height: 0;
+    width: 0;
+    overflow: hidden;
+    visibility: hidden;
+    display: inline-block;
+  }
+  .el-menu--collapse
+    > div
+    > .el-submenu
+    > .el-submenu__title
+    .el-submenu__icon-arrow {
+    display: none;
   }
 }
 </style>

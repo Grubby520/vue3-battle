@@ -1,25 +1,17 @@
 <template>
   <div class="sl-login-container">
     <div class="sl-login">
-      <h3 class="sl-login-title">{{systemName}}</h3>
+      <h3 class="sl-login-title">
+        <img src="@/assets/login-logo.png" alt="logo" />
+      </h3>
       <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
           <span class="el-icon-s-custom form-item-icon"></span>
-          <el-input
-            name="username"
-            type="text"
-            v-model="loginForm.username"
-            placeholder="username"
-          />
+          <el-input name="username" type="text" v-model="loginForm.username" placeholder="用户名" />
         </el-form-item>
         <el-form-item prop="password">
           <span class="el-icon-lock form-item-icon"></span>
-          <el-input
-            name="password"
-            type="password"
-            v-model="loginForm.password"
-            placeholder="password"
-          />
+          <el-input name="password" type="password" v-model="loginForm.password" placeholder="密码" />
         </el-form-item>
         <div class="align-center">
           <el-button type="primary" class="mr-2rem" @click="register">{{$t('button.registerText')}}</el-button>
@@ -35,7 +27,8 @@
 import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
 import { valueToMd5 } from '@shared/util'
-const { mapActions: userMapActions } = createNamespacedHelpers('user')
+const { mapActions: userMapActions, mapState: userMapState, mapGetters: userMapGetters } = createNamespacedHelpers('user')
+const { mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
   name: 'Login',
@@ -59,10 +52,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['systemName'])
+    ...mapState(['systemName']),
+    ...userMapState(['confirmAgreement', 'supplierStatusCode']),
+    ...userMapGetters(['enterMainPage', 'enterRegisterPage'])
+  },
+  mounted () {
+    this.RESET_USER_DATA()
   },
   methods: {
-    ...userMapActions(['AUTH_LOGIN']),
+    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO', 'RESET_USER_DATA']),
+    ...registerMapMutations(['RESET_REGISTER_DATA']),
     login () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
@@ -72,7 +71,19 @@ export default {
             password: valueToMd5(this.loginForm.password)
           }).then(res => {
             if (res.success) {
-              this.$router.push('home/my-file')
+              this.GET_USER_INFO().then(data => {
+                if (data) {
+                  if (this.enterMainPage) {
+                    this.$router.push('home/recommend-products/list')
+                    return
+                  }
+                  if (this.enterRegisterPage) {
+                    this.$router.push('/register')
+                    return
+                  }
+                  this.$router.push('/registerProgress')
+                }
+              })
             }
           }).finally(() => {
             this.isLoading = false
@@ -81,7 +92,13 @@ export default {
       })
     },
     register () {
-      this.$router.push('register')
+      this.RESET_REGISTER_DATA()
+      this.$router.push({
+        path: '/register',
+        query: {
+          init: true
+        }
+      })
     }
   }
 }
@@ -90,6 +107,8 @@ export default {
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
 @import '@assets/scss/_mixin.scss';
+$inputBgColor: #454545;
+$boxShadowColor: rgba(0, 0, 0, 0.7);
 
 .sl-login-container {
   height: 100%;
@@ -100,11 +119,24 @@ export default {
 }
 
 .sl-login-container /deep/ {
+  .el-input {
+    background-color: $inputBgColor;
+  }
+
   .el-input__inner {
     display: inline-block;
-    height: 4rem;
-    line-height: 4rem;
+    height: 4.5rem;
+    line-height: 4.5rem;
     padding: 0 0.3em 0 2em;
+    color: $color-white;
+    border-radius: 0;
+    border: none !important;
+    background: transparent;
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
+      box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
+      -webkit-text-fill-color: #fff !important;
+    }
   }
 }
 
@@ -114,6 +146,9 @@ export default {
   color: $color-white;
   letter-spacing: 0.2em;
   text-align: center;
+  img {
+    height: 12rem;
+  }
 }
 
 .sl-login {
@@ -130,6 +165,7 @@ export default {
   position: absolute;
   left: 0.5em;
   top: 50%;
+  color: $color-white;
   transform: translateY(-50%);
   z-index: 10;
 }

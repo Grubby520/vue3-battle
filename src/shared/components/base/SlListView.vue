@@ -3,7 +3,7 @@
     <div v-if="$slots.search">
       <slot name="search"></slot>
       <div class="bases-search">
-        <el-button type="primary" @click="searchPage">搜索</el-button>
+        <el-button type="primary" @click="searchPage" :loading="loading">搜索</el-button>
         <el-button v-if="isReset" @click="reset">重置</el-button>
       </div>
     </div>
@@ -28,6 +28,11 @@ export default {
     isReset: { type: Boolean, required: false, default: true },
     isPagination: { type: Boolean, required: false, default: true }
   },
+  data () {
+    return {
+      loading: false
+    }
+  },
   mounted () {
     this.refresh()
   },
@@ -36,6 +41,7 @@ export default {
       this.$emit('gotoPage', item.pageSize, item.pageIndex)
     },
     searchPage () {
+      this.loading = true
       this.$emit('gotoPage', 10, 1)
     },
     refresh () {
@@ -52,14 +58,6 @@ export default {
 .bases {
   &-search {
     text-align: right;
-    font-size: 1.2rem;
-    padding: 0.5rem;
-    margin-top: 2rem;
-  }
-  &-page {
-    margin-bottom: 2rem;
-    margin-top: 0.5rem;
-    text-align: center;
   }
 }
 </style>

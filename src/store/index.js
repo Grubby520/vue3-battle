@@ -2,18 +2,20 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { Loading } from 'element-ui'
 import { loadModules } from './loadModules'
+import { setLocalStorageItem } from '@shared/util'
 const modules = loadModules()
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    systemName: 'Starlink供应商平台',
+    systemName: '马上发商家系统',
     loadingInstance: null,
     loadingCount: 0, // 用于计算请求的次数
     breadcrumbs: [],
     activePath: null,
-    menuCollapse: false
+    menuCollapse: false,
+    hasVersionUpdated: false // 版本是否更新
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
@@ -25,12 +27,16 @@ export default new Vuex.Store({
     },
     SET_ACTIVE_PATH (state, activePath) {
       state.activePath = activePath
+      setLocalStorageItem('activePath', activePath)
     },
     SET_MENU_COLLAPSE (state, menuCollapse) {
       state.menuCollapse = menuCollapse
     },
     SET_LOADING_COUNT (state, loadingCount) {
       state.loadingCount = loadingCount
+    },
+    SET_VERSION_UPDATED (state, hasVersionUpdated) {
+      state.hasVersionUpdated = hasVersionUpdated
     }
   },
   actions: {

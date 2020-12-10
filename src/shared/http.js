@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
-import { merge, getSessionItem, errorMessageTip } from '@shared/util'
+import router from '@/router'
+import { merge, getCookie, errorMessageTip, errorNotify } from '@shared/util'
 
 // 存储http错误状态信息
 let httpErrorCache = {}
@@ -13,14 +14,14 @@ baseURL = useProxy ? '/api' : baseURL
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
-  timeout: 3000,
+  timeout: 110 * 1000,
   headers: {}
 })
 
 // 请求拦截
 axiosInstance.interceptors.request.use(config => {
-  const token = getSessionItem('token')
-  const userKey = getSessionItem('userKey')
+  const token = getCookie('token')
+  const userKey = getCookie('userKey')
 
   if (config.headers['addLoading']) {
     store.dispatch('OPEN_LOADING', true)
@@ -57,6 +58,15 @@ axiosInstance.interceptors.response.use(
         case '200002': // 原密码错误
         case '200003': // 公司名重复注册
         case '200004': // 账号重复注册
+        case '200005': // 当前账号已冻结
+        case '200006': // 供应商信息保存失败
+        case '200007': // 供应商注册信息更新失败:审核未通过情况下允许此操作
+        case '500001': // 参数异常
+        case '500002': // 数据不存在
+        case '500003': // 数据冲突
+        case '500004': // 超出最大限制
+        case '900001':
+        case '200017': // feign调用失败
           errorMessageTip(error.message)
           break
       }
@@ -66,28 +76,37 @@ axiosInstance.interceptors.response.use(
   },
   err => {
     let errorStatus
+    let errorData
     store.dispatch('CLOSE_LOADING')
     store.commit('SET_LOADING_COUNT', 0)
     // 错误处理
     if (err && err.response) {
       errorStatus = err.response.status
+      errorData = err.response.data
       switch (errorStatus) {
         case 500:
-          err.message = '服务器错误(500)'
+          err.message = `服务器错误`
           break
-        case 501: err.message = '服务未实现(501)'
+        case 501: err.message = `服务未实现`
           break
-        case 502: err.message = '网络错误(502)'
+        case 502: err.message = `网络错误`
           break
-        case 503: err.message = '服务不可用(503)'
+        case 503: err.message = `服务不可用`
           break
-        case 504: err.message = '网络超时(504)'
+        case 504: err.message = `网络超时`
           break
-        case 505: err.message = 'HTTP版本不受支持(505)'
+        case 505: err.message = `HTTP版本不受支持`
           break
-        case 404: err.message = '访问资源不存在(404)'
+        case 401:
+          err.message = errorData.error.message
+          store.dispatch('user/RESET_USER_DATA')
+          router.push('/login')
           break
-        default: err.message = `连接出错(${err.response.status})!`
+        case 404: err.message = `访问资源不存在`
+          break
+        case 429: err.message = `系统繁忙,请稍后重试`
+          break
+        default: err.message = `网络错误`
       }
     } else {
       err.message = '连接服务器失败!'
@@ -97,11 +116,11 @@ axiosInstance.interceptors.response.use(
       httpErrorCache[errorStatus] = {
         time: +new Date()
       }
-      errorMessageTip(err.message)
+      errorNotify(null, err.message)
     } else {
       let now = +new Date()
       if (now - httpErrorCache[errorStatus].time > errorTimeInterval) {
-        errorMessageTip(err.message)
+        errorNotify(null, err.message)
         httpErrorCache[errorStatus].time = now
       }
     }
@@ -110,9 +129,14 @@ axiosInstance.interceptors.response.use(
 
 function addLoadingConfigToHeader (config) {
   if (config && config.addLoading !== undefined) {
-    config.headers = config.headers ? config.headers = merge(config.headers, {
-      addLoading: config.addLoading
-    }) : { addLoading: config.addLoading }
+    if (config.headers) {
+      config.headers = merge(config.headers, {
+        addLoading: config.addLoading
+      })
+    } else {
+      config.headers = { addLoading: config.addLoading }
+    }
+
     delete config.addLoading
   }
   return config

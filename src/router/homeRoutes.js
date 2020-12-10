@@ -10,48 +10,74 @@ export const homeRoutes = [
     },
     component: () => import('@/views/Index.vue')
   },
-  {
-    path: 'my-file',
-    name: '我的档案',
-    meta: {
-      icon: 'el-icon-postcard',
-      code: 'menu_my_info'
-    },
-    component: () => import('@/views/MyFile.vue')
-  },
+  // {
+  //   path: 'my-file',
+  //   name: '我的档案',
+  //   meta: {
+  //     icon: 'el-icon-postcard',
+  //     code: 'menu_my_info'
+  //   },
+  //   component: () => import('@/views/MyFile.vue')
+  // },
   {
     path: 'recommend-products',
     name: '商品管理',
     meta: {
-      icon: 'el-icon-postcard',
+      icon: 'el-icon-goods',
       code: 'menu_goods_management'
     },
     component: ParentMenuRoute,
     children: [
       {
-        path: 'list',
-        name: 'ODM推品列表',
+        path: 'OdmOneDetails',
+        name: '创建产品',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: 'el-icon-paperclip',
+          code: 'menu_create_product'
+        },
+        props: route => {
+          return {
+            id: route.query.id,
+            mode: route.query.mode,
+            categoryId: route.query.categoryId
+          }
+        },
+        component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
+      },
+      {
+        path: 'list',
+        name: '商品列表',
+        meta: {
+          icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/RecommendProductsList.vue')
       },
       {
-        path: 'maintain',
-        name: 'ODM推品',
+        path: 'odmDetail',
+        name: '产品详情',
         meta: {
-          icon: 'el-icon-postcard',
+          alias: '创建产品',
+          icon: '',
           notMenu: true
         },
-        props: route => { return { id: route.query.id, mode: route.query.mode } },
-        component: () => import('@/views/components/recommendProducts/Maintain.vue')
+        props: route => {
+          return {
+            id: route.query.id,
+            mode: route.query.mode,
+            categoryId: route.query.categoryId,
+            cateLabels: route.query.cateLabels,
+            categoryLevel: route.query.categoryLevel,
+            supplierItemNo: route.query.supplierItemNo
+          }
+        },
+        component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
       },
       {
         path: 'import-spu',
         name: '导入SPU',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: '',
           notMenu: true
         },
         component: () => import('@/views/ImportSpu.vue')
@@ -60,20 +86,11 @@ export const homeRoutes = [
         path: 'import-product-imgs',
         name: '导入商品图片',
         meta: {
-          icon: 'el-icon-postcard',
+          icon: '',
           notMenu: true
         },
         component: () => import('@/views/ImportProductImgs')
       }
     ]
-  },
-  {
-    path: 'supplier-list',
-    name: '供应商列表',
-    meta: {
-      icon: 'el-icon-more-outline',
-      code: 'menu_supplier_list'
-    },
-    component: () => import('@/views/SupplierList.vue')
   }
 ]

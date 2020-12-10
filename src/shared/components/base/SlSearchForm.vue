@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="form" label-width="100px">
+    <el-form :model="form" :label-width="`${labelWidth}px`">
       <el-row :gutter="15">
         <el-col
           v-for="(item,index) in items"
@@ -11,7 +11,11 @@
           :xl="6"
           :key="'item_'+index"
         >
-          <el-form-item v-if="item.type === 'input'" :label="item.label" :prop="item.name">
+          <el-form-item
+            v-if="item.type === 'input'"
+            :label="item.isLabel? '':item.label"
+            :prop="item.name"
+          >
             <el-input
               :placeholder="item.label"
               v-model="form[item.name]"
@@ -21,15 +25,30 @@
           </el-form-item>
           <template v-else-if="item.type === 'single-select'">
             <el-form-item
-              :label="item.label"
+              :label="item.isLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
               <SlSingleSelect
+                :label="item.isLabel?item.label:'请选择'"
                 v-model="form[item.name]"
                 :remoteUrl="item.data.remoteUrl"
                 :options="options[item.name]"
               ></SlSingleSelect>
+            </el-form-item>
+          </template>
+          <!-- 树型下拉 -->
+          <template v-else-if="item.type === 'tree-select'">
+            <el-form-item
+              :label="item.isLabel? '':item.label"
+              :prop="item.name"
+              :class="{'block':item.data.isBlock}"
+            >
+              <SlTreeSelect
+                v-model="form[item.name]"
+                :options="options[item.name]"
+                :label="item.isLabel?item.label:'请选择'"
+              ></SlTreeSelect>
             </el-form-item>
           </template>
         </el-col>
@@ -53,6 +72,10 @@ export default {
     items: {
       type: Array,
       default: () => []
+    },
+    labelWidth: {
+      type: Number,
+      default: 100
     }
   },
   data () {
@@ -73,7 +96,11 @@ export default {
   },
   created () {
     this.items.forEach(item => {
-      this.$set(this.form, item.name, item.isMultivalued ? [] : '')
+      /// 判断入参是否有设置默认值。
+      /// 若有就取传入的默认值。
+      /// 若没有，则根据是否是多选设置默认值。
+      const defaultValue = item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
+      this.$set(this.form, item.name, defaultValue)
       if (item.data && item.data.options) {
         this.$set(this.options, item.name, item.data.options)
       }

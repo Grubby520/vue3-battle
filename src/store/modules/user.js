@@ -1,4 +1,4 @@
-import { setSessionItem, removeSessionItem } from '@shared/util'
+import { setCookie, removeCookie } from '@shared/util'
 import UserApi from '@api/user'
 
 export default {
@@ -6,40 +6,66 @@ export default {
   state: {
     permissions: [],
     supplierStatus: '',
+    supplierStatusCode: '', // 供应商状态代码 0：待审核 1：审核中 2：试版中 3：已准入 5：未通过
     supplierName: '',
+    supplierId: '',
     userName: '',
-    isAdmin: false
+    userId: '',
+    isAdmin: false,
+    confirmAgreement: false // 是否确认了协议
   },
   getters: {
-
+    enterMainPage (state) {
+      return (state.confirmAgreement && state.supplierStatusCode === 2) || state.supplierStatusCode === 3
+    },
+    enterRegisterPage (state) {
+      return !state.confirmAgreement && state.supplierStatusCode === 2
+    }
   },
   mutations: {
     SET_USER_INFO (state, userInfo) {
-      state.permissions = userInfo.permissions
-      state.supplierStatus = userInfo.supplierStatus
-      state.supplierName = userInfo.supplierName
-      state.userName = userInfo.userName
-      state.isAdmin = userInfo.isAdmin
+      if (userInfo === null || Object.keys(userInfo).length === 0) {
+        state.permissions = []
+        state.supplierStatus = ''
+        state.supplierStatusCode = ''
+        state.supplierName = ''
+        state.supplierId = ''
+        state.userName = ''
+        state.userId = ''
+        state.isAdmin = false
+        state.confirmAgreement = false
+        return
+      }
+      Object.keys(userInfo).forEach(key => {
+        if (typeof userInfo[key] === 'object') {
+          state[key] = JSON.parse(JSON.stringify(userInfo[key]))
+        } else {
+          state[key] = userInfo[key]
+        }
+      })
     }
   },
   actions: {
-    AUTH_LOGIN ({ state }, params) {
+    RESET_USER_DATA ({ commit }) {
+      commit('SET_USER_INFO', {})
+      removeCookie('token')
+      removeCookie('userKey')
+    },
+    AUTH_LOGIN ({ commit }, params) {
       return UserApi.authLogin(params).then((res) => {
         const { success, data } = res
         if (success) {
-          setSessionItem('token', data.token)
-          setSessionItem('userKey', data.userKey)
+          setCookie('token', data.token)
+          setCookie('userKey', data.userKey)
         }
         return res
       })
     },
-    SIGN_OUT ({ commit }) {
+    SIGN_OUT ({ commit, dispatch }) {
       return UserApi.logout().then((res) => {
         const { success } = res
         if (success) {
-          commit('SET_USER_INFO', {})
-          removeSessionItem('token')
-          removeSessionItem('userKey')
+          dispatch('RESET_USER_DATA')
           return res
         }
       })

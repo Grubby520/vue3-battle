@@ -1,6 +1,5 @@
 <template>
   <div class="recommond">
-    {{query}}
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -10,64 +9,81 @@
       class="recommonPar"
     >
       <div slot="search">
-        <!-- 搜索区域包含搜索和重置按钮 -->
-        <SlSearchForm v-model="query" :items="searchItems" />
-        <!-- <SlCategory v-model="category"></SlCategory> -->
+        <!-- 搜索区域search包含搜索和重置按钮 -->
+        <SlSearchForm
+          v-model="query"
+          :items="searchItems"
+          :labelWidth="20"
+          ref="searchForm"
+          v-if="filterIsLoad"
+        />
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="recommon">批量推品</el-button>
-        <el-button type="primary" @click="uploadSpu">导入SPU</el-button>
-        <el-button type="primary" @click="uploadImages">导入商品图片</el-button>
+        <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
+        <el-button type="primary" @click="OdmDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
-      <SlTable ref="table" :tableData="tableData" :columns="columns" v-model="selections">
-        <div slot="operation" slot-scope="{row}">
-          <span @click="maintain(row,'modify')" class="btn">维护</span>
-          <span type="text" @click="maintain(row,'view')" class="btn">查看</span>
-          <span type="text" @click="recommon(row)" class="btn">推品</span>
-          <span type="text" @click="deleteProduct(row)" class="btn">删除</span>
-          <span type="text" @click="cancel(row)" class="btn">取消推品</span>
+      <SlTable
+        ref="table"
+        :tableData="tableData"
+        :columns="columns"
+        v-model="selections"
+        :selectionsDisabled="selectionsDisabled"
+        :tooltip="false"
+      >
+        <div slot="operation" slot-scope="{row}" class="operate">
+          <el-button
+            @click="OdmDetail('modify',row)"
+            type="text"
+            v-if="[0].includes(row.productStatus)"
+          >编辑</el-button>
+          <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
+          <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
+          <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
         </div>
       </SlTable>
     </SlListView>
   </div>
 </template>
 <script>
-import { successNotify, errorNotify } from '@shared/util'
+import { successNotify, errorNotify, confirmBox } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import CommonApi from '@api/api.js'
 export default {
   data () {
     return {
       tableData: [],
       selections: [], // 复选框数据
+      selectionsDisabled: [],
       page: {
         pageIndex: 1,
-        pageSize: 10,
         total: 0
       },
       category: undefined,
       query: {
-        categoryName: '',
-        itemNo: '',
+        supplierItemNo: '',
         status: ''
       },
       searchItems: [
         {
-          type: 'single-select',
+          default: null,
+          type: 'tree-select',
           label: '品类',
+          isLabel: true,
           name: 'categoryId',
           data: {
-            remoteUrl: RecommondUrl.recommendCategory,
             options: []
           }
         },
-        { type: 'input', label: '供方货号', name: 'itemNo' },
+        { type: 'input', label: '供方货号', name: 'supplierItemNo', isLabel: true },
         {
           type: 'single-select',
           label: '状态',
-          name: 'status',
+          isLabel: true,
+          name: 'productStatus',
           data: {
             remoteUrl: RecommondUrl.recommendstatus,
             options: []
@@ -79,10 +95,11 @@ export default {
           prop: 'productName',
           label: '商品信息',
           width: '300',
-          isInImg: 'coverImageUrl',
+          isInImg: 'src',
           pre: {
-            productName: '商品名称',
-            itemNo: '供方货号'
+            title: '商品名称',
+            supplierItemNo: '供方货号',
+            erpSpuCode: 'SPU'
           }
         },
         {
@@ -90,8 +107,8 @@ export default {
           label: '品类'
         },
         {
-          prop: 'supplyPrice',
-          label: '供货价（元）'
+          prop: 'description',
+          label: '商品描述'
         },
         {
           prop: 'productStatusName',
@@ -101,33 +118,78 @@ export default {
           prop: 'skuCode',
           label: '创建时间/更新时间',
           pre: {
-            createTimes: '创建',
-            updateTimes: '更新'
+            createTime: '创建',
+            updateTime: '更新'
           }
         }
-      ]
+      ],
+      // 搜索条件是否可以开始加载
+      filterIsLoad: false
     }
   },
-
+  mounted () {
+    this.initFilter()
+  },
   methods: {
+    /**
+     * 初始化筛选的基础数据
+     */
+    initFilter () {
+      CommonApi.category({ type: 1 }).then((response) => {
+        if (response.success) {
+          let data = response.data
+          this.shakingTree(data)
+          this.searchItems[0].data.options = data
+        }
+      }).finally(() => {
+        this.filterIsLoad = true
+      })
+    },
+    /**
+     * 对树的数据进行加工
+     */
+    shakingTree (treeData) {
+      treeData.forEach((node) => {
+        // 将树的id换成path
+        node.id = node.path
+        if (node.children && node.children.length > 0) {
+          this.shakingTree(node.children)
+        } else {
+          delete node.children
+        }
+      })
+    },
     gotoPage (pageSize = 10, pageIndex = 1) {
-      const RECOMMONDPAR = { ...this.query, pageIndex, pageSize }
+      let requestParams = { ...this.query }
+      // 将分类过滤取值赋给[categoryIdLevel]，[categoryId]取level的最后一级
+      const path = requestParams.categoryId || ''
+      requestParams.categoryIdLevel = path
+      requestParams.categoryId = path.split(',').reverse()[0]
+
+      const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
+      this.tableData = []
       RecommondApi.getRecommedList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
-          this.tableData = list
-          console.log(list)
-          list.forEach(item => {
-            item.createTimes = this.$moment(item.createTime).format('YYYY-M-D HH:mm')
-            item.updateTimes = this.$moment(item.updateTime).format('YYYY-M-D HH:mm')
+          list.forEach(data => {
+            if (data.description.length > 30) {
+              data.description = data.description.substring(0, 30) + '...'
+            }
+            // 列表品类name
+            if (data.categoryName) {
+              const cateName = data.categoryName.split('>')
+              data.categoryName = cateName.join('/')
+            }
           })
+          this.tableData = list
+          this.$refs.listView.loading = false
+          // 待推品复选框置灰数据
+          this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
           this.page.total = total
         })
     },
     reset () {
-      this.query.categoryName = ''
-      this.query.itemNo = ''
-      this.query.status = ''
+      this.$refs.searchForm.reset()
       // 更新列表
       this.$refs.listView.refresh()
     },
@@ -136,53 +198,60 @@ export default {
       // 批量推品
       const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
       // 批量图品供方货号
-      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.itemNo), []).join(',')
+      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
       // 判断批量推品还是单独推品
       const PUSHPRODUCTS = SELECTIONARR && SELECTIONARR.length > 0 ? SELECTIONARR : [row.id]
       // 批量推品供方货号和单独供方货号
-      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.itemNo
-      RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
+      confirmBox(this, '是否提交商品', '')
         .then(() => {
-          successNotify(this, `供方货号：${ITEMNOALL}推品成功`)
-        })
-        .catch(() => {
-          errorNotify(this, `供方货号：${ITEMNOALL}推品失败`)
+          RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+            .then((res) => {
+              if (res.success) {
+                successNotify(this, `供方货号：${ITEMNOALL}提交成功`, true)
+                this.$refs.listView.refresh()
+              } else {
+                errorNotify(this, `供方货号：${ITEMNOALL},${res.error.message}`, true, 4500, '')
+              }
+            })
         })
     },
     deleteProduct (row) {
-      RecommondApi.deleteRecommed(row.id)
-        .then(res => {
-          // 删除成功重新渲染页面
-          this.$refs.listView.refresh()
-          successNotify(this, `供方货号：${row.itemNo}删除推品成功`)
-        })
-        .catch(res => {
-          errorNotify(this, `供方货号：${row.itemNo}删除推品失败`)
+      confirmBox(this, '是否删除商品', '')
+        .then(() => {
+          RecommondApi.deleteRecommed(row.id)
+            .then(res => {
+              if (res.success) {
+                this.gotoPage()
+                successNotify(this, `供方货号：${row.supplierItemNo}删除成功`)
+              } else {
+                errorNotify(this, `供方货号：${row.supplierItemNo},${res.error.message}`, false, 4500, '')
+              }
+            })
         })
     },
     cancel (row) {
-      const params = row.id
-      RecommondApi.cancelrcommend({ productIdList: [params] })
-        .then(res => {
-          successNotify(this, `供方货号：${row.itemNo}取消推品成功`)
+      confirmBox(this, '是否取消提交', '')
+        .then(() => {
+          RecommondApi.cancelrcommend(row.id)
+            .then(res => {
+              if (res.success) {
+                this.$refs.listView.refresh()
+                successNotify(this, `供方货号：${row.supplierItemNo}取消提交成功`)
+              } else {
+                errorNotify(this, `供方货号：${row.supplierItemNo},${res.error.message}`, false, 4500, '')
+              }
+            })
         })
-        .catch(() => {
-          errorNotify(this, `供方货号：${row.itemNo}取消推品失败`)
-        })
     },
-    maintain (row, status) {
-      this.$router.push({ path: '/home/recommend-products/maintain', query: { mode: status, id: row.id } })
-    },
-    uploadSpu () {
-      this.$router.push({ path: '/home/recommend-products/import-spu' })
-    },
-    uploadImages () {
-      this.$router.push({ path: '/home/recommend-products/import-product-imgs' })
+    OdmDetail (status, row) {
+      const { id, categoryId, supplierItemNo } = row
+      if (status !== 'create') {
+        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: id, categoryId: categoryId, supplierItemNo: supplierItemNo } })
+      } else {
+        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { categoryId: categoryId, mode: status, id: id, supplierItemNo: supplierItemNo } })
+      }
     }
   }
 }
 </script>
-<style lang="scss" scoped>
-.recommond {
-}
-</style>

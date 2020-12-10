@@ -1,6 +1,12 @@
 <template>
   <div class="category">
-    <el-select v-model="cate" placeholder="请选择" clearable class="category-select" @change="change">
+    <el-select
+      v-model="cateInfo"
+      placeholder="请选择"
+      clearable
+      class="category-select"
+      @change="change"
+    >
       <el-option
         v-for="(category,index) in categoryArr"
         :key="'category_'+index"
@@ -12,7 +18,7 @@
 </template>
 
 <script>
-import categoryService from '@api/api.js'
+import CommonApi from '@api/api.js'
 export default {
   name: 'SlCategory',
   model: {
@@ -24,23 +30,26 @@ export default {
   },
   data () {
     return {
-      categoryArr: []
+      categoryArr: [],
+      cateInfo: undefined
     }
   },
-  created () {
-
+  watch: {
+    'cate' (newValue) { // 回显
+      this.cateInfo = newValue
+    }
   },
   mounted () {
     this.getCategory()
   },
   methods: {
     getCategory () {
-      categoryService.category().then(res => {
+      CommonApi.category().then(res => {
         this.categoryArr = res.data
       })
     },
     change () {
-      this.$emit('changeCategory', this.cate)
+      this.$emit('changeCategory', this.cateInfo)
     }
   }
 }

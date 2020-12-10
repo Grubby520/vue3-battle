@@ -11,9 +11,19 @@ export const routes = [
     component: () => import('@/views/Register.vue')
   },
   {
+    path: '/registerProgress',
+    name: '注册进度',
+    component: () => import('@/views/RegisterProgress.vue')
+  },
+  {
     path: '/modify-password',
     name: '修改密码',
     component: () => import('@/views/ModifyPassword.vue')
+  },
+  {
+    path: '/notify',
+    name: '消息通知',
+    component: () => import('@/views/Notify.vue')
   },
   {
     path: '/home',

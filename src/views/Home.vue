@@ -3,7 +3,6 @@
     <!--侧边栏-->
     <aside class="page-aside" :class="{'page-aside--collapse':menuCollapse}">
       <SystemInfo></SystemInfo>
-      <UserStatus></UserStatus>
       <MenuBar :menus="menus" :activePath="activePath" :isCollapse="menuCollapse"></MenuBar>
     </aside>
     <article class="page-article">
@@ -20,11 +19,7 @@
       </header>
       <div class="page-breadcrumb">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item
-            v-for="(item, index) in breadcrumbs"
-            :key="index"
-            :to="{ path: item.path }"
-          >{{item.label}}</el-breadcrumb-item>
+          <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">{{item.label}}</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
       <div class="page-content">
@@ -38,7 +33,6 @@
 // @ is an alias to /src
 import { createNamespacedHelpers, mapState } from 'vuex'
 import SystemInfo from '@/views/components/layout/SystemInfo.vue'
-import UserStatus from '@/views/components/layout/UserStatus.vue'
 import UserInfo from '@/views/components/layout/UserInfo.vue'
 import UserOperations from '@/views/components/layout/UserOperations.vue'
 import MenuBar from '@/views/components/layout/MenuBar.vue'
@@ -49,7 +43,6 @@ export default {
   name: 'Home',
   components: {
     SystemInfo,
-    UserStatus,
     UserInfo,
     UserOperations,
     MenuBar

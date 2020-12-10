@@ -1,178 +1,182 @@
 <template>
   <div class="register-container">
-    <div class="register">
-      <h3 class="register-title">注册Starlink供应商平台</h3>
-      <el-form
-        ref="form"
-        class="register-form"
-        :model="form"
-        :rules="rules"
-        label-width="12rem"
-        label-position="left"
-      >
-        <el-form-item label="公司名称" prop="supplierName">
-          <el-input v-model="form.supplierName" maxlength="100" clearable placeholder="请填写公司名称"></el-input>
-        </el-form-item>
-
-        <el-form-item prop="userName">
-          <template v-slot:label>
-            <span>
-              <span class="label-space label-two-space">账号</span>
-            </span>
-          </template>
-          <el-input v-model="form.userName" maxlength="100" clearable placeholder="请填写账户"></el-input>
-        </el-form-item>
-
-        <el-form-item prop="password">
-          <template v-slot:label>
-            <span>
-              <span class="label-space label-two-space">密码</span>
-            </span>
-          </template>
-          <el-input
-            v-model="form.password"
-            minlength="8"
-            maxlength="20"
-            clearable
-            placeholder="由8-20位数字、字母、符号组成，区分大小写"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item prop="contactName">
-          <template v-slot:label>
-            <span>
-              <span class="label-space label-three-space">联系人</span>
-            </span>
-          </template>
-          <el-input
-            v-model="form.contactName"
-            minlength="2"
-            maxlength="50"
-            clearable
-            placeholder="请输入联系人信息"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="联系电话" prop="contactNumber">
-          <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入11位长度联系电话"></el-input>
-        </el-form-item>
-
-        <el-form-item label="公司地址" prop="address">
-          <SlAreaCascader v-model="form.address"></SlAreaCascader>
-        </el-form-item>
-
-        <el-form-item label prop="addressDetail">
-          <el-input v-model="form.addressDetail" maxlength="100" clearable placeholder="请输入详细地址"></el-input>
-        </el-form-item>
-
-        <el-form-item label="供应类型" prop="supplyType">
-          <el-select v-model="form.supplyType" placeholder="请选择供应类型">
-            <el-option
-              v-for="(item, index) in supplierTypeOptions"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="供应方式" prop="supplyWay">
-          <el-select v-model="form.supplyWay" placeholder="请选择供应方式">
-            <el-option
-              v-for="(item, index) in supplierWayOptions"
-              :key="index"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label>
-          <el-button @click="goBack" class="register-btn">{{$t('button.cancelText')}}</el-button>
-          <el-button
-            type="primary"
-            @click="register"
-            :loading="isLoading"
-            class="register-btn"
-          >{{$t('button.submitText')}}</el-button>
-        </el-form-item>
-      </el-form>
+    <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
+    <div class="register-content-container">
+      <div class="steps-container clearfix">
+        <h2 class="float-left font-wight-normal">商家入驻</h2>
+        <Steps :data="steps" :active="activeStep"></Steps>
+      </div>
+      <el-row>
+        <el-col class="register-content" :xs="24" :sm="24" :md="12" :lg="10" :xl="8">
+          <keep-alive>
+            <component ref="currentComponent" v-bind:is="currentStep"></component>
+          </keep-alive>
+          <!-- 前两步才会有的结构 -->
+          <div v-if="activeStep <= 2" class="align-center">
+            <el-button v-if="activeStep === 1" @click="toLogin()">{{$t('button.cancelText')}}</el-button>
+            <el-button type="primary" :disabled="isLoading" @click="goStep()">{{stepText}}</el-button>
+            <el-button
+              v-if="activeStep === 2"
+              type="primary"
+              :loading="isLoading"
+              @click="register"
+            >提交申请</el-button>
+          </div>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
 
 <script>
-import { emptyValidator, passwordValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
-import { valueToMd5 } from '@shared/util'
+import { createNamespacedHelpers } from 'vuex'
+import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
+import Steps from '@/views/components/register/Steps.vue'
+import Application from '@/views/components/register/Application.vue'
+import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
+import Protocol from '@/views/components/register/Protocol.vue'
 import UserApi from '@api/user'
-import CommonApi from '@api/api.js'
+import { getCookie, scrollToTop } from '@shared/util'
+const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
+const { mapGetters: registerMapGetters, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
   name: 'Register',
+  components: {
+    RegisterHeader,
+    Steps,
+    Application,
+    AdditionalInfo,
+    Protocol
+  },
   data () {
     return {
-      form: {
-        supplierName: '', // 公司名称
-        userName: '', // 账号
-        password: '',
-        contactName: '', // 联系人
-        contactNumber: '', // 联系电话
-        address: [], // 公司地址
-        addressDetail: '', // 详细地址
-        supplyType: '', // 供应类型
-        supplyWay: '' // 供应方式
-      },
-      supplierTypeOptions: [],
-      supplierWayOptions: [],
-      rules: {
-        supplierName: [emptyValidator('请填写公司名称', ['blur', 'change'])],
-        userName: [emptyValidator('请填写账户', ['blur', 'change'])],
-        password: [
-          emptyValidator('请输入密码', ['blur', 'change']),
-          passwordValidator()
-        ],
-        contactName: [
-          emptyValidator('请输入联系人信息', ['blur', 'change']),
-          charLimitValidator('长度在 2 到 50 个字符', 2, 50, ['blur', 'change'])
-        ],
-        contactNumber: [
-          emptyValidator('请输入联系电话', ['blur', 'change']),
-          phoneNoValidator()
-        ],
-        address: [
-          emptyValidator('请选择公司地址', ['blur', 'change'])
-        ],
-        supplyType: [
-          emptyValidator('请选择供应类型', ['blur', 'change'])
-        ],
-        supplyWay: [
-          emptyValidator('请选择供应方式', ['blur', 'change'])
-        ]
-      },
+      steps: [
+        {
+          title: '提交入驻申请'
+        },
+        {
+          title: '补充资质信息'
+        },
+        {
+          title: '补充确认协议'
+        }
+      ],
+      activeStep: 1,
       isLoading: false
     }
   },
+  computed: {
+    ...userMapState(['supplierId', 'supplierName', 'supplierStatusCode', 'confirmAgreement']),
+    ...registerMapGetters(['getSubmitData']),
+    currentStep () {
+      let componentsMap = {
+        1: 'Application',
+        2: 'AdditionalInfo',
+        3: 'Protocol'
+      }
+
+      return componentsMap[this.activeStep]
+    },
+    stepText () {
+      let stepTextMap = {
+        1: '下一步',
+        2: '上一步'
+      }
+      return stepTextMap[this.activeStep]
+    }
+  },
+  watch: {
+    confirmAgreement: {
+      handler (val) {
+        if (!this.confirmAgreement && this.supplierStatusCode === 2) {
+          this.activeStep = 3
+        }
+      },
+      immediate: true
+    }
+  },
   methods: {
-    goBack () {
-      this.$router.go(-1)
+    ...userMapActions(['GET_USER_INFO']),
+    ...registerMapMutations(['SET_APPLICATION', 'SET_ADDITIONAL_INFO', 'SET_SUPPLIER_ID']),
+    goStep () {
+      let stepMap = {
+        1: 2,
+        2: 1
+      }
+      if (this.activeStep === 1) {
+        this.$refs.currentComponent.validate().then((data) => {
+          if (data) {
+            this.activeStep = stepMap[this.activeStep]
+            scrollToTop()
+          }
+        })
+        return
+      }
+      this.activeStep = stepMap[this.activeStep]
+      scrollToTop()
+    },
+    toLogin () {
+      this.$router.push({
+        path: '/login'
+      })
+    },
+    transformImageData (url) {
+      return {
+        url
+      }
+    },
+    transformBackData (data) {
+      let { baseInfo = {}, bankInfo = {}, certification = {} } = data
+      let application = {}
+      let additionalInfo = {}
+      // 申请入驻信息回填
+      application = {
+        address: baseInfo.address ? JSON.parse(baseInfo.address) : [],
+        tradeType: baseInfo.tradeType ? JSON.parse(baseInfo.tradeType) : [],
+        certificationNo: certification.certificationNo
+      }
+      Object.keys(baseInfo).forEach(key => {
+        if (!['address', 'tradeType'].includes(key)) {
+          application[key] = baseInfo[key]
+        }
+      })
+      // 资质信息回填
+      let idCardImages = []
+      if (certification.idCardBack) {
+        idCardImages.push(this.transformImageData(certification.idCardBack))
+      }
+      if (certification.idCardFront) {
+        idCardImages.push(this.transformImageData(certification.idCardFront))
+      }
+      additionalInfo = {
+        idCardImages
+      }
+      Object.keys(certification).forEach(key => {
+        if (!['idCardBack', 'idCardBack', 'certificationNo'].includes(key)) {
+          additionalInfo[key] = certification[key] ? [this.transformImageData(certification[key])] : []
+        }
+      })
+      Object.keys(bankInfo).forEach(key => {
+        additionalInfo[key] = bankInfo[key]
+      })
+
+      this.SET_APPLICATION(application)
+      this.SET_ADDITIONAL_INFO(additionalInfo)
     },
     register () {
-      this.$refs.form.validate(valid => {
-        if (valid) {
+      this.$refs.currentComponent.validate().then((data) => {
+        if (data) {
           this.isLoading = true
-          UserApi.register({
-            ...this.form,
-            address: JSON.stringify(this.form.address), // 复写address的值
-            password: valueToMd5(this.form.password)// 复写password的值
-          }).then(res => {
+          let apiMethod = this.supplierId ? 'registerUpdate' : 'register'
+          UserApi[apiMethod](this.getSubmitData).then(res => {
             if (res.success) {
-              this.$refs.form.resetFields()
-              this.$message({
-                type: 'success',
-                message: '注册成功！',
-                duration: 2000
+              this.$router.push({
+                path: '/notify',
+                query: {
+                  msgType: 'register-submit-success'
+                }
               })
-              this.goBack()
             }
           }).finally(() => {
             this.isLoading = false
@@ -182,13 +186,19 @@ export default {
     }
   },
   mounted () {
-    CommonApi.getDict({ dataCode: 'SUPPLY_TYPE' }).then(res => {
-      this.supplierTypeOptions = res.data || []
-    })
-
-    CommonApi.getDict({ dataCode: 'SUPPLY_WAY' }).then(res => {
-      this.supplierWayOptions = res.data || []
-    })
+    let isInit = this.$route.query.init // 用于区分是首次注册还是审核拒绝后的再次注册
+    if (getCookie('token') && !isInit) {
+      this.GET_USER_INFO().then(res => {
+        if (res && this.supplierStatusCode === 5) {
+          this.SET_SUPPLIER_ID(this.supplierId)
+          UserApi.getSupplierDetail({ supplierId: this.supplierId }).then(res => {
+            if (res.success) {
+              this.transformBackData(res.data)
+            }
+          })
+        }
+      })
+    }
   }
 }
 </script>
@@ -198,62 +208,35 @@ export default {
 @import '@assets/scss/_mixin.scss';
 .register-container {
   height: 100%;
-  background-color: $color-login-bg;
+  background-color: $color-white;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
 .register-container /deep/ {
-  .el-form-item__label {
-    color: $color-white;
-  }
-  .el-form-item__content {
-    width: 70%;
-  }
   .el-select,
-  .el-input,
   .el-cascader {
-    width: 100%;
+    display: block;
   }
 }
 
-.register-title {
-  margin-bottom: 1em;
-  font-size: 2.5rem;
-  color: $color-white;
-  letter-spacing: 0.2em;
-  text-align: center;
+.register-content-container {
+  margin-top: 8rem;
 }
 
-.register {
-  display: inline-block;
-  position: absolute;
-  width: 25%;
+.steps-container {
+  position: relative;
   left: 50%;
-  top: 45%;
+  width: 50%;
+  transform: translateX(-40%);
+}
+
+.register-content {
+  position: relative;
+  left: 50%;
+  margin-top: 4em;
   padding: 1em;
-  transform: translate(-50%, -50%);
-}
-
-.register-btn {
-  margin-top: 1rem;
-  margin-right: 1rem;
-}
-
-.label-space {
-  display: inline-block;
-  width: 5.5rem;
-  white-space: nowrap;
-  &.label-two-space {
-    letter-spacing: 2.6rem;
-  }
-  &.label-three-space {
-    letter-spacing: 0.7rem;
-  }
-}
-
-.register {
-  @include login-responsive-layout;
+  transform: translateX(-50%);
 }
 </style>

@@ -4,7 +4,7 @@ import { setLang } from '@shared/util'
 
 export default {
   name: 'doc',
-  data: () => {
+  data () {
     return {
       lang: process.env.VUE_APP_LANG,
       inputText: '',

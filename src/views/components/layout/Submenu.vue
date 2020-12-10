@@ -1,19 +1,21 @@
 
 <template>
-  <el-submenu :index="submenu.path">
-    <template slot="title">
-      <i :class="[submenu.icon]"></i>
-      <span slot="title">{{submenu.name}}</span>
+  <div>
+    <template v-for="menu in submenus">
+      <el-submenu
+        v-if="menu.children && menu.children.length > 0"
+        :index="menu.path"
+        :key="menu.path"
+      >
+        <template slot="title">
+          <i :class="[menu.icon]"></i>
+          <span slot="title">{{menu.name}}</span>
+        </template>
+        <Submenu :submenus="menu.children"></Submenu>
+      </el-submenu>
+      <MenuItem v-else :menuItem="menu" :key="menu.path"></MenuItem>
     </template>
-    <template v-for="(submenuItem,index) in submenu.children">
-      <MenuItem
-        :key="'menu-'+index"
-        v-if="!submenuItem.children || submenuItem.children.length === 0"
-        :menuItem="submenuItem"
-      ></MenuItem>
-      <Submenu :key="'submenu-'+index" v-else :submenu="submenuItem"></Submenu>
-    </template>
-  </el-submenu>
+  </div>
 </template>
 
 <script>
@@ -21,15 +23,15 @@ import MenuItem from './MenuItem'
 export default {
   name: 'Submenu',
   props: {
-    submenu: {
-      type: Object,
-      default: () => ({})
+    submenus: {
+      type: Array,
+      default: () => []
     }
   },
   components: {
     MenuItem
   },
-  data: () => {
+  data () {
     return {
     }
   },

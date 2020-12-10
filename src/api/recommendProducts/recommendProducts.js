@@ -1,24 +1,28 @@
-import { get, http, del, put, post } from '@shared/http'
+import { get, del, put, post } from '@shared/http'
 import RECOMMENDURLS from './recommendProductsUrl'
+// import qs from 'qs'
 const RECOMMEND = {
   // odm推品列表
   getRecommedList ({ ...params }) {
-    return get(RECOMMENDURLS.recommendproducts, params)
+    return post(RECOMMENDURLS.recommendproducts, params)
   },
   // odm 推品删除
   deleteRecommed (id) {
     return del(`${RECOMMENDURLS.rcommenduel}/${id}`)
   },
   // 上传Spu数据
-  uploadSpuData (formData) {
-    return http.post(RECOMMENDURLS.upload_spu_data, formData)
+  // uploadSpuData (formData) {
+  //   return post(RECOMMENDURLS.upload_spu_data, formData)
+  // },
+  // 下载SPU数据模板
+  // spuDataTemplate (formData) {
+  //   return get(RECOMMENDURLS.spu_data_template, formData)
+  // },
+  // odm撤回
+  cancelrcommend (id) {
+    return put(`${RECOMMENDURLS.cancelrcommend}/${id}`)
   },
-  // odm取消推品
-  cancelrcommend (info) {
-    console.log(info)
-    return put(RECOMMENDURLS.cancelrcommend, info)
-  },
-  // odm 推品
+  // odm 提交
   recommend (info) {
     return put(RECOMMENDURLS.recommend, info)
   },
@@ -30,8 +34,28 @@ const RECOMMEND = {
   modifyDetail (info) {
     return post(`${RECOMMENDURLS.rcommenduel}`, info)
   },
+  // 校验供应商货号是否已存在
   checkItem (itemNo) {
     return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
+  },
+  save (params) {
+    return post(RECOMMENDURLS.rcommenduel, params)
+  },
+  // 保存并提交
+  saveSubmit (params) {
+    return post(RECOMMENDURLS.saveSubmit, params)
+  },
+  // 属性项列表,颜色 id:1、尺寸 id:2
+  getAttrList (id, params) {
+    return get(RECOMMENDURLS.getAttrList + id, params)
+  },
+  // 自定义属性
+  getMetadata (id) {
+    return get(`/product-service/metadata/${id}/metafileds`)
+  },
+  // 根据用户获取颜色尺寸id
+  allByUser (params) {
+    return get(RECOMMENDURLS.allByUser, params)
   }
 }
 export default RECOMMEND
