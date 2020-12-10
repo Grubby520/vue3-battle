@@ -20,6 +20,12 @@ export default {
     },
     enterRegisterPage (state) {
       return !state.confirmAgreement && state.supplierStatusCode === 2
+    },
+    statusInfo (state) {
+      return {
+        confirmAgreement: state.confirmAgreement,
+        supplierStatusCode: state.supplierStatusCode
+      }
     }
   },
   mutations: {
