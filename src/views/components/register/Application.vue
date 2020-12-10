@@ -84,33 +84,35 @@
           show-word-limit
         ></el-input>
       </el-form-item>
-
-      <SlContentTitle text="账号注册" line></SlContentTitle>
-      <el-form-item label="邮箱" prop="userName">
-        <el-input v-model="form.userName" clearable placeholder="用于登录,请务必填写正确的邮箱"></el-input>
-      </el-form-item>
-      <el-form-item label="登录密码" prop="password">
-        <el-input
-          v-model="form.password"
-          :type="passwordType"
-          minlength="6"
-          maxlength="20"
-          clearable
-          placeholder="必须包含数字、字母组合,不少于6位,不超过20位"
-          @focus="passwordTypeChange"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input
-          v-model="form.confirmPassword"
-          :type="passwordType"
-          minlength="6"
-          maxlength="20"
-          clearable
-          placeholder="请填写和上面相同的密码"
-          @focus="passwordTypeChange"
-        ></el-input>
-      </el-form-item>
+      <!-- 审核拒绝再次编辑时不编辑账号注册模块 -->
+      <template v-if="!supplierId">
+        <SlContentTitle text="账号注册" line></SlContentTitle>
+        <el-form-item label="邮箱" prop="userName">
+          <el-input v-model="form.userName" clearable placeholder="用于登录,请务必填写正确的邮箱"></el-input>
+        </el-form-item>
+        <el-form-item label="登录密码" prop="password">
+          <el-input
+            v-model="form.password"
+            :type="passwordType"
+            minlength="6"
+            maxlength="20"
+            clearable
+            placeholder="必须包含数字、字母组合,不少于6位,不超过20位"
+            @focus="passwordTypeChange"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input
+            v-model="form.confirmPassword"
+            :type="passwordType"
+            minlength="6"
+            maxlength="20"
+            clearable
+            placeholder="请填写和上面相同的密码"
+            @focus="passwordTypeChange"
+          ></el-input>
+        </el-form-item>
+      </template>
 
       <SlContentTitle text="联系人" line></SlContentTitle>
       <el-form-item label="运营负责人" prop="contactName">
@@ -161,18 +163,18 @@ export default {
       return this.form.password && this.form.password !== this.form.confirmPassword
     })
 
-    // let supplierNameExistValidator = {
-    //   validator: (rule, value, callback) => {
-    //     UserApi.isSupplierNameExist({ supplierName: value, supplierId: this.supplierId }).then(res => {
-    //       if (res.data) {
-    //         callback(new Error('公司名已存在'))
-    //       } else {
-    //         callback()
-    //       }
-    //     })
-    //   },
-    //   trigger: 'blur'
-    // }
+    let supplierNameExistValidator = {
+      validator: (rule, value, callback) => {
+        UserApi.isSupplierNameExist({ supplierName: value, supplierId: this.supplierId }).then(res => {
+          if (res.data) {
+            callback(new Error('公司名已存在'))
+          } else {
+            callback()
+          }
+        })
+      },
+      trigger: 'blur'
+    }
 
     let certificationNoExistValidator = {
       validator: (rule, value, callback) => {
@@ -225,8 +227,8 @@ export default {
       rules: {
         supplierName: [
           emptyValidator('请填写公司名称'),
-          charLimitValidator('字符长度不能超过100', 1, 100)
-          // supplierNameExistValidator
+          charLimitValidator('字符长度不能超过100', 1, 100),
+          supplierNameExistValidator
         ],
         certificationNo: [
           emptyValidator('请填写公司营业执照号'),

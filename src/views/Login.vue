@@ -11,7 +11,13 @@
         </el-form-item>
         <el-form-item prop="password">
           <span class="el-icon-lock form-item-icon"></span>
-          <el-input name="password" type="password" v-model="loginForm.password" placeholder="密码" />
+          <el-input
+            name="password"
+            type="password"
+            v-model="loginForm.password"
+            placeholder="密码"
+            @keyup.enter.native="login"
+          />
         </el-form-item>
         <div class="align-center">
           <el-button type="primary" class="mr-2rem" @click="register">{{$t('button.registerText')}}</el-button>
