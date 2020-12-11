@@ -154,17 +154,34 @@ export default {
       'UPLOAD_FILE'
     ]),
     imgLoad (file) {
+      file['loadFailed'] = false
+      file['failedTimes'] = 0
       this.$set(file, 'loading', false)
     },
     imgError (evt, file) {
+      if (typeof file['failedTimes'] === 'undefined') {
+        file['failedTimes'] = 1// 扩展：failedTimes字段,用于记录图片加载失败的次数
+      }
+      file['loadFailed'] = true// 扩展：loadFailed字符，用于记录图片最终加载结果
+      let failedTimes = file['failedTimes']
+      if (failedTimes >= 10) {
+        this.$set(file, 'loading', false)
+        return
+      }
+
       if (file.url) {
         this.$set(file, 'loading', true)
       }
-      setTimeout(() => {
-        if (evt.target && file.url) {
-          evt.target.src = file.url
-        }
-      }, 500)
+
+      // 限制错误图片只能加载10次就去掉loading效果
+      if (failedTimes > 0 && failedTimes < 10) {
+        setTimeout(() => {
+          if (evt.target && file.url) {
+            file['failedTimes']++
+            evt.target.src = file.url
+          }
+        }, 500)
+      }
     },
     handleExceed () {
       this.$message.error(`上传图片不能超过${this.imgNumber}张!`)

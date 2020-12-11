@@ -3,7 +3,7 @@
     <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
     <div class="register-content-container">
       <div class="steps-container clearfix">
-        <h2 class="float-left font-wight-normal">商家入驻</h2>
+        <h2 class="float-left font-wight-normal mr-2rem">商家入驻</h2>
         <Steps :data="steps" :active="activeStep"></Steps>
       </div>
       <el-row>
@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     ...userMapState(['supplierId', 'supplierName', 'supplierStatusCode']),
-    ...userMapGetters(['statusInfo', 'enterMainPage', 'enterRegisterProgressPage']),
+    ...userMapGetters(['statusInfo', 'enterMainPage']),
     ...registerMapGetters(['getSubmitData']),
     currentStep () {
       let componentsMap = {
@@ -247,15 +247,18 @@ export default {
 
 .steps-container {
   position: relative;
+  display: flex;
   left: 50%;
   width: 50%;
-  transform: translateX(-40%);
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
 }
 
 .register-content {
   position: relative;
   left: 50%;
-  margin-top: 4em;
+  margin-top: 1em;
   padding: 1em;
   transform: translateX(-50%);
 }
