@@ -144,17 +144,17 @@ export default {
       })
       // 资质信息回填
       let idCardImages = []
-      if (certification.idCardBack) {
-        idCardImages.push(this.transformImageData(certification.idCardBack))
-      }
       if (certification.idCardFront) {
-        idCardImages.push(this.transformImageData(certification.idCardFront))
+        idCardImages[0] = this.transformImageData(certification.idCardFront)
+      }
+      if (certification.idCardBack) {
+        idCardImages[1] = this.transformImageData(certification.idCardBack)
       }
       additionalInfo = {
         idCardImages
       }
       Object.keys(certification).forEach(key => {
-        if (!['idCardBack', 'idCardBack', 'certificationNo'].includes(key)) {
+        if (!['idCardFront', 'idCardBack', 'certificationNo'].includes(key)) {
           additionalInfo[key] = certification[key] ? [this.transformImageData(certification[key])] : []
         }
       })

@@ -79,16 +79,31 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="法人身份证" prop="idCardImages">
-        <UploadImages
-          ref="idCardImagesRef"
-          v-model="form.idCardImages"
-          :folder="certificationNo"
-          :imageType="2"
-          :imgNumber="2"
-          :tools="['download', 'delete']"
-          :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
-        <p>请依次传入身份证正面和反面。复印件需加盖公章,图片小于1M</p>
+        <el-row>
+          <el-col :span="8" style="min-width:120px">
+            <UploadImages
+              v-model="idCardFronts"
+              :folder="certificationNo"
+              :imageType="2"
+              :imgNumber="1"
+              :tools="['download', 'delete']"
+              :limits="[{type: 'size',meta: {size: 1}}]"
+            ></UploadImages>
+            <p>身份证正面</p>
+          </el-col>
+          <el-col :span="8" style="min-width:120px">
+            <UploadImages
+              v-model="idCardBacks"
+              :folder="certificationNo"
+              :imageType="2"
+              :imgNumber="1"
+              :tools="['download', 'delete']"
+              :limits="[{type: 'size',meta: {size: 1}}]"
+            ></UploadImages>
+            <p>身份证反面</p>
+          </el-col>
+        </el-row>
+        <p>复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="营业执照" prop="certificationImage">
         <UploadImages
@@ -148,6 +163,7 @@ import UploadImages from './UploadImages'
 import CommonApi from '@api/api.js'
 import { scrollToElFormElement } from '@shared/util'
 import {
+  fnValidator,
   emptyValidator,
   phoneNoValidator,
   digitalValidator,
@@ -167,6 +183,8 @@ export default {
   data () {
     return {
       currencyOptions: [],
+      idCardFronts: [],
+      idCardBacks: [],
       form: {
         currency: null,
         payeeCompany: '',
@@ -193,7 +211,7 @@ export default {
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
-        idCardImages: [emptyValidator('请上传身份证证件图片', 'change')],
+        idCardImages: [this.getIdCardImagesValidator()],
         certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
         taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
@@ -209,9 +227,21 @@ export default {
     additionalInfo: {
       handler (val) {
         this.form = Object.assign(this.form, val)
+        if (this.form.idCardImages.length > 0) {
+          this.idCardFronts = [].concat(this.form.idCardImages[0])
+          this.idCardBacks = [].concat(this.form.idCardImages[1])
+        }
       },
       immediate: true,
       deep: true
+    },
+    idCardFronts: function (val) {
+      this.form.idCardImages[0] = val[0]
+      this.$refs.form.validateField('idCardImages')
+    },
+    idCardBacks: function (val) {
+      this.form.idCardImages[1] = val[0]
+      this.$refs.form.validateField('idCardImages')
     }
   },
   mounted: function () {
@@ -233,6 +263,11 @@ export default {
           }
         })
       })
+    },
+    getIdCardImagesValidator () {
+      return fnValidator('请上传身份证信息', () => {
+        return this.form.idCardImages.length < 2 || this.form.idCardImages.some(img => !img)
+      }, 'change')
     }
   }
 }

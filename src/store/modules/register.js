@@ -27,7 +27,7 @@ export default {
             baseInfo[key] = JSON.stringify(state.application[key])
           }
 
-          if (key === 'password') {
+          if (key === 'password' && state.application[key]) {
             baseInfo[key] = valueToMd5(state.application[key])
           }
         }
