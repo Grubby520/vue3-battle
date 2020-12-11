@@ -136,30 +136,8 @@ export default {
 
 <style scoped lang="scss">
 .odmOneDetails {
-  // /deep/.el-cascader-node.is-active {
-  //   // 最后一级设置
-  //   color: unset;
-  //   font-weight: unset;
-  //   &:focus {
-  //     color: #fff;
-  //     background-color: #409eff;
-  //   }
-  // }
-
-  // /deep/.el-cascader-node.is-active {
-  //   color: unset;
-  //   font-weight: unset;
-  // }
-
-  // /deep/ .in-active-path {
-  //   // 父级设置
-  //   background-color: #86c1ff;
-  //   color: #fff;
-  // }
-
-  // /deep/.el-cascader-node__prefix {
-  //   display: none;
-  // }
+  margin: 0 auto;
+  width: 1500px;
   /deep/.el-cascader-panel {
     height: 500px;
     width: 90%;
@@ -168,12 +146,11 @@ export default {
   /deep/.el-cascader-menu__wrap {
     height: 500px;
   }
-  /deep/.el-cascader-menu__list {
-    width: 300px; // 设置宽度防止li内容不同页面抖动
+  /deep/ .el-cascader-menu {
+    width: 25%;
   }
   &-title {
     font-size: 18px;
-    // color: #409eff;
     font-weight: bold;
     margin: 20px 80px;
   }
