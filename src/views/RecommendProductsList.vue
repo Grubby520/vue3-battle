@@ -208,10 +208,10 @@ export default {
           RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
             .then((res) => {
               if (res.success) {
-                successNotify(this, `供方货号：${ITEMNOALL}提交成功`, true)
+                successNotify(this, `供方货号[${ITEMNOALL}]提交成功`, true)
                 this.$refs.listView.refresh()
               } else {
-                errorNotify(this, `供方货号：${ITEMNOALL},${res.error.message}`, true, 4500, '')
+                errorNotify(this, `供方货号[${ITEMNOALL}]${res.error.message}`, true, 4500, '')
               }
             })
         })
@@ -223,9 +223,9 @@ export default {
             .then(res => {
               if (res.success) {
                 this.gotoPage()
-                successNotify(this, `供方货号：${row.supplierItemNo}删除成功`)
+                successNotify(this, `供方货号[${row.supplierItemNo}]删除成功`)
               } else {
-                errorNotify(this, `供方货号：${row.supplierItemNo},${res.error.message}`, false, 4500, '')
+                errorNotify(this, `供方货号[${row.supplierItemNo}]${res.error.message}`, false, 4500, '')
               }
             })
         })
@@ -237,9 +237,9 @@ export default {
             .then(res => {
               if (res.success) {
                 this.$refs.listView.refresh()
-                successNotify(this, `供方货号：${row.supplierItemNo}取消提交成功`)
+                successNotify(this, `供方货号[${row.supplierItemNo}]取消提交成功`)
               } else {
-                errorNotify(this, `供方货号：${row.supplierItemNo},${res.error.message}`, false, 4500, '')
+                errorNotify(this, `供方货号[${row.supplierItemNo}]${res.error.message}`, false, 4500, '')
               }
             })
         })

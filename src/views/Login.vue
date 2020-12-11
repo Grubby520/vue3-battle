@@ -102,7 +102,7 @@ export default {
       this.$router.push({
         path: '/register',
         query: {
-          init: true
+          from: 'loginPage'
         }
       })
     }

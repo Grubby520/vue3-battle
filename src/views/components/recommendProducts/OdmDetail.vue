@@ -96,10 +96,14 @@ export default {
           data.productBasicInfo.productImageList = productImageList
           data.productSalesAttributeList = productSalesAttributeList
           data.productCustomizeAttributeList = productCustomizeAttributeList
-          if (status === 'create') {
-            this.create(data)
+          if (data.productBasicInfo.categoryLevel) {
+            if (status === 'create') {
+              this.create(data)
+            } else {
+              this.submit(data)
+            }
           } else {
-            this.submit(data)
+            this.$message.error(`商品分类层级不能为空!`)
           }
         })
         .catch((err) => {
