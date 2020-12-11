@@ -2,7 +2,7 @@
   <!-- 从erp创建产品的‘产品自定义属性’组件拷贝而来 -->
   <div class="container">
     <div v-if="form.metadatas.length" class="primary-header">商品属性</div>
-    <el-form :model="form" ref="submitForm" label-width="100px">
+    <el-form :model="form" ref="submitForm" label-width="120px">
       <el-row :gutter="8">
         <el-col :span="6" v-for="(item,itemIndex) in form.metadatas" :key="item.metadataId">
           <el-form-item
@@ -331,6 +331,9 @@ export default {
         content: '';
       }
     }
+  }
+  /deep/ .el-select {
+    width: 100%;
   }
 }
 

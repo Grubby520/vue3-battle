@@ -6,7 +6,7 @@
         :model="form"
         :rules="rules"
         ref="form"
-        label-width="130px"
+        label-width="120px"
         class="odmDetailBase-form-con"
       >
         <el-form-item
@@ -244,9 +244,7 @@ export default {
     border-top: 1px solid #dcdfe6;
     border-bottom: 1px solid #dcdfe6;
     &-con {
-      width: 90%;
-      margin: 0 auto;
-      padding: 2rem 0;
+      padding: 2rem;
     }
   }
 }
