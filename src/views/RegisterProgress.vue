@@ -75,7 +75,12 @@ export default {
   methods: {
     ...userMapActions(['GET_USER_INFO']),
     toRegister () {
-      this.$router.push('/register')
+      this.$router.push({
+        path: '/register',
+        query: {
+          from: 'registerProgress'
+        }
+      })
     }
   }
 

@@ -37,7 +37,7 @@ import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
 import Protocol from '@/views/components/register/Protocol.vue'
 import UserApi from '@api/user'
 import { getCookie, scrollToTop } from '@shared/util'
-const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
+const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 const { mapGetters: registerMapGetters, mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
 export default {
@@ -67,7 +67,8 @@ export default {
     }
   },
   computed: {
-    ...userMapState(['supplierId', 'supplierName', 'supplierStatusCode', 'confirmAgreement']),
+    ...userMapState(['supplierId', 'supplierName', 'supplierStatusCode']),
+    ...userMapGetters(['statusInfo', 'enterMainPage', 'enterRegisterProgressPage']),
     ...registerMapGetters(['getSubmitData']),
     currentStep () {
       let componentsMap = {
@@ -87,9 +88,9 @@ export default {
     }
   },
   watch: {
-    confirmAgreement: {
+    statusInfo: {
       handler (val) {
-        if (!this.confirmAgreement && this.supplierStatusCode === 2) {
+        if (!val.confirmAgreement && val.supplierStatusCode === 2) {
           this.activeStep = 3
         }
       },
@@ -186,16 +187,35 @@ export default {
     }
   },
   mounted () {
-    let isInit = this.$route.query.init // 用于区分是首次注册还是审核拒绝后的再次注册
-    if (getCookie('token') && !isInit) {
+    if (getCookie('token')) {
+      // 通过路由参数区分是从哪个页面来到注册页的
+      let fromPage = this.$route.query.from
+      if (fromPage === 'loginPage') {
+        return
+      }
       this.GET_USER_INFO().then(res => {
-        if (res && this.supplierStatusCode === 5) {
-          this.SET_SUPPLIER_ID(this.supplierId)
-          UserApi.getSupplierDetail({ supplierId: this.supplierId }).then(res => {
-            if (res.success) {
-              this.transformBackData(res.data)
+        if (res) {
+          if (this.enterMainPage) {
+            this.$router.push('home/recommend-products/list')
+            return
+          }
+          if ([0, 1].includes(this.supplierStatusCode)) {
+            this.$router.push('/registerProgress')
+            return
+          }
+
+          if (this.supplierStatusCode === 5) {
+            if (fromPage !== 'registerProgress') {
+              this.$router.push('/registerProgress')
+              return
             }
-          })
+            this.SET_SUPPLIER_ID(this.supplierId)
+            UserApi.getSupplierDetail({ supplierId: this.supplierId }).then(res => {
+              if (res.success) {
+                this.transformBackData(res.data)
+              }
+            })
+          }
         }
       })
     }
