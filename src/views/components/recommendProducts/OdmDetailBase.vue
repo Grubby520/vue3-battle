@@ -9,10 +9,7 @@
         label-width="120px"
         class="odmDetailBase-form-con"
       >
-        <el-form-item
-          label="商品类目"
-          prop="categoryId"
-        >{{cateLabels ? cateLabels :this.form.categoryName }}</el-form-item>
+        <el-form-item label="商品类目" prop="categoryId">{{cateLabels ? cateLabels :form.categoryName }}</el-form-item>
         <el-form-item label="商品标题" prop="title">
           <el-input
             clearable
@@ -136,8 +133,10 @@ export default {
     }
   },
   mounted () {
-    const label = this.cateLabels.split('>')
-    this.form.categoryName = label[label.length - 1]
+    if (this.mode === 'create') {
+      const label = this.cateLabels.split('>')
+      this.form.categoryName = label[label.length - 1]
+    }
   },
   watch: {
     'productBasicInfo': {
@@ -152,7 +151,6 @@ export default {
             }
           }
         }
-        this.form.categoryId = this.categoryId
       },
       immediate: true
     }
@@ -163,8 +161,10 @@ export default {
       return new Promise((resolve, reject) => {
         this.$refs['form'].validate((valid) => {
           if (valid) {
-            const label = _this.cateLabels.split('>')
-            _this.form.categoryName = label[label.length - 1]
+            if (this.mode === 'create') {
+              const label = _this.cateLabels.split('>')
+              _this.form.categoryName = label[label.length - 1]
+            }
             // 返回数据包含页面需要使用数据form 和传入所有数据
             Object.assign(this.productBasicInfo, _this.form)
             resolve({ 'productBasicInfo': this.productBasicInfo })

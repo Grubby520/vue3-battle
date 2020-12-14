@@ -21,7 +21,7 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
-        <el-button type="primary" @click="OdmDetail('create','')" class="recommond-create">创建产品</el-button>
+        <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -34,14 +34,15 @@
       >
         <div slot="operation" slot-scope="{row}" class="operate">
           <el-button
-            @click="OdmDetail('modify',row)"
+            @click="odmDetail('modify',row)"
             type="text"
             v-if="[0].includes(row.productStatus)"
           >编辑</el-button>
-          <el-button @click="OdmDetail('view',row)" type="text">查看</el-button>
+          <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
           <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
+          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.productStatus===2">修改</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -244,12 +245,12 @@ export default {
             })
         })
     },
-    OdmDetail (status, row) {
-      const { id, categoryId, supplierItemNo } = row
+    odmDetail (status, row) {
+      const { id, categoryId, supplierItemNo, productStatus } = row
       if (status !== 'create') {
-        this.$router.push({ path: '/home/recommend-products/OdmDetail', query: { mode: status, id: id, categoryId: categoryId, supplierItemNo: supplierItemNo } })
+        this.$router.push({ path: '/home/recommend-products/odmDetail', query: { mode: status, id, categoryId, supplierItemNo, productStatus } })
       } else {
-        this.$router.push({ path: '/home/recommend-products/OdmOneDetails', query: { categoryId: categoryId, mode: status, id: id, supplierItemNo: supplierItemNo } })
+        this.$router.push({ path: '/home/recommend-products/odmOneDetails', query: { categoryId, mode: status, id, supplierItemNo, productStatus } })
       }
     }
   }

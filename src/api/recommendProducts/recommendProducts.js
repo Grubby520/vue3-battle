@@ -45,6 +45,10 @@ const RECOMMEND = {
   saveSubmit (params) {
     return post(RECOMMENDURLS.saveSubmit, params)
   },
+  // 保存并补充
+  supplement (params) {
+    return post(RECOMMENDURLS.supplement, params)
+  },
   // 属性项列表,颜色 id:1、尺寸 id:2
   getAttrList (id, params) {
     return get(RECOMMENDURLS.getAttrList + id, params)
