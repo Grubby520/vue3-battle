@@ -30,8 +30,10 @@
     <div class="odmDetail-btn" v-if="!isStatus">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
-      <el-button @click="submitForm('submit')" type="primary" v-if="productStatus!=='2'">提交</el-button>
-      <el-button @click="submitForm('submit')" type="primary" v-if="productStatus==='2'">确定补充信息</el-button>
+      <el-button
+        @click="submitForm('submit')"
+        type="primary"
+      >{{productStatus!=='2' ? '提交' : '确定补充信息'}}</el-button>
     </div>
   </div>
 </template>
@@ -218,7 +220,6 @@ export default {
     bottom: 0;
     z-index: 999;
     padding: 2rem 0;
-    background: white;
   }
 }
 
