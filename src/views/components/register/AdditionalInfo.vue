@@ -211,7 +211,7 @@ export default {
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
-        idCardImages: [this.getIdCardImagesValidator()],
+        idCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator()],
         certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
         taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
