@@ -33,7 +33,7 @@
       <el-button
         @click="submitForm('submit')"
         type="primary"
-      >{{productStatus!=='2' ? '提交' : '确定补充信息'}}</el-button>
+      >{{productStatus!==2 ? '提交' : '确定补充信息'}}</el-button>
     </div>
   </div>
 </template>
@@ -61,8 +61,7 @@ export default {
     },
     categoryLevel: { type: String, required: false, default: '' },
     cateLabels: { type: String, required: false, default: '' },
-    supplierItemNo: { type: String, required: false, default: '' },
-    productStatus: { type: [Number, String], required: false, default: undefined }
+    supplierItemNo: { type: String, required: false, default: '' }
   },
   data () {
     return {
@@ -71,7 +70,8 @@ export default {
       productBasicInfo: {},
       productCustomizeAttributeList: [],
       productSalesAttributeList: {},
-      loading: true
+      loading: true,
+      productStatus: undefined
     }
   },
   computed: {
@@ -103,9 +103,9 @@ export default {
           if (data.productBasicInfo.categoryLevel) {
             let method = null
             if (status === 'create') {
-              method = this.productStatus !== '2' ? this.create : this.supplementSave
+              method = this.productStatus !== 2 ? this.create : this.supplementSave
             } else {
-              method = this.productStatus !== '2' ? this.submit : this.supplement
+              method = this.productStatus !== 2 ? this.submit : this.supplement
             }
             method(data)
           } else {
@@ -125,7 +125,8 @@ export default {
       RecommondApi.recommendDetail(this.id)
         .then(res => {
           const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
-          const { productImageList } = productBasicInfo
+          const { productImageList, productStatus } = productBasicInfo
+          this.productStatus = productStatus
           // 销售属性回显
           if (productSalesAttributeList && productSalesAttributeList.length > 0) {
             _this.initSaleAttr.productSalesAttributeList = productSalesAttributeList
