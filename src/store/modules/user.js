@@ -1,4 +1,5 @@
-import { setCookie, removeCookie } from '@shared/util'
+import { setCookie, removeCookie, downloadFile } from '@shared/util'
+import UserUrl from '@api/user/userUrl'
 import UserApi from '@api/user'
 
 export default {
@@ -100,6 +101,9 @@ export default {
           return res
         }
       })
+    },
+    DOWNLOAD_TEMPLATE ({ commit }) {
+      downloadFile(UserUrl.payeePowerOfAttorney, '供应商收款委托书(RMB).docx')
     }
   }
 }
