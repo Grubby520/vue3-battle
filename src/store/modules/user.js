@@ -102,8 +102,8 @@ export default {
         }
       })
     },
-    DOWNLOAD_TEMPLATE ({ commit }, { fileName } = {}) {
-      downloadFile(UserUrl.payeePowerOfAttorney, fileName)
+    DOWNLOAD_TEMPLATE ({ commit }) {
+      downloadFile(UserUrl.payeePowerOfAttorney, '供应商收款委托书(RMB).docx')
     }
   }
 }
