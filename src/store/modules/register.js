@@ -5,7 +5,9 @@ export default {
   state: {
     supplierId: '',
     application: {},
-    additionalInfo: {}
+    additionalInfo: {
+      currency: 0 // 默认人民币
+    }
   },
   getters: {
     certificationNo (state) {
@@ -82,7 +84,7 @@ export default {
       }
 
       state.additionalInfo = {
-        currency: null,
+        currency: 0, // 默认人民币
         payeeCompany: '',
         payee: '',
         payeeIdCard: '',

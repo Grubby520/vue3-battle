@@ -185,7 +185,7 @@ export default {
       idCardFronts: [],
       idCardBacks: [],
       form: {
-        currency: 0, // 默认人民币
+        currency: null,
         payeeCompany: '',
         payee: '',
         payeeIdCard: '',
