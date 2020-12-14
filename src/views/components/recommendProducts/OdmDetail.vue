@@ -101,17 +101,13 @@ export default {
           data.productSalesAttributeList = productSalesAttributeList
           data.productCustomizeAttributeList = productCustomizeAttributeList
           if (data.productBasicInfo.categoryLevel) {
+            let method = null
             if (status === 'create') {
-              this.create(data)
+              method = this.productStatus !== '2' ? this.create : this.supplementSave
             } else {
-              if (this.productStatus !== '2') {
-                // 保存提交
-                this.submit(data)
-              } else {
-                // 保存补充
-                this.supplement(data)
-              }
+              method = this.productStatus !== '2' ? this.submit : this.supplement
             }
+            method(data)
           } else {
             this.$message.error(`商品分类层级不能为空!`)
           }
@@ -190,6 +186,18 @@ export default {
     },
     supplement (params) {
       RecommondApi.supplement(params)
+        .then(res => {
+          if (res.success) {
+            this.$router.push({ path: '/home/recommend-products/list' })
+          } else {
+            if (res.error && res.error.message) {
+              this.$message.error(res.error.message)
+            }
+          }
+        })
+    },
+    supplementSave (params) {
+      RecommondApi.supplementSave(params)
         .then(res => {
           if (res.success) {
             this.$router.push({ path: '/home/recommend-products/list' })
