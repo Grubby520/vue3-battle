@@ -69,7 +69,7 @@ export default {
   top: 0;
   width: 100%;
   background-color: $color-white;
-  z-index: 100;
+  z-index: 10;
 }
 
 .register-header {

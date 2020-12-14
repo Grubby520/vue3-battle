@@ -21,7 +21,10 @@ const RECOMMENDURLS = {
   // 校验货号是否存在
   checkItem: baseURL + '/product/supplier-item-no-is-exist',
   saveSubmit: baseURL + '/product/save-and-submit',
-  supplement: baseURL + '/product/supplement-info',
+  // 保存补充信息
+  supplementSave: baseURL + '/product/supplement-info',
+  // 保存并提交补充
+  supplement: baseURL + '/product/supplement-info/save-and-submit',
   // 属性项列表,颜色、尺寸
   getAttrList: productUrl + '/attribute/list-term/',
   // 根据用户获取颜色尺寸id

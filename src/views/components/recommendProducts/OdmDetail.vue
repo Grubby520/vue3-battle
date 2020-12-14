@@ -30,8 +30,10 @@
     <div class="odmDetail-btn" v-if="!isStatus">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
-      <el-button @click="submitForm('submit')" type="primary" v-if="productStatus!=='2'">提交</el-button>
-      <el-button @click="submitForm('submit')" type="primary" v-if="productStatus==='2'">确定补充信息</el-button>
+      <el-button
+        @click="submitForm('submit')"
+        type="primary"
+      >{{productStatus!=='2' ? '提交' : '确定补充信息'}}</el-button>
     </div>
   </div>
 </template>
@@ -99,17 +101,13 @@ export default {
           data.productSalesAttributeList = productSalesAttributeList
           data.productCustomizeAttributeList = productCustomizeAttributeList
           if (data.productBasicInfo.categoryLevel) {
+            let method = null
             if (status === 'create') {
-              this.create(data)
+              method = this.productStatus !== '2' ? this.create : this.supplementSave
             } else {
-              if (this.productStatus !== '2') {
-                // 保存提交
-                this.submit(data)
-              } else {
-                // 保存补充
-                this.supplement(data)
-              }
+              method = this.productStatus !== '2' ? this.submit : this.supplement
             }
+            method(data)
           } else {
             this.$message.error(`商品分类层级不能为空!`)
           }
@@ -198,6 +196,18 @@ export default {
           }
         })
     },
+    supplementSave (params) {
+      RecommondApi.supplementSave(params)
+        .then(res => {
+          if (res.success) {
+            this.$router.push({ path: '/home/recommend-products/list' })
+          } else {
+            if (res.error && res.error.message) {
+              this.$message.error(res.error.message)
+            }
+          }
+        })
+    },
     cancel () {
       this.$router.push({ path: '/home/recommend-products/list' })
     },
@@ -218,7 +228,6 @@ export default {
     bottom: 0;
     z-index: 999;
     padding: 2rem 0;
-    background: white;
   }
 }
 
