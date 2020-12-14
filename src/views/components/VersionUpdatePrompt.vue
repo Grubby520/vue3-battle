@@ -74,6 +74,7 @@ $color-green: #76b610;
   text-decoration: underline;
   animation: color-change 3s infinite;
   cursor: pointer;
+  z-index: 10;
 }
 
 @keyframes color-change {
