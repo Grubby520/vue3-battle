@@ -163,7 +163,6 @@ import UploadImages from './UploadImages'
 import CommonApi from '@api/api.js'
 import { scrollToElFormElement } from '@shared/util'
 import {
-  fnValidator,
   emptyValidator,
   phoneNoValidator,
   digitalValidator,
@@ -211,7 +210,7 @@ export default {
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
-        idCardImages: [this.getIdCardImagesValidator()],
+        idCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator()],
         certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
         taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
@@ -265,9 +264,31 @@ export default {
       })
     },
     getIdCardImagesValidator () {
-      return fnValidator('请上传身份证信息', () => {
-        return this.form.idCardImages.length < 2 || this.form.idCardImages.some(img => !img)
-      }, 'change')
+      return {
+        validator: (rule, value, callback) => {
+          let errorMsg = ''
+          switch (true) {
+            case this.form.idCardImages.length === 0 || (!this.form.idCardImages[0] && !this.form.idCardImages[1]):
+              errorMsg = '请上传身份证信息'
+              break
+            case !this.form.idCardImages[0]:
+              errorMsg = '请上传身份证正面信息'
+              break
+            case !this.form.idCardImages[1]:
+              errorMsg = '请上传身份证反面信息'
+              break
+            case this.form.idCardImages[0].name === this.form.idCardImages[1].name:// 通过图片名称判断是否重复
+              errorMsg = '两张图片重复,请重新上传'
+              break
+          }
+          if (errorMsg) {
+            callback(new Error(errorMsg))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'change'
+      }
     }
   }
 }
