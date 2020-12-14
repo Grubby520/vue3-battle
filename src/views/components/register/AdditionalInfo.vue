@@ -3,7 +3,7 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="12rem" label-position="left">
       <SlContentTitle text="收款信息" line></SlContentTitle>
       <el-form-item label="收款币种" prop="currency">
-        <el-select v-model="form.currency" filterable clearable placeholder="请选择">
+        <el-select v-model="form.currency" filterable clearable placeholder="请选择" disabled>
           <el-option
             v-for="(item,index) in currencyOptions"
             :key="'options-'+index"
@@ -39,15 +39,6 @@
           clearable
           placeholder="请输入收款方手机号"
           maxlength="11"
-          show-word-limit
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="银行联行号" prop="unionPayNo">
-        <el-input
-          v-model="form.unionPayNo"
-          clearable
-          placeholder="请输入银行联行号"
-          maxlength="12"
           show-word-limit
         ></el-input>
       </el-form-item>
@@ -107,7 +98,6 @@
       </el-form-item>
       <el-form-item label="营业执照" prop="certificationImage">
         <UploadImages
-          ref="certificationImageRef"
           v-model="form.certificationImage"
           :folder="certificationNo"
           :imageType="2"
@@ -117,9 +107,21 @@
         ></UploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
+      <el-form-item label="收款委托书" prop="payeeDelegationImage">
+        <UploadImages
+          v-model="form.payeeDelegationImage"
+          :folder="certificationNo"
+          :imageType="2"
+          :imgNumber="1"
+          :tools="['download', 'delete']"
+          :limits="[{type: 'size',meta: {size: 1}}]"
+        ></UploadImages>
+        <p>
+          <el-button type="text" @click="downloadTemplate">下载收款委托书模板</el-button>,请填写后拍照上传。图片小于1M
+        </p>
+      </el-form-item>
       <el-form-item label="组织机构代码证" prop="organizationImage">
         <UploadImages
-          ref="organizationImageRef"
           v-model="form.organizationImage"
           :folder="certificationNo"
           :imageType="2"
@@ -131,7 +133,6 @@
       </el-form-item>
       <el-form-item label="税务登记证" prop="taxRegisterImage">
         <UploadImages
-          ref="taxRegisterImageRef"
           v-model="form.taxRegisterImage"
           :folder="certificationNo"
           :imageType="2"
@@ -143,7 +144,6 @@
       </el-form-item>
       <el-form-item label="企业股东证截图" prop="companyShareholderImage">
         <UploadImages
-          ref="companyShareholderImageRef"
           v-model="form.companyShareholderImage"
           :folder="certificationNo"
           :imageType="2"
@@ -166,11 +166,11 @@ import {
   fnValidator,
   emptyValidator,
   phoneNoValidator,
-  digitalValidator,
   charLimitValidator,
   idCardValidator,
   bankCardNumberValidator
 } from '@shared/validate'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
 const { mapState: registerMapState, mapMutations: registerMapMutations, mapGetters: registerMapGetters } = createNamespacedHelpers('register')
 
 export default {
@@ -186,17 +186,17 @@ export default {
       idCardFronts: [],
       idCardBacks: [],
       form: {
-        currency: null,
+        currency: 0, // 默认人民币
         payeeCompany: '',
         payee: '',
         payeeIdCard: '',
         payeePhone: '',
-        unionPayNo: '',
         bank: '',
         bankBranch: '',
         bankAccount: '',
         idCardImages: [],
         certificationImage: [],
+        payeeDelegationImage: [],
         organizationImage: [],
         taxRegisterImage: [],
         companyShareholderImage: []
@@ -207,12 +207,12 @@ export default {
         payee: [emptyValidator('请输入收款人姓名'), charLimitValidator('长度在 2 到 20 个字符', 2, 20)],
         payeeIdCard: [emptyValidator('请输入身份证号'), idCardValidator()],
         payeePhone: [emptyValidator('请输入收款人手机号'), phoneNoValidator()],
-        unionPayNo: [emptyValidator('请输入位银行联行号'), digitalValidator(), charLimitValidator('银行联行号是12位数字', 12, 12)],
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
         idCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator()],
         certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
+        payeeDelegationImage: [emptyValidator('请上传委托书图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
         taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
         companyShareholderImage: [emptyValidator('请上传企业股东证件图片', 'change')]
@@ -251,6 +251,7 @@ export default {
   },
   methods: {
     ...registerMapMutations(['SET_ADDITIONAL_INFO']),
+    ...userMapActions(['DOWNLOAD_TEMPLATE']),
     validate () {
       return new Promise((resolve, reject) => {
         this.$refs.form.validate(valid => {
@@ -268,6 +269,9 @@ export default {
       return fnValidator('请上传身份证信息', () => {
         return this.form.idCardImages.length < 2 || this.form.idCardImages.some(img => !img)
       }, 'change')
+    },
+    downloadTemplate () {
+      this.DOWNLOAD_TEMPLATE()
     }
   }
 }
