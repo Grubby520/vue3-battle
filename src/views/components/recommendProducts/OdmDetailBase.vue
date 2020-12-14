@@ -151,6 +151,7 @@ export default {
             }
           }
         }
+        this.form.categoryId = this.categoryId
       },
       immediate: true
     }
