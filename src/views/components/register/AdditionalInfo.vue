@@ -163,7 +163,6 @@ import UploadImages from './UploadImages'
 import CommonApi from '@api/api.js'
 import { scrollToElFormElement } from '@shared/util'
 import {
-  fnValidator,
   emptyValidator,
   phoneNoValidator,
   charLimitValidator,
@@ -266,9 +265,28 @@ export default {
       })
     },
     getIdCardImagesValidator () {
-      return fnValidator('请上传身份证信息', () => {
-        return this.form.idCardImages.length < 2 || this.form.idCardImages.some(img => !img)
-      }, 'change')
+      return {
+        validator: (rule, value, callback) => {
+          let errorMsg = ''
+          switch (true) {
+            case this.form.idCardImages.length === 0 || (!this.form.idCardImages[0] && !this.form.idCardImages[1]):
+              errorMsg = '请上传身份证信息'
+              break
+            case !this.form.idCardImages[0]:
+              errorMsg = '请上传身份证正面信息'
+              break
+            case !this.form.idCardImages[1]:
+              errorMsg = '请上传身份证反面信息'
+              break
+          }
+          if (errorMsg) {
+            callback(new Error(errorMsg))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'change'
+      }
     },
     downloadTemplate () {
       this.DOWNLOAD_TEMPLATE()
