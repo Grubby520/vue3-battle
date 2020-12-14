@@ -85,6 +85,8 @@ export default {
   },
   mounted () {
     this.load()
+    sessionStorage.setItem('type', typeof this.productStatus)
+    sessionStorage.setItem('typeValue', this.productStatus)
   },
   methods: {
     submitForm (status) {
