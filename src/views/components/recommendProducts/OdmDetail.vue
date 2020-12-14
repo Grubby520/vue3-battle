@@ -187,7 +187,6 @@ export default {
       }
     },
     supplement (params) {
-      console.log(params)
       RecommondApi.supplement(params)
         .then(res => {
           if (res.success) {
