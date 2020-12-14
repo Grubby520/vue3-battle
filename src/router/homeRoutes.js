@@ -29,7 +29,7 @@ export const homeRoutes = [
     component: ParentMenuRoute,
     children: [
       {
-        path: 'OdmOneDetails',
+        path: 'odmOneDetails',
         name: '创建产品',
         meta: {
           icon: 'el-icon-paperclip',
@@ -68,7 +68,8 @@ export const homeRoutes = [
             categoryId: route.query.categoryId,
             cateLabels: route.query.cateLabels,
             categoryLevel: route.query.categoryLevel,
-            supplierItemNo: route.query.supplierItemNo
+            supplierItemNo: route.query.supplierItemNo,
+            productStatus: route.query.productStatus
           }
         },
         component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
