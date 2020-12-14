@@ -246,11 +246,11 @@ export default {
         })
     },
     odmDetail (status, row) {
-      const { id, categoryId, supplierItemNo, productStatus } = row
+      const { id, categoryId, supplierItemNo } = row
       if (status !== 'create') {
-        this.$router.push({ path: '/home/recommend-products/odmDetail', query: { mode: status, id, categoryId, supplierItemNo, productStatus } })
+        this.$router.push({ path: '/home/recommend-products/odmDetail', query: { mode: status, id, categoryId, supplierItemNo } })
       } else {
-        this.$router.push({ path: '/home/recommend-products/odmOneDetails', query: { categoryId, mode: status, id, supplierItemNo, productStatus } })
+        this.$router.push({ path: '/home/recommend-products/odmOneDetails', query: { categoryId, mode: status, id, supplierItemNo } })
       }
     }
   }

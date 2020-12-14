@@ -68,8 +68,7 @@ export const homeRoutes = [
             categoryId: route.query.categoryId,
             cateLabels: route.query.cateLabels,
             categoryLevel: route.query.categoryLevel,
-            supplierItemNo: route.query.supplierItemNo,
-            productStatus: route.query.productStatus
+            supplierItemNo: route.query.supplierItemNo
           }
         },
         component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
