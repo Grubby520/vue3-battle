@@ -62,7 +62,7 @@ export default {
     categoryLevel: { type: String, required: false, default: '' },
     cateLabels: { type: String, required: false, default: '' },
     supplierItemNo: { type: String, required: false, default: '' },
-    productStatus: { type: String, required: false, default: '' }
+    productStatus: { type: [Number, String], required: false, default: undefined }
   },
   data () {
     return {
@@ -85,8 +85,6 @@ export default {
   },
   mounted () {
     this.load()
-    sessionStorage.setItem('type', typeof this.productStatus)
-    sessionStorage.setItem('typeValue', this.productStatus)
   },
   methods: {
     submitForm (status) {
