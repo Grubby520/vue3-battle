@@ -65,7 +65,7 @@
                 @change="selectChange($event, 'size')"
               ></SlSelect>
             </el-form-item>
-            <el-form-item label="尺码" prop="sizes">
+            <!-- <el-form-item label="尺码" prop="sizes">
               <el-button type="primary" @click="handleAddSize">添加尺码</el-button>
               <el-tag
                 style="margin: 0 0 5px 10px"
@@ -76,7 +76,7 @@
                 :type="['success', 'info', 'danger', 'warning', ''][index%5]"
                 @close="removeSizeTag(tag)"
               >{{tag.attrTermName}}</el-tag>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item label="颜色" prop="colors">
               <SlSelect
                 ref="colorSelect"
@@ -141,11 +141,11 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
+              <!-- <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
                 <template v-slot="{row}">
                   <el-input v-model="row.tagSize" :disabled="mode === 'view'"></el-input>
                 </template>
-              </el-table-column>
+              </el-table-column>-->
               <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
                 <template slot="header">
                   <p>带包装重量（G）</p>
@@ -164,14 +164,25 @@
         </div>
       </div>
     </div>
+
+    <!-- <SizeSelectDialog
+      :visible="sizeSelectDialogVisible"
+      :formSizes="form.sizes"
+      :categoryId="categoryId"
+      :sizeOptions="sizeOptions"
+    ></SizeSelectDialog>-->
   </div>
 </template>
 
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
+// import SizeSelectDialog from '@/views/createProduct/SizeSelectDialog'
 
 export default {
   name: 'SalesAttributes',
+  components: {
+    // SizeSelectDialog
+  },
   props: {
     categoryId: {
       type: [String, Number],
@@ -220,11 +231,9 @@ export default {
       sizeKeys: [],
       colorKeys: [],
       productSalesAttributeList: [],
-      productImageList: {}
+      productImageList: {},
+      sizeSelectDialogVisible: false
     }
-  },
-  components: {
-
   },
   mounted () { },
   methods: {
@@ -383,8 +392,8 @@ export default {
           colorAttributeName: attribute === 'size' ? item.attrTermName : addItem.attrTermName,
           supplierSkuCode: '',
           supplyPrice: '',
-          weight: '',
-          tagSize: ''
+          weight: ''
+          // tagSize: ''
         }
         this.productSalesAttributeList.push(row)
       })
@@ -491,7 +500,7 @@ export default {
       })
     },
     handleAddSize () {
-
+      this.sizeSelectDialogVisible = true
     },
     removeSizeTag (tag) {
       this.form.sizes.splice(this.form.sizes.findIndex(size => size.id === tag.id), 1)
