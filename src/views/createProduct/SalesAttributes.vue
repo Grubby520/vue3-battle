@@ -415,9 +415,9 @@ export default {
       let index = this[attribute + 'Keys'].findIndex(item => item === val)
       this[attribute + 'Keys'].splice(index, 1)
     },
-    validateAll () {
-      this.validateAndGet().then(res => { console.log(res) }).catch(() => { })
-    },
+    // validateAll () {
+    //   this.validateAndGet().then(res => { console.log(res) }).catch(() => { })
+    // },
     validateFormItem () {
       const p = this.validateForm()
       p.then(res => { }).catch(() => { })
