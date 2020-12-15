@@ -19,15 +19,17 @@
                 <span class="star-symble">*</span>
               </div>
               <div class="product-images--picture">
-                <template v-for="(item, index) in productImages">
-                  <SlUploadImages
-                    :key="index"
-                    v-model="item.images"
-                    :imageType="0"
-                    :limit="1"
-                    :multiple="false"
-                    :disabled="mode === 'view'"
-                  ></SlUploadImages>
+                <SlUploadImages
+                  v-model="productImages"
+                  :imageType="0"
+                  :limit="8"
+                  :multiple="true"
+                  :disabled="mode === 'view'"
+                ></SlUploadImages>
+                <template v-for="(item, index) in [1,2,3,4,5,6,7]">
+                  <div v-if="index >= productImages.length" :key="index" class="dashed-box">
+                    <i class="el-icon-plus"></i>
+                  </div>
                 </template>
                 <div class="error-tip">商品图片注意事项：</div>
                 <div
@@ -37,6 +39,7 @@
               </div>
             </div>
           </div>
+          <el-button type="primary" @click="validateAll">校验</el-button>
         </div>
       </div>
       <div>
@@ -61,6 +64,18 @@
                 :disabled="mode === 'view'"
                 @change="selectChange($event, 'size')"
               ></SlSelect>
+            </el-form-item>
+            <el-form-item label="尺码" prop="sizes">
+              <el-button type="primary" @click="handleAddSize">添加尺码</el-button>
+              <el-tag
+                style="margin: 0 0 5px 10px"
+                v-for="(tag, index) in form.sizes"
+                :key="tag.id"
+                closable
+                effect="dark"
+                :type="['success', 'info', 'danger', 'warning', ''][index%5]"
+                @close="removeSizeTag(tag)"
+              >{{tag.attrTermName}}</el-tag>
             </el-form-item>
             <el-form-item label="颜色" prop="colors">
               <SlSelect
@@ -97,7 +112,6 @@
                 <template slot="header">
                   <p>
                     <span class="star-symble">*</span>供货价格（RMB）
-                    <el-button type="text" @click="fillDown('supplyPrice')">向下填充</el-button>
                   </p>
                 </template>
                 <template v-slot="{row}">
@@ -127,12 +141,14 @@
                   ></el-input>
                 </template>
               </el-table-column>
+              <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
+                <template v-slot="{row}">
+                  <el-input v-model="row.tagSize" :disabled="mode === 'view'"></el-input>
+                </template>
+              </el-table-column>
               <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
                 <template slot="header">
-                  <p>
-                    带包装重量（G）
-                    <el-button type="text" @click="fillDown('weight')">向下填充</el-button>
-                  </p>
+                  <p>带包装重量（G）</p>
                 </template>
                 <template v-slot="{row}">
                   <el-input
@@ -228,7 +244,7 @@ export default {
         sizeOptions = await p1
         colorOptions = await p2
       }
-      let { productSalesAttributeList = [], productImageList = {} } = this.initialValue
+      let { productSalesAttributeList = [], productImageList = [] } = this.initialValue
       this.productSalesAttributeList = JSON.parse(JSON.stringify(productSalesAttributeList))
       this.productImageList = JSON.parse(JSON.stringify(productImageList))
       this.productSalesAttributeList.forEach(item => {
@@ -260,26 +276,7 @@ export default {
         }
       })
       this.preForm = JSON.parse(JSON.stringify(this.form))
-      // for (let [key, value] of Object.entries(this.productImageList)) {
-      //   let colorAttributeName = ''
-      //   this.form.colors.map(color => {
-      //     if (color.id === +key) {
-      //       colorAttributeName = color.attrTermName
-      //     }
-      //   })
-      //   value.url = value.src
-      //   this.productImages.push({
-      //     colorAttributeId: key,
-      //     colorAttributeName,
-      //     images: value
-      //   })
-      // }
-      this.productImages = new Array(8)
-      for (let i = 0; i < 8; i++) {
-        this.$set(this.productImages, i, {
-          images: this.productImageList[i] && this.productImageList[i].src ? [this.productImageList[i]] : []
-        })
-      }
+      this.productImages = JSON.parse(JSON.stringify(productImageList))
     },
     requestAllByUser () {
       return new Promise((resolve, reject) => {
@@ -386,7 +383,8 @@ export default {
           colorAttributeName: attribute === 'size' ? item.attrTermName : addItem.attrTermName,
           supplierSkuCode: '',
           supplyPrice: '',
-          weight: ''
+          weight: '',
+          tagSize: ''
         }
         this.productSalesAttributeList.push(row)
       })
@@ -454,14 +452,8 @@ export default {
     },
     validateProductImgs () {
       return new Promise((resolve, reject) => {
-        let total = 0
-        this.productImages.map(item => {
-          const LENGTH = item.images.length >>> 0
-          if (LENGTH) {
-            total++
-          }
-        })
-        if (total < 4) {
+        const LENGTH = this.productImages.length >>> 0
+        if (LENGTH < 4) {
           reject(new Error(`商品图片：至少上传4张商品图片`))
         }
         resolve()
@@ -470,24 +462,19 @@ export default {
     getSubmitData () {
       let productImageList = []
       let productSalesAttributeList = []
-      this.productImages.map(item => {
-        let val = item.images.map(img => {
-          return {
-            src: img.src,
-            hash: img.hash,
-            productId: this.productId,
-            id: img.id
-          }
-        })
-        if (val.length) {
-          productImageList.push(val[0])
-        }
-      })
       this.productSalesAttributeList.map(item => {
         let li = JSON.parse(JSON.stringify(item))
         delete li.sizeAttributeName
         delete li.colorAttributeName
         productSalesAttributeList.push(li)
+      })
+      productImageList = this.productImages.map(item => {
+        return {
+          src: item.src,
+          hash: item.hash,
+          productId: this.productId,
+          id: item.id
+        }
       })
       return {
         productSalesAttributeList,
@@ -503,13 +490,13 @@ export default {
         }
       })
     },
-    fillDown (col) {
-      let len = this.productSalesAttributeList.length >>> 0
-      if (len <= 1) return
-      let val = this.productSalesAttributeList[0][col]
-      this.productSalesAttributeList.forEach(item => {
-        item[col] = val
-      })
+    handleAddSize () {
+
+    },
+    removeSizeTag (tag) {
+      this.form.sizes.splice(this.form.sizes.findIndex(size => size.id === tag.id), 1)
+      this.generateTableData('del', 'size')
+      this.preForm = JSON.parse(JSON.stringify(this.form))
     }
   },
   watch: {
@@ -551,16 +538,31 @@ export default {
         box-sizing: border-box;
       }
       .product-images--picture {
-        flex: 1;
         .uploadImage {
-          width: 11rem;
-          height: 12rem;
-          overflow: hidden;
-          vertical-align: top;
           display: inline-block;
-          margin-right: 2rem;
-          /deep/ .el-upload-list--picture-card .el-upload-list__item {
-            margin: 0;
+          /deep/ .el-upload--picture-card {
+            border-color: #409eff;
+            &:hover {
+              border-color: #2190ff;
+            }
+            .el-icon-plus {
+              color: #409eff;
+            }
+          }
+        }
+        .dashed-box {
+          display: inline-block;
+          text-align: center;
+          line-height: 11rem;
+          width: 11rem;
+          height: 11rem;
+          border: 1px dashed #e0e0e0;
+          border-radius: 5px;
+          margin: 0 0 2rem 1rem;
+          vertical-align: top;
+          i {
+            font-size: 2rem;
+            color: #e0e0e0;
           }
         }
       }
