@@ -1,5 +1,5 @@
 <template>
-  <div class="uploadImage">
+  <div class="uploadImage" :class="{'hide-upload':hideUpload}">
     <!-- 上传图片 -->
     <el-upload
       action="#"
@@ -114,6 +114,11 @@ export default {
       },
       deep: true,
       immediate: true
+    }
+  },
+  computed: {
+    hideUpload () {
+      return this.limit > 0 && this.fileList.length >= this.limit
     }
   },
   methods: {
@@ -294,6 +299,11 @@ export default {
         background-color: unset;
       }
     }
+  }
+}
+.hide-upload /deep/ {
+  .el-upload {
+    display: none;
   }
 }
 </style>
