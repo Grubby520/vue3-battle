@@ -26,13 +26,6 @@
             placeholder="请输入供方货号"
           />
         </el-form-item>
-        <el-form-item label="预计出货时间" prop="supplyType">
-          <el-radio v-model="form.supplyType" :label="0">
-            现货
-            <span style="color: #ff0000;">（今日可发货）</span>
-          </el-radio>
-          <el-radio v-model="form.supplyType" :label="1">期货</el-radio>
-        </el-form-item>
         <el-form-item label="商品描述" prop="description">
           <el-input
             v-if="!isStatus"
@@ -67,7 +60,6 @@
 <script>
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 
-import { isEmpty } from '@shared/util'
 export default {
   props: {
     id: { type: String, required: false, default: '' },
@@ -114,15 +106,12 @@ export default {
         // 商品备注
         remark: '',
         categoryName: '',
-        // 0 现货 1 期货
-        supplyType: 0,
         id: this.id
       },
       rules: {
         categoryId: [{ required: true }],
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
         supplierItemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
-        supplyType: [this.ShippingTimeValidator()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
@@ -177,22 +166,6 @@ export default {
           }
         })
       })
-    },
-    ShippingTimeValidator () {
-      return {
-        required: true,
-        validator: (rule, value, callback) => {
-          if (this.form.supplyType) {
-            callback()
-          } else if (isEmpty(value)) {
-            callback(new Error('请选择预计出货时间'))
-          } else {
-            callback()
-          }
-        },
-        message: '请选择预计出货时间',
-        trigger: 'change'
-      }
     }
   }
 }

@@ -102,11 +102,10 @@ export default {
           data.productCustomizeAttributeList = productCustomizeAttributeList
           if (data.productBasicInfo.categoryLevel) {
             let method = null
-            if (status === 'create') {
-              method = this.productStatus !== 2 ? this.create : this.supplementSave
-            } else {
-              method = this.productStatus !== 2 ? this.submit : this.supplement
+            const decision = (save, submit) => {
+              return this.productStatus !== 2 ? save : submit
             }
+            method = status === 'create' ? decision(this.create, this.supplementSave) : decision(this.submit, this.supplement)
             method(data)
           } else {
             this.$message.error(`商品分类层级不能为空!`)
