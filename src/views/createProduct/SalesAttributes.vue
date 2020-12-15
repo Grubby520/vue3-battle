@@ -90,6 +90,10 @@
               </template>
             </el-table-column>
           </el-table>
+          <el-row type="flex">
+            <sl-space></sl-space>
+            <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
+          </el-row>
           <div class="error-tip">商品供货价：供货价为采购价，并非前台销售价，需低于平台价格（包括1688，淘宝等）。</div>
         </div>
       </div>
@@ -135,11 +139,15 @@
         <div class="error-tip">2.颜色图片建议从正面、侧面、背面，细节各个维度展示商品。每个SKU至少上传4张图片；</div>
       </div>
     </div>
+    <!-- 批量设置弹窗 -->
+    <BatchAttributes @hide="hideDialog" ref="batchAttributes"></BatchAttributes>
   </div>
 </template>
 
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
+import BatchAttributes from './batchAttributes'
+import { isEmpty } from '@shared/util'
 
 export default {
   name: 'SalesAttributes',
@@ -165,6 +173,9 @@ export default {
         }
       }
     }
+  },
+  components: {
+    BatchAttributes
   },
   data () {
     return {
@@ -193,9 +204,6 @@ export default {
       productSalesAttributeList: [],
       productImageList: {}
     }
-  },
-  components: {
-
   },
   mounted () { },
   methods: {
@@ -510,6 +518,50 @@ export default {
           this.$set(img, 'isMainImage', 0)
         }
       })
+    },
+    /**
+     * 页面统一开启弹窗的函数
+     * @param {String} type 弹窗类型
+     * @param {Object} data 弹窗基础数据
+     */
+    openDialog (type, data = '') {
+      let dialog = null
+      switch (type) {
+        case 'batchAttributes':
+          dialog = this.$refs.batchAttributes
+          data = this.productSalesAttributeList
+          break
+      }
+      dialog.open(type, data)
+      dialog = null
+    },
+    /**
+     * 页面统一关闭弹窗的回调
+     * @param {String} type 弹窗类型
+     * @param {Boolean} isSubmit 弹窗响应类型是否是提交
+     * @param {Object} data 弹窗返回的数据
+     */
+    hideDialog (type, isSubmit, data) {
+      // 弹窗是否是提交类型
+      if (isSubmit) {
+        switch (type) {
+          case 'batchAttributes':
+            const { skuList, supplyPrice, sizeList } = data
+            let productSalesAttributeList = this.productSalesAttributeList
+            let sizeMap = new Map()
+            let hasNeedSku = skuList.length > 0 && !isEmpty(supplyPrice)
+            sizeList.forEach((size) => {
+              if (!isEmpty(size.weight)) sizeMap.set(size.sizeAttributeId, size.weight)
+            })
+            productSalesAttributeList.forEach((attribute, index) => {
+              const weight = sizeMap.get(attribute.sizeAttributeId)
+              if (hasNeedSku && skuList.indexOf(attribute.colorAttributeId) !== -1) attribute.supplyPrice = supplyPrice
+              if (!isEmpty(weight)) attribute.weight = weight
+              this.$set(this.productSalesAttributeList, index, attribute)
+            })
+            break
+        }
+      }
     }
   },
   watch: {
