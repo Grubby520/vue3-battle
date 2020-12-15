@@ -39,7 +39,7 @@
               </div>
             </div>
           </div>
-          <el-button type="primary" @click="validateAll">校验</el-button>
+          <!-- <el-button type="primary" @click="validateAll">校验</el-button> -->
         </div>
       </div>
       <div>
