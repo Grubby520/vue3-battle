@@ -443,10 +443,10 @@ export default {
     validateTableData () {
       return new Promise((resolve, reject) => {
         this.productSalesAttributeList.map(item => {
-          if (!item.supplyPrice) {
-            reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 供货价格未填写`))
+          if (!Number(item.supplyPrice)) {
+            reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 供货价格未填写(需大于0)`))
           }
-          if (!item.supplierSkuCode) {
+          if (!item.supplierSkuCode.toString()) {
             reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 商家SKU编码未填写`))
           }
         })
