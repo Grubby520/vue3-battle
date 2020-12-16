@@ -20,6 +20,7 @@
               </div>
               <div class="product-images--picture">
                 <SlUploadImages
+                  :class="{'upload-disabled': mode === 'view'}"
                   v-model="productImages"
                   :imageType="0"
                   :limit="8"
@@ -50,23 +51,7 @@
           <!-- 尺码、颜色表单 -->
           <el-form :model="form" :rules="rules" ref="form" label-width="120px">
             <el-form-item label="尺码" prop="sizes">
-              <SlSelect
-                ref="sizeSelect"
-                v-model="form.sizes"
-                :options="sizeOptions"
-                label="attrTermName"
-                value="id"
-                filterable
-                multiple
-                clearable
-                isObj
-                placeholder="请选择尺码"
-                :disabled="mode === 'view'"
-                @change="selectChange($event, 'size')"
-              ></SlSelect>
-            </el-form-item>
-            <!-- <el-form-item label="尺码" prop="sizes">
-              <el-button type="primary" @click="handleAddSize">添加尺码</el-button>
+              <el-button type="text" @click="handleAddSize">添加尺码</el-button>
               <el-tag
                 style="margin: 0 0 5px 10px"
                 v-for="(tag, index) in form.sizes"
@@ -76,7 +61,7 @@
                 :type="['success', 'info', 'danger', 'warning', ''][index%5]"
                 @close="removeSizeTag(tag)"
               >{{tag.attrTermName}}</el-tag>
-            </el-form-item>-->
+            </el-form-item>
             <el-form-item label="颜色" prop="colors">
               <SlSelect
                 ref="colorSelect"
@@ -141,11 +126,11 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <!-- <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
+              <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
                 <template v-slot="{row}">
                   <el-input v-model="row.tagSize" :disabled="mode === 'view'"></el-input>
                 </template>
-              </el-table-column>-->
+              </el-table-column>
               <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
                 <template slot="header">
                   <p>带包装重量（G）</p>
@@ -159,29 +144,39 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-row type="flex">
+              <sl-space></sl-space>
+              <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
+            </el-row>
             <div class="error-tip">商品供货价：供货价为采购价，并非前台销售价，需低于平台价格（包括1688，淘宝等）。</div>
           </div>
         </div>
       </div>
     </div>
+    <!-- 批量设置弹窗 -->
+    <BatchAttributes @hide="hideDialog" ref="batchAttributes"></BatchAttributes>
 
-    <!-- <SizeSelectDialog
-      :visible="sizeSelectDialogVisible"
+    <SizeSelectDialog
+      :visible.sync="sizeSelectDialogVisible"
       :formSizes="form.sizes"
       :categoryId="categoryId"
       :sizeOptions="sizeOptions"
-    ></SizeSelectDialog>-->
+      @confirm="sizeSelectConfirm"
+    ></SizeSelectDialog>
   </div>
 </template>
 
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
-// import SizeSelectDialog from '@/views/createProduct/SizeSelectDialog'
+import BatchAttributes from './batchAttributes'
+import { isEmpty } from '@shared/util'
+import SizeSelectDialog from '@/views/createProduct/SizeSelectDialog'
 
 export default {
   name: 'SalesAttributes',
   components: {
-    // SizeSelectDialog
+    SizeSelectDialog,
+    BatchAttributes
   },
   props: {
     categoryId: {
@@ -392,8 +387,8 @@ export default {
           colorAttributeName: attribute === 'size' ? item.attrTermName : addItem.attrTermName,
           supplierSkuCode: '',
           supplyPrice: '',
-          weight: ''
-          // tagSize: ''
+          weight: '',
+          tagSize: ''
         }
         this.productSalesAttributeList.push(row)
       })
@@ -449,10 +444,10 @@ export default {
     validateTableData () {
       return new Promise((resolve, reject) => {
         this.productSalesAttributeList.map(item => {
-          if (!item.supplyPrice) {
-            reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 供货价格未填写`))
+          if (!Number(item.supplyPrice)) {
+            reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 供货价格未填写(需大于0)`))
           }
-          if (!item.supplierSkuCode) {
+          if (!item.supplierSkuCode.toString()) {
             reject(new Error(`销售属性：表格项 ${item.sizeAttributeName} / ${item.colorAttributeName} 商家SKU编码未填写`))
           }
         })
@@ -499,12 +494,88 @@ export default {
         }
       })
     },
+    /**
+     * 页面统一开启弹窗的函数
+     * @param {String} type 弹窗类型
+     * @param {Object} data 弹窗基础数据
+     */
+    openDialog (type, data = '') {
+      let dialog = null
+      switch (type) {
+        case 'batchAttributes':
+          dialog = this.$refs.batchAttributes
+          data = this.productSalesAttributeList
+          break
+      }
+      dialog.open(type, data)
+      dialog = null
+    },
+    /**
+     * 页面统一关闭弹窗的回调
+     * @param {String} type 弹窗类型
+     * @param {Boolean} isSubmit 弹窗响应类型是否是提交
+     * @param {Object} data 弹窗返回的数据
+     */
+    hideDialog (type, isSubmit, data) {
+      // 弹窗是否是提交类型
+      if (isSubmit) {
+        switch (type) {
+          case 'batchAttributes':
+            const { skuList, supplyPrice, sizeList } = data
+            let productSalesAttributeList = this.productSalesAttributeList
+            let sizeMap = new Map()
+            let hasNeedSku = skuList.length > 0 && !isEmpty(supplyPrice)
+            sizeList.forEach((size) => {
+              if (!isEmpty(size.weight)) sizeMap.set(size.sizeAttributeId, size.weight)
+            })
+            productSalesAttributeList.forEach((attribute, index) => {
+              const weight = sizeMap.get(attribute.sizeAttributeId)
+              if (hasNeedSku && skuList.indexOf(attribute.colorAttributeId) !== -1) attribute.supplyPrice = supplyPrice
+              if (!isEmpty(weight)) attribute.weight = weight
+              this.$set(this.productSalesAttributeList, index, attribute)
+            })
+            break
+        }
+      }
+    },
     handleAddSize () {
       this.sizeSelectDialogVisible = true
     },
     removeSizeTag (tag) {
       this.form.sizes.splice(this.form.sizes.findIndex(size => size.id === tag.id), 1)
       this.generateTableData('del', 'size')
+      this.preForm = JSON.parse(JSON.stringify(this.form))
+    },
+    sizeSelectConfirm (val) {
+      this.form.sizes = val
+      let table = []
+      this.form.sizes.map(size => {
+        this.form.colors.map(color => {
+          table.push({
+            productId: this.productId,
+            sizeAttributeId: size.id,
+            sizeAttributeName: size.attrTermName,
+            colorAttributeId: color.id,
+            colorAttributeName: color.attrTermName,
+            supplierSkuCode: '',
+            supplyPrice: '',
+            weight: '',
+            tagSize: ''
+          })
+        })
+      })
+      this.productSalesAttributeList.map(current => {
+        table.forEach(next => {
+          if (current.sizeAttributeId === next.sizeAttributeId && current.colorAttributeId === next.colorAttributeId) {
+            next.supplierSkuCode = current.supplierSkuCode
+            next.supplyPrice = current.supplyPrice
+            next.weight = current.weight
+            next.tagSize = current.tagSize
+          }
+        })
+      })
+      this.productSalesAttributeList = JSON.parse(JSON.stringify(table))
+      this.sizeKeys = this.form.sizes.map(size => size.id)
       this.preForm = JSON.parse(JSON.stringify(this.form))
     }
   },
@@ -556,6 +627,17 @@ export default {
             }
             .el-icon-plus {
               color: #409eff;
+            }
+          }
+          &.upload-disabled {
+            /deep/ .el-upload--picture-card {
+              border-color: #e0e0e0;
+              &:hover {
+                border-color: #e0e0e0;
+              }
+              .el-icon-plus {
+                color: #e0e0e0;
+              }
             }
           }
         }
