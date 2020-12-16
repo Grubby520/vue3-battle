@@ -153,12 +153,11 @@ export default {
       fileList: [] // 上传图片列表
     }
   },
-
   watch: {
     // 监听回显图片
     'images': {
       handler (newValue) {
-        this.fileList = newValue
+        this.fileList = JSON.parse(JSON.stringify(this.images))
       },
       deep: true,
       immediate: true
@@ -175,7 +174,6 @@ export default {
       'UPLOAD_FILE' // 上传oss
     ]),
     imgLoad (file) {
-      console.log('loading', file)
       file['loadFailed'] = false
       file['failedTimes'] = 0
       this.$set(file, 'loading', false)
@@ -300,15 +298,14 @@ export default {
     },
 
     handleRemove (file) {
+      const _this = this
       this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // 取消上传文件
-        this.$refs.uploader.abort(file)
-        // 上传列表中删除取消文件
-        this.fileList.splice(this.fileList.indexOf(file), 1)
+        const filterImages = _this.fileList.filter(img => img.hash !== file.hash)
+        this.$emit('changeUploadImages', filterImages)
       })
     },
 
@@ -328,29 +325,31 @@ export default {
     uploadFile (file) {
       // 自定上传需要手动触发on-success方法
       file.onSuccess()
-      const params = { 'folder': this.folder, 'fileName': file.file.name, 'contentType': file.file.type, 'fileType': this.imageType }
+      this.preOssUrl(file).then(res => {
+        this.gotoOss(res, file.file)
+      })
+    },
+    preOssUrl (file) {
       // 获取预上传oss地址
-      this.GET_UPLOAD_API(params)
+      const params = { 'folder': this.folder, 'fileName': file.file.name, 'contentType': file.file.type, 'fileType': this.imageType }
+      return this.GET_UPLOAD_API(params)
         .then(res => {
-          const fileInfo = file.file
-          const data = res.data
-          data.file = fileInfo
-          data.uid = fileInfo.uid
-          data.name = fileInfo.name
-          data.src = data.showUrl
-          data.imageType = this.imageType
-          data.hash = fileInfo.hash
-          this.gotoOss(data)
+          return res.data
         })
     },
-
-    gotoOss (data) {
+    gotoOss (data, file) {
       // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
       this.UPLOAD_FILE({
-        ...data
+        preUploadUrl: data.preUploadUrl,
+        file
       })
         .then(res => {
-          this.$emit('changeUploadImages', [...this.images, data])
+          const changeImages = {}
+          changeImages.src = data.showUrl
+          changeImages.hash = file.hash
+          changeImages.name = file.name
+          changeImages.uid = file.uid
+          this.$emit('changeUploadImages', [...this.images, changeImages])
         })
     }
 
