@@ -125,11 +125,11 @@
                   ></el-input>
                 </template>
               </el-table-column>
-              <!-- <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
+              <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
                 <template v-slot="{row}">
                   <el-input v-model="row.tagSize" :disabled="mode === 'view'"></el-input>
                 </template>
-              </el-table-column>-->
+              </el-table-column>
               <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
                 <template slot="header">
                   <p>带包装重量（G）</p>
@@ -377,8 +377,8 @@ export default {
           colorAttributeName: attribute === 'size' ? item.attrTermName : addItem.attrTermName,
           supplierSkuCode: '',
           supplyPrice: '',
-          weight: ''
-          // tagSize: ''
+          weight: '',
+          tagSize: ''
         }
         this.productSalesAttributeList.push(row)
       })
@@ -505,8 +505,8 @@ export default {
             colorAttributeName: color.attrTermName,
             supplierSkuCode: '',
             supplyPrice: '',
-            weight: ''
-            // tagSize: ''
+            weight: '',
+            tagSize: ''
           })
         })
       })

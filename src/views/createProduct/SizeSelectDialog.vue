@@ -108,7 +108,7 @@ export default {
     formSizes (val) {
       this.checkedSizes = val.map(item => item.id)
     },
-    categoryId: {
+    'categoryId': {
       handler (val) {
         if (val) {
           // this.getSizeTable()
@@ -117,7 +117,7 @@ export default {
       immediate: true
     }
   },
-  mounted: {
+  mounted () {
 
   },
   methods: {
