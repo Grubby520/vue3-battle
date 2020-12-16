@@ -20,6 +20,7 @@
               </div>
               <div class="product-images--picture">
                 <SlUploadImages
+                  :class="{'upload-disabled': mode === 'view'}"
                   v-model="productImages"
                   :imageType="0"
                   :limit="8"
@@ -626,6 +627,17 @@ export default {
             }
             .el-icon-plus {
               color: #409eff;
+            }
+          }
+          &.upload-disabled {
+            /deep/ .el-upload--picture-card {
+              border-color: #e0e0e0;
+              &:hover {
+                border-color: #e0e0e0;
+              }
+              .el-icon-plus {
+                color: #e0e0e0;
+              }
             }
           }
         }
