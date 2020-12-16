@@ -8,7 +8,7 @@
       :multiple="multiple"
       list-type="picture-card"
       :accept="accept.join()"
-      :file-list="fileList"
+      :file-list="images"
       :limit="limit"
       :on-success="onSuccess"
       :http-request="uploadFile"
@@ -44,7 +44,7 @@
             <span
               v-if="!disabled && tools.includes('delete')"
               class="item-delete"
-              @click="handleRemove(file, fileList)"
+              @click="handleRemove(file, images)"
             >
               <i class="el-icon-delete"></i>
             </span>
@@ -57,7 +57,7 @@
     </el-upload>
 
     <!-- 预览图片 -->
-    <el-dialog :visible.sync="dialogVisible" width="20%">
+    <el-dialog :visible.sync="dialogVisible" width="20%" :append-to-body="true">
       <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
@@ -70,7 +70,7 @@ import { downloadFile, fileToMd5, asyncSome } from '@/shared/util'
 export default {
   name: 'SlUploadImages',
   model: {
-    prop: 'images',
+    prop: 'images', // 上传图片列表
     event: 'changeUploadImages'
   },
   props: {
@@ -149,23 +149,12 @@ export default {
   data () {
     return {
       dialogImageUrl: '',
-      dialogVisible: false,
-      fileList: [] // 上传图片列表
-    }
-  },
-  watch: {
-    // 监听回显图片
-    'images': {
-      handler (newValue) {
-        this.fileList = JSON.parse(JSON.stringify(this.images))
-      },
-      deep: true,
-      immediate: true
+      dialogVisible: false
     }
   },
   computed: {
     hideUpload () {
-      return this.limit > 0 && this.fileList.length >= this.limit
+      return this.limit > 0 && this.images.length >= this.limit
     }
   },
   methods: {
@@ -262,7 +251,7 @@ export default {
         // hash校验相同的图片
         const isHash = await this.addMd5(file)
         file.hash = isHash
-        return this.fileList.some(item => item.hash === file.hash)
+        return this.images.some(item => item.hash === file.hash)
       } catch (error) {
         return error
       }
@@ -304,8 +293,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const filterImages = _this.fileList.filter(img => img.hash !== file.hash)
-        this.$emit('changeUploadImages', filterImages)
+        const filterImages = _this.images.filter(img => img.hash !== file.hash)
+        this.emitImageChange(filterImages)
       })
     },
 
@@ -321,6 +310,7 @@ export default {
       // 图片通过src字段渲染
       file.src = file.url
       delete file.url
+      // form校验通过去除错误信息
     },
     uploadFile (file) {
       // 自定上传需要手动触发on-success方法
@@ -349,10 +339,16 @@ export default {
           changeImages.hash = file.hash
           changeImages.name = file.name
           changeImages.uid = file.uid
-          this.$emit('changeUploadImages', [...this.images, changeImages])
+          this.emitImageChange([...this.images, changeImages])
         })
+    },
+    emitImageChange (arr) {
+      this.$emit('changeUploadImages', arr)
+      // 用于表单验证change事件捕获
+      if (this.$parent) {
+        this.$parent.$emit('el.form.change')
+      }
     }
-
   }
 
 }
