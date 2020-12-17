@@ -24,6 +24,9 @@ export default {
       currentNodes: []
     }
   },
+  mounted () {
+    this._throttle = this.throttle(() => { this.$message.error('请选择完整的类目！') }, 3000)
+  },
   computed: {
     cateLabels () {
       return this.currentNodes.reduce((init, a) => init.concat(a.label), []).join('>')
@@ -46,10 +49,20 @@ export default {
         }
         )
       } else {
-        this.$message.error('请选择完整的类目！')
+        this._throttle()
+        // this.$message.error('请选择完整的类目！')
+      }
+    },
+    throttle (fn, wait) {
+      let init = 0
+      return function () {
+        let nowTimes = +new Date()
+        if (nowTimes - init > wait) {
+          fn.apply(this)
+          init = nowTimes
+        }
       }
     }
-
   }
 }
 </script>
