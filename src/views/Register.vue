@@ -122,9 +122,9 @@ export default {
         path: '/login'
       })
     },
-    transformImageData (url) {
+    transformImageData (src) {
       return {
-        url
+        src
       }
     },
     transformBackData (data) {

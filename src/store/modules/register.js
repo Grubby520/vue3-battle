@@ -22,7 +22,7 @@ export default {
           return ''
         }
         // 图片链接'?'后面跟的认证信息,保存时需要去掉
-        return image.url ? image.url.split('?')[0] : image.url
+        return image.src ? image.src.split('?')[0] : image.src
       }
       // 基本信息转换
       let excludeKeys = ['certificationNo', 'confirmPassword']
