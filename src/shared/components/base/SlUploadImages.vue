@@ -310,7 +310,6 @@ export default {
       // 图片通过src字段渲染
       file.src = file.url
       delete file.url
-      // form校验通过去除错误信息
     },
     uploadFile (file) {
       // 自定上传需要手动触发on-success方法
