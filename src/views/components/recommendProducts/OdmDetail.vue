@@ -230,40 +230,4 @@ export default {
     padding: 2rem 0;
   }
 }
-
-.view-container {
-  pointer-events: none;
-  cursor: not-allowed;
-  /deep/.el-input__inner {
-    border: 0;
-    &::placeholder {
-      color: #fff !important;
-    }
-  }
-  /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
-    border: 0;
-  }
-  /deep/.el-textarea__inner {
-    border: 0 !important;
-    &::placeholder {
-      color: #fff !important;
-    }
-  }
-
-  /deep/.stl-big-data-select .selected-tags.disabled[data-v-05976cfe] {
-    background-color: #fff;
-  }
-  /deep/.el-input.is-disabled .el-input__inner {
-    background-color: #fff;
-  }
-  /deep/.el-input__count {
-    display: none;
-  }
-  /deep/.el-input__prefix {
-    display: none;
-  }
-  /deep/.el-icon-arrow-down {
-    display: none;
-  }
-}
 </style>
