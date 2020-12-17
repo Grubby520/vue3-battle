@@ -72,85 +72,85 @@
       <el-form-item label="法人身份证" prop="idCardImages">
         <el-row>
           <el-col :span="8" style="min-width:120px">
-            <UploadImages
+            <SlUploadImages
               v-model="idCardFronts"
               :folder="certificationNo"
               :imageType="2"
-              :imgNumber="1"
+              :limit="1"
               :tools="['download', 'delete']"
               :limits="[{type: 'size',meta: {size: 1}}]"
-            ></UploadImages>
+            ></SlUploadImages>
             <p>身份证正面</p>
           </el-col>
           <el-col :span="8" style="min-width:120px">
-            <UploadImages
+            <SlUploadImages
               v-model="idCardBacks"
               :folder="certificationNo"
               :imageType="2"
-              :imgNumber="1"
+              :limit="1"
               :tools="['download', 'delete']"
               :limits="[{type: 'size',meta: {size: 1}}]"
-            ></UploadImages>
+            ></SlUploadImages>
             <p>身份证反面</p>
           </el-col>
         </el-row>
         <p>复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="营业执照" prop="certificationImage">
-        <UploadImages
+        <SlUploadImages
           v-model="form.certificationImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="收款委托书" prop="payeeDelegationImage">
-        <UploadImages
+        <SlUploadImages
           v-model="form.payeeDelegationImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>
           <el-button type="text" @click="downloadTemplate">下载收款委托书模板</el-button>,请填写后拍照上传。图片小于1M
         </p>
       </el-form-item>
       <el-form-item label="组织机构代码证" prop="organizationImage">
-        <UploadImages
+        <SlUploadImages
           v-model="form.organizationImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="税务登记证" prop="taxRegisterImage">
-        <UploadImages
+        <SlUploadImages
           v-model="form.taxRegisterImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="企业股东证截图" prop="companyShareholderImage">
-        <UploadImages
+        <SlUploadImages
           v-model="form.companyShareholderImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>国家企业信用信息公示系统截图股东信息。图片小于1M</p>
       </el-form-item>
     </el-form>
@@ -159,7 +159,6 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import UploadImages from './UploadImages'
 import CommonApi from '@api/api.js'
 import { scrollToElFormElement } from '@shared/util'
 import {
@@ -175,7 +174,6 @@ const { mapState: registerMapState, mapMutations: registerMapMutations, mapGette
 export default {
   name: 'AdditionalInfo',
   components: {
-    UploadImages
   },
   props: {
   },
