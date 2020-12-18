@@ -1,6 +1,6 @@
 <template>
   <div class="register-container">
-    <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
+    <RegisterHeader :supplierName="supplierName"></RegisterHeader>
     <div class="register-content-container">
       <div class="steps-container clearfix">
         <h2 class="float-left font-wight-normal mr-2rem">商家入驻</h2>
@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     ...userMapState(['supplierId', 'supplierName', 'supplierStatusCode']),
-    ...userMapGetters(['statusInfo', 'enterMainPage']),
+    ...userMapGetters(['statusInfo', 'isRejected', 'isAuditting', 'enterMainPage']),
     ...registerMapGetters(['getSubmitData']),
     currentStep () {
       let componentsMap = {
@@ -199,12 +199,12 @@ export default {
             this.$router.push('home/recommend-products/list')
             return
           }
-          if ([0].includes(this.supplierStatusCode)) {
+          if (this.isAuditting) {
             this.$router.push('/registerProgress')
             return
           }
 
-          if (this.supplierStatusCode === 3) {
+          if (this.isRejected) {
             if (fromPage !== 'registerProgress') {
               this.$router.push('/registerProgress')
               return

@@ -1,13 +1,13 @@
 <template>
   <div class="register-progress-container">
-    <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
+    <RegisterHeader :supplierName="supplierName"></RegisterHeader>
     <div class="register-result align-center">
       <span class="el-icon-success"></span>
       <div>
-        <b v-if="showSubmitSuccess">您的申请已成功提交</b>
+        <b v-if="isInvalidStatusCode">您的申请已成功提交</b>
         <div v-else-if="supplierStatusText" class="display-inline-block">
           {{supplierStatusText}}&nbsp;&nbsp;
-          <el-button v-if="notPassed" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
+          <el-button v-if="isRejected" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
         </div>
       </div>
     </div>
@@ -32,25 +32,15 @@ export default {
     }
   },
   computed: {
-    ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
-    ...userMapGetters(['enterMainPage', 'enterRegisterPage']),
-    isSubmitMsg () {
-      return this.$route.query.msg === 'submit'
-    },
-    showSubmitSuccess () {
-      // 无供应商状态时显示'提交成功提示'
-      return ![0, 1, 2, 3].includes(this.supplierStatusCode)
-    },
-    notPassed () {
-      return this.supplierStatusCode === 3
-    },
+    ...userMapState(['supplierName', 'confirmAgreement']),
+    ...userMapGetters(['isInvalidStatusCode', 'isRejected', 'isAuditting', 'enterMainPage', 'enterRegisterPage']),
     supplierStatusText () {
       let text = ''
-      if ([0].includes(this.supplierStatusCode)) {
+      if (this.isAuditting) {
         text = '正在审核中'
       }
 
-      if (this.notPassed) {
+      if (this.isRejected) {
         text = '审核未通过'
       }
       return text

@@ -16,11 +16,23 @@ export default {
     confirmAgreement: false // 是否确认了协议
   },
   getters: {
-    enterMainPage (state) {
-      return state.confirmAgreement && state.supplierStatusCode === 1
+    isInvalidStatusCode (state) {
+      return ![0, 1, 2, 3].includes(state.supplierStatusCode)
     },
-    enterRegisterPage (state) {
-      return !state.confirmAgreement && state.supplierStatusCode === 1
+    isPassed (state) {
+      return state.supplierStatusCode === 1
+    },
+    isRejected (state) {
+      return state.supplierStatusCode === 3
+    },
+    isAuditting (state) {
+      return state.supplierStatusCode === 0
+    },
+    enterMainPage (state, getters) {
+      return state.confirmAgreement && getters.isPassed
+    },
+    enterRegisterPage (state, getters) {
+      return !state.confirmAgreement && getters.isPassed
     },
     statusInfo (state) {
       return {
