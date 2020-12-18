@@ -80,8 +80,8 @@
               border
               style="width: 100%; margin-bottom: 1rem;"
             >
-              <el-table-column prop="sizeAttributeName" label="尺码" width="160px" align="center"></el-table-column>
-              <el-table-column prop="colorAttributeName" label="颜色" width="160px" align="center"></el-table-column>
+              <el-table-column prop="sizeAttributeName" label="尺码" align="center"></el-table-column>
+              <el-table-column prop="colorAttributeName" label="颜色" align="center"></el-table-column>
               <el-table-column
                 prop="supplyPrice"
                 label="供货价格（RMB）"
@@ -541,6 +541,7 @@ export default {
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
+
       let table = []
       this.form.sizes.map(size => {
         this.form.colors.map(color => {
