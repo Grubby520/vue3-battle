@@ -59,7 +59,7 @@ export default {
   },
   computed: {
     ...mapState(['systemName']),
-    ...userMapState(['confirmAgreement', 'supplierStatusCode']),
+    ...userMapState(['confirmAgreement']),
     ...userMapGetters(['enterMainPage', 'enterRegisterPage'])
   },
   mounted () {

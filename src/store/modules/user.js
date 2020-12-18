@@ -7,7 +7,7 @@ export default {
   state: {
     permissions: [],
     supplierStatus: '',
-    supplierStatusCode: '', // 供应商状态代码 0：待审核 1：审核中 2：试版中 3：已准入 5：未通过
+    supplierStatusCode: '', // 供应商状态代码 0:审核中 1:已入驻 2:已冻结 3:已驳回
     supplierName: '',
     supplierId: '',
     userName: '',
@@ -17,10 +17,10 @@ export default {
   },
   getters: {
     enterMainPage (state) {
-      return (state.confirmAgreement && state.supplierStatusCode === 2) || state.supplierStatusCode === 3
+      return state.confirmAgreement && state.supplierStatusCode === 1
     },
     enterRegisterPage (state) {
-      return !state.confirmAgreement && state.supplierStatusCode === 2
+      return !state.confirmAgreement && state.supplierStatusCode === 1
     },
     statusInfo (state) {
       return {

@@ -90,7 +90,7 @@ export default {
   watch: {
     statusInfo: {
       handler (val) {
-        if (!val.confirmAgreement && val.supplierStatusCode === 2) {
+        if (!val.confirmAgreement && val.supplierStatusCode === 1) {
           this.activeStep = 3
         }
       },
@@ -199,12 +199,12 @@ export default {
             this.$router.push('home/recommend-products/list')
             return
           }
-          if ([0, 1].includes(this.supplierStatusCode)) {
+          if ([0].includes(this.supplierStatusCode)) {
             this.$router.push('/registerProgress')
             return
           }
 
-          if (this.supplierStatusCode === 5) {
+          if (this.supplierStatusCode === 3) {
             if (fromPage !== 'registerProgress') {
               this.$router.push('/registerProgress')
               return

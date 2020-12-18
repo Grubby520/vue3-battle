@@ -39,18 +39,18 @@ export default {
     },
     showSubmitSuccess () {
       // 无供应商状态时显示'提交成功提示'
-      return ![0, 1, 2, 3, 4, 5].includes(this.supplierStatusCode)
+      return ![0, 1, 2, 3].includes(this.supplierStatusCode)
     },
     notPassed () {
-      return this.supplierStatusCode === 5
+      return this.supplierStatusCode === 3
     },
     supplierStatusText () {
       let text = ''
-      if ([0, 1].includes(this.supplierStatusCode)) {
+      if ([0].includes(this.supplierStatusCode)) {
         text = '正在审核中'
       }
 
-      if (this.supplierStatusCode === 5) {
+      if (this.notPassed) {
         text = '审核未通过'
       }
       return text
