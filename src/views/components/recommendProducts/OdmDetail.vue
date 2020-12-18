@@ -221,7 +221,6 @@ export default {
 
 <style scoped lang="scss">
 .odmDetail {
-  border: 1px solid #dcdfe6;
   &-btn {
     text-align: center;
     position: sticky;
