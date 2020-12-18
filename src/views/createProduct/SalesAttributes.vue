@@ -2,23 +2,17 @@
   <div>
     <div class="container">
       <!-- 商品图片 -->
-      <div>
-        <div class="primary-header">
-          <span class="primary-header--title">
-            商品图片
-            <span
-              class="error-tip"
-              style="font-weight: normal;margin-left: 20px;"
-            >若产品主体超出预览图规范框，则代表该商品不符合规范-仅限产品平铺图，模特图可考虑整体效果。</span>
-          </span>
+      <el-card class="box-card box-content">
+        <div slot="header" class="primary-header">
+          <span>商品图片</span>
         </div>
         <div class="content-body">
           <div class="product-images">
             <div class="product-images--item">
-              <div class="product-images--name">
-                <span class="star-symble">*</span>
-              </div>
+              <div class="product-images--name"></div>
               <div class="product-images--picture">
+                <div class="error-tip">若产品主体超出预览图规范框，则代表该商品不符合规范-仅限产品平铺图，模特图可考虑整体效果。</div>
+                <span class="star-symble">*</span>
                 <SlUploadImages
                   :class="{'upload-disabled': mode === 'view'}"
                   v-model="productImages"
@@ -42,10 +36,10 @@
           </div>
           <!-- <el-button type="primary" @click="validateAll">校验</el-button> -->
         </div>
-      </div>
-      <div>
-        <div class="primary-header">
-          <span class="primary-header--title">销售属性</span>
+      </el-card>
+      <el-card class="box-card">
+        <div slot="header" class="primary-header">
+          <span>销售属性</span>
         </div>
         <div class="content-body">
           <!-- 尺码、颜色表单 -->
@@ -86,8 +80,8 @@
               border
               style="width: 100%; margin-bottom: 1rem;"
             >
-              <el-table-column prop="sizeAttributeName" label="尺码" width="160px" align="center"></el-table-column>
-              <el-table-column prop="colorAttributeName" label="颜色" width="160px" align="center"></el-table-column>
+              <el-table-column prop="sizeAttributeName" label="尺码" align="center"></el-table-column>
+              <el-table-column prop="colorAttributeName" label="颜色" align="center"></el-table-column>
               <el-table-column
                 prop="supplyPrice"
                 label="供货价格（RMB）"
@@ -148,10 +142,9 @@
               <sl-space></sl-space>
               <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
             </el-row>
-            <div class="error-tip">商品供货价：供货价为采购价，并非前台销售价，需低于平台价格（包括1688，淘宝等）。</div>
           </div>
         </div>
-      </div>
+      </el-card>
     </div>
     <!-- 批量设置弹窗 -->
     <BatchAttributes @hide="hideDialog" ref="batchAttributes"></BatchAttributes>
@@ -548,6 +541,7 @@ export default {
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
+
       let table = []
       this.form.sizes.map(size => {
         this.form.colors.map(color => {
@@ -593,6 +587,8 @@ export default {
 
 <style scoped lang="scss">
 .container {
+  width: 95%;
+  margin: 0 auto;
   position: inherit;
   .cover {
     position: absolute;
@@ -660,7 +656,8 @@ export default {
     }
   }
   .content-body {
-    padding: 2rem;
+    width: 90%;
+    margin: 0 auto;
   }
   .normal-tip {
     color: #909399;
@@ -670,14 +667,13 @@ export default {
     font-size: 1.4rem;
     color: #f56c6c;
     line-height: 2rem;
+    margin-bottom: 2rem;
   }
   .primary-header {
-    font-size: 1.8rem;
-    padding: 0 20px;
-    line-height: 5rem;
-    .primary-header--title {
-      font-weight: bold;
-    }
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-left: 2rem;
+    color: #909399;
   }
   .secondary-header {
     font-size: 1.8rem;
@@ -690,6 +686,9 @@ export default {
   .star-symble {
     color: #f56c6c;
     margin-right: 0.5rem;
+  }
+  .box-content {
+    margin-bottom: 2rem;
   }
 }
 </style>
