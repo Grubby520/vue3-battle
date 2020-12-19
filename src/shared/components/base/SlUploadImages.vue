@@ -44,7 +44,7 @@
             <span
               v-if="!disabled && tools.includes('delete')"
               class="item-delete"
-              @click="handleRemove(file, images)"
+              @click="handleRemove(file)"
             >
               <i class="el-icon-delete"></i>
             </span>
@@ -234,6 +234,8 @@ export default {
         }
         if (isError) {
           this.$message.error(message)
+          const index = this.images.findIndex(item => item.hash === file.hash)
+          this.images.splice(index, 1)
           // 不符合条件中断上传
           return new Promise(() => { })
         }
@@ -293,6 +295,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        // 取消上传文件
         const filterImages = _this.images.filter(img => img.hash !== file.hash)
         this.emitImageChange(filterImages)
       })
