@@ -144,7 +144,7 @@ export default {
             setTimeout(() => {
               this.$message.error('基本信息：请填写必填项')
             })
-            reject(new Error('OdmDetailBase'))
+            reject(new Error('odmDetailBase'))
           }
         })
       })
