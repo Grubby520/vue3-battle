@@ -11,7 +11,7 @@
 
 <script>
 import Cascader from './Cascader'
-
+import { throttle } from '@/shared/util'
 export default {
   components: { Cascader },
   props: {
@@ -25,7 +25,7 @@ export default {
     }
   },
   mounted () {
-    this._throttle = this.throttle(() => { this.$message.error('请选择完整的类目！') }, 3000)
+    this._throttle = throttle(this.throttleMessage, 3000)
   },
   computed: {
     cateLabels () {
@@ -35,7 +35,7 @@ export default {
   methods: {
     save () {
       const current = this.currentNodes[this.currentNodes.length - 1]
-      if (current.leaf) {
+      if (current && current.leaf) {
         const categoryId = current.id > 0 ? current.id : this.categoryId
         this.$router.push({
           path: '/home/recommend-products/OdmDetail',
@@ -50,18 +50,10 @@ export default {
         )
       } else {
         this._throttle()
-        // this.$message.error('请选择完整的类目！')
       }
     },
-    throttle (fn, wait) {
-      let init = 0
-      return function () {
-        let nowTimes = +new Date()
-        if (nowTimes - init > wait) {
-          fn.apply(this)
-          init = nowTimes
-        }
-      }
+    throttleMessage () {
+      this.$message.error('请选择完整的类目！')
     }
   }
 }
