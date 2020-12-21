@@ -3,6 +3,7 @@ export * from './messageUI'
 export * from './json2Csv'
 // 下载文件
 export * from './download'
+export * from './optimize'
 export * from './browserStorage'
 export * from './crypto'
 

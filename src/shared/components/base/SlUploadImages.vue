@@ -313,6 +313,7 @@ export default {
       // 图片通过src字段渲染
       file.src = file.url
       delete file.url
+      this.$refs.uploader && this.$refs.uploader.clearFiles()
     },
     uploadFile (file) {
       // 自定上传需要手动触发on-success方法

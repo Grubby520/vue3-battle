@@ -60,7 +60,6 @@
 
 <script>
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-
 export default {
   props: {
     id: { type: String, required: false, default: '' },
@@ -75,24 +74,6 @@ export default {
     supplierItemNo: { type: String, required: false, default: '' }
   },
   data () {
-    const productValidata = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('供方货号不能为空'))
-      } else {
-        if (value === this.supplierItemNo) {
-          callback()
-        } else {
-          RecommondApi.checkItem(value)
-            .then(res => {
-              if (res.data) {
-                callback(new Error('同一个供应商下，供方SPU唯一'))
-              } else {
-                callback()
-              }
-            })
-        }
-      }
-    }
     return {
       hasPattern: false,
       form: {
@@ -112,7 +93,7 @@ export default {
       rules: {
         categoryId: [{ required: true }],
         title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
-        supplierItemNo: [{ required: true, validator: productValidata, trigger: 'change' }],
+        supplierItemNo: [this.productValidata()],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
@@ -163,10 +144,34 @@ export default {
             setTimeout(() => {
               this.$message.error('基本信息：请填写必填项')
             })
-            reject(new Error('OdmDetailBase'))
+            reject(new Error('odmDetailBase'))
           }
         })
       })
+    },
+    productValidata () {
+      return {
+        required: true,
+        validator: (rule, value, callback) => {
+          if (!value) {
+            callback(new Error('供方货号不能为空'))
+          } else {
+            if (value === this.supplierItemNo) {
+              callback()
+            } else {
+              RecommondApi.checkItem(value)
+                .then(res => {
+                  if (res.data) {
+                    callback(new Error('同一个供应商下，供方SPU唯一'))
+                  } else {
+                    callback()
+                  }
+                })
+            }
+          }
+        },
+        trigger: 'blur'
+      }
     }
   }
 }
