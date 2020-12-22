@@ -30,7 +30,7 @@
         <span class="float-right">(如包含字母,字母请大写)</span>
       </el-form-item>
       <el-form-item label="公司性质" prop="supplyType">
-        <el-radio-group v-model="form.supplyType">
+        <el-radio-group v-model="form.supplyType" style="line-height:32px">
           <el-radio
             v-for="(item,index) in supplierTypeOptions"
             :key="'radio_'+index"
@@ -83,6 +83,15 @@
           maxlength="500"
           show-word-limit
         ></el-input>
+      </el-form-item>
+      <el-form-item label="现在合作的跨境电商公司" prop="cooperationCompanies">
+        <el-checkbox-group v-model="form.cooperationCompanies" style="line-height:32px">
+          <el-checkbox
+            v-for="(item,index) in cooperationCompanyOptions"
+            :key="'checkbox_'+index"
+            :label="item.value"
+          >{{item.label}}</el-checkbox>
+        </el-checkbox-group>
       </el-form-item>
       <!-- 审核拒绝再次编辑时不编辑账号注册模块 -->
       <template v-if="!supplierId">
@@ -206,6 +215,7 @@ export default {
       $passwordType: 'text',
       supplierTypeOptions: [],
       tradeTypeOptions: [],
+      cooperationCompanyOptions: [],
       selfFactoryOptions: [],
       form: {
         supplierName: '',
@@ -217,6 +227,7 @@ export default {
         selfFactory: null, // 是否自有工厂
         factoryDescription: '', // 工厂实力
         advantage: '',
+        cooperationCompanies: [],
         userName: '',
         password: '',
         confirmPassword: '',
@@ -304,6 +315,9 @@ export default {
     })
     CommonApi.getDict({ dataCode: 'TRADE_TYPE' }).then(data => {
       this.tradeTypeOptions = data
+    })
+    CommonApi.getDict({ dataCode: 'COOPERATION_COMPANY' }).then(data => {
+      this.cooperationCompanyOptions = data
     })
     CommonApi.getDict({ dataCode: 'YES_NO' }).then(data => {
       this.selfFactoryOptions = data
