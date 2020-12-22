@@ -75,6 +75,7 @@ export default {
         selfFactory: null, // 是否自有工厂
         factoryDescription: '', // 工厂实力
         advantage: '',
+        cooperationCompanies: [],
         userName: '',
         password: '',
         confirmPassword: '',

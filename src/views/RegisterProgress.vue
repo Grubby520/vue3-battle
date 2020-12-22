@@ -6,7 +6,12 @@
       <div>
         <b v-if="isInvalidStatusCode">您的申请已成功提交</b>
         <div v-else-if="supplierStatusText" class="display-inline-block">
-          {{supplierStatusText}}&nbsp;&nbsp;
+          {{supplierStatusText}}
+          <!-- 驳回意见 -->
+          <p
+            class="audit-remarks align-left color-text--red"
+            v-if="auditRemarks"
+          >原因：{{auditRemarks}}</p>
           <el-button v-if="isRejected" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
         </div>
       </div>
@@ -32,7 +37,7 @@ export default {
     }
   },
   computed: {
-    ...userMapState(['supplierName', 'confirmAgreement']),
+    ...userMapState(['supplierName', 'confirmAgreement', 'auditRemarks']),
     ...userMapGetters(['isInvalidStatusCode', 'isRejected', 'isAuditting', 'enterMainPage', 'enterRegisterPage']),
     supplierStatusText () {
       let text = ''
@@ -96,5 +101,11 @@ export default {
 .register-result {
   margin-top: 8rem;
   padding-top: 6em;
+}
+
+.audit-remarks {
+  margin-top: 1em;
+  max-width: 30rem;
+  line-height: 1.5;
 }
 </style>

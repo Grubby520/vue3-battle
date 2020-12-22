@@ -13,7 +13,8 @@ export default {
     userName: '',
     userId: '',
     isAdmin: false,
-    confirmAgreement: false // 是否确认了协议
+    confirmAgreement: false, // 是否确认了协议
+    auditRemarks: null // 审核驳回备注
   },
   getters: {
     isInvalidStatusCode (state) {
@@ -53,6 +54,7 @@ export default {
         state.userId = ''
         state.isAdmin = false
         state.confirmAgreement = false
+        state.auditRemarks = null
         return
       }
       Object.keys(userInfo).forEach(key => {
