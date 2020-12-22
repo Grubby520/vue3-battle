@@ -234,10 +234,8 @@ export default {
         }
         if (isError) {
           this.$message.error(message)
-          const index = this.images.findIndex(item => item.hash === file.hash)
-          this.images.splice(index, 1)
           // 不符合条件中断上传
-          return new Promise(() => { })
+          return new Promise((resolve, reject) => { reject(new Error()) })
         }
         return isError
       }
@@ -313,6 +311,7 @@ export default {
       // 图片通过src字段渲染
       file.src = file.url
       delete file.url
+      // 清空已上传的文件列表
       this.$refs.uploader && this.$refs.uploader.clearFiles()
     },
     uploadFile (file) {
