@@ -37,114 +37,116 @@
           <!-- <el-button type="primary" @click="validateAll">校验</el-button> -->
         </div>
       </el-card>
-      <el-card class="box-card">
-        <div slot="header" class="primary-header">
-          <span>销售属性</span>
-        </div>
-        <div class="content-body">
-          <!-- 尺码、颜色表单 -->
-          <el-form :model="form" :rules="rules" ref="form" label-width="120px">
-            <el-form-item label="尺码" prop="sizes">
-              <el-button type="text" @click="handleAddSize">添加尺码</el-button>
-              <el-tag
-                style="margin: 0 0 5px 10px"
-                v-for="(tag, index) in form.sizes"
-                :key="tag.id"
-                closable
-                effect="dark"
-                :type="['success', 'info', 'danger', 'warning', ''][index%5]"
-                @close="removeSizeTag(tag)"
-              >{{tag.attrTermName}}</el-tag>
-            </el-form-item>
-            <el-form-item label="颜色" prop="colors">
-              <SlSelect
-                ref="colorSelect"
-                v-model="form.colors"
-                :options="colorOptions"
-                label="attrTermName"
-                value="id"
-                filterable
-                multiple
-                clearable
-                isObj
-                placeholder="请选择颜色"
-                :disabled="mode === 'view'"
-                @change="selectChange($event, 'color')"
-              ></SlSelect>
-            </el-form-item>
-          </el-form>
-          <!-- 尺码、颜色表格 -->
-          <div class="table-wrap">
-            <el-table
-              :data="productSalesAttributeList"
-              border
-              style="width: 100%; margin-bottom: 1rem;"
-            >
-              <el-table-column prop="sizeAttributeName" label="尺码" align="center"></el-table-column>
-              <el-table-column prop="colorAttributeName" label="颜色" align="center"></el-table-column>
-              <el-table-column
-                prop="supplyPrice"
-                label="供货价格（RMB）"
-                min-width="220px"
-                align="center"
-              >
-                <template slot="header">
-                  <p>
-                    <span class="star-symble">*</span>供货价格（RMB）
-                  </p>
-                </template>
-                <template v-slot="{row}">
-                  <el-input
-                    v-model="row.supplyPrice"
-                    v-slFormatNumber="{type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2}"
-                    :disabled="mode === 'view'"
-                  ></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="supplierSkuCode"
-                label="商家SKU编码"
-                min-width="220px"
-                align="center"
-              >
-                <template slot="header">
-                  <p>
-                    <span class="star-symble">*</span>商家SKU编码
-                  </p>
-                </template>
-                <template v-slot="{row}">
-                  <el-input
-                    v-model.trim="row.supplierSkuCode"
-                    :disabled="mode === 'view'"
-                    maxlength="50"
-                  ></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
-                <template v-slot="{row}">
-                  <el-input v-model="row.tagSize" :disabled="mode === 'view'"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
-                <template slot="header">
-                  <p>带包装重量（G）</p>
-                </template>
-                <template v-slot="{row}">
-                  <el-input
-                    v-model="row.weight"
-                    v-slFormatNumber="{type: 'integer', max: 999999, compareLength: true, includeZero:true}"
-                    :disabled="mode === 'view'"
-                  ></el-input>
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-row type="flex">
-              <sl-space></sl-space>
-              <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
-            </el-row>
+      <div class="card-color">
+        <el-card class="box-card">
+          <div slot="header" class="primary-header">
+            <span>销售属性</span>
           </div>
-        </div>
-      </el-card>
+          <div class="content-body">
+            <!-- 尺码、颜色表单 -->
+            <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+              <el-form-item label="尺码" prop="sizes">
+                <el-button type="text" @click="handleAddSize">添加尺码</el-button>
+                <el-tag
+                  style="margin: 0 0 5px 10px"
+                  v-for="(tag, index) in form.sizes"
+                  :key="tag.id"
+                  closable
+                  effect="dark"
+                  :type="['success', 'info', 'danger', 'warning', ''][index%5]"
+                  @close="removeSizeTag(tag)"
+                >{{tag.attrTermName}}</el-tag>
+              </el-form-item>
+              <el-form-item label="颜色" prop="colors">
+                <SlSelect
+                  ref="colorSelect"
+                  v-model="form.colors"
+                  :options="colorOptions"
+                  label="attrTermName"
+                  value="id"
+                  filterable
+                  multiple
+                  clearable
+                  isObj
+                  placeholder="请选择颜色"
+                  :disabled="mode === 'view'"
+                  @change="selectChange($event, 'color')"
+                ></SlSelect>
+              </el-form-item>
+            </el-form>
+            <!-- 尺码、颜色表格 -->
+            <div class="table-wrap">
+              <el-table
+                :data="productSalesAttributeList"
+                border
+                style="width: 100%; margin-bottom: 1rem;"
+              >
+                <el-table-column prop="sizeAttributeName" label="尺码" align="center"></el-table-column>
+                <el-table-column prop="colorAttributeName" label="颜色" align="center"></el-table-column>
+                <el-table-column
+                  prop="supplyPrice"
+                  label="供货价格（RMB）"
+                  min-width="220px"
+                  align="center"
+                >
+                  <template slot="header">
+                    <p>
+                      <span class="star-symble">*</span>供货价格（RMB）
+                    </p>
+                  </template>
+                  <template v-slot="{row}">
+                    <el-input
+                      v-model="row.supplyPrice"
+                      v-slFormatNumber="{type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2}"
+                      :disabled="mode === 'view'"
+                    ></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  prop="supplierSkuCode"
+                  label="商家SKU编码"
+                  min-width="220px"
+                  align="center"
+                >
+                  <template slot="header">
+                    <p>
+                      <span class="star-symble">*</span>商家SKU编码
+                    </p>
+                  </template>
+                  <template v-slot="{row}">
+                    <el-input
+                      v-model.trim="row.supplierSkuCode"
+                      :disabled="mode === 'view'"
+                      maxlength="50"
+                    ></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="tagSize" label="商家吊牌尺码" min-width="220px" align="center">
+                  <template v-slot="{row}">
+                    <el-input v-model="row.tagSize" :disabled="mode === 'view'"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="weight" label="带包装重量（G）" min-width="220px" align="center">
+                  <template slot="header">
+                    <p>带包装重量（G）</p>
+                  </template>
+                  <template v-slot="{row}">
+                    <el-input
+                      v-model="row.weight"
+                      v-slFormatNumber="{type: 'integer', max: 999999, compareLength: true, includeZero:true}"
+                      :disabled="mode === 'view'"
+                    ></el-input>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-row type="flex">
+                <sl-space></sl-space>
+                <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
+              </el-row>
+            </div>
+          </div>
+        </el-card>
+      </div>
     </div>
     <!-- 批量设置弹窗 -->
     <BatchAttributes @hide="hideDialog" ref="batchAttributes"></BatchAttributes>
@@ -689,6 +691,11 @@ export default {
   }
   .box-content {
     margin-bottom: 2rem;
+  }
+  .card-color {
+    /deep/.el-card {
+      overflow: unset !important;
+    }
   }
 }
 </style>
