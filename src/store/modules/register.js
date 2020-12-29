@@ -5,7 +5,9 @@ export default {
   state: {
     supplierId: '',
     application: {},
-    additionalInfo: {}
+    additionalInfo: {
+      currency: 0 // 默认人民币
+    }
   },
   getters: {
     certificationNo (state) {
@@ -15,8 +17,12 @@ export default {
       let baseInfo = {}
       let bankInfo = {}
       let certification = {}
-      let getSensitivePictureUrl = function (url) {
-        return url ? url.split('?')[0] : url
+      let getHandledPictureUrl = function (image) {
+        if (!image) {
+          return ''
+        }
+        // 图片链接'?'后面跟的认证信息,保存时需要去掉
+        return image.src ? image.src.split('?')[0] : image.src
       }
       // 基本信息转换
       let excludeKeys = ['certificationNo', 'confirmPassword']
@@ -27,13 +33,13 @@ export default {
             baseInfo[key] = JSON.stringify(state.application[key])
           }
 
-          if (key === 'password') {
+          if (key === 'password' && state.application[key]) {
             baseInfo[key] = valueToMd5(state.application[key])
           }
         }
       })
       // 银行信息转换
-      let bankKeys = ['currency', 'payeeCompany', 'payee', 'payeeIdCard', 'payeePhone', 'unionPayNo', 'bank', 'bankBranch', 'bankAccount']
+      let bankKeys = ['currency', 'payeeCompany', 'payee', 'payeeIdCard', 'payeePhone', 'bank', 'bankBranch', 'bankAccount']
       Object.keys(state.additionalInfo).forEach(key => {
         if (bankKeys.includes(key)) {
           bankInfo[key] = state.additionalInfo[key]
@@ -41,12 +47,13 @@ export default {
       })
       // 资质信息转换
       certification['certificationNo'] = state.application.certificationNo
-      certification['certificationImage'] = state.additionalInfo.certificationImage[0] ? getSensitivePictureUrl(state.additionalInfo.certificationImage[0].url) : ''
-      certification['idCardFront'] = state.additionalInfo.idCardImages[0] ? getSensitivePictureUrl(state.additionalInfo.idCardImages[0].url) : ''
-      certification['idCardBack'] = state.additionalInfo.idCardImages[1] ? getSensitivePictureUrl(state.additionalInfo.idCardImages[1].url) : ''
-      certification['organizationImage'] = state.additionalInfo.organizationImage[0] ? getSensitivePictureUrl(state.additionalInfo.organizationImage[0].url) : ''
-      certification['taxRegisterImage'] = state.additionalInfo.taxRegisterImage[0] ? getSensitivePictureUrl(state.additionalInfo.taxRegisterImage[0].url) : ''
-      certification['companyShareholderImage'] = state.additionalInfo.companyShareholderImage[0] ? getSensitivePictureUrl(state.additionalInfo.companyShareholderImage[0].url) : ''
+      certification['certificationImage'] = getHandledPictureUrl(state.additionalInfo.certificationImage[0])
+      certification['payeeDelegationImage'] = getHandledPictureUrl(state.additionalInfo.payeeDelegationImage[0])
+      certification['idCardFront'] = getHandledPictureUrl(state.additionalInfo.idCardImages[0])
+      certification['idCardBack'] = getHandledPictureUrl(state.additionalInfo.idCardImages[1])
+      certification['organizationImage'] = getHandledPictureUrl(state.additionalInfo.organizationImage[0])
+      certification['taxRegisterImage'] = getHandledPictureUrl(state.additionalInfo.taxRegisterImage[0])
+      certification['companyShareholderImage'] = getHandledPictureUrl(state.additionalInfo.companyShareholderImage[0])
 
       return {
         baseInfo,
@@ -68,6 +75,7 @@ export default {
         selfFactory: null, // 是否自有工厂
         factoryDescription: '', // 工厂实力
         advantage: '',
+        cooperationCompanies: [],
         userName: '',
         password: '',
         confirmPassword: '',
@@ -77,17 +85,17 @@ export default {
       }
 
       state.additionalInfo = {
-        currency: null,
+        currency: 0, // 默认人民币
         payeeCompany: '',
         payee: '',
         payeeIdCard: '',
         payeePhone: '',
-        unionPayNo: '',
         bank: '',
         bankBranch: '',
         bankAccount: '',
         idCardImages: [],
         certificationImage: [],
+        payeeDelegationImage: [],
         organizationImage: [],
         taxRegisterImage: [],
         companyShareholderImage: []

@@ -1,64 +1,68 @@
 <template>
   <!-- 从erp创建产品的‘产品自定义属性’组件拷贝而来 -->
   <div class="container">
-    <div v-if="form.metadatas.length" class="primary-header">商品属性</div>
-    <el-form :model="form" ref="submitForm" label-width="100px">
-      <el-row :gutter="8">
-        <el-col :span="6" v-for="(item,itemIndex) in form.metadatas" :key="item.metadataId">
-          <el-form-item
-            :label="item.name"
-            :prop="'metadatas.'+itemIndex+'.value'"
-            :rules="[{required: item.isRequired,message: `${item.name}是必填项`,trigger: itemType(item) === 'select'?'change':'blur'}]"
-          >
-            <template slot="label">
-              <span :title="item.name">{{item.name}}</span>
-            </template>
-            <template v-if="canUpdate">
-              <el-select
-                v-if="itemType(item) === 'select'"
-                :multiple="item.multipleSelect"
-                filterable
-                clearable
-                v-model="item.value"
-                placeholder="请选择"
-              >
-                <el-option
-                  v-for="(opt, index) in item.optionalDatas"
-                  :key="'valueCn-' + index"
-                  :label="opt.valueCn"
-                  :value="opt.valueCn"
-                ></el-option>
-                <!-- 处理单选时使用的自定义属性值被删除后UI异常的情况 -->
-                <el-option
-                  v-if="!item.multipleSelect && item.value !== '' && !item.optionalDatas.find(ele=>ele.valueCn === item.value)"
-                  :label="item.value"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-              <el-radio-group v-else-if="itemType(item) === 'radio'" v-model="item.value">
-                <el-radio v-show="!item.isRequired" label>未选择</el-radio>
-                <el-radio label="true">是</el-radio>
-                <el-radio label="false">否</el-radio>
-              </el-radio-group>
-              <el-input
-                v-else
-                :type="item.dataType == 0 ? 'number' : 'text'"
-                v-model="item.value"
-                placeholder="请输入内容"
-              ></el-input>
-            </template>
-            <template v-else-if="canView">
-              <template v-if="item.multipleSelect && item.isList">
-                <el-tag v-for="text in item.value" :key="'multipleSelect_' + text">{{text}}</el-tag>
+    <el-card class="box-card">
+      <div slot="header" class="primary-header">
+        <div v-if="form.metadatas.length">商品属性</div>
+      </div>
+      <el-form :model="form" ref="submitForm" label-width="120px" class="form">
+        <el-row :gutter="8">
+          <el-col :span="6" v-for="(item,itemIndex) in form.metadatas" :key="item.metadataId">
+            <el-form-item
+              :label="item.name"
+              :prop="'metadatas.'+itemIndex+'.value'"
+              :rules="[{required: item.isRequired,message: `${item.name}是必填项`,trigger: itemType(item) === 'select'?'change':'blur'}]"
+            >
+              <template slot="label">
+                <span :title="item.name">{{item.name}}</span>
               </template>
-              <template v-else-if="item.dataType == 2">{{item.value == 'false' ? '否' : '是'}}</template>
-              <span v-else>{{item.value}}</span>
-            </template>
-            <span v-else>******</span>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
+              <template v-if="canUpdate">
+                <el-select
+                  v-if="itemType(item) === 'select'"
+                  :multiple="item.multipleSelect"
+                  filterable
+                  clearable
+                  v-model="item.value"
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="(opt, index) in item.optionalDatas"
+                    :key="'valueCn-' + index"
+                    :label="opt.valueCn"
+                    :value="opt.valueCn"
+                  ></el-option>
+                  <!-- 处理单选时使用的自定义属性值被删除后UI异常的情况 -->
+                  <el-option
+                    v-if="!item.multipleSelect && item.value !== '' && !item.optionalDatas.find(ele=>ele.valueCn === item.value)"
+                    :label="item.value"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+                <el-radio-group v-else-if="itemType(item) === 'radio'" v-model="item.value">
+                  <el-radio v-show="!item.isRequired" label>未选择</el-radio>
+                  <el-radio label="true">是</el-radio>
+                  <el-radio label="false">否</el-radio>
+                </el-radio-group>
+                <el-input
+                  v-else
+                  :type="item.dataType == 0 ? 'number' : 'text'"
+                  v-model="item.value"
+                  placeholder="请输入内容"
+                ></el-input>
+              </template>
+              <template v-else-if="canView">
+                <template v-if="item.multipleSelect && item.isList">
+                  <el-tag v-for="text in item.value" :key="'multipleSelect_' + text">{{text}}</el-tag>
+                </template>
+                <template v-else-if="item.dataType == 2">{{item.value == 'false' ? '否' : '是'}}</template>
+                <span v-else>{{item.value}}</span>
+              </template>
+              <span v-else>******</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
   </div>
 </template>
 
@@ -308,70 +312,81 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.container,
-.template-dialog {
-  padding: 2rem;
-  /deep/ .el-form {
-    .el-form-item__label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    // 解决label过长星号放在后面被遮住的问题
-    .el-form-item {
-      min-height: 4rem;
-      &.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
-        content: '*';
-        margin-right: 4px;
-        color: #f00;
+.container {
+  width: 95%;
+  margin: 0 auto;
+  margin-top: 2rem;
+  .template-dialog {
+    padding: 2rem;
+    /deep/ .el-form {
+      .el-form-item__label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      &.is-required .el-form-item__label:after {
-        content: '';
+      // 解决label过长星号放在后面被遮住的问题
+      .el-form-item {
+        min-height: 4rem;
+        &.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
+          content: '*';
+          margin-right: 4px;
+          color: #f00;
+        }
+
+        &.is-required .el-form-item__label:after {
+          content: '';
+        }
       }
     }
-  }
-}
-
-.template-dialog /deep/ {
-  .el-col-12 {
-    padding-left: 0 !important;
-  }
-  .el-select {
-    width: 100%;
-  }
-}
-
-.custom-attribute {
-  display: flex;
-  align-items: center;
-  padding-bottom: 20px;
-
-  span {
-    margin-right: 15px;
+    /deep/ .el-select {
+      width: 100%;
+    }
   }
 
-  > div {
+  .template-dialog /deep/ {
+    .el-col-12 {
+      padding-left: 0 !important;
+    }
+    .el-select {
+      width: 100%;
+    }
+  }
+
+  .custom-attribute {
     display: flex;
     align-items: center;
-  }
+    padding-bottom: 20px;
 
-  .template-module {
-    white-space: nowrap;
-    display: inline-block;
-    .template-span {
-      &:hover {
-        cursor: pointer;
-        color: #f56c6c;
+    span {
+      margin-right: 15px;
+    }
+
+    > div {
+      display: flex;
+      align-items: center;
+    }
+
+    .template-module {
+      white-space: nowrap;
+      display: inline-block;
+      .template-span {
+        &:hover {
+          cursor: pointer;
+          color: #f56c6c;
+        }
       }
     }
   }
-}
-.primary-header {
-  font-weight: bold;
-  font-size: 1.8rem;
-  line-height: 4rem;
-  margin-bottom: 2rem;
+  .primary-header {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-left: 2rem;
+    color: #909399;
+  }
+  form {
+    width: 90%;
+    margin: 0 auto;
+  }
 }
 </style>

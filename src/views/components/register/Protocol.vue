@@ -219,7 +219,7 @@ export default {
   margin-bottom: 1em;
   line-height: 2;
   max-height: calc(100vh - 300px);
-  box-shadow: 0 0 1rem #ccc;
+  box-shadow: 0 0 1rem #eee;
   overflow: auto;
   & ol :not(.root) li {
     margin-left: 1em;

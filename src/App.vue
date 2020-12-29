@@ -26,7 +26,7 @@ export default {
     if (process.env.NODE_ENV === 'production') {
       setInterval(() => {
         this.getVersion()
-      }, 1000 * 60 * 1)
+      }, 1000 * 60 * 5)
     }
   },
   methods: {

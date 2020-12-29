@@ -5,7 +5,7 @@
         <img src="@/assets/register-logo.png" alt="logo" />
       </div>
       <div class="right-module">
-        <div v-if="!supplierStatusCode && supplierStatusCode!== 0">
+        <div v-if="isInvalidStatusCode">
           <span class="display-inline-block">已有账户</span>&nbsp;
           <el-button type="text" @click="login">快速登录</el-button>
         </div>
@@ -21,15 +21,11 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-const { mapActions: userMapActions } = createNamespacedHelpers('user')
+const { mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 
 export default {
   name: 'RegisterHeader',
   props: {
-    supplierStatusCode: {
-      type: [String, Number],
-      default: ''
-    },
     supplierName: {
       type: String,
       default: ''
@@ -41,7 +37,7 @@ export default {
     }
   },
   computed: {
-
+    ...userMapGetters(['isInvalidStatusCode'])
   },
   mounted: function () {
 
@@ -69,7 +65,7 @@ export default {
   top: 0;
   width: 100%;
   background-color: $color-white;
-  z-index: 100;
+  z-index: 10;
 }
 
 .register-header {

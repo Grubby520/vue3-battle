@@ -7,7 +7,7 @@
         :isStatus="isStatus"
         :productBasicInfo="productBasicInfo"
         :supplierItemNo="supplierItemNo"
-        ref="OdmDetailBase"
+        ref="odmDetailBase"
       />
       <SalesAttributes
         v-if="!loading"
@@ -30,13 +30,15 @@
     <div class="odmDetail-btn" v-if="!isStatus">
       <el-button @click="cancel">取消</el-button>
       <el-button @click="submitForm('create')" type="primary">保存</el-button>
-      <el-button @click="submitForm('submit')" type="primary">提交</el-button>
+      <el-button
+        @click="submitForm('submit')"
+        type="primary"
+      >{{productStatus!==2 ? '提交' : '确定补充信息'}}</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { errorNotify } from '@shared/util'
 import OdmDetailBase from './OdmDetailBase'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import SalesAttributes from '@/views/createProduct/SalesAttributes'
@@ -67,7 +69,8 @@ export default {
       productBasicInfo: {},
       productCustomizeAttributeList: [],
       productSalesAttributeList: {},
-      loading: true
+      loading: true,
+      productStatus: undefined
     }
   },
   computed: {
@@ -84,22 +87,27 @@ export default {
   },
   methods: {
     submitForm (status) {
-      const OdmDetailBase = this.$refs.OdmDetailBase.commmitInfo()
+      const odmDetailBase = this.$refs.odmDetailBase.commmitInfo()
       const initSaleAttr = this.$refs.saleAttributesInfo.validateAndGet()
       const productCustomizeAttributeList = this.$refs.customAttributesInfo.getSubmitData()
       let data = {}
-      Promise.all([OdmDetailBase, initSaleAttr, productCustomizeAttributeList])
+      Promise.all([odmDetailBase, initSaleAttr, productCustomizeAttributeList])
         .then((res) => {
           const [{ productBasicInfo }, { productImageList, productSalesAttributeList }, productCustomizeAttributeList] = res
           data.productBasicInfo = productBasicInfo
-          data.productBasicInfo.categoryLevel = this.categoryLevel
+          data.productBasicInfo.categoryLevel = this.categoryLevel ? this.categoryLevel : productBasicInfo.categoryLevel
           data.productBasicInfo.productImageList = productImageList
           data.productSalesAttributeList = productSalesAttributeList
           data.productCustomizeAttributeList = productCustomizeAttributeList
-          if (status === 'create') {
-            this.create(data)
+          if (data.productBasicInfo.categoryLevel) {
+            let method = null
+            const decision = (save, submit) => {
+              return this.productStatus !== 2 ? save : submit
+            }
+            method = status === 'create' ? decision(this.create, this.supplementSave) : decision(this.submit, this.supplement)
+            method(data)
           } else {
-            this.submit(data)
+            this.$message.error(`商品分类层级不能为空!`)
           }
         })
         .catch((err) => {
@@ -115,7 +123,8 @@ export default {
       RecommondApi.recommendDetail(this.id)
         .then(res => {
           const { productBasicInfo = [], productCustomizeAttributeList = [], productSalesAttributeList = [] } = res.data
-          const { productImageList } = productBasicInfo
+          const { productImageList, productStatus } = productBasicInfo
+          this.productStatus = productStatus
           // 销售属性回显
           if (productSalesAttributeList && productSalesAttributeList.length > 0) {
             _this.initSaleAttr.productSalesAttributeList = productSalesAttributeList
@@ -143,36 +152,41 @@ export default {
     },
 
     submit (params) {
-      if (!this.id) {
-        // 创建产品调用的保存提交
-        RecommondApi.saveSubmit(params)
-          .then(res => {
-            if (res.success) {
-              this.$router.push({ path: '/home/recommend-products/list' })
-            } else {
-              if (res.error && res.error.message) {
-                this.$message.error(res.error.message)
-              }
+      // 创建产品调用的保存提交
+      RecommondApi.saveSubmit(params)
+        .then(res => {
+          if (res.success) {
+            this.$router.push({ path: '/home/recommend-products/list' })
+          } else {
+            if (res.error && res.error.message) {
+              this.$message.error(res.error.message)
             }
-          })
-      } else {
-        // 编辑状态调用的列表的提交接口
-        RecommondApi.recommend({ productIdList: [this.id] })
-          .then((res) => {
-            if (res.success) {
-              this.$router.back()
-            } else {
-              if (res.error && res.error.message) {
-                this.$message.error(res.error.message)
-              }
+          }
+        })
+    },
+    supplement (params) {
+      RecommondApi.supplement(params)
+        .then(res => {
+          if (res.success) {
+            this.$router.push({ path: '/home/recommend-products/list' })
+          } else {
+            if (res.error && res.error.message) {
+              this.$message.error(res.error.message)
             }
-          })
-          .catch((error) => {
-            if (error.error === '100002') {
-              errorNotify(this, `账号在别处登录`)
+          }
+        })
+    },
+    supplementSave (params) {
+      RecommondApi.supplementSave(params)
+        .then(res => {
+          if (res.success) {
+            this.$router.push({ path: '/home/recommend-products/list' })
+          } else {
+            if (res.error && res.error.message) {
+              this.$message.error(res.error.message)
             }
-          })
-      }
+          }
+        })
     },
     cancel () {
       this.$router.push({ path: '/home/recommend-products/list' })
@@ -187,50 +201,12 @@ export default {
 
 <style scoped lang="scss">
 .odmDetail {
-  border: 1px solid #dcdfe6;
   &-btn {
     text-align: center;
     position: sticky;
     bottom: 0;
     z-index: 999;
     padding: 2rem 0;
-    background: white;
-  }
-}
-
-.view-container {
-  pointer-events: none;
-  cursor: not-allowed;
-  /deep/.el-input__inner {
-    border: 0;
-    &::placeholder {
-      color: #fff !important;
-    }
-  }
-  /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
-    border: 0;
-  }
-  /deep/.el-textarea__inner {
-    border: 0 !important;
-    &::placeholder {
-      color: #fff !important;
-    }
-  }
-
-  /deep/.stl-big-data-select .selected-tags.disabled[data-v-05976cfe] {
-    background-color: #fff;
-  }
-  /deep/.el-input.is-disabled .el-input__inner {
-    background-color: #fff;
-  }
-  /deep/.el-input__count {
-    display: none;
-  }
-  /deep/.el-input__prefix {
-    display: none;
-  }
-  /deep/.el-icon-arrow-down {
-    display: none;
   }
 }
 </style>

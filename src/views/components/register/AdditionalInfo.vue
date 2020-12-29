@@ -3,7 +3,7 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="12rem" label-position="left">
       <SlContentTitle text="收款信息" line></SlContentTitle>
       <el-form-item label="收款币种" prop="currency">
-        <el-select v-model="form.currency" filterable clearable placeholder="请选择">
+        <el-select v-model="form.currency" filterable clearable placeholder="请选择" disabled>
           <el-option
             v-for="(item,index) in currencyOptions"
             :key="'options-'+index"
@@ -42,15 +42,6 @@
           show-word-limit
         ></el-input>
       </el-form-item>
-      <el-form-item label="银行联行号" prop="unionPayNo">
-        <el-input
-          v-model="form.unionPayNo"
-          clearable
-          placeholder="请输入银行联行号"
-          maxlength="12"
-          show-word-limit
-        ></el-input>
-      </el-form-item>
       <el-form-item label="银行开户行" prop="bank">
         <el-input
           v-model="form.bank"
@@ -79,63 +70,87 @@
         ></el-input>
       </el-form-item>
       <el-form-item label="法人身份证" prop="idCardImages">
-        <UploadImages
-          ref="idCardImagesRef"
-          v-model="form.idCardImages"
-          :folder="certificationNo"
-          :imageType="2"
-          :imgNumber="2"
-          :tools="['download', 'delete']"
-          :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
-        <p>请依次传入身份证正面和反面。复印件需加盖公章,图片小于1M</p>
+        <el-row>
+          <el-col :span="8" style="min-width:120px">
+            <SlUploadImages
+              v-model="idCardFronts"
+              :folder="certificationNo"
+              :imageType="2"
+              :limit="1"
+              :tools="['download', 'delete']"
+              :limits="[{type: 'size',meta: {size: 1}}]"
+            ></SlUploadImages>
+            <p>身份证正面</p>
+          </el-col>
+          <el-col :span="8" style="min-width:120px">
+            <SlUploadImages
+              v-model="idCardBacks"
+              :folder="certificationNo"
+              :imageType="2"
+              :limit="1"
+              :tools="['download', 'delete']"
+              :limits="[{type: 'size',meta: {size: 1}}]"
+            ></SlUploadImages>
+            <p>身份证反面</p>
+          </el-col>
+        </el-row>
+        <p>复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="营业执照" prop="certificationImage">
-        <UploadImages
-          ref="certificationImageRef"
+        <SlUploadImages
           v-model="form.certificationImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
+      <el-form-item label="收款委托书" prop="payeeDelegationImage">
+        <SlUploadImages
+          v-model="form.payeeDelegationImage"
+          :folder="certificationNo"
+          :imageType="2"
+          :limit="1"
+          :tools="['download', 'delete']"
+          :limits="[{type: 'size',meta: {size: 1}}]"
+        ></SlUploadImages>
+        <p>
+          <el-button type="text" @click="downloadTemplate">下载收款委托书模板</el-button>,请填写后拍照上传。图片小于1M
+        </p>
+      </el-form-item>
       <el-form-item label="组织机构代码证" prop="organizationImage">
-        <UploadImages
-          ref="organizationImageRef"
+        <SlUploadImages
           v-model="form.organizationImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="税务登记证" prop="taxRegisterImage">
-        <UploadImages
-          ref="taxRegisterImageRef"
+        <SlUploadImages
           v-model="form.taxRegisterImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
       <el-form-item label="企业股东证截图" prop="companyShareholderImage">
-        <UploadImages
-          ref="companyShareholderImageRef"
+        <SlUploadImages
           v-model="form.companyShareholderImage"
           :folder="certificationNo"
           :imageType="2"
-          :imgNumber="1"
+          :limit="1"
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
-        ></UploadImages>
+        ></SlUploadImages>
         <p>国家企业信用信息公示系统截图股东信息。图片小于1M</p>
       </el-form-item>
     </el-form>
@@ -144,41 +159,41 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import UploadImages from './UploadImages'
 import CommonApi from '@api/api.js'
 import { scrollToElFormElement } from '@shared/util'
 import {
   emptyValidator,
   phoneNoValidator,
-  digitalValidator,
   charLimitValidator,
   idCardValidator,
   bankCardNumberValidator
 } from '@shared/validate'
+const { mapActions: userMapActions } = createNamespacedHelpers('user')
 const { mapState: registerMapState, mapMutations: registerMapMutations, mapGetters: registerMapGetters } = createNamespacedHelpers('register')
 
 export default {
   name: 'AdditionalInfo',
   components: {
-    UploadImages
   },
   props: {
   },
   data () {
     return {
       currencyOptions: [],
+      idCardFronts: [],
+      idCardBacks: [],
       form: {
         currency: null,
         payeeCompany: '',
         payee: '',
         payeeIdCard: '',
         payeePhone: '',
-        unionPayNo: '',
         bank: '',
         bankBranch: '',
         bankAccount: '',
         idCardImages: [],
         certificationImage: [],
+        payeeDelegationImage: [],
         organizationImage: [],
         taxRegisterImage: [],
         companyShareholderImage: []
@@ -189,12 +204,12 @@ export default {
         payee: [emptyValidator('请输入收款人姓名'), charLimitValidator('长度在 2 到 20 个字符', 2, 20)],
         payeeIdCard: [emptyValidator('请输入身份证号'), idCardValidator()],
         payeePhone: [emptyValidator('请输入收款人手机号'), phoneNoValidator()],
-        unionPayNo: [emptyValidator('请输入位银行联行号'), digitalValidator(), charLimitValidator('银行联行号是12位数字', 12, 12)],
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
-        idCardImages: [emptyValidator('请上传身份证证件图片', 'change')],
+        idCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator()],
         certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
+        payeeDelegationImage: [emptyValidator('请上传委托书图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
         taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
         companyShareholderImage: [emptyValidator('请上传企业股东证件图片', 'change')]
@@ -209,9 +224,21 @@ export default {
     additionalInfo: {
       handler (val) {
         this.form = Object.assign(this.form, val)
+        if (this.form.idCardImages.length > 0) {
+          this.idCardFronts = [].concat(this.form.idCardImages[0])
+          this.idCardBacks = [].concat(this.form.idCardImages[1])
+        }
       },
       immediate: true,
       deep: true
+    },
+    idCardFronts: function (val) {
+      this.form.idCardImages[0] = val[0]
+      this.$refs.form.validateField('idCardImages')
+    },
+    idCardBacks: function (val) {
+      this.form.idCardImages[1] = val[0]
+      this.$refs.form.validateField('idCardImages')
     }
   },
   mounted: function () {
@@ -221,6 +248,7 @@ export default {
   },
   methods: {
     ...registerMapMutations(['SET_ADDITIONAL_INFO']),
+    ...userMapActions(['DOWNLOAD_TEMPLATE']),
     validate () {
       return new Promise((resolve, reject) => {
         this.$refs.form.validate(valid => {
@@ -233,6 +261,33 @@ export default {
           }
         })
       })
+    },
+    getIdCardImagesValidator () {
+      return {
+        validator: (rule, value, callback) => {
+          let errorMsg = ''
+          switch (true) {
+            case this.form.idCardImages.length === 0 || (!this.form.idCardImages[0] && !this.form.idCardImages[1]):
+              errorMsg = '请上传身份证信息'
+              break
+            case !this.form.idCardImages[0]:
+              errorMsg = '请上传身份证正面信息'
+              break
+            case !this.form.idCardImages[1]:
+              errorMsg = '请上传身份证反面信息'
+              break
+          }
+          if (errorMsg) {
+            callback(new Error(errorMsg))
+          } else {
+            callback()
+          }
+        },
+        trigger: 'change'
+      }
+    },
+    downloadTemplate () {
+      this.DOWNLOAD_TEMPLATE()
     }
   }
 }

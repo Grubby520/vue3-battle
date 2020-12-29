@@ -82,7 +82,11 @@ export const emptyValidator = function (errorMsg, trigger = 'blur', required = t
  * @param {Number} max
  * @param {String} trigger
  */
-export const charLimitValidator = function (errorMsg, min, max, trigger = 'blur') {
+export const charLimitValidator = function (errorMsg, min, max, trigger = 'blur', required = true) {
+  if (!required) {
+    const CHAR_LENGTH_REG = new RegExp('^.{' + min + ',' + max + '}$')
+    return generateNotRequiredValidator(errorMsg, CHAR_LENGTH_REG, trigger)
+  }
   return {
     min,
     max,
@@ -124,7 +128,10 @@ export const idCardValidator = function (errorMsg = '请输入正确的身份证
   }
 }
 
-export const digitalValidator = function (errorMsg = '请输入数字', trigger = 'blur') {
+export const digitalValidator = function (errorMsg = '请输入数字', trigger = 'blur', required = true) {
+  if (!required) {
+    return generateNotRequiredValidator(errorMsg, numberReg, trigger)
+  }
   return {
     validator: generateFormItemValidator(numberReg, errorMsg),
     message: errorMsg,

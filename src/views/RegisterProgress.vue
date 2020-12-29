@@ -1,13 +1,18 @@
 <template>
   <div class="register-progress-container">
-    <RegisterHeader :supplierName="supplierName" :supplierStatusCode="supplierStatusCode"></RegisterHeader>
+    <RegisterHeader :supplierName="supplierName"></RegisterHeader>
     <div class="register-result align-center">
       <span class="el-icon-success"></span>
       <div>
-        <b v-if="showSubmitSuccess">您的申请已成功提交</b>
+        <b v-if="isInvalidStatusCode">您的申请已成功提交</b>
         <div v-else-if="supplierStatusText" class="display-inline-block">
-          {{supplierStatusText}}&nbsp;&nbsp;
-          <el-button v-if="notPassed" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
+          {{supplierStatusText}}
+          <!-- 驳回意见 -->
+          <p
+            class="audit-remarks align-left color-text--red"
+            v-if="auditRemarks"
+          >原因：{{auditRemarks}}</p>
+          <el-button v-if="isRejected" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
         </div>
       </div>
     </div>
@@ -32,25 +37,15 @@ export default {
     }
   },
   computed: {
-    ...userMapState(['supplierName', 'supplierStatusCode', 'confirmAgreement']),
-    ...userMapGetters(['enterMainPage', 'enterRegisterPage']),
-    isSubmitMsg () {
-      return this.$route.query.msg === 'submit'
-    },
-    showSubmitSuccess () {
-      // 无供应商状态时显示'提交成功提示'
-      return ![0, 1, 2, 3, 4, 5].includes(this.supplierStatusCode)
-    },
-    notPassed () {
-      return this.supplierStatusCode === 5
-    },
+    ...userMapState(['supplierName', 'confirmAgreement', 'auditRemarks']),
+    ...userMapGetters(['isInvalidStatusCode', 'isRejected', 'isAuditting', 'enterMainPage', 'enterRegisterPage']),
     supplierStatusText () {
       let text = ''
-      if ([0, 1].includes(this.supplierStatusCode)) {
+      if (this.isAuditting) {
         text = '正在审核中'
       }
 
-      if (this.supplierStatusCode === 5) {
+      if (this.isRejected) {
         text = '审核未通过'
       }
       return text
@@ -75,7 +70,12 @@ export default {
   methods: {
     ...userMapActions(['GET_USER_INFO']),
     toRegister () {
-      this.$router.push('/register')
+      this.$router.push({
+        path: '/register',
+        query: {
+          from: 'registerProgress'
+        }
+      })
     }
   }
 
@@ -101,5 +101,11 @@ export default {
 .register-result {
   margin-top: 8rem;
   padding-top: 6em;
+}
+
+.audit-remarks {
+  margin-top: 1em;
+  max-width: 30rem;
+  line-height: 1.5;
 }
 </style>

@@ -1,6 +1,7 @@
 const baseURL = '/srm-user-service/'// 与后端微服务名对应
 
 export default {
+  payeePowerOfAttorney: 'http://srm-file-public-prod.oss-cn-shanghai.aliyuncs.com/srm/template/供应商收款委托书(RMB).docx', // 收款委托书
   authLogin: baseURL + 'auth/login',
   modifyPassword: baseURL + 'user/password/modify',
   register: baseURL + 'user/register',

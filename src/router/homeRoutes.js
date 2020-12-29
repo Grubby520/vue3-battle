@@ -29,7 +29,7 @@ export const homeRoutes = [
     component: ParentMenuRoute,
     children: [
       {
-        path: 'OdmOneDetails',
+        path: 'odmOneDetails',
         name: '创建产品',
         meta: {
           icon: 'el-icon-paperclip',

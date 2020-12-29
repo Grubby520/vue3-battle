@@ -1,7 +1,7 @@
 <template>
   <div class="notify-container">
     <RegisterHeader></RegisterHeader>
-    <div class="notify-content align-center">
+    <div v-if="notifyModel.msgType" class="notify-content align-center">
       <span class="el-icon-success"></span>
       <div>
         <b v-if="'register-submit-success' === notifyModel.msgType">{{notifyModel.msgContent}}</b>
