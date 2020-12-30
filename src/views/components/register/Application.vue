@@ -247,7 +247,7 @@ export default {
           certificationNoExistValidator
         ],
         supplyType: [
-          emptyValidator('请选择供公司性质', ['blur', 'change'])
+          emptyValidator('请选择公司性质', ['blur', 'change'])
         ],
         address: [
           emptyValidator('请选择公司地址', ['blur', 'change'])
