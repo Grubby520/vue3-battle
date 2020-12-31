@@ -332,7 +332,7 @@ export default {
       if (val) {
         this.addFactoryDescriptionValidators()
       } else {
-        this.form.factoryDescription = null
+        this.form.factoryDescription = ''
         delete this.rules['factoryDescription']
       }
     },
