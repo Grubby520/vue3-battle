@@ -1,7 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
-import { merge, getCookie, errorMessageTip, errorNotify } from '@shared/util'
+import { getCookie, errorMessageTip, errorNotify } from '@shared/util'
+import { merge } from 'lodash'
 
 // 存储http错误状态信息
 let httpErrorCache = {}
