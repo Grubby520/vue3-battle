@@ -92,5 +92,52 @@ export const homeRoutes = [
         component: () => import('@/views/ImportProductImgs')
       }
     ]
+  },
+  {
+    path: 'delivery-manage',
+    name: '发货管理',
+    meta: {
+      icon: 'el-icon-goods',
+      code: 'menu_goods_management'
+    },
+    component: ParentMenuRoute,
+    children: [
+      {
+        path: 'stay-grouped-goods',
+        name: '待组单商品',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/StayGroupedGoods.vue')
+      },
+      {
+        path: 'delivery-list',
+        name: '发货单列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/DeliveryList.vue')
+      },
+      {
+        path: 'purchase-list',
+        name: '采购单列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/PurchaseList.vue')
+      },
+      {
+        path: 'defective-list',
+        name: '次品列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/DefectiveList.vue')
+      }
+    ]
   }
 ]
