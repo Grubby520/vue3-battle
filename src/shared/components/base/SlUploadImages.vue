@@ -341,15 +341,27 @@ export default {
           changeImages.hash = file.hash
           changeImages.name = file.name
           changeImages.uid = file.uid
-          this.emitImageChange([...this.images, changeImages])
+          this.emitImageChange([...this.images, changeImages], file)
         })
     },
     emitImageChange (arr) {
-      this.$emit('changeUploadImages', arr)
+      const filtersimage = this.filterImages(arr)
+      this.$emit('changeUploadImages', filtersimage)
       // 用于表单验证change事件捕获
       if (this.$parent) {
         this.$parent.$emit('el.form.change')
       }
+    },
+    filterImages (arr) {
+      const filters = []
+      arr.forEach(res => {
+        if (!filters.find(item => item.hash === res.hash)) {
+          filters.push(res)
+        } else {
+          this.$message.error('图片重复,请重新上传')
+        }
+      })
+      return filters
     }
   }
 
