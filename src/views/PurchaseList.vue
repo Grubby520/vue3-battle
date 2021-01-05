@@ -68,7 +68,6 @@
 </template>
 
 <script>
-import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 
 export default {
   name: 'PurchaseList',
@@ -92,10 +91,50 @@ export default {
         {
           type: 'single-select',
           label: '订单状态',
-          name: 'productStatus',
+          name: 'orderState',
           data: {
-            remoteUrl: RecommondUrl.recommendstatus,
             options: []
+          }
+        },
+        {
+          type: 'input',
+          label: '订单号',
+          name: 'orderId'
+        },
+        {
+          type: 'input',
+          label: 'SKU',
+          name: 'sku'
+        },
+        {
+          type: 'input',
+          label: '发货单号',
+          name: 'sku'
+        },
+        {
+          type: 'single-select',
+          label: '订单类型',
+          name: 'orderType',
+          data: {
+            options: []
+          }
+        },
+        {
+          type: 'date',
+          label: '创建时间',
+          name: 'cTime',
+          data: {
+            datetype: 'date',
+            isBlock: true
+          }
+        },
+        {
+          type: 'date',
+          label: '更新时间',
+          name: 'uTime',
+          data: {
+            datetype: 'date',
+            isBlock: true
           }
         }
       ],

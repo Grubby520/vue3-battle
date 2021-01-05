@@ -54,6 +54,21 @@
               ></SlTreeSelect>
             </el-form-item>
           </template>
+          <template v-else-if="item.type === 'date'">
+            <el-form-item
+              :label="item.isLabel? '':item.label"
+              :prop="item.name"
+              :class="{'block':item.data.isBlock}"
+            >
+              <el-date-picker
+                v-model="form[item.name]"
+                :type="item.data.datetype"
+                placeholder="选择日期"
+                format="yyyy-MM-dd"
+                value-format="timestamp"
+              ></el-date-picker>
+            </el-form-item>
+          </template>
         </el-col>
       </el-row>
     </el-form>
@@ -124,6 +139,10 @@ export default {
 .block /deep/ {
   .el-select {
     display: block;
+  }
+  .el-date-editor.el-input,
+  .el-date-editor.el-input__inner {
+    width: 100%;
   }
 }
 </style>
