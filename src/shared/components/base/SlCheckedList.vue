@@ -3,14 +3,15 @@
     <span
       v-if="label"
       class="checked-list__label"
-      :class="{right:align==='right',left:align==='left'}"
+      :class="{right:align==='right',left:align==='left',bold:labelBold}"
     >{{label}}</span>
     <ul class="checked-list__value">
       <li
         class="checked-item"
         v-for="(item,index) in options"
         :key="'item-'+index"
-        :class="{active:isActive(item.value)}"
+        :class="{['active__'+activeType]:isActive(item.value)}"
+        :style="{marginRight:gutter}"
         @click="itemClick(item)"
       >
         <slot :item="item">
@@ -26,7 +27,7 @@ export default {
   name: 'SlCheckedList',
   model: {
     prop: 'value',
-    event: 'changeValue'
+    event: 'change'
   },
   props: {
     label: {
@@ -53,6 +54,21 @@ export default {
       type: String,
       required: false,
       default: 'right'// left
+    },
+    gutter: {
+      type: String,
+      required: false,
+      default: '2rem'
+    },
+    activeType: {
+      type: String,
+      required: false,
+      default: 'text'// button
+    },
+    labelBold: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
@@ -81,7 +97,7 @@ export default {
       } else {
         newValue = this.singleModeClickHandle(item)
       }
-      this.$emit('changeValue', newValue)
+      this.$emit('change', newValue)
     },
     multipleModeClickHandle (item) {
       let index = this.value.find(val => val === item.value)
@@ -107,6 +123,7 @@ export default {
 
 <style lang="scss" scoped>
 .sl-checked-list {
+  padding: 0.5em 0;
   .checked-list__label {
     display: inline-block;
     min-width: 100px;
@@ -116,19 +133,27 @@ export default {
     &.right {
       text-align: right;
     }
+    &.bold {
+      font-weight: 600;
+    }
   }
 
   .checked-list__value {
     display: inline-block;
-    margin-bottom: 1em;
     .checked-item {
       display: inline-block;
       padding: 0 0.5em;
       line-height: 32px;
       cursor: pointer;
-      &.active {
+      &.active__button {
         color: #fff;
         background-color: #409eff;
+      }
+      &.active__text {
+        color: #409eff;
+      }
+      &:last-child {
+        margin-right: 0 !important;
       }
     }
   }
