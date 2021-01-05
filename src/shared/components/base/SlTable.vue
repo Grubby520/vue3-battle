@@ -46,6 +46,13 @@
                     </div>
                   </div>
                 </div>
+                <SlTableExtend
+                  v-else-if="item.render"
+                  :row="scope.row"
+                  :column="item"
+                  :index="scope.$index"
+                  :render="item.render"
+                ></SlTableExtend>
                 <div v-else class="tableData-col-text">{{scope.row[item.prop] }}</div>
               </el-col>
             </el-row>
@@ -61,8 +68,12 @@
   </el-table>
 </template>
 <script>
+import SlTableExtend from './SlTableExtend'
 export default {
   name: 'SlTable',
+  components: {
+    SlTableExtend
+  },
   model: {
     event: 'changeSelection'
   },
