@@ -2,6 +2,9 @@
   <div>
     <el-form :model="form" :label-width="`${labelWidth}px`">
       <el-row :gutter="15">
+        <el-col v-if="$slots.before" :span="24">
+          <slot name="before"></slot>
+        </el-col>
         <el-col
           v-for="(item,index) in items"
           :xs="24"
@@ -95,6 +98,7 @@ export default {
     }
   },
   created () {
+    this.form = Object.assign({}, JSON.parse(JSON.stringify(this.modelVal)))
     this.items.forEach(item => {
       /// 判断入参是否有设置默认值。
       /// 若有就取传入的默认值。

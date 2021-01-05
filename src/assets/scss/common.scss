@@ -25,6 +25,10 @@
   color: $color-red;
 }
 
+.color-bg--white {
+  background-color: $color-white;
+}
+
 .mr-1rem {
   margin-right: 1rem !important;
 }
@@ -164,4 +168,9 @@
   /deep/.el-icon-arrow-down {
     display: none;
   }
+}
+
+
+.switch-nav {
+  margin-bottom: 2em;
 }
