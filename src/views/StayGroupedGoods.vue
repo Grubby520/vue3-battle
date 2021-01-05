@@ -1,5 +1,6 @@
 <template>
   <div>
+    <MerchantNotice></MerchantNotice>
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
@@ -12,6 +13,24 @@
         <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
       </div>
       <el-divider />
+      <SlTableToolbar>
+        <el-button type="primary">生成发货单</el-button>
+        <el-button type="primary" plain>导出待发货商品详情</el-button>
+      </SlTableToolbar>
+      <div class="switch-nav">
+        <el-menu
+          :default-active="activeIndex"
+          class="color-bg--white"
+          mode="horizontal"
+          @select="switchNav"
+        >
+          <el-menu-item
+            v-for="(item,index) in switchNavs"
+            :key="'index'+index"
+            :index="item.index+''"
+          >{{item.name}}({{item.amount?item.amount:0}})</el-menu-item>
+        </el-menu>
+      </div>
       <!-- 表格区域包含分页 -->
       <SlTable ref="table" :tableData="tableData" :columns="columns" :selection="false"></SlTable>
     </SlListView>
@@ -19,11 +38,17 @@
 </template>
 
 <script>
+import MerchantNotice from './stayGroupedGoods/MerchantNotice'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 export default {
   name: 'StayGroupedGoods',
+  components: {
+    MerchantNotice
+  },
   data () {
     return {
+      activeIndex: '0',
+      switchNavs: [],
       tableData: [],
       page: {
         pageIndex: 1,
@@ -76,6 +101,9 @@ export default {
       ]
     }
   },
+  mounted () {
+    this.switchNavs = this.getSwitchNavs()
+  },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       // const params = { ...this.query, pageIndex, pageSize }
@@ -86,6 +114,14 @@ export default {
     reset () {
       this.$refs.searchForm.reset()
       this.$refs.listView.refresh()
+    },
+    getSwitchNavs () {
+      return [{ 'index': 0, 'name': '全部', 'value': null, 'amount': 50 }, { 'index': 1, 'name': '已入驻', 'value': 1, 'amount': 28 }]
+    },
+    switchNav (index) {
+      // let item = this.switchNavs[parseInt(index)]
+      this.activeIndex = index
+      this.gotoPage()
     }
   }
 }
