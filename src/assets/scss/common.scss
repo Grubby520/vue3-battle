@@ -181,7 +181,7 @@
   background-color: $color-breadcrumb-bg;
   & /deep/ {
     .sl-checked-list {
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid $color-gray;
       &:last-child {
         border:none
       }
