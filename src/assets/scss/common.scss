@@ -174,3 +174,17 @@
 .switch-nav {
   margin-bottom: 2em;
 }
+
+.table-search-statistics {
+  padding:0 0.5em;
+  margin-bottom: 2em;
+  background-color: $color-breadcrumb-bg;
+  & /deep/ {
+    .sl-checked-list {
+      border-bottom: 1px solid $color-gray;
+      &:last-child {
+        border:none
+      }
+    }
+  }
+}
