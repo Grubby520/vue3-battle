@@ -1,5 +1,5 @@
 export default {
-  name: 'SlTableExtend',
+  name: 'SlTableColFormat',
   functional: true,
   props: {
     row: Object,

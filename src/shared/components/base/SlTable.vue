@@ -46,13 +46,13 @@
                     </div>
                   </div>
                 </div>
-                <SlTableExtend
+                <SlTableColFormat
                   v-else-if="item.render"
                   :row="scope.row"
                   :column="item"
                   :index="scope.$index"
                   :render="item.render"
-                ></SlTableExtend>
+                ></SlTableColFormat>
                 <div v-else class="tableData-col-text">{{scope.row[item.prop] }}</div>
               </el-col>
             </el-row>
@@ -68,11 +68,11 @@
   </el-table>
 </template>
 <script>
-import SlTableExtend from './SlTableExtend'
+import SlTableColFormat from './SlTableColFormat'
 export default {
   name: 'SlTable',
   components: {
-    SlTableExtend
+    SlTableColFormat
   },
   model: {
     event: 'changeSelection'
