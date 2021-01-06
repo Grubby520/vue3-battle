@@ -126,11 +126,19 @@ export default {
           label: '状态'
         },
         {
-          prop: 'skuCode',
-          label: '创建时间/更新时间',
-          pre: {
-            createTime: '创建',
-            updateTime: '更新'
+          prop: 'shippedNum',
+          label: '发货数量',
+          render: (h, data) => {
+            return (
+              <div>
+                <el-input
+                  vModel={data.row.shippedNum} placeholder="请输入数量"
+                  vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }}></el-input>
+                <div class="mt-1rem">
+                  <el-button type="primary" onClick={() => this.openSplitDialog(data)}>拆单</el-button>
+                </div>
+              </div>
+            )
           }
         }
       ]
@@ -149,7 +157,8 @@ export default {
             supplierItemNo: '1231231',
             merchantSku: 'SKU12345678',
             sku: '1123121412'
-          }
+          },
+          shippedNum: 23
         }
       ]
       this.$refs.listView.loading = false
@@ -166,6 +175,9 @@ export default {
       // let item = this.switchNavs[parseInt(index)]
       this.activeIndex = index
       this.gotoPage()
+    },
+    openSplitDialog (data) {
+      console.log(data)
     }
   }
 }
