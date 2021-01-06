@@ -93,7 +93,7 @@ export default {
       ],
       columns: [
         {
-          prop: 'productName',
+          prop: '',
           label: '商品信息',
           width: '300',
           isInImg: 'src',
@@ -116,7 +116,7 @@ export default {
           label: '状态'
         },
         {
-          prop: 'skuCode',
+          prop: '',
           label: '创建时间/更新时间',
           pre: {
             createTime: '创建',

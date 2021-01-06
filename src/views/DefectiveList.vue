@@ -13,7 +13,13 @@
       </div>
       <el-divider />
       <!-- 表格区域包含分页 -->
-      <SlTable ref="table" :tableData="tableData" :columns="columns" :selection="false"></SlTable>
+      <SlTable
+        ref="table"
+        :tableData="tableData"
+        :columns="columns"
+        :selection="false"
+        :operate="false"
+      ></SlTable>
     </SlListView>
   </div>
 </template>

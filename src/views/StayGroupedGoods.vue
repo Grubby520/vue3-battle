@@ -32,14 +32,20 @@
         </el-menu>
       </div>
       <!-- 表格区域包含分页 -->
-      <SlTable ref="table" :tableData="tableData" :columns="columns" :selection="false"></SlTable>
+      <SlTable
+        ref="table"
+        v-model="selections"
+        :tableData="tableData"
+        :columns="columns"
+        :operate="false"
+      ></SlTable>
     </SlListView>
   </div>
 </template>
 
 <script>
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
-import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
+
 export default {
   name: 'StayGroupedGoods',
   components: {
@@ -50,6 +56,7 @@ export default {
       activeIndex: '0',
       switchNavs: [],
       tableData: [],
+      selections: [],
       page: {
         pageIndex: 1,
         total: 0
@@ -57,25 +64,53 @@ export default {
       query: {},
       searchItems: [
         {
+          type: 'input',
+          label: '订单号',
+          name: 'orderId'
+        },
+        {
+          type: 'input',
+          label: '供方货号',
+          name: 'suppierId'
+        },
+        {
+          type: 'input',
+          label: '商家SKU',
+          name: 'merchantSku'
+        },
+        {
+          type: 'input',
+          label: 'SKU',
+          name: 'sku'
+        },
+        {
           type: 'single-select',
-          label: '订单状态',
-          name: 'productStatus',
+          label: '订单类型',
+          name: 'orderType',
           data: {
-            remoteUrl: RecommondUrl.recommendstatus,
             options: []
+          }
+        },
+        {
+          type: 'date',
+          label: '应交货时间',
+          name: 'dueDeliveryTime',
+          data: {
+            datetype: 'date',
+            isBlock: true
           }
         }
       ],
       columns: [
         {
-          prop: 'productName',
-          label: '商品信息',
+          prop: 'baseInfo',
+          label: '基本信息',
           width: '300',
           isInImg: 'src',
           pre: {
-            title: '商品名称',
             supplierItemNo: '供方货号',
-            erpSpuCode: 'SPU'
+            merchantSku: '商家SKU',
+            sku: 'SKU'
           }
         },
         {
@@ -107,7 +142,16 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       // const params = { ...this.query, pageIndex, pageSize }
-      this.tableData = []
+      this.tableData = [
+        {
+          src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
+          baseInfo: {
+            supplierItemNo: '1231231',
+            merchantSku: 'SKU12345678',
+            sku: '1123121412'
+          }
+        }
+      ]
       this.$refs.listView.loading = false
       this.page.total = 1
     },

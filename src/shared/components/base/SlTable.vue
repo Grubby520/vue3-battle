@@ -40,9 +40,20 @@
               <el-col :span="item.isInImg?14:24">
                 <div v-if="item.pre" :class="{'tableData-col-pre' : !item.isInImg && item.pre }">
                   <div class="tableData-col-con">
-                    <div v-for="(pr, ins) in item.pre" :key="pr">
-                      <span v-if="scope.row[ins]">{{ pr}}:</span>
-                      <span>{{scope.row[ins] }}</span>
+                    <div v-for="(value, key) in item.pre" :key="key">
+                      <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
+                      <template v-if="!item.prop">
+                        <p v-if="scope.row[key]">
+                          <span>{{ value }}:</span>
+                          <span>{{ scope.row[key] }}</span>
+                        </p>
+                      </template>
+                      <template v-else>
+                        <p v-if="scope.row[item.prop] && scope.row[item.prop][key]">
+                          <span>{{ value }}:</span>
+                          <span>{{ scope.row[item.prop][key] }}</span>
+                        </p>
+                      </template>
                     </div>
                   </div>
                 </div>
