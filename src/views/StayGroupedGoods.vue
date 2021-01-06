@@ -14,8 +14,8 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary">生成发货单</el-button>
-        <el-button type="primary" plain>导出待发货商品详情</el-button>
+        <el-button type="primary" :disabled="!canGenerateInvoice">生成发货单</el-button>
+        <el-button type="primary" :disabled="!canExport" plain>导出待发货商品详情</el-button>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
@@ -28,8 +28,21 @@
             v-for="(item,index) in switchNavs"
             :key="'index'+index"
             :index="item.index+''"
-          >{{item.name}}({{item.amount?item.amount:0}})</el-menu-item>
+          >
+            <template v-if="item.status">
+              <span
+                class="switch-nav-status"
+                :class="{'color-text--danger':item.status === 'danger'}"
+              >{{item.statusText}}</span>
+            </template>
+            {{item.name}}({{item.amount?item.amount:0}})
+          </el-menu-item>
         </el-menu>
+        <div class="choosed-sku-statistics">
+          选中SKU：
+          <span>SKU款数({{selections.length}})</span>&nbsp;&nbsp;
+          <span>SKU件数({{skuNumber}})</span>
+        </div>
       </div>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -142,7 +155,7 @@ export default {
               <div>
                 <el-input
                   vModel={data.row.shippedNum} placeholder="请输入数量"
-                  vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }}></el-input>
+                  vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }} disabled></el-input>
                 <div class="mt-1rem">
                   <el-button type="primary" onClick={() => this.openSplitDialog(data)}>拆单</el-button>
                 </div>
@@ -152,6 +165,17 @@ export default {
         }
       ],
       dialogForm: {}
+    }
+  },
+  computed: {
+    canGenerateInvoice () {
+      return this.selections.length > 0
+    },
+    canExport () {
+      return this.selections.length > 0
+    },
+    skuNumber () {
+      return 10
     }
   },
   mounted () {
@@ -179,7 +203,19 @@ export default {
       this.$refs.listView.refresh()
     },
     getSwitchNavs () {
-      return [{ 'index': 0, 'name': '全部', 'value': null, 'amount': 50 }, { 'index': 1, 'name': '已入驻', 'value': 1, 'amount': 28 }]
+      return [
+        { 'index': 0, 'name': '全部待组单', 'value': null, 'amount': 50 },
+        { 'index': 1, 'name': '1日未组单', 'value': 1, 'amount': 28 },
+        {
+          'index': 2, 'name': '3日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '预警!'
+        },
+        {
+          'index': 3, 'name': '5日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
+        },
+        {
+          'index': 4, 'name': '7日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
+        }
+      ]
     },
     switchNav (index) {
       // let item = this.switchNavs[parseInt(index)]
@@ -204,4 +240,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.choosed-sku-statistics {
+  position: absolute;
+  top: 50%;
+  right: 2em;
+  transform: translateY(-50%);
+}
 </style>
