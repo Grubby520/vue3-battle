@@ -40,28 +40,37 @@
         :operate="false"
       ></SlTable>
     </SlListView>
+    <!-- 拆单对话框 -->
+    <SplitOrderDialog
+      :showDialog.sync="showSplitOrderDialog"
+      :inData="dialogForm"
+      @submit="submitSplitOrder"
+    ></SplitOrderDialog>
   </div>
 </template>
 
 <script>
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
+import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
 
 export default {
   name: 'StayGroupedGoods',
   components: {
-    MerchantNotice
+    MerchantNotice,
+    SplitOrderDialog
   },
   data () {
     return {
       activeIndex: '0',
+      showSplitOrderDialog: false,
       switchNavs: [],
       tableData: [],
       selections: [],
+      query: {},
       page: {
         pageIndex: 1,
         total: 0
       },
-      query: {},
       searchItems: [
         {
           type: 'input',
@@ -141,7 +150,8 @@ export default {
             )
           }
         }
-      ]
+      ],
+      dialogForm: {}
     }
   },
   mounted () {
@@ -177,6 +187,16 @@ export default {
       this.gotoPage()
     },
     openSplitDialog (data) {
+      this.dialogForm = {
+        src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
+        merchantSku: '1231231293798',
+        requiredNum: 1234,
+        retainRequiredNum: 123,
+        shippedNum: 0
+      }
+      this.showSplitOrderDialog = true
+    },
+    submitSplitOrder (data) {
       console.log(data)
     }
   }
