@@ -7,7 +7,11 @@ export * from './optimize'
 export * from './browserStorage'
 export * from './crypto'
 
-export const merge = require('lodash/merge')
+/**
+ * 在文件使用的地方使用，import {merge} from "lodash"
+ * 不建议使用require的方式引用，这样不能做摇树优化
+ */
+// export const merge = require('lodash/merge')
 
 export const getLang = function () {
   return localStorage.getItem('lang') || process.env.VUE_APP_LANG || 'zh'
