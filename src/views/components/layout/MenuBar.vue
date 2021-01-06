@@ -62,6 +62,14 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.menu-bar {
+  height: calc(100% - 5rem);
+  overflow-y: auto;
+  margin-bottom: 2rem;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 .menu-bar /deep/ {
   .el-menu {
     border: none;
