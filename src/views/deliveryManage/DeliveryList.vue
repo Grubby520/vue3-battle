@@ -10,7 +10,7 @@
       </div>
       <div class="warehouse-address delivery-introduce-bg">
         <p>仓库地址：XXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
-        <p>{{test | dateFormat('yyyy-M-dd at hh:mm')}}</p>
+        <p>{{test | dateFormat('yyyy-M-dd at H:m:ss')}}</p>
       </div>
     </div>
     <SlListView
@@ -74,15 +74,22 @@
         </el-table-column>
       </el-table>
     </SlListView>
+    <logistics-info></logistics-info>
+    <modify-logistics-no></modify-logistics-no>
+    <shipping-details></shipping-details>
   </div>
 </template>
 
 <script>
+import logisticsInfo from './LogisticsInfoDiaolog'
+import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
+import ShippingDetails from './ShippingDetailsDiaolog'
 export default {
   name: 'DeliveryList',
+  components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails },
   data () {
     return {
-      test: '1609917853735',
+      test: '1609948800000',
       page: {
         pageIndex: 1,
         total: 0
@@ -166,6 +173,7 @@ export default {
     margin-bottom: 20px;
     .delivery-introduce-bg {
       background: #d3d3d3;
+      border-radius: 4px;
     }
     .deliver-info {
       width: 60%;
