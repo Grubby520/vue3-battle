@@ -14,8 +14,8 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary">生成发货单</el-button>
-        <el-button type="primary" plain>导出待发货商品详情</el-button>
+        <el-button type="primary" :disabled="!canGenerateInvoice">生成发货单</el-button>
+        <el-button type="primary" :disabled="!canExport" plain>导出待发货商品详情</el-button>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
@@ -28,8 +28,21 @@
             v-for="(item,index) in switchNavs"
             :key="'index'+index"
             :index="item.index+''"
-          >{{item.name}}({{item.amount?item.amount:0}})</el-menu-item>
+          >
+            <template v-if="item.status">
+              <span
+                class="switch-nav-status"
+                :class="{'color-text--danger':item.status === 'danger'}"
+              >{{item.statusText}}</span>
+            </template>
+            {{item.name}}({{item.amount?item.amount:0}})
+          </el-menu-item>
         </el-menu>
+        <div class="choosed-sku-statistics">
+          选中SKU：
+          <span>SKU款数({{selections.length}})</span>&nbsp;&nbsp;
+          <span>SKU件数({{skuNumber}})</span>
+        </div>
       </div>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -40,28 +53,37 @@
         :operate="false"
       ></SlTable>
     </SlListView>
+    <!-- 拆单对话框 -->
+    <SplitOrderDialog
+      :showDialog.sync="showSplitOrderDialog"
+      :inData="dialogForm"
+      @submit="submitSplitOrder"
+    ></SplitOrderDialog>
   </div>
 </template>
 
 <script>
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
+import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
 
 export default {
   name: 'StayGroupedGoods',
   components: {
-    MerchantNotice
+    MerchantNotice,
+    SplitOrderDialog
   },
   data () {
     return {
       activeIndex: '0',
+      showSplitOrderDialog: false,
       switchNavs: [],
       tableData: [],
       selections: [],
+      query: {},
       page: {
         pageIndex: 1,
         total: 0
       },
-      query: {},
       searchItems: [
         {
           type: 'input',
@@ -106,7 +128,7 @@ export default {
           prop: 'baseInfo',
           label: '基本信息',
           width: '300',
-          isInImg: 'src',
+          isInImg: 'imageUrl',
           pre: {
             supplierItemNo: '供方货号',
             merchantSku: '商家SKU',
@@ -126,14 +148,34 @@ export default {
           label: '状态'
         },
         {
-          prop: 'skuCode',
-          label: '创建时间/更新时间',
-          pre: {
-            createTime: '创建',
-            updateTime: '更新'
+          prop: 'shippedNum',
+          label: '发货数量',
+          render: (h, data) => {
+            return (
+              <div>
+                <el-input
+                  vModel={data.row.shippedNum} placeholder="请输入数量"
+                  vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }} disabled></el-input>
+                <div class="mt-1rem">
+                  <el-button type="primary" onClick={() => this.openSplitDialog(data)}>拆单</el-button>
+                </div>
+              </div>
+            )
           }
         }
-      ]
+      ],
+      dialogForm: {}
+    }
+  },
+  computed: {
+    canGenerateInvoice () {
+      return this.selections.length > 0
+    },
+    canExport () {
+      return this.selections.length > 0
+    },
+    skuNumber () {
+      return 10
     }
   },
   mounted () {
@@ -144,12 +186,13 @@ export default {
       // const params = { ...this.query, pageIndex, pageSize }
       this.tableData = [
         {
-          src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
           baseInfo: {
+            imageUrl: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
             supplierItemNo: '1231231',
             merchantSku: 'SKU12345678',
             sku: '1123121412'
-          }
+          },
+          shippedNum: 23
         }
       ]
       this.$refs.listView.loading = false
@@ -160,16 +203,47 @@ export default {
       this.$refs.listView.refresh()
     },
     getSwitchNavs () {
-      return [{ 'index': 0, 'name': '全部', 'value': null, 'amount': 50 }, { 'index': 1, 'name': '已入驻', 'value': 1, 'amount': 28 }]
+      return [
+        { 'index': 0, 'name': '全部待组单', 'value': null, 'amount': 50 },
+        { 'index': 1, 'name': '1日未组单', 'value': 1, 'amount': 28 },
+        {
+          'index': 2, 'name': '3日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '预警!'
+        },
+        {
+          'index': 3, 'name': '5日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
+        },
+        {
+          'index': 4, 'name': '7日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
+        }
+      ]
     },
     switchNav (index) {
       // let item = this.switchNavs[parseInt(index)]
       this.activeIndex = index
       this.gotoPage()
+    },
+    openSplitDialog (data) {
+      this.dialogForm = {
+        src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
+        merchantSku: '1231231293798',
+        requiredNum: 1234,
+        retainRequiredNum: 123,
+        shippedNum: 0
+      }
+      this.showSplitOrderDialog = true
+    },
+    submitSplitOrder (data) {
+      console.log(data)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.choosed-sku-statistics {
+  position: absolute;
+  top: 50%;
+  right: 2em;
+  transform: translateY(-50%);
+}
 </style>

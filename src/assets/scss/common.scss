@@ -25,6 +25,14 @@
   color: $color-red;
 }
 
+.color-text--yellow {
+  color: $color-yellow;
+}
+
+.color-text--danger {
+  color: $color-danger;
+}
+
 .color-bg--white {
   background-color: $color-white;
 }
@@ -172,7 +180,11 @@
 
 
 .switch-nav {
+  position: relative;
   margin-bottom: 2em;
+  .switch-nav-status {
+    vertical-align: top;
+  }
 }
 
 .table-search-statistics {

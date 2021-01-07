@@ -14,14 +14,19 @@
       fixed
       :selectable="checkSelectable"
     />
-    <div v-for="item in columns" :key="item.label">
-      <template v-if="item.isImg">
-        <el-table-column align="center" :prop="item.prop" :label="item.label" :width="item.width">
-          <template slot-scope="scope">
-            <SlImage size="10rem" :src="scope.row[item.prop]" />
-          </template>
-        </el-table-column>
-      </template>
+    <template v-for="item in columns">
+      <el-table-column
+        v-if="item.isImg"
+        align="center"
+        :prop="item.prop"
+        :label="item.label"
+        :width="item.width"
+        :key="item.label"
+      >
+        <template slot-scope="scope">
+          <SlImage size="10rem" :src="scope.row[item.prop]" />
+        </template>
+      </el-table-column>
       <el-table-column
         v-else
         align="center"
@@ -29,12 +34,20 @@
         :label="item.label"
         :width="item.width"
         :show-overflow-tooltip="tooltip"
+        :key="item.label"
       >
+        <template slot="header">
+          <SlTableHeaderFormat v-if="item.headerRender" :column="item" :render="item.headerRender"></SlTableHeaderFormat>
+        </template>
         <template slot-scope="scope">
           <div class="tableData-col">
             <el-row type="flex" align="middle">
               <el-col :span="10" v-if="item.isInImg">
-                <SlImage size="10rem" :src="scope.row[item.isInImg]" />
+                <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
+                <SlImage
+                  size="10rem"
+                  :src="item.prop?scope.row[item.prop][item.isInImg]:scope.row[item.isInImg]"
+                />
               </el-col>
 
               <el-col :span="item.isInImg?14:24">
@@ -70,7 +83,7 @@
           </div>
         </template>
       </el-table-column>
-    </div>
+    </template>
     <el-table-column width="180px" align="center" label="操作" v-if="operate">
       <template slot-scope="scope">
         <slot name="operation" :row="scope.row"></slot>
@@ -79,10 +92,12 @@
   </el-table>
 </template>
 <script>
+import SlTableHeaderFormat from './SlTableHeaderFormat'
 import SlTableColFormat from './SlTableColFormat'
 export default {
   name: 'SlTable',
   components: {
+    SlTableHeaderFormat,
     SlTableColFormat
   },
   model: {
