@@ -14,14 +14,19 @@
       fixed
       :selectable="checkSelectable"
     />
-    <div v-for="item in columns" :key="item.label">
-      <template v-if="item.isImg">
-        <el-table-column align="center" :prop="item.prop" :label="item.label" :width="item.width">
-          <template slot-scope="scope">
-            <SlImage size="10rem" :src="scope.row[item.prop]" />
-          </template>
-        </el-table-column>
-      </template>
+    <template v-for="item in columns">
+      <el-table-column
+        v-if="item.isImg"
+        align="center"
+        :prop="item.prop"
+        :label="item.label"
+        :width="item.width"
+        :key="item.label"
+      >
+        <template slot-scope="scope">
+          <SlImage size="10rem" :src="scope.row[item.prop]" />
+        </template>
+      </el-table-column>
       <el-table-column
         v-else
         align="center"
@@ -29,6 +34,7 @@
         :label="item.label"
         :width="item.width"
         :show-overflow-tooltip="tooltip"
+        :key="item.label"
       >
         <template slot-scope="scope">
           <div class="tableData-col">
@@ -74,7 +80,7 @@
           </div>
         </template>
       </el-table-column>
-    </div>
+    </template>
     <el-table-column width="180px" align="center" label="操作" v-if="operate">
       <template slot-scope="scope">
         <slot name="operation" :row="scope.row"></slot>
