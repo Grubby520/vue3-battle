@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import { date } from '@shared/util'
 import GoodsApi from '@api/goods'
 
 export default {
@@ -208,12 +209,10 @@ export default {
           prop: 'dueDeliveryTime',
           label: '应交货时间',
           render: (h, data) => {
-            // let { row = {} } = data
-            // let date = +new Date()
+            let { row = {} } = data
 
             return (
-              <span></span>
-              // <p>{dateFormat(date, 'yyyy-M-dd hh:mm:ss')}</p>
+              <p>{date(row.dueDeliveryTime, 'yyyy-M-dd hh:mm:ss')}</p>
             )
           }
 
@@ -258,6 +257,7 @@ export default {
       this.tableData = [
         {
           orderId: 123123,
+          dueDeliveryTime: 1610001839415,
           baseInfo: {},
           orderPlan: {}
         }

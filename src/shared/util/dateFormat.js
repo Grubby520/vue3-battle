@@ -18,7 +18,7 @@ const DATE_FORMATS = {
 }
 
 function padNumber (num, digits, trim, negWrap) {
-  var neg = ''
+  let neg = ''
   if (num < 0 || (negWrap && num <= 0)) {
     if (negWrap) {
       num = -num + 1
@@ -38,7 +38,7 @@ function padNumber (num, digits, trim, negWrap) {
 function dateGetter (name, size, offset, trim, negWrap) {
   offset = offset || 0
   return function (date) {
-    var value = date['get' + name]()
+    let value = date['get' + name]()
     if (offset > 0 || value > -offset) {
       value += offset
     }
@@ -48,12 +48,12 @@ function dateGetter (name, size, offset, trim, negWrap) {
 }
 
 export function date (val, format) {
-  var DATE_FORMATS_SPLIT = /((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|m+|s+|a|Z|G+|w+))([\s\S]*)/
-  var text = ''
-  var parts = []
-  var fn
-  var match
-  var date
+  let DATE_FORMATS_SPLIT = /((?:[^yMLdHhmsaZEwG']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|L+|d+|H+|h+|m+|s+|a|Z|G+|w+))([\s\S]*)/
+  let text = ''
+  let parts = []
+  let fn
+  let match
+  let date = val
   if (typeof val === 'string') {
     date = parseInt(val, 10)
   }
