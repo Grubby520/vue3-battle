@@ -36,6 +36,9 @@
         :show-overflow-tooltip="tooltip"
         :key="item.label"
       >
+        <template slot="header">
+          <SlTableHeaderFormat v-if="item.headerRender" :column="item" :render="item.headerRender"></SlTableHeaderFormat>
+        </template>
         <template slot-scope="scope">
           <div class="tableData-col">
             <el-row type="flex" align="middle">
@@ -89,10 +92,12 @@
   </el-table>
 </template>
 <script>
+import SlTableHeaderFormat from './SlTableHeaderFormat'
 import SlTableColFormat from './SlTableColFormat'
 export default {
   name: 'SlTable',
   components: {
+    SlTableHeaderFormat,
     SlTableColFormat
   },
   model: {
