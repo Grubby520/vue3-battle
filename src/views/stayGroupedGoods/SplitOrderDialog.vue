@@ -29,7 +29,7 @@
           <el-form-item label="保留需求数" prop="retainRequiredNum">
             <el-input
               v-model="form.retainRequiredNum"
-              v-slFormatNumber="{ type: 'integer', max: form.requiredNum?parseInt(form.requiredNum)-1:999999, compareLength: true, includeZero: false }"
+              v-slFormatNumber="{ type: 'integer', max: form.requiredNum?parseInt(form.requiredNum)-1:999999, compareLength: false, includeZero: false }"
               @input="computeNum"
               placeholder="填写大于0、小于原需求的正整数"
             ></el-input>

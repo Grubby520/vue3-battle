@@ -128,7 +128,7 @@ export default {
           prop: 'baseInfo',
           label: '基本信息',
           width: '300',
-          isInImg: 'src',
+          isInImg: 'imageUrl',
           pre: {
             supplierItemNo: '供方货号',
             merchantSku: '商家SKU',
@@ -186,8 +186,8 @@ export default {
       // const params = { ...this.query, pageIndex, pageSize }
       this.tableData = [
         {
-          src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
           baseInfo: {
+            imageUrl: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
             supplierItemNo: '1231231',
             merchantSku: 'SKU12345678',
             sku: '1123121412'

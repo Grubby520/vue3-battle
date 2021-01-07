@@ -14,7 +14,7 @@
             <div class="table-search-statistics">
               <SlCheckedList
                 v-model="query.ungrouped"
-                :options="options"
+                :options="ungroupedStatistics"
                 label="未组单"
                 gutter="3em"
                 labelBold
@@ -24,7 +24,7 @@
               </SlCheckedList>
               <SlCheckedList
                 v-model="query.ungrouped"
-                :options="options1"
+                :options="notShippedStatistics"
                 label="已组单未发货"
                 gutter="3em"
                 labelBold
@@ -34,7 +34,7 @@
               </SlCheckedList>
               <SlCheckedList
                 v-model="query.ungrouped"
-                :options="options2"
+                :options="notArrivedStatistics"
                 label="已发货未到货"
                 gutter="3em"
                 labelBold
@@ -68,15 +68,16 @@
 </template>
 
 <script>
+import GoodsApi from '@api/goods'
 
 export default {
   name: 'PurchaseList',
   data () {
     return {
-      activeIndex: '0',
-      options: [],
-      options1: [],
-      options2: [],
+      activeIndex: '-1',
+      ungroupedStatistics: [], // 未组单统计
+      notShippedStatistics: [], // 已组单未发货
+      notArrivedStatistics: [], // 已发货未到货
       switchNavs: [],
       tableData: [],
       selections: [], // 复选框数据
@@ -122,18 +123,18 @@ export default {
         {
           type: 'date',
           label: '创建时间',
-          name: 'cTime',
+          name: 'cTimes',
           data: {
-            datetype: 'date',
+            datetype: 'daterange',
             isBlock: true
           }
         },
         {
           type: 'date',
           label: '更新时间',
-          name: 'uTime',
+          name: 'uTimes',
           data: {
-            datetype: 'date',
+            datetype: 'daterange',
             isBlock: true
           }
         }
@@ -174,101 +175,28 @@ export default {
     }
   },
   mounted () {
-    this.options = this.getOptions()
-    this.options1 = this.getOptions1()
-    this.options2 = this.getOptions2()
-    this.switchNavs = this.getSwitchNavs()
+    this.getStatistics(0).then(data => {
+      this.ungroupedStatistics = data
+    })
+    this.getStatistics(0).then(data => {
+      this.notShippedStatistics = data
+    })
+    this.getStatistics(0).then(data => {
+      this.notArrivedStatistics = data
+    })
+    this.getSwitchNavs()
   },
   methods: {
-    getOptions () {
-      return [
-        {
-          label: '全部未组单',
-          value: '',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '1日未组单',
-          value: '1',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '2日未组单',
-          value: '2',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '3日未组单',
-          value: '3',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '7日未组单',
-          value: '7',
-          extra: {
-            amount: 0
-          }
-        }
-      ]
-    },
-    getOptions1 () {
-      return [
-        {
-          label: '全部已组单未发货',
-          value: '',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '已组单1日未发货',
-          value: '1',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '已组单2日未发货',
-          value: '2',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '已组单3日未发货',
-          value: '3',
-          extra: {
-            amount: 0
-          }
-        }
-      ]
-    },
-    getOptions2 () {
-      return [
-        {
-          label: '全部已发货未到货',
-          value: '',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '发货后2日未到货',
-          value: '1',
-          extra: {
-            amount: 0
-          }
-        }, {
-          label: '发货后3日未到货',
-          value: '2',
-          extra: {
-            amount: 0
-          }
-        }
-      ]
+    getStatistics (type) {
+      return GoodsApi.getStatistics({ type })
     },
     getSwitchNavs () {
-      return [{ 'index': 0, 'name': '全部', 'value': null, 'amount': 50 }, { 'index': 1, 'name': '已入驻', 'value': 1, 'amount': 28 }]
+      GoodsApi.getTabs({}).then(data => {
+        this.switchNavs = data
+      })
+    },
+    generateParams () {
+      return {}
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       // const params = { ...this.query, pageIndex, pageSize }
