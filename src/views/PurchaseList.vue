@@ -18,6 +18,7 @@
                 label="未组单"
                 gutter="3em"
                 labelBold
+                underline
                 @change="checkedListChange"
               >
                 <template v-slot="{item}">{{item.label}}({{item.extra.amount}})</template>
@@ -28,6 +29,7 @@
                 label="已组单未发货"
                 gutter="3em"
                 labelBold
+                underline
                 @change="checkedListChange"
               >
                 <template v-slot="{item}">{{item.label}}({{item.extra.amount}})</template>
@@ -38,6 +40,7 @@
                 label="已发货未到货"
                 gutter="3em"
                 labelBold
+                underline
                 @change="checkedListChange"
               >
                 <template v-slot="{item}">{{item.label}}({{item.extra.amount}})</template>
@@ -92,7 +95,9 @@ export default {
         total: 0
       },
       query: {
-        ungrouped: ''
+        tabType: -1,
+        type: -1,
+        dayNum: -1
       },
       searchItems: [
         {
@@ -203,7 +208,23 @@ export default {
         },
         {
           prop: 'cTime',
-          label: '时间'
+          label: '时间',
+          width: '200',
+          render: function (h, data) {
+            let { row = {} } = data
+            let cTimeArr = row.cTime
+            return (
+              cTimeArr.map(item => {
+                if (!item.timeStamp) return ''
+                return (
+                  <div>
+                    <span>{item.typeDes}:</span>
+                    <span>{date(item.timeStamp, 'yyyy-MM-dd hh:mm:ss')}</span>
+                  </div>
+                )
+              })
+            )
+          }
         },
         {
           prop: 'dueDeliveryTime',
@@ -212,7 +233,7 @@ export default {
             let { row = {} } = data
 
             return (
-              <p>{date(row.dueDeliveryTime, 'yyyy-M-dd hh:mm:ss')}</p>
+              <p>{date(row.dueDeliveryTime, 'yyyy-MM-dd hh:mm:ss')}</p>
             )
           }
 
@@ -258,8 +279,23 @@ export default {
         {
           orderId: 123123,
           dueDeliveryTime: 1610001839415,
-          baseInfo: {},
-          orderPlan: {}
+          baseInfo: {
+            supplierItemNo: '供方货号',
+            merchantSku: '商家SKU',
+            sku: 'SKU',
+            spu: 'SPU'
+          },
+          orderPlan: {},
+          cTime: [{
+            timeStamp: '14234235324',
+            type: 1,
+            typeDes: '创建时间'
+          },
+          {
+            timeStamp: '14234235324',
+            type: 2,
+            typeDes: '更新时间'
+          }]
         }
       ]
       this.$refs.listView.loading = false
