@@ -1,8 +1,8 @@
-// import { post } from '@shared/http'
+// import { get,post } from '@shared/http'
 // import URL from './goodsUrl'
 
-const PURCHASELIST_API = {
-  getStatistics (params) {
+const GOODS_API = {
+  getPurchaseStatistics (params) {
     return Promise.resolve([
       {
         label: '全部未组单',
@@ -19,7 +19,7 @@ const PURCHASELIST_API = {
         }
       }
     ])
-    // return post(URL.statistics, params).then(res => {
+    // return post(URL.purchaseStatistics, params).then(res => {
     //   let data = []
     //   if (res.success) {
     //     data = res.data.map(item => {
@@ -35,7 +35,7 @@ const PURCHASELIST_API = {
     //   return data
     // })
   },
-  getTabs (params) {
+  getPurchaseTabs (params) {
     return Promise.resolve([
       {
         'index': -1,
@@ -68,7 +68,7 @@ const PURCHASELIST_API = {
         'value': 7
       }
     ])
-    // return post(URL.tabs, params).then(res => {
+    // return post(URL.purchaseTabs, params).then(res => {
     //   let data = []
     //   if (res.success) {
     //     data = res.data.map(item => {
@@ -83,7 +83,7 @@ const PURCHASELIST_API = {
     //   return data
     // })
   },
-  getTableList (params) {
+  getPurchaseTableList (params) {
     return Promise.resolve([
       {
         orderId: 123123,
@@ -107,8 +107,31 @@ const PURCHASELIST_API = {
         }]
       }
     ])
-    // return post(URL.list, params)
+    // return post(URL.purchaseList, params)
+  },
+  getDefectiveTableList (params) {
+    return Promise.resolve([
+      {
+        'id': 1,
+        'supplierItemNo': '供方货号/供应商货号',
+        'supplierSkuCode': '商品SKU/供应商SKU',
+        'skuCode': 'SKU/采购单上的SKU',
+        'name': '商品名称/产品名称',
+        'attributesName': '销售属性',
+        'exceptionType': 3, // 异常类型
+        'exceptionAmount': 30, // 异常数量
+        'exceptionDealType': 1, // 处理方式
+        'remake': '详情（备注）',
+        'purchaseOrderId': '21212121', // 采购单号
+        'orderNumber': '12121212', // 发货单号
+        'logisticsNumber': 1, // 物流单号
+        'operateName': '采购员/操作人',
+        'createTime': '21212121', // 创建时间
+        'updateTime': '12121212' // 更新时间
+      }
+    ])
+    // return get(URL.defectiveList, params)
   }
 }
 
-export default PURCHASELIST_API
+export default GOODS_API

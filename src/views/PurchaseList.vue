@@ -112,7 +112,7 @@ export default {
           name: 'orderState',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'SUPPLY_TYPE' }
+            params: { dataCode: 'SUPPLY_TYPE' } // PURCHASE_ORDER_STATE
           }
         },
         {
@@ -136,7 +136,7 @@ export default {
           name: 'orderType',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'SUPPLY_TYPE' }
+            params: { dataCode: 'SUPPLY_TYPE' } // PURCHASE_ORDER_TYPE
           }
         },
         {
@@ -272,16 +272,16 @@ export default {
   },
   methods: {
     getStatistics (type) {
-      return GoodsApi.getStatistics({ type })
+      return GoodsApi.getPurchaseStatistics({ type })
     },
     getSwitchNavs () {
-      GoodsApi.getTabs({}).then(data => {
+      GoodsApi.getPurchaseTabs({}).then(data => {
         this.switchNavs = data
       })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      GoodsApi.getTableList(params).then(res => {
+      GoodsApi.getPurchaseTableList(params).then(res => {
         this.tableData = res
       }).finally(() => {
         this.$refs.listView.loading = false
