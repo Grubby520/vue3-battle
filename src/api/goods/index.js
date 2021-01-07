@@ -82,6 +82,32 @@ const PURCHASELIST_API = {
     //   }
     //   return data
     // })
+  },
+  getTableList (params) {
+    return Promise.resolve([
+      {
+        orderId: 123123,
+        dueDeliveryTime: 1610001839415,
+        baseInfo: {
+          supplierItemNo: '供方货号',
+          merchantSku: '商家SKU',
+          sku: 'SKU',
+          spu: 'SPU'
+        },
+        orderPlan: {},
+        cTime: [{
+          timeStamp: '14234235324',
+          type: 1,
+          typeDes: '创建时间'
+        },
+        {
+          timeStamp: '14234235324',
+          type: 2,
+          typeDes: '更新时间'
+        }]
+      }
+    ])
+    // return post(URL.list, params)
   }
 }
 

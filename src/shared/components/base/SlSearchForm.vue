@@ -36,6 +36,7 @@
                 :label="item.isLabel?item.label:'请选择'"
                 v-model="form[item.name]"
                 :remoteUrl="item.data.remoteUrl"
+                :reqParams="item.data.params"
                 :options="options[item.name]"
               ></SlSingleSelect>
             </el-form-item>
@@ -64,6 +65,8 @@
                 v-model="form[item.name]"
                 :type="item.data.datetype"
                 placeholder="选择日期"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
                 format="yyyy-MM-dd"
                 value-format="timestamp"
               ></el-date-picker>

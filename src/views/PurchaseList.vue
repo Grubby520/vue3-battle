@@ -13,35 +13,35 @@
           <template v-slot:before>
             <div class="table-search-statistics">
               <SlCheckedList
-                v-model="query.ungrouped"
+                v-model="statistics[0]"
                 :options="ungroupedStatistics"
                 label="未组单"
                 gutter="3em"
                 labelBold
                 underline
-                @change="checkedListChange"
+                @change="checkedListChange(0,$event)"
               >
                 <template v-slot="{item}">{{item.label}}({{item.extra.amount}})</template>
               </SlCheckedList>
               <SlCheckedList
-                v-model="query.ungrouped"
+                v-model="statistics[1]"
                 :options="notShippedStatistics"
                 label="已组单未发货"
                 gutter="3em"
                 labelBold
                 underline
-                @change="checkedListChange"
+                @change="checkedListChange(1,$event)"
               >
                 <template v-slot="{item}">{{item.label}}({{item.extra.amount}})</template>
               </SlCheckedList>
               <SlCheckedList
-                v-model="query.ungrouped"
+                v-model="statistics[2]"
                 :options="notArrivedStatistics"
                 label="已发货未到货"
                 gutter="3em"
                 labelBold
                 underline
-                @change="checkedListChange"
+                @change="checkedListChange(2,$event)"
               >
                 <template v-slot="{item}">{{item.label}}({{item.extra.amount}})</template>
               </SlCheckedList>
@@ -78,6 +78,7 @@
 
 <script>
 import { date } from '@shared/util'
+import CommonUrl from '@api/url.js'
 import GoodsApi from '@api/goods'
 
 export default {
@@ -90,6 +91,11 @@ export default {
       notArrivedStatistics: [], // 已发货未到货
       switchNavs: [],
       tableData: [],
+      statistics: {
+        0: undefined,
+        1: undefined,
+        2: undefined
+      },
       page: {
         pageIndex: 1,
         total: 0
@@ -105,7 +111,8 @@ export default {
           label: '订单状态',
           name: 'orderState',
           data: {
-            options: []
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'SUPPLY_TYPE' }
           }
         },
         {
@@ -128,7 +135,8 @@ export default {
           label: '订单类型',
           name: 'orderType',
           data: {
-            options: []
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'SUPPLY_TYPE' }
           }
         },
         {
@@ -259,6 +267,7 @@ export default {
     this.getStatistics(2).then(data => {
       this.notArrivedStatistics = data
     })
+
     this.getSwitchNavs()
   },
   methods: {
@@ -270,50 +279,53 @@ export default {
         this.switchNavs = data
       })
     },
-    generateParams () {
-      return {}
-    },
     gotoPage (pageSize = 10, pageIndex = 1) {
-      // const params = { ...this.query, pageIndex, pageSize }
-      this.tableData = [
-        {
-          orderId: 123123,
-          dueDeliveryTime: 1610001839415,
-          baseInfo: {
-            supplierItemNo: '供方货号',
-            merchantSku: '商家SKU',
-            sku: 'SKU',
-            spu: 'SPU'
-          },
-          orderPlan: {},
-          cTime: [{
-            timeStamp: '14234235324',
-            type: 1,
-            typeDes: '创建时间'
-          },
-          {
-            timeStamp: '14234235324',
-            type: 2,
-            typeDes: '更新时间'
-          }]
-        }
-      ]
-      this.$refs.listView.loading = false
-      this.page.total = 1
+      const params = this.generateParams(pageSize, pageIndex)
+      GoodsApi.getTableList(params).then(res => {
+        this.tableData = res
+      }).finally(() => {
+        this.$refs.listView.loading = false
+        this.page.total = 1
+      })
     },
     reset () {
-      this.$refs.searchForm.reset()
+      this.resetParams()
       this.$refs.listView.refresh()
     },
     switchNav (index) {
-      // let item = this.switchNavs[parseInt(index)]
-      this.activeIndex = index
+      this.resetParams()
+      this.activeIndex = this.query.tabType = index
       this.gotoPage()
     },
-    checkedListChange (value) {
-      console.log(value)
+    checkedListChange (type, value) {
+      this.resetParams()
+      if (typeof value !== 'undefined') {
+        this.query.type = type
+        this.query.dayNum = value
+        this.statistics[type] = value
+      }
+      this.gotoPage()
+    },
+    resetParams () {
+      this.$refs.searchForm.reset()
+      this.statistics = {
+        0: undefined,
+        1: undefined,
+        2: undefined
+      }
+    },
+    generateParams (pageSize, pageIndex) {
+      let { cTimes = [], uTimes = [], ...orther } = this.query
+      return {
+        ...orther,
+        pageIndex,
+        pageSize,
+        cStartTime: cTimes[0] ? cTimes[0] : '',
+        cEndTime: cTimes[1] ? cTimes[1] : '',
+        uStartTime: uTimes[0] ? uTimes[0] : '',
+        uEndTime: uTimes[1] ? uTimes[1] : ''
+      }
     }
-
   }
 }
 </script>

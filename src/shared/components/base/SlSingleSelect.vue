@@ -35,6 +35,10 @@ export default {
       type: String,
       default: null
     },
+    reqParams: {
+      type: Object,
+      default: () => ({})
+    },
     options: {
       type: Array,
       default: () => []
@@ -54,7 +58,7 @@ export default {
     remoteUrl: {
       handler: function (val, oldVal) {
         if (val) {
-          get(val).then(res => {
+          get(val, this.reqParams ? this.reqParams : {}).then(res => {
             this.selfOptions = res.data || []
           })
         }
