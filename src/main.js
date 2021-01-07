@@ -9,7 +9,7 @@ import i18n from '@/lang'
 import '@shared/components/elementUI.js'
 import '@shared/components/register.js'
 import '@shared/directives/register.js'
-import '@shared/filters/dateFormat.js'
+import '@shared/filters/register.js'
 
 // if (process.env.NODE_ENV === 'development') {
 //   require('@/mock')
