@@ -1,9 +1,9 @@
-import { get } from '@shared/http'
+import { post } from '@shared/http'
 import URL from './goodsUrl'
 
 const PURCHASELIST_API = {
   getStatistics (params) {
-    return get(URL.statistics, params).then(res => {
+    return post(URL.statistics, params).then(res => {
       let data = []
       if (res.success) {
         data = res.data.map(item => {
@@ -13,6 +13,22 @@ const PURCHASELIST_API = {
             extra: {
               amount: item.count
             }
+          }
+        })
+      }
+      return data
+    })
+  },
+  getTabs (params) {
+    return post(URL.tabs, params).then(res => {
+      let data = []
+      if (res.success) {
+        data = res.data.map(item => {
+          return {
+            index: item.tabType,
+            name: item.des,
+            value: item.tabType,
+            amount: item.count
           }
         })
       }
