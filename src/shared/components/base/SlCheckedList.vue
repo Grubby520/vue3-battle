@@ -10,7 +10,7 @@
         class="checked-item"
         v-for="(item,index) in options"
         :key="'item-'+index"
-        :class="{['active__'+activeType]:isActive(item.value)}"
+        :class="{['active__'+activeType]:isActive(item.value),underline:underline}"
         :style="{marginRight:gutter}"
         @click="itemClick(item)"
       >
@@ -66,6 +66,11 @@ export default {
       default: 'text'// button
     },
     labelBold: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    underline: {
       type: Boolean,
       required: false,
       default: false
@@ -151,6 +156,9 @@ export default {
       }
       &.active__text {
         color: #409eff;
+      }
+      &.underline {
+        text-decoration: underline;
       }
       &:last-child {
         margin-right: 0 !important;

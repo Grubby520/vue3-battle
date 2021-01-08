@@ -25,7 +25,9 @@
 </template>
 
 <script>
-import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
+import { date } from '@shared/util'
+import CommonUrl from '@api/url.js'
+import GoodsApi from '@api/goods'
 
 export default {
   name: 'DefectiveList',
@@ -39,45 +41,107 @@ export default {
       query: {},
       searchItems: [
         {
+          type: 'input',
+          label: '发货单号',
+          name: 'deliveryNumber'
+        },
+        {
+          type: 'input',
+          label: '物流单号',
+          name: 'logisticsNo'
+        },
+        {
+          type: 'input',
+          label: 'SKU',
+          name: 'sku'
+        },
+        {
           type: 'single-select',
-          label: '订单状态',
-          name: 'productStatus',
+          label: '异常类型',
+          name: 'exceptionType',
           data: {
-            remoteUrl: RecommondUrl.recommendstatus,
-            options: []
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'SUPPLY_TYPE' } // DEFECTIVE_EXCEPTION_ENUM
+          }
+        },
+        {
+          type: 'single-select',
+          label: '异常处理方式',
+          name: 'exceptionDealType',
+          data: {
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'SUPPLY_TYPE' } // DEFECTIVE_EXCEPTION_DEAL_ENUM
           }
         }
       ],
       columns: [
         {
-          prop: 'productName',
-          label: '商品信息',
-          width: '300',
-          isInImg: 'src',
-          pre: {
-            title: '商品名称',
-            supplierItemNo: '供方货号',
-            erpSpuCode: 'SPU'
-          }
+          prop: 'name',
+          label: '商品名称'
         },
         {
-          prop: 'categoryName',
-          label: '品类'
+          prop: 'attributesName',
+          label: '销售属性'
         },
         {
-          prop: 'description',
-          label: '商品描述'
+          prop: 'exceptionType',
+          label: '异常类型'
         },
         {
-          prop: 'productStatusName',
-          label: '状态'
+          prop: 'exceptionAmount',
+          label: '异常数量'
         },
         {
-          prop: 'skuCode',
-          label: '创建时间/更新时间',
-          pre: {
-            createTime: '创建',
-            updateTime: '更新'
+          prop: 'exceptionDealType',
+          label: '处理方式'
+        },
+        {
+          prop: 'remark',
+          label: '详情'
+        },
+        {
+          prop: 'purchaseOrderId',
+          label: '采购单号'
+        },
+        {
+          prop: 'orderNumber',
+          label: '发货单号'
+        },
+        {
+          prop: 'logisticsNumber',
+          label: '物流单号'
+        },
+        {
+          prop: 'operateName',
+          label: '采购员'
+        },
+        {
+          prop: '',
+          label: '时间',
+          width: '200',
+          render: function (h, data) {
+            let { row = {} } = data
+            let cTimeArr = [
+              {
+                timeStamp: row.createTime,
+                typeDes: '创建时间'
+              },
+              {
+                timeStamp: row.updateTime,
+                typeDes: '更新时间'
+              }
+            ]
+            return (
+              cTimeArr.map(item => {
+                if (!item.timeStamp) return ''
+                return (
+                  <div>
+                    <span>{item.typeDes}:</span>
+                    <span>{date(item.timeStamp, 'yyyy-MM-dd hh:mm:ss')}</span>
+                  </div>
+                )
+              })
+            )
           }
         }
       ]
@@ -85,10 +149,13 @@ export default {
   },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
-      // const params = { ...this.query, pageIndex, pageSize }
-      this.tableData = []
-      this.$refs.listView.loading = false
-      this.page.total = 1
+      const params = { ...this.query, pageIndex, pageSize }
+      GoodsApi.getDefectiveTableList(params).then(res => {
+        this.tableData = res
+      }).finally(() => {
+        this.$refs.listView.loading = false
+        this.page.total = 1
+      })
     },
     reset () {
       this.$refs.searchForm.reset()
