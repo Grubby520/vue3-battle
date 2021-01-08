@@ -14,7 +14,11 @@
       <el-table-column prop="name" label="订单号" width="80px" align="center"></el-table-column>
       <el-table-column prop="name" label="商家SKU" width="80px" align="center"></el-table-column>
       <el-table-column prop="name" label="商品名称" width="120px" align="center"></el-table-column>
-      <el-table-column prop="name" label="图片" width="100px" align="center"></el-table-column>
+      <el-table-column label="图片" width="100px" align="center">
+        <template slot-scope="scope">
+          <SlImage size="8rem" :src="scope.row.src" />
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="销售属性" width="80px" align="center"></el-table-column>
       <el-table-column prop="name" label="订单需求量" width="90px" align="center"></el-table-column>
       <el-table-column prop="num" label="实际发货数量" width="120px" align="center">
@@ -35,7 +39,7 @@ export default {
     return {
       dialogVisible: true,
       tableData: [],
-      tableData1: [{ date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }, { date: '19647064', name: '12321', num: '312' }]
+      tableData1: [{ date: '19647064', src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609148703-62dc5530-64a3-4483-b509-18e6714aa66c.jpeg', name: '12321', num: '312' }]
     }
   },
   methods: {
