@@ -86,7 +86,7 @@
             <el-button @click="odmDetail('see',row)" type="text">查看</el-button>
             <el-button @click="exportExcle('modify',row)" type="text">导出表格</el-button>
             <el-button @click="printOrder('modify',row)" type="text">打印发货单</el-button>
-            <el-button @click="printBatchNo('modify',row)" type="text">打印批次号</el-button>
+            <el-button @click="printBatch(scope.row)" type="text">打印批次号</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -97,11 +97,13 @@
     <modify-logistics-no ref="logisticsNo"></modify-logistics-no>
     <!-- 发货单详情 -->
     <shipping-details ref="shippingDetail"></shipping-details>
+    <print-batch-no ref="printBatch"></print-batch-no>
   </div>
 </template>
 
 <script>
 import logisticsInfo from './LogisticsInfoDialog'
+import PrintBatchNo from './printBatchNo'
 import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
 import ShippingDetails from './ShippingDetailsDiaolog'
 import GoodsUrl from '@api/goods/goodsUrl.js'
@@ -168,7 +170,7 @@ const pickerOptions = {
 }
 export default {
   name: 'DeliveryList',
-  components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails },
+  components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo },
   data () {
     return {
       page: {
@@ -267,6 +269,54 @@ export default {
     modifyLogistNo (row) {
       let data = Object.assign({ showDiaolog: true }, row)
       this.$refs.logisticsNo.show(data)
+    },
+
+    printBatch (row) {
+      let data = [
+        {
+          'skuCode': 'CPCP40562009',
+          'purchaseBatchNo': 2001831,
+          'productVariantAttributes': [
+            '浅卡其色',
+            '裤子均码'
+          ],
+          'locationCode': 'A-01',
+          'purchaseOrderNumber': '20001673',
+          'printedAt': '2021-01-11 20:42:58',
+          'printedAtStr': null,
+          'printCount': null,
+          'productVariantAttributesStr': null
+        },
+        {
+          'skuCode': 'CPCP40562007',
+          'purchaseBatchNo': 2001832,
+          'productVariantAttributes': [
+            '浅卡其色',
+            'OPPO A3S'
+          ],
+          'locationCode': 'A-01',
+          'purchaseOrderNumber': '20001673',
+          'printedAt': '2021-01-11 20:42:58',
+          'printedAtStr': null,
+          'printCount': null,
+          'productVariantAttributesStr': null
+        },
+        {
+          'skuCode': 'CPCP40562008',
+          'purchaseBatchNo': 2001833,
+          'productVariantAttributes': [
+            '浅卡其色',
+            '25.0 cm * 7.5 cm * 6.5 cm'
+          ],
+          'locationCode': 'A-01',
+          'purchaseOrderNumber': '20001673',
+          'printedAt': '2021-01-11 20:42:58',
+          'printedAtStr': null,
+          'printCount': null,
+          'productVariantAttributesStr': null
+        }
+      ]
+      this.$refs.printBatch.show(data)
     }
   },
 
