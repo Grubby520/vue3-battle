@@ -49,20 +49,28 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="date" label="发货单号" width="120px" align="center">
           <template slot-scope="scope">
-            <span>{{scope.days}}</span>
+            <span>{{scope.row.orderNumber}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="date" label="订单需求数量" width="120px" align="center"></el-table-column>
-        <el-table-column prop="date" label="实际发货数量" width="120px" align="center"></el-table-column>
-        <el-table-column prop="date" label="总金额（￥）" width="100px" align="center"></el-table-column>
-        <el-table-column prop="date" label="上架数量" width="120px" align="center"></el-table-column>
+        <el-table-column prop="orderRequireNum" label="订单需求数量" width="120px" align="center"></el-table-column>
+        <el-table-column prop="shipmentNo" label="实际发货数量" width="120px" align="center"></el-table-column>
+        <el-table-column prop="totalAmount" label="总金额（￥）" width="100px" align="center"></el-table-column>
+        <el-table-column prop="shelveNo" label="上架数量" width="120px" align="center"></el-table-column>
         <el-table-column label="最晚交货时间" width="180px" align="center">
           <template slot-scope="scope">
             <span>还剩下：{{scope.days}}天</span>
           </template>
         </el-table-column>
-        <el-table-column prop="date" label="结算单ID" width="100px" align="center"></el-table-column>
-        <el-table-column prop="date" label="物流信息" width="180px" align="center">
+        <el-table-column label="最晚交货时间" width="180px" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</span>
+            <span v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</span>
+            <span v-if="scope.row.submissionTime">签收时间：{{scope.row.submissionTime}}</span>
+            <span v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="settlementId" label="结算单ID" width="100px" align="center"></el-table-column>
+        <el-table-column prop="logisticsNo" label="物流信息" width="180px" align="center">
           <template slot-scope="scope">
             <span>还剩下：{{scope.days}}天</span>
           </template>
@@ -74,16 +82,77 @@
         </el-table-column>
       </el-table>
     </SlListView>
-    <logistics-info></logistics-info>
+    <logistics-info ref="logisticsInfo"></logistics-info>
     <modify-logistics-no></modify-logistics-no>
     <shipping-details></shipping-details>
   </div>
 </template>
 
 <script>
-import logisticsInfo from './LogisticsInfoDiaolog'
+import logisticsInfo from './LogisticsInfoDialog'
 import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
 import ShippingDetails from './ShippingDetailsDiaolog'
+import GoodsUrl from '@api/goods/goodsUrl.js'
+const pickerOptions = {
+  shortcuts: [
+    {
+      text: '今天',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 0)
+        picker.$emit('pick', [start, end])
+      }
+    }, {
+      text: '昨天',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
+        picker.$emit('pick', [start, end])
+      }
+    }, {
+      text: '最近三天',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 3)
+        picker.$emit('pick', [start, end])
+      }
+    }, {
+      text: '最近一周',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+        picker.$emit('pick', [start, end])
+      }
+    }, {
+      text: '最近15天',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 15)
+        picker.$emit('pick', [start, end])
+      }
+    }, {
+      text: '最近30天',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+        picker.$emit('pick', [start, end])
+      }
+    }, {
+      text: '最近90天',
+      onClick (picker) {
+        const end = new Date()
+        const start = new Date()
+        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+        picker.$emit('pick', [start, end])
+      }
+    }]
+}
 export default {
   name: 'DeliveryList',
   components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails },
@@ -98,17 +167,17 @@ export default {
         {
           type: 'input',
           label: '发货单号',
-          name: 'orderId'
+          name: 'deliveryNumber'
         },
         {
           type: 'input',
           label: '订单号',
-          name: 'sku'
+          name: 'orderNumber'
         },
         {
           type: 'input',
           label: '供方货号',
-          name: 'sku'
+          name: 'supplierItemNumber'
         },
         {
           type: 'input',
@@ -120,8 +189,9 @@ export default {
           label: '组单时间',
           name: 'cTime',
           data: {
-            datetype: 'date',
-            isBlock: true
+            datetype: 'daterange',
+            isBlock: true,
+            pickerOptions: pickerOptions
           }
         },
         {
@@ -129,14 +199,19 @@ export default {
           label: '最晚收货时间',
           name: 'uTime',
           data: {
-            datetype: 'date',
+            datetype: 'daterange',
+            pickerOptions: pickerOptions,
             isBlock: true
           }
         },
         {
-          type: 'input',
-          label: '发货状态',
-          name: 'sku'
+          type: 'single-select',
+          label: '订单状态',
+          name: 'orderState',
+          data: {
+            remoteUrl: GoodsUrl.statusList,
+            params: { data: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
+          }
         }
       ],
       tableData: [],
@@ -156,7 +231,12 @@ export default {
     },
 
     handleSelectionChange () { },
-    switchNav () { }
+    switchNav () { },
+
+    async openLogistisInfoDialog (row) {
+      let params = Object.assign({ isShowLogistics: true }, row)
+      this.$refs.logisticsInfo.show(params)
+    }
   }
 }
 </script>

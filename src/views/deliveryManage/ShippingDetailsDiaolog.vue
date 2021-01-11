@@ -37,7 +37,7 @@ export default {
   name: 'ShippingDetails',
   data () {
     return {
-      dialogVisible: true,
+      dialogVisible: false,
       tableData: [],
       tableData1: [{ date: '19647064', src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609148703-62dc5530-64a3-4483-b509-18e6714aa66c.jpeg', name: '12321', num: '312' }]
     }
