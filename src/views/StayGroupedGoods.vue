@@ -14,7 +14,12 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" :disabled="!canGenerateInvoice">生成发货单</el-button>
+        <el-button
+          type="primary"
+          :disabled="!canGenerateInvoice"
+          @click="generateInvoice"
+          :loading="loading"
+        >生成发货单</el-button>
         <el-button type="primary" :disabled="!canExport" plain>导出待发货商品详情</el-button>
       </SlTableToolbar>
       <div class="switch-nav">
@@ -63,6 +68,9 @@
 </template>
 
 <script>
+import { date } from '@shared/util'
+import CommonUrl from '@api/url.js'
+import GoodsApi from '@api/goods'
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
 import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
 
@@ -74,12 +82,15 @@ export default {
   },
   data () {
     return {
+      loading: false,
       activeIndex: '0',
       showSplitOrderDialog: false,
       switchNavs: [],
       tableData: [],
       selections: [],
-      query: {},
+      query: {
+        tabType: -1
+      },
       page: {
         pageIndex: 1,
         total: 0
@@ -110,20 +121,25 @@ export default {
           label: '订单类型',
           name: 'orderType',
           data: {
-            options: []
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'SUPPLY_TYPE' } // PURCHASE_ORDER_TYPE
           }
         },
         {
           type: 'date',
           label: '应交货时间',
-          name: 'dueDeliveryTime',
+          name: 'dueDeliveryTimes',
           data: {
-            datetype: 'date',
+            datetype: 'daterange',
             isBlock: true
           }
         }
       ],
       columns: [
+        {
+          prop: 'orderId',
+          label: '订单号'
+        },
         {
           prop: 'baseInfo',
           label: '基本信息',
@@ -136,28 +152,70 @@ export default {
           }
         },
         {
-          prop: 'categoryName',
-          label: '品类'
+          prop: 'productName',
+          label: '商品名称'
         },
         {
-          prop: 'description',
-          label: '商品描述'
+          prop: 'sellProperty',
+          label: '销售属性'
         },
         {
-          prop: 'productStatusName',
-          label: '状态'
+          prop: 'orderType',
+          label: '订单类型'
+        },
+        {
+          prop: 'cTime',
+          label: '创建时间',
+          render: (h, data) => {
+            let { row = {} } = data
+            if (Array.isArray(row['cTime'])) {
+              return (
+                row['cTime'].map(item => {
+                  if (!item.timeStamp) return ''
+                  return (
+                    <div>
+                      <span>{item.typeDes}:</span>
+                      <span>{date(item.timeStamp, 'yyyy-MM-dd hh:mm:ss')}</span>
+                    </div>
+                  )
+                })
+              )
+            }
+            return <template></template>
+          }
+        },
+        {
+          prop: 'dueDeliveryTime',
+          label: '应交货时间',
+          width: '150',
+          render: (h, data) => {
+            let { row = {} } = data
+            let dueDeliveryTime = row.dueDeliveryTime ? row.dueDeliveryTime : 0
+            let offsetDays = (dueDeliveryTime - new Date().getTime()) / 1000 / 60 / 60 / 24
+            return (
+              <div>
+                <p>{date(row.dueDeliveryTime, 'yyyy-MM-dd hh:mm:ss')}</p>
+                <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${parseInt(offsetDays)}天` : '已超期'}</span>
+              </div>
+            )
+          }
+        },
+        {
+          prop: 'requiredNum',
+          label: '需求数量'
         },
         {
           prop: 'shippedNum',
           label: '发货数量',
           render: (h, data) => {
+            let { row = {} } = data
             return (
               <div>
                 <el-input
-                  vModel={data.row.shippedNum} placeholder="请输入数量"
+                  vModel={row.shippedNum} placeholder="请输入数量"
                   vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }} disabled></el-input>
                 <div class="mt-1rem">
-                  <el-button type="primary" onClick={() => this.openSplitDialog(data)}>拆单</el-button>
+                  <el-button type="primary" onClick={() => this.openSplitDialog(row)} disabled={!row.shippedEnable}>拆单</el-button>
                 </div>
               </div>
             )
@@ -179,11 +237,21 @@ export default {
     }
   },
   mounted () {
-    this.switchNavs = this.getSwitchNavs()
+    this.getSwitchNavs()
   },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
-      // const params = { ...this.query, pageIndex, pageSize }
+      // const params = this.generateParams(pageSize, pageIndex)
+      // GoodsApi.getPurchaseTableList(params).then(res => {
+      //   let { success, data = {} } = res
+      //   if (success) {
+      //     this.tableData = data.list
+      //     this.page.total = data.total
+      //   }
+      // }).finally(() => {
+      //   this.$refs.listView.loading = false
+      // })
+
       this.tableData = [
         {
           baseInfo: {
@@ -192,48 +260,98 @@ export default {
             merchantSku: 'SKU12345678',
             sku: '1123121412'
           },
-          shippedNum: 23
+          requiredNum: 100,
+          shippedNum: 100,
+          shippedEnable: true,
+          dueDeliveryTime: 1610356061288
         }
       ]
-      this.$refs.listView.loading = false
-      this.page.total = 1
     },
     reset () {
       this.$refs.searchForm.reset()
       this.$refs.listView.refresh()
     },
     getSwitchNavs () {
-      return [
-        { 'index': 0, 'name': '全部待组单', 'value': null, 'amount': 50 },
-        { 'index': 1, 'name': '1日未组单', 'value': 1, 'amount': 28 },
-        {
-          'index': 2, 'name': '3日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '预警!'
-        },
-        {
-          'index': 3, 'name': '5日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
-        },
-        {
-          'index': 4, 'name': '7日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
-        }
-      ]
+      GoodsApi.getGroupTabs({}).then(data => {
+        this.switchNavs = data
+      })
     },
     switchNav (index) {
-      // let item = this.switchNavs[parseInt(index)]
-      this.activeIndex = index
+      this.selections = []
+      this.activeIndex = this.query.tabType = index
       this.gotoPage()
     },
-    openSplitDialog (data) {
+    generateParams (pageSize, pageIndex) {
+      let { dueDeliveryTimes = [], ...orther } = this.query
+      return {
+        ...orther,
+        pageIndex,
+        pageSize,
+        dueDeliveryStartTime: dueDeliveryTimes[0] ? dueDeliveryTimes[0] : '',
+        dueDeliveryEndTime: dueDeliveryTimes[1] ? dueDeliveryTimes[1] : ''
+      }
+    },
+    validateGenerateInvoice () {
+      let skuTotal = this.selections.length
+      let shippedTolNum = this.selections.reduce((prev, next) => {
+        prev += next
+        return prev
+      }, 0)
+      if (skuTotal > 50) {
+        this.$message({
+          showClose: true,
+          message: '总SKU个数超过50，不能生成发货单',
+          type: 'error',
+          duration: 4500
+        })
+        return false
+      }
+
+      if (shippedTolNum > 200) {
+        this.$message({
+          showClose: true,
+          message: '总发货数量超过200，不能生成发货单',
+          type: 'error',
+          duration: 4500
+        })
+        return false
+      }
+      return true
+    },
+    generateInvoice () {
+      if (!this.validateGenerateInvoice()) {
+        return
+      }
+      this.loading = true
+      this.groupGenerateShippedBill(this.selections.map(item => item.id)).then(res => {
+        if (res.success) {
+          this.$message.success('生成发货单(FH202012310001)成功')
+        }
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    openSplitDialog (row) {
       this.dialogForm = {
-        src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
-        merchantSku: '1231231293798',
-        requiredNum: 1234,
-        retainRequiredNum: 123,
-        shippedNum: 0
+        orderId: row.orderId,
+        sku: row.sku,
+        src: row.baseInfo.imageUrl,
+        merchantSku: row.baseInfo.merchantSku,
+        requiredNum: row.requiredNum,
+        retainRequiredNum: row.requiredNum - row.shippedNum,
+        shippedNum: row.shippedNum
       }
       this.showSplitOrderDialog = true
     },
-    submitSplitOrder (data) {
-      console.log(data)
+    submitSplitOrder (submitData) {
+      GoodsApi.groupSplite({
+        orderId: submitData.orderId,
+        sku: submitData.sku,
+        saveRequiredNum: submitData.retainRequiredNum
+      }).then(res => {
+        this.showSplitOrderDialog = false
+        this.gotoPage()
+      })
     }
   }
 }
