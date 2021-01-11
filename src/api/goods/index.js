@@ -1,5 +1,5 @@
-// import { get,post } from '@shared/http'
-// import URL from './goodsUrl'
+import { get } from '@shared/http'
+import URL from './goodsUrl'
 
 const GOODS_API = {
   getPurchaseStatistics (params) {
@@ -131,7 +131,53 @@ const GOODS_API = {
       }
     ])
     // return get(URL.defectiveList, params)
+  },
+
+  // 发货列表
+  invoiceList (params) {
+    return Promise.resolve({
+      'pageIndex': 1,
+      'pageSize': 10,
+      'orderBy': null,
+      'orderDirect': 'desc',
+      'deliveryOrderList': [
+        {
+          'id': 1,
+          'supplierId': 10,
+          'orderNumber': '123',
+          'orderRequireNum': 30,
+          'deliveryNum': 30,
+          'totalPrice': 600.0000,
+          'orderStatus': 0,
+          'shelvedNum': 0,
+          'lastDeliveryTime': '2021-01-14T22:52:45',
+          'settleOrderNumber': '123456',
+          'logisticsCompanyId': 1,
+          'logisticsNumber': '12345678',
+          'courierCode': 'fedex',
+          'courierName': '快递名称',
+          'logisticsCompanyName': '物流商名称',
+          'createTime': '2021-01-09T22:53:05',
+          'updateTime': '2021-01-09T22:53:08',
+          'lastDeliveryTimeS': 1610635965,
+          'singleTime': '2021-01-09 22:53:08',
+          'deliveryTime': '2021-01-09T22:53:08',
+          'submissionTime': '2021-01-09T22:53:08',
+          'completeTime': '2021-01-09T22:53:08'
+        }
+      ],
+      'count': 1,
+      'total': 1,
+      'totalWait': 0,
+      'totalWaitOneDay': 1,
+      'totalWaitTwoDay': 1,
+      'totalWaitThreeDay': 1
+    })
+    // return get(URL, params)
+  },
+
+  getInvoiceDetail (id) {
+    return get(`${URL.invoiceDetail} / ${id}`)
   }
 }
-
 export default GOODS_API

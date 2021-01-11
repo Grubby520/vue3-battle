@@ -53,38 +53,50 @@
           </template>
         </el-table-column>
         <el-table-column prop="orderRequireNum" label="订单需求数量" width="120px" align="center"></el-table-column>
-        <el-table-column prop="shipmentNo" label="实际发货数量" width="120px" align="center"></el-table-column>
-        <el-table-column prop="totalAmount" label="总金额（￥）" width="100px" align="center"></el-table-column>
-        <el-table-column prop="shelveNo" label="上架数量" width="120px" align="center"></el-table-column>
+        <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center"></el-table-column>
+        <el-table-column prop="totalPrice" label="总金额（￥）" width="100px" align="center"></el-table-column>
+        <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
         <el-table-column label="最晚交货时间" width="180px" align="center">
           <template slot-scope="scope">
-            <span>还剩下：{{scope.days}}天</span>
+            <span>{{scope.row.lastDeliveryTimeS | dateFormat('yy-MM-dd HH:mm:ss')}}</span>
+            <span>还剩下：{{parseInt((Date.parse(new Date)-scope.row.lastDeliveryTimeS)/1000/3600/24)}}天</span>
           </template>
         </el-table-column>
-        <el-table-column label="最晚交货时间" width="180px" align="center">
+        <el-table-column label="最晚交货时间" width="200px" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</span>
-            <span v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</span>
-            <span v-if="scope.row.submissionTime">签收时间：{{scope.row.submissionTime}}</span>
-            <span v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</span>
+            <p v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</p>
+            <p v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</p>
+            <p v-if="scope.row.submissionTime">签收时间：{{scope.row.submissionTime}}</p>
+            <p v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</p>
           </template>
         </el-table-column>
-        <el-table-column prop="settlementId" label="结算单ID" width="100px" align="center"></el-table-column>
-        <el-table-column prop="logisticsNo" label="物流信息" width="180px" align="center">
+        <el-table-column prop="settleOrderNumber" label="结算单ID" width="100px" align="center"></el-table-column>
+        <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
           <template slot-scope="scope">
-            <span>还剩下：{{scope.days}}天</span>
+            <p>
+              物流单号：
+              <a>{{scope.row.logisticsNumber}}</a>
+            </p>
+            <el-button type="primary" @click="modifyLogistNo(scope.row)">修改物流单号</el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px" align="center">
           <template slot-scope="scope">
-            <span>{{scope.name}}</span>
+            <el-button @click="odmDetail(scope.row,'modify')" type="text">修改</el-button>
+            <el-button @click="odmDetail('see',row)" type="text">查看</el-button>
+            <el-button @click="exportExcle('modify',row)" type="text">导出表格</el-button>
+            <el-button @click="printOrder('modify',row)" type="text">打印发货单</el-button>
+            <el-button @click="printBatchNo('modify',row)" type="text">打印批次号</el-button>
           </template>
         </el-table-column>
       </el-table>
     </SlListView>
+    <!-- 物流信息dialog -->
     <logistics-info ref="logisticsInfo"></logistics-info>
-    <modify-logistics-no></modify-logistics-no>
-    <shipping-details></shipping-details>
+    <!-- 修改物理单号 -->
+    <modify-logistics-no ref="logisticsNo"></modify-logistics-no>
+    <!-- 发货单详情 -->
+    <shipping-details ref="shippingDetail"></shipping-details>
   </div>
 </template>
 
@@ -93,6 +105,7 @@ import logisticsInfo from './LogisticsInfoDialog'
 import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
 import ShippingDetails from './ShippingDetailsDiaolog'
 import GoodsUrl from '@api/goods/goodsUrl.js'
+import GOODS_API from '@api/goods'
 const pickerOptions = {
   shortcuts: [
     {
@@ -220,7 +233,6 @@ export default {
     }
   },
   methods: {
-
     reset () {
       this.$refs.searchForm.reset()
       this.$refs.listView.refresh()
@@ -233,10 +245,33 @@ export default {
     handleSelectionChange () { },
     switchNav () { },
 
+    getInvoiceList (params) {
+      GOODS_API.invoiceList(params).then(data => {
+        this.page.pageIndex = data.pageIndex
+        this.page.pageSize = data.pageSize
+        this.tableData = data.deliveryOrderList
+      })
+    },
+
     async openLogistisInfoDialog (row) {
       let params = Object.assign({ isShowLogistics: true }, row)
       this.$refs.logisticsInfo.show(params)
+    },
+
+    async odmDetail (row, type) {
+      // let res = await GOODS_API.getInvoiceDetail(row.id)
+      let data = { type: type, dialogVisible: true, row: row }
+      this.$refs.shippingDetail.show(data)
+    },
+
+    modifyLogistNo (row) {
+      let data = Object.assign({ showDiaolog: true }, row)
+      this.$refs.logisticsNo.show(data)
     }
+  },
+
+  mounted () {
+    this.getInvoiceList(this.page)
   }
 }
 </script>

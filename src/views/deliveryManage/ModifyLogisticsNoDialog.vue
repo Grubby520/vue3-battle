@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" width="50%" center>
+  <el-dialog :visible.sync="showDiaolog" width="50%" center>
     <h4 slot="title">添加物流</h4>
     <div class="notice">
       <p>注意！</p>
@@ -44,11 +44,13 @@
   </el-dialog>
 </template>
 <script>
+import { cloneDeep as _cloneDeep } from 'lodash'
 export default {
   name: 'ModifyLogisticsNo',
   data () {
     return {
-      dialogVisible: false,
+      showDiaolog: false,
+      logisticsInfo: {},
       form: {
         region: '',
         name: ''
@@ -56,6 +58,10 @@ export default {
     }
   },
   methods: {
+    show (data) {
+      this.logisticsInfo = _cloneDeep(data)
+      this.showDiaolog = data.showDiaolog
+    }
   }
 }
 </script>

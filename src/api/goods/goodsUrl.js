@@ -5,6 +5,7 @@ export default {
   purchaseTabs: baseURL + 'purchase/agg/tabs',
   purchaseList: baseURL + 'purchase',
   defectiveList: baseURL + 'defective/defective-list',
-  invoiceList: baseURL + '/invoice/invoice-list',
-  statusList: baseURL + '/data/name-value/list' //  获取发货单状态
+  invoiceList: baseURL + '/invoice/invoice-list', // 发货单列表
+  statusList: baseURL + '/data/name-value/list', //  获取发货单状态
+  invoiceDetail: baseURL + 'nvoice/invoice-detail' // 发货单详情
 }
