@@ -1,0 +1,167 @@
+@import "@assets/scss/_reset.scss";
+@import "@assets/scss/_mixin.scss";
+
+.align-center {
+  text-align: center;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.color-text--white {
+  color: $color-white;
+}
+
+.color-text--gray {
+  color: $color-gray;
+}
+
+.color-text--red {
+  color: $color-red;
+}
+
+.mr-1rem {
+  margin-right: 1rem !important;
+}
+
+.mr-2rem {
+  margin-right: 2rem !important;
+}
+
+.mt-1rem {
+  margin-top: 1rem !important;
+}
+
+.mb-1rem {
+  margin-bottom: 1rem !important;
+}
+
+.mb-2rem {
+  margin-bottom: 2rem !important;
+}
+
+.mt-2rem {
+  margin-top: 2rem !important;
+}
+
+.font-size-30 {
+  font-size: 3rem;
+}
+
+.font-size-20 {
+  font-size: 2rem;
+}
+
+.font-size-16 {
+  font-size: 1.6rem;
+}
+
+.font-wight-normal {
+  font-weight: normal;
+}
+
+.font-wight-600 {
+  font-weight: 600;
+}
+
+.btn {
+  color: rgb(21, 146, 241);
+  display: block;
+}
+
+.echarts {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.flex-left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex1 {
+  flex: 1;
+}
+
+.text-overflow {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.clearfix {
+  @include clearfix;
+}
+
+.display-inline-block {
+  display: inline-block;
+}
+
+.reset-autofill {
+  & input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px $color-white inset !important;
+    box-shadow: 0 0 0px 1000px $color-white inset !important;
+  }
+}
+// notify英文折行
+.el-notification__content p {
+  word-break: break-all;
+}
+// 查看页面
+.view-container {
+  pointer-events: none;
+  cursor: not-allowed;
+  /deep/.el-input__inner {
+    border: 0;
+    padding: unset;
+    &::placeholder {
+      color: #fff !important;
+    }
+  }
+  /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
+    border: 0;
+  }
+  /deep/.el-textarea__inner {
+    border: 0 !important;
+  }
+
+  /deep/.stl-big-data-select .selected-tags.disabled[data-v-05976cfe] {
+    background-color: #fff;
+  }
+  /deep/.stl-big-data-select .placeholder {
+    display: none;
+  }
+  /deep/.el-input.is-disabled .el-input__inner {
+    background-color: #fff;
+  }
+  /deep/.el-input__count {
+    display: none;
+  }
+  /deep/.el-input__prefix {
+    display: none;
+  }
+  /deep/.el-icon-arrow-down {
+    display: none;
+  }
+}

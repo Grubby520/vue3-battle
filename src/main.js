@@ -1,28 +1,20 @@
+import '@assets/scss/common.scss'
+import 'element-ui/lib/theme-chalk/index.css'
+import 'nprogress/nprogress.css'// Progress 进度条 样式
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import ECharts from 'vue-echarts'
-import { http, get, post, del, patch, put } from '@shared/http'
 import i18n from '@/lang'
-import '@components/element'
-import '@assets/scss/com.scss'
-import 'element-ui/lib/theme-chalk/index.css'
+import '@shared/components/elementUI.js'
+import '@shared/components/register.js'
+import '@shared/directives/register.js'
 
-if (process.env.NODE_ENV === 'development') {
-  require('@/mock')
-}
+// if (process.env.NODE_ENV === 'development') {
+//   require('@/mock')
+// }
 
-Vue.component('sl-chart', ECharts)
 Vue.config.productionTip = false
-
-Vue.prototype.$http = http
-Vue.prototype.$get = get
-Vue.prototype.$post = post
-Vue.prototype.$del = del
-Vue.prototype.$patch = patch
-Vue.prototype.$put = put
-Vue.prototype.$console = console
 
 new Vue({
   router,

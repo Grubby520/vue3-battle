@@ -1,121 +1,182 @@
 <template>
-<div class="w-login-container">
-  <form class="w-login">
-    <div class="w-form-item" :class="{error:userNameProp.isError && submited}">
-      <input type="text" v-model="userNameProp.value" :placeholder="userNameProp.tip">
+  <div class="sl-login-container">
+    <div class="sl-login">
+      <h3 class="sl-login-title">
+        <img src="@/assets/login-logo.png" alt="logo" />
+      </h3>
+      <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
+        <el-form-item prop="username">
+          <span class="el-icon-s-custom form-item-icon"></span>
+          <el-input name="username" type="text" v-model="loginForm.username" placeholder="用户名" />
+        </el-form-item>
+        <el-form-item prop="password">
+          <span class="el-icon-lock form-item-icon"></span>
+          <el-input
+            name="password"
+            type="password"
+            v-model="loginForm.password"
+            placeholder="密码"
+            @keyup.enter.native="login"
+          />
+        </el-form-item>
+        <div class="align-center">
+          <el-button type="primary" class="mr-2rem" @click="register">{{$t('button.registerText')}}</el-button>
+          <el-button type="primary" @click="login" :loading="isLoading">{{$t('button.loginText')}}</el-button>
+        </div>
+      </el-form>
     </div>
-    <div class="w-form-item" :class="{error:passwordProp.isError && submited}">
-      <input type="password" v-model="passwordProp.value" :placeholder="passwordProp.tip">
-    </div>
-    <div class="w-button">
-      <button type="button" @click="login" :disabled="!canLogin">{{submitText}}</button>
-    </div>
-  </form>
-</div>
+  </div>
 </template>
 
 <script>
+
+import { createNamespacedHelpers, mapState } from 'vuex'
+import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
+import { valueToMd5 } from '@shared/util'
+const { mapActions: userMapActions, mapState: userMapState, mapGetters: userMapGetters } = createNamespacedHelpers('user')
+const { mapMutations: registerMapMutations } = createNamespacedHelpers('register')
+
 export default {
+  name: 'Login',
   data () {
     return {
-      submitText: '登录',
-      submited: false,
-      userNameProp: {
-        value: '',
-        isError: true,
-        tip: '用户名'
+      loginForm: {
+        username: '',
+        password: ''
       },
-      passwordProp: {
-        value: '',
-        isError: true,
-        tip: '密码'
-      }
-    }
-  },
-  watch: {
-    'userNameProp.value': function () {
-      this.userNameProp.isError = this.userNameProp.value === ''
-    },
-    'passwordProp.value': function () {
-      this.passwordProp.isError = this.passwordProp.value === ''
+      loginRules: {
+        username: [
+          emptyValidator('账户不能为空'),
+          charLimitValidator('字符长度不能超过100', 1, 100)
+        ],
+        password: [
+          emptyValidator('密码不能为空'),
+          passwordValidator()
+        ]
+      },
+      isLoading: false
     }
   },
   computed: {
-    canLogin: function () {
-      return !this.userNameProp.isError && !this.passwordProp.isError
-    }
+    ...mapState(['systemName']),
+    ...userMapState(['confirmAgreement']),
+    ...userMapGetters(['enterMainPage', 'enterRegisterPage'])
+  },
+  mounted () {
+    this.RESET_USER_DATA()
   },
   methods: {
-    login (event) {
-      if (!this.submited) {
-        this.submited = true
-      }
-      if (this.canLogin) {
-        this.$router.push('home')
-      }
+    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO', 'RESET_USER_DATA']),
+    ...registerMapMutations(['RESET_REGISTER_DATA']),
+    login () {
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          this.isLoading = true
+          this.AUTH_LOGIN({
+            username: this.loginForm.username,
+            password: valueToMd5(this.loginForm.password)
+          }).then(res => {
+            if (res.success) {
+              this.GET_USER_INFO().then(data => {
+                if (data) {
+                  if (this.enterMainPage) {
+                    this.$router.push('home/recommend-products/list')
+                    return
+                  }
+                  if (this.enterRegisterPage) {
+                    this.$router.push('/register')
+                    return
+                  }
+                  this.$router.push('/registerProgress')
+                }
+              })
+            }
+          }).finally(() => {
+            this.isLoading = false
+          })
+        }
+      })
+    },
+    register () {
+      this.RESET_REGISTER_DATA()
+      this.$router.push({
+        path: '/register',
+        query: {
+          from: 'loginPage'
+        }
+      })
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-$borderW:1px;
-$errorCorlor:#f00;
-$fontCorlor:#fff;
-$placeholderColor:#ccc;
-$black:#000;
+@import '@assets/scss/_var.scss';
+@import '@assets/scss/_mixin.scss';
+$inputBgColor: #454545;
+$boxShadowColor: rgba(0, 0, 0, 0.7);
 
-.w-login-container {
+.sl-login-container {
   height: 100%;
-  // background-image: url('/img/bg.jpg');
-  background-color: $black;
+  background-color: $color-login-bg;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-.w-login {
-  display: inline-block;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  padding: 1em;
-  transform: translate(-50%,-50%);
-}
+.sl-login-container /deep/ {
+  .el-input {
+    background-color: $inputBgColor;
+  }
 
-.w-form-item {
-  margin-bottom: 1em;
-  &.error {
-    input {
-      border:$borderW solid $errorCorlor
+  .el-input__inner {
+    display: inline-block;
+    height: 4.5rem;
+    line-height: 4.5rem;
+    padding: 0 0.3em 0 2em;
+    color: $color-white;
+    border-radius: 0;
+    border: none !important;
+    background: transparent;
+    &:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
+      box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
+      -webkit-text-fill-color: #fff !important;
     }
   }
+}
 
-  input {
-    padding: 0.5em;
-    width: 20vw;
-    font-size: 1.5rem;
-    color:$fontCorlor;
-    background: transparent;
-    border: none;
-    box-shadow: 0 0 0.5em #000;
-  }
-  input::-webkit-input-placeholder {
-    color:$placeholderColor;
+.sl-login-title {
+  margin-bottom: 1em;
+  font-size: 2.5rem;
+  color: $color-white;
+  letter-spacing: 0.2em;
+  text-align: center;
+  img {
+    height: 12rem;
   }
 }
 
-.w-button {
-  button {
-    width: 10vw;
-    padding: 0.3em 0.5em;
-    border: none;
-    color: $fontCorlor;
-    font-size: 1.8rem;
-    box-shadow: 0 0 1em;
-    background: transparent;
-    cursor: pointer;
-  }
+.sl-login {
+  display: inline-block;
+  position: absolute;
+  width: 25%;
+  left: 50%;
+  top: 40%;
+  padding: 1em;
+  transform: translate(-50%, -50%);
 }
 
+.form-item-icon {
+  position: absolute;
+  left: 0.5em;
+  top: 50%;
+  color: $color-white;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.sl-login {
+  @include login-responsive-layout;
+}
 </style>

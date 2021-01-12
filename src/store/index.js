@@ -1,31 +1,63 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { Loading } from 'element-ui'
+import { loadModules } from './loadModules'
+import { setLocalStorageItem } from '@shared/util'
+const modules = loadModules()
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    systemName: '马上发商家系统',
     loadingInstance: null,
-    breadcrumbs: []
+    loadingCount: 0, // 用于计算请求的次数
+    breadcrumbs: [],
+    activePath: null,
+    menuCollapse: false,
+    hasVersionUpdated: false // 版本是否更新
   },
   mutations: {
-    setLoadingInstance (state, payload) {
-      state.loadingInstance = payload
+    SET_LAODING (state, loadingInstance) {
+      state.loadingInstance = loadingInstance
     },
-    setBreadcrumbs (state, payload) {
-      state.breadcrumbs = payload
+
+    SET_BREADCRUMBS (state, breadcrumbs) {
+      state.breadcrumbs = breadcrumbs
+    },
+    SET_ACTIVE_PATH (state, activePath) {
+      state.activePath = activePath
+      setLocalStorageItem('activePath', activePath)
+    },
+    SET_MENU_COLLAPSE (state, menuCollapse) {
+      state.menuCollapse = menuCollapse
+    },
+    SET_LOADING_COUNT (state, loadingCount) {
+      state.loadingCount = loadingCount
+    },
+    SET_VERSION_UPDATED (state, hasVersionUpdated) {
+      state.hasVersionUpdated = hasVersionUpdated
     }
   },
   actions: {
-    createLoading ({ commit }) {
-      commit('setLoadingInstance', Loading.service({ fullscreen: true }))
+    OPEN_LOADING ({ state, commit }, isCount = false) {
+      if (isCount) { // 是否计数,用于请求拦截场景
+        state.loadingCount++
+      }
+      if (!state.loadingInstance) {
+        commit('SET_LAODING', Loading.service({ fullscreen: true }))
+      }
     },
-    closeLoading ({ state, commit }) {
+    CLOSE_LOADING ({ state, commit }, isCount = false) {
+      if (isCount) {
+        state.loadingCount--
+        if (state.loadingCount > 0) {
+          return
+        }
+      }
       state.loadingInstance && state.loadingInstance.close()
-      commit('setLoadingInstance', null)
+      commit('SET_LAODING', null)
     }
   },
-  modules: {
-  }
+  modules
 })

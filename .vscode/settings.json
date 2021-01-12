@@ -1,0 +1,62 @@
+{
+  "editor.formatOnSave": true,
+  "[scss]": {
+    "editor.formatOnSave": false
+  },
+  // 是否开启eslint检测
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "html",
+    "vue",
+    "typescript",
+    "typescriptreact",
+    "jsx"
+  ],
+  "vetur.validation.template": false,
+  "vetur.format.defaultFormatter.html": "prettyhtml",
+  "vetur.format.defaultFormatter.js": "vscode-typescript",
+  "vetur.format.defaultFormatterOptions": {
+    "prettier": {
+      "singleQuote": true,
+      "semi": false,
+      "eslintIntegration": true
+    }
+  },
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "octref.vetur"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  // vscode默认启用了根据文件类型自动设置tabsize的选项
+  "editor.detectIndentation": false,
+  // 重新设定tabsize
+  "editor.tabSize": 2,
+  // 文件寻址 需要安装插件 Path Intellisense **1.4.2**
+  "path-intellisense.mappings": {
+    "@": "${workspaceRoot}/src",
+    "@shared": "${workspaceRoot}/src/shared",
+    "@components": "${workspaceRoot}/src/shared/components",
+    "@directives": "${workspaceRoot}/src/shared/directives",
+    "@filters": "${workspaceRoot}/src/shared/filters",
+    "@mixins": "${workspaceRoot}/src/shared/mixins",
+    "@plugins": "${workspaceRoot}/src/shared/plugins",
+    "@assets": "${workspaceRoot}/src/assets",
+    "@api": "${workspaceRoot}/src/api",
+  },
+  "path-intellisense.extensionOnImport": true,
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "path-intellisense.showHiddenFiles": true,
+  "path-intellisense.absolutePathToWorkspace": false,
+}

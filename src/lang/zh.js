@@ -1,14 +1,15 @@
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
 export default {
-  home: {
-    label: '标签',
-    routers: {
-      'home': '首页',
-      'home_detail_$id': null,
-      'home_d3': 'd3.js 示例'
-    }
+  button: {
+    cancelText: '取 消',
+    submitText: '提 交',
+    registerText: '注 册',
+    loginText: '登 录',
+    saveText: '保 存',
+    enterText: '确 定'
   },
-  views: {},
-  components: {},
+  placeholder: {
+
+  },
   ...zhLocale
 }

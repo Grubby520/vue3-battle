@@ -1,3 +1,5 @@
+@import '@assets/scss/_var.scss';
+
 @function strip-units($number) {
     //去掉单位
     @return $number / ($number * 0 + 1);
