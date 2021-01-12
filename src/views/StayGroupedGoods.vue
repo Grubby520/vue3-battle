@@ -10,17 +10,23 @@
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
+        <SlSearchForm ref="searchForm" v-model="formQuery" :items="searchItems"></SlSearchForm>
       </div>
       <el-divider />
       <SlTableToolbar>
         <el-button
           type="primary"
-          :disabled="!canGenerateInvoice"
           @click="generateInvoice"
           :loading="loading"
+          :disabled="!canGenerateInvoice"
         >生成发货单</el-button>
-        <el-button type="primary" :disabled="!canExport" plain>导出待发货商品详情</el-button>
+        <el-button
+          type="primary"
+          @click="exportDetail"
+          :loading="loading"
+          :disabled="!canExport"
+          plain
+        >导出待发货商品详情</el-button>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
@@ -68,8 +74,9 @@
 </template>
 
 <script>
-import { date } from '@shared/util'
+import { date, exportFileFromRemote } from '@shared/util'
 import CommonUrl from '@api/url.js'
+import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
 import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
@@ -83,13 +90,15 @@ export default {
   data () {
     return {
       loading: false,
-      activeIndex: '0',
+      activeIndex: '-1',
       showSplitOrderDialog: false,
       switchNavs: [],
       tableData: [],
       selections: [],
-      query: {
+      extraQuery: {
         tabType: -1
+      },
+      formQuery: {
       },
       page: {
         pageIndex: 1,
@@ -122,7 +131,7 @@ export default {
           name: 'orderType',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'SUPPLY_TYPE' } // PURCHASE_ORDER_TYPE
+            params: { dataCode: 'PURCHASE_ORDER_TYPE' }
           }
         },
         {
@@ -230,10 +239,14 @@ export default {
       return this.selections.length > 0
     },
     canExport () {
-      return this.selections.length > 0
+      return true
+      // return this.selections.length > 0
     },
     skuNumber () {
-      return 10
+      return this.selections.reduce((prev, next) => {
+        prev += next
+        return prev
+      }, 0)
     }
   },
   mounted () {
@@ -241,31 +254,17 @@ export default {
   },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
-      // const params = this.generateParams(pageSize, pageIndex)
-      // GoodsApi.getPurchaseTableList(params).then(res => {
-      //   let { success, data = {} } = res
-      //   if (success) {
-      //     this.tableData = data.list
-      //     this.page.total = data.total
-      //   }
-      // }).finally(() => {
-      //   this.$refs.listView.loading = false
-      // })
-
-      this.tableData = [
-        {
-          baseInfo: {
-            imageUrl: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609813675-a7698629-39ff-4b56-952a-5ea0eb989e8e.jpg',
-            supplierItemNo: '1231231',
-            merchantSku: 'SKU12345678',
-            sku: '1123121412'
-          },
-          requiredNum: 100,
-          shippedNum: 100,
-          shippedEnable: true,
-          dueDeliveryTime: 1610356061288
+      const params = this.generateParams(pageSize, pageIndex)
+      GoodsApi.getGroupList(params).then(res => {
+        let { success, data = {} } = res
+        if (success) {
+          this.tableData = data.list
+          this.page.total = data.total
         }
-      ]
+      }).finally(() => {
+        this.$refs.listView.loading = false
+        this.getSwitchNavs()
+      })
     },
     reset () {
       this.$refs.searchForm.reset()
@@ -278,13 +277,14 @@ export default {
     },
     switchNav (index) {
       this.selections = []
-      this.activeIndex = this.query.tabType = index
+      this.activeIndex = this.extraQuery.tabType = index
       this.gotoPage()
     },
     generateParams (pageSize, pageIndex) {
-      let { dueDeliveryTimes = [], ...orther } = this.query
+      let { dueDeliveryTimes = [], ...orther } = this.formQuery
       return {
         ...orther,
+        ...this.extraQuery,
         pageIndex,
         pageSize,
         dueDeliveryStartTime: dueDeliveryTimes[0] ? dueDeliveryTimes[0] : '',
@@ -293,10 +293,6 @@ export default {
     },
     validateGenerateInvoice () {
       let skuTotal = this.selections.length
-      let shippedTolNum = this.selections.reduce((prev, next) => {
-        prev += next
-        return prev
-      }, 0)
       if (skuTotal > 50) {
         this.$message({
           showClose: true,
@@ -307,7 +303,7 @@ export default {
         return false
       }
 
-      if (shippedTolNum > 200) {
+      if (this.skuNumber > 200) {
         this.$message({
           showClose: true,
           message: '总发货数量超过200，不能生成发货单',
@@ -323,12 +319,30 @@ export default {
         return
       }
       this.loading = true
-      this.groupGenerateShippedBill(this.selections.map(item => item.id)).then(res => {
+      GoodsApi.groupGenerateShippedBill({
+        ids: this.selections.map(item => item.id)
+      }).then(res => {
         if (res.success) {
           this.$message.success('生成发货单(FH202012310001)成功')
         }
       }).finally(() => {
         this.loading = false
+      })
+    },
+    exportDetail () {
+      exportFileFromRemote({
+        url: GoodsUrl.groupExport,
+        name: `发货商品详情-${+new Date()}.xlsx`,
+        beforeLoad: () => {
+          this.loading = true
+          this.$store.dispatch('OPEN_LOADING')
+        },
+        afterLoad: () => {
+          this.loading = false
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
       })
     },
     openSplitDialog (row) {

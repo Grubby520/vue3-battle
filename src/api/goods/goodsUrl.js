@@ -5,7 +5,7 @@ export default {
   purchaseTabs: baseURL + 'purchase/agg/tabs',
   purchaseList: baseURL + 'purchase',
   defectiveList: baseURL + 'defective/defective-list',
-  groupTabs: baseURL + 'group-list',
+  groupTabs: baseURL + 'group-list/agg/tabs',
   groupList: baseURL + 'group-list', // 待组单商品列表
   groupSplite: baseURL + 'group-list/splite', // 拆单
   groupGenerateShippedBill: baseURL + 'group-list/general-shipped-bill', // 生成发货单

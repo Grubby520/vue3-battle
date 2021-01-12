@@ -1,5 +1,5 @@
 import { post } from '@shared/http'
-// import URL from './goodsUrl'
+import URL from './goodsUrl'
 
 const GOODS_API = {
   getPurchaseStatistics (params) {
@@ -110,77 +110,42 @@ const GOODS_API = {
     // return post(URL.purchaseList, params)
   },
   getDefectiveTableList (params) {
-    return Promise.resolve([
-      {
-        'id': 1,
-        'supplierItemNo': '供方货号/供应商货号',
-        'supplierSkuCode': '商品SKU/供应商SKU',
-        'skuCode': 'SKU/采购单上的SKU',
-        'name': '商品名称/产品名称',
-        'attributesName': '销售属性',
-        'exceptionType': 3, // 异常类型
-        'exceptionAmount': 30, // 异常数量
-        'exceptionDealType': 1, // 处理方式
-        'remake': '详情（备注）',
-        'purchaseOrderId': '21212121', // 采购单号
-        'orderNumber': '12121212', // 发货单号
-        'logisticsNumber': 1, // 物流单号
-        'operateName': '采购员/操作人',
-        'createTime': '21212121', // 创建时间
-        'updateTime': '12121212' // 更新时间
-      }
-    ])
-    // return get(URL.defectiveList, params)
+    return post(URL.defectiveList, params)
   },
   getGroupTabs (params) {
-    return Promise.resolve([
-      { 'index': 0, 'name': '全部待组单', 'value': null, 'amount': 50 },
-      { 'index': 1, 'name': '1日未组单', 'value': 1, 'amount': 28 },
-      {
-        'index': 2, 'name': '3日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '预警!'
-      },
-      {
-        'index': 3, 'name': '5日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
-      },
-      {
-        'index': 4, 'name': '7日未组单', 'value': null, 'amount': 50, status: 'danger', statusText: '严重预警!'
+    return post(URL.groupTabs, params).then(res => {
+      let data = []
+      let tabMap = {
+        3: {
+          status: 'danger',
+          statusText: '预警!'
+        },
+        5: {
+          status: 'danger',
+          statusText: '严重预警!'
+        },
+        7: {
+          status: 'danger',
+          statusText: '严重预警!'
+        }
       }
-    ])
-    // return post(URL.groupTabs, params).then(res => {
-    //   let data = []
-    //   let tabMap = {
-    //     2: {
-    //       status: 'danger',
-    //       statusText: '预警!'
-    //     },
-    //     3: {
-    //       status: 'danger',
-    //       statusText: '严重预警!'
-    //     },
-    //     4: {
-    //       status: 'danger',
-    //       statusText: '严重预警!'
-    //     }
-    //   }
-    //   if (res.success) {
-    //     data = res.data.map(item => {
-    //       let temp = {
-    //         index: item.tabType,
-    //         name: item.des,
-    //         value: item.tabType,
-    //         amount: item.count
-    //       }
-    //       if (tabMap[item.tabType]) {
-    //         temp['status'] = tabMap[item.tabType]['status']
-    //         temp['statusText'] = tabMap[item.tabType]['statusText']
-    //       }
-    //       return {
-
-    //       }
-    //     })
-    //   }
-    //   return data
-    // })
+      if (res.success) {
+        data = res.data.map(item => {
+          let temp = {
+            index: item.tabType,
+            name: item.des,
+            value: item.tabType,
+            amount: item.count
+          }
+          if (tabMap[item.tabType]) {
+            temp['status'] = tabMap[item.tabType]['status']
+            temp['statusText'] = tabMap[item.tabType]['statusText']
+          }
+          return temp
+        })
+      }
+      return data
+    })
   },
   getGroupList (params) {
     return post(URL.groupList, params)

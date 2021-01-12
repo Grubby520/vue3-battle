@@ -61,7 +61,7 @@ export default {
           name: 'exceptionType',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'SUPPLY_TYPE' } // DEFECTIVE_EXCEPTION_ENUM
+            params: { dataCode: 'DEFECTIVE_EXCEPTION_ENUM' }
           }
         },
         {
@@ -70,7 +70,7 @@ export default {
           name: 'exceptionDealType',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'SUPPLY_TYPE' } // DEFECTIVE_EXCEPTION_DEAL_ENUM
+            params: { dataCode: 'DEFECTIVE_EXCEPTION_DEAL_ENUM' }
           }
         }
       ],
@@ -151,10 +151,13 @@ export default {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = { ...this.query, pageIndex, pageSize }
       GoodsApi.getDefectiveTableList(params).then(res => {
-        this.tableData = res
+        let { success, data = {} } = res
+        if (success) {
+          this.tableData = data.list
+          this.page.total = data.total
+        }
       }).finally(() => {
         this.$refs.listView.loading = false
-        this.page.total = 1
       })
     },
     reset () {
