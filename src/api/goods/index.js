@@ -114,6 +114,14 @@ const GOODS_API = {
 
   printInvoice (id) {
     return get(`${URL.printInvoice}/${id}`)
+  },
+
+  getLogisticsInfo (data) {
+    return get(URL.logisticsInfo, data)
+  },
+
+  batchPrintNo (data) {
+    post(URL.printNo, data)
   }
 
 }

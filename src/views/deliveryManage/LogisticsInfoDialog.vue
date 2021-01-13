@@ -1,11 +1,5 @@
 <template>
-  <el-dialog
-    title="提示"
-    :visible.sync="logisticsInfo.isShowLogistics"
-    width="40%"
-    center
-    class="logistics-dialog"
-  >
+  <el-dialog title="提示" :visible.sync="isShowLogistics" width="40%" center class="logistics-dialog">
     <div class="content">
       <h3>物流信息</h3>
       <div class="logistics-info">
@@ -30,13 +24,16 @@ export default {
   name: 'LogisticsInfo',
   data () {
     return {
-      logisticsInfo: { isShowLogistics: false },
-      tableData: [{ date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }, { date: '123', name: '12321' }]
+      isShowLogistics: false,
+      logisticsInfo: {},
+      tableData: []
     }
   },
   methods: {
     show (data) {
-      this.logisticsInfo = Object.assign({}, data)
+      this.logisticsInfo = data.row
+      this.isShowLogistics = data.isShowLogistics
+      this.tableData = data.info
     }
   }
 }

@@ -28,7 +28,7 @@
     <div class="logistics-no">
       <el-form ref="form" :model="form" label-width="80px" class="logistics-form">
         <el-form-item label="物流商">
-          <el-select v-model="form.id" placeholder="物流商">
+          <el-select v-model="form.id" placeholder="物流商" filterable>
             <el-option
               v-for="item in companyList"
               :key="item.id"
@@ -50,6 +50,7 @@
 <script>
 import { cloneDeep as _cloneDeep } from 'lodash'
 import GOODS_API from '@api/goods'
+import { Message } from 'element-ui'
 
 export default {
   name: 'ModifyLogisticsNo',
@@ -77,8 +78,15 @@ export default {
       this.onClick = data.onClick
     },
     submit () {
+      if (this.logisticsInfo.logisticsNumber === this.form.logisticsNumber) {
+        Message({
+          showClose: true,
+          message: '没做修改',
+          type: 'warning'
+        })
+        return
+      }
       let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
-
       GOODS_API.modifyLogisticsNo(data).then(res => {
         if (res) {
           this.onClick(this.form.logisticsNumber)

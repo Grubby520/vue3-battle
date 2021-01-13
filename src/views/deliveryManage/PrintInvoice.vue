@@ -4,29 +4,36 @@
       <div class="sku-print" id="print" ref="print">
         <div class="tittle">
           <h3>商家名：12321</h3>
+          <div class="barcode">
+            <!-- <svg :class="'barcodeSvg'+index" /> -->
+          </div>
         </div>
         <div class="info">
           <div>
-            <p>发货单ID：123</p>
-            <p>组单时间：12321321</p>
-            <p>需到货时间：3213213213</p>
-            <p>采购员：3213</p>
+            <p>发货单ID：{{info.deliveryNum}}</p>
+            <p>组单时间：{{info.combineTime}}</p>
+            <p>需到货时间：{{info.requireTime}}</p>
+            <p>采购员：{{info.operateName}}</p>
           </div>
           <div>
-            <p>SPU总数：</p>
+            <p>SPU总数：{{info.spuTotal}}</p>
             <p>需求总件数：</p>
-            <p>需求实际发货数量</p>
+            <p>需求实际发货数量：{{info.deliveryGoodsNum}}</p>
           </div>
         </div>
-        <el-table :data="tableData" style="width: 100%" border>
-          <el-table-column prop="date" label="图片" align="center"></el-table-column>
-          <el-table-column prop="name" label="SPU" align="center"></el-table-column>
-          <el-table-column prop="name" label="SKU" align="center"></el-table-column>
-          <el-table-column prop="name" label="sku颜色" align="center"></el-table-column>
-          <el-table-column prop="name" label="商品名称" align="center"></el-table-column>
-          <el-table-column prop="name" label="上架吊牌尺" align="center"></el-table-column>
-          <el-table-column prop="name" label="需求总量" align="center"></el-table-column>
-          <el-table-column prop="name" label="实际发货数量" align="center"></el-table-column>
+        <el-table :data="info.items" style="width: 100%" border>
+          <el-table-column label="图片" align="center" width="120px">
+            <template slot-scope="scope">
+              <SlImage size="8rem" :src="scope.row.image" />
+            </template>
+          </el-table-column>
+          <el-table-column prop="spu" label="SPU" align="center"></el-table-column>
+          <el-table-column prop="sku" label="SKU" align="center"></el-table-column>
+          <el-table-column prop="skuColor" label="sku颜色" align="center" width="80px"></el-table-column>
+          <el-table-column prop="skuSize" label="商品名称" align="center"></el-table-column>
+          <el-table-column prop="merchantDropSize" label="上架吊牌尺" align="center" width="100px"></el-table-column>
+          <el-table-column prop="requireNum" label="需求总量" align="center"></el-table-column>
+          <el-table-column prop="deliveryGoodsNum" label="实际发货数量" align="center" width="100px"></el-table-column>
         </el-table>
       </div>
     </div>
@@ -39,14 +46,14 @@ export default {
   name: 'PrintInvoice',
   data () {
     return {
-      title: '打印发货单',
-      skuArr: [],
-      tableData: [{ date: 123123, name: '12321321' }],
+      info: {},
+      tableData: [],
       visible: false
     }
   },
   methods: {
-    show () {
+    show (data) {
+      this.info = data
       this.appendStyle()
       this.toPrint()
     },
@@ -100,11 +107,20 @@ export default {
 }
 </style>
 <style scoped lang="scss">
-.sku-container-purchase {
-  position: relative;
-  left: -10px;
-  overflow: hidden;
-  margin: 0 auto 25px auto;
-  clip-path: polygon(0px 0px, 0px 0px, 0px 0px, 0px 0px);
+.sku-print {
+  margin-top: 20px;
+  width: 100%;
+  .tittle {
+    text-align: center;
+    h3 {
+      font-size: 28px;
+    }
+  }
+  .info {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+  }
 }
 </style>
