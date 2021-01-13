@@ -77,7 +77,6 @@
 </template>
 
 <script>
-import { date } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsApi from '@api/goods'
 
@@ -215,19 +214,19 @@ export default {
           }
         },
         {
-          prop: 'cTime',
+          prop: 'ctime',
           label: '时间',
           width: '200',
           render: function (h, data) {
             let { row = {} } = data
-            let cTimeArr = row.cTime
+            let cTimeArr = row.ctime
             return (
               cTimeArr.map(item => {
                 if (!item.timeStamp) return ''
                 return (
                   <div>
                     <span>{item.typeDes}:</span>
-                    <span>{date(item.timeStamp, 'yyyy-MM-dd hh:mm:ss')}</span>
+                    <span>{item.timeStamp}</span>
                   </div>
                 )
               })
@@ -237,14 +236,7 @@ export default {
         {
           prop: 'dueDeliveryTime',
           label: '应交货时间',
-          render: (h, data) => {
-            let { row = {} } = data
-
-            return (
-              <p>{date(row.dueDeliveryTime, 'yyyy-MM-dd hh:mm:ss')}</p>
-            )
-          }
-
+          width: '150'
         },
         {
           prop: 'shippedNum',
