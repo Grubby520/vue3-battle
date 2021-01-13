@@ -1,4 +1,5 @@
-import { post } from '@shared/http'
+
+import { get, post, put } from '@shared/http'
 import URL from './goodsUrl'
 
 const GOODS_API = {
@@ -84,7 +85,36 @@ const GOODS_API = {
   },
   groupGenerateShippedBill (params) {
     return post(URL.groupGenerateShippedBill, params)
-  }
-}
+  },
 
+  // 发货列表
+  invoiceList (params) {
+    return post(URL.invoiceList, params)
+  },
+
+  getInvoiceDetail (id) {
+    return get(`${URL.invoiceDetail}/${id}`)
+  },
+
+  printNo (id) {
+    return get(`${URL.printNo}/${id}`)
+  },
+
+  logisticsCompany () {
+    return get(URL.logisticsCompany)
+  },
+
+  modifyLogisticsNo (data) {
+    return put(URL.modifyLogisticsNo, data)
+  },
+
+  modifyInvoice (data) {
+    return put(URL.modifyInvoice, data)
+  },
+
+  printInvoice (id) {
+    return get(`${URL.printInvoice}/${id}`)
+  }
+
+}
 export default GOODS_API

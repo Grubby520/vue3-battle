@@ -66,6 +66,8 @@
                 v-model="form[item.name]"
                 :type="item.data.datetype"
                 placeholder="选择日期"
+                unlink-panels
+                :picker-options="item.data.pickerOptions ? item.data.pickerOptions : {}"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 :format="item.data.format?item.data.format:'yyyy-MM-dd'"
