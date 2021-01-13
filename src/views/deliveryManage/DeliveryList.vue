@@ -23,6 +23,7 @@
       <div slot="search">
         <SlSearchForm ref="searchForm" v-model="searchQuery" :items="searchItems"></SlSearchForm>
       </div>
+      <el-button type="primary" @click="batchPrintNo">批量打印批次号</el-button>
       <div class="switch-nav">
         <el-menu
           :default-active="activeIndex"
@@ -49,20 +50,25 @@
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="date" label="发货单号" width="120px" align="center">
           <template slot-scope="scope">
-            <span>{{scope.row.orderNumber}}</span>
+            <el-button @click="odmDetail(scope.row,'see')" type="text">{{scope.row.orderNumber}}</el-button>
           </template>
         </el-table-column>
         <el-table-column prop="orderRequireNum" label="订单需求数量" width="120px" align="center"></el-table-column>
         <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center"></el-table-column>
         <el-table-column prop="totalPrice" label="总金额（￥）" width="100px" align="center"></el-table-column>
+        <el-table-column label="状态" width="80px" align="center">
+          <template slot-scope="scope">{{orderStatusList[scope.row.orderStatus]}}</template>
+        </el-table-column>
         <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
         <el-table-column label="最晚交货时间" width="180px" align="center">
           <template slot-scope="scope">
-            <span>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd HH:mm:ss')}}</span>
-            <span>还剩下：{{parseInt((Date.parse(new Date)-scope.row.lastDeliveryTimeS * 1000)/1000/3600/24)}}天</span>
+            <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd HH:mm:ss')}}</p>
+            <p
+              style="color:red"
+            >还剩下：{{parseInt((Date.parse(new Date)-scope.row.lastDeliveryTimeS * 1000)/1000/3600/24)}}天</p>
           </template>
         </el-table-column>
-        <el-table-column label="最晚交货时间" width="200px" align="center">
+        <el-table-column label="进度时间" width="200px" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</p>
             <p v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</p>
@@ -75,7 +81,10 @@
           <template slot-scope="scope">
             <p>
               物流单号：
-              <a>{{scope.row.logisticsNumber}}</a>
+              <el-button
+                @click="openLogistisInfoDialog(scope.row)"
+                type="text"
+              >{{scope.row.logisticsNumber}}</el-button>
             </p>
             <el-button
               type="primary"
@@ -85,7 +94,11 @@
         </el-table-column>
         <el-table-column label="操作" width="180px" align="center" fixed="right">
           <template slot-scope="scope">
-            <el-button @click="odmDetail(scope.row,'modify')" type="text">修改</el-button>
+            <el-button
+              @click="odmDetail(scope.row,'modify')"
+              type="text"
+              v-if="[0,1].includes(Number(scope.row.orderStatus))"
+            >修改</el-button>
             <el-button @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
             <el-button @click="exportExcle" type="text">导出表格</el-button>
             <el-button @click="printOrder(scope.row)" type="text">打印发货单</el-button>
@@ -113,6 +126,7 @@ import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
 import ShippingDetails from './ShippingDetailsDiaolog'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GOODS_API from '@api/goods'
+import { Message } from 'element-ui'
 const pickerOptions = {
   shortcuts: [
     {
@@ -235,11 +249,14 @@ export default {
           }
         }
       ],
+      orderStatusList: ['待发货', '已发货 ', '已到货', '异常到货', '已完成'],
       navInfo: {},
       tableData: [],
-      activeIndex: '0'
+      activeIndex: '0',
+      selectdChange: []
     }
   },
+
   methods: {
     reset () {
       this.$refs.searchForm.reset()
@@ -251,7 +268,7 @@ export default {
     },
 
     handleSelectionChange (val) {
-      console.log(val)
+      this.selectdChange = val
     },
 
     switchNav (val) {
@@ -272,8 +289,14 @@ export default {
     },
 
     async openLogistisInfoDialog (row) {
-      let params = Object.assign({ isShowLogistics: true }, row)
-      this.$refs.logisticsInfo.show(params)
+      let params = {
+        logisticsNumber: row.logisticsNumber,
+        logisticsCompanyName: row.logisticsCompanyName,
+        logisticsCompanyCode: row.courierCode
+      }
+      let res = await GOODS_API.getLogisticsInfo(params)
+      let data = { isShowLogistics: true, info: res.data, row: row }
+      this.$refs.logisticsInfo.show(data)
     },
 
     async odmDetail (row, type) {
@@ -312,14 +335,27 @@ export default {
 
     async printOrder (row) {
       let res = await GOODS_API.printInvoice(row.id)
-      console.log(res)
-      // if (res.success) {
-      //   console.log(res)
-      //   // this.$refs.printInvoice.show(res.data)
-      // }
+      if (res.success) {
+        this.$refs.printInvoice.show(res.data)
+      }
     },
 
     exportExcle () {
+    },
+
+    batchPrintNo () {
+      if (this.selectdChange.length > 0) {
+        let arr = []
+        this.selectdChange.forEach((item) => {
+          arr.push(item.id)
+        })
+        GOODS_API.batchPrintNo({ ids: arr })
+      } else {
+        Message({
+          message: '请至少选择一条发货记录',
+          type: 'warning'
+        })
+      }
     }
   },
 

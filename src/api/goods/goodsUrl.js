@@ -21,5 +21,4 @@ export default {
   printNo: baseURL + 'invoice/gen-pre-invoice-batch-no', // 打印批次号
   modifyInvoice: baseURL + 'invoice/update-invoice', // 发货单修改
   modifyLogisticsNo: baseURL + 'invoice/add-logistics-number' // 发货单修改
-
 }
