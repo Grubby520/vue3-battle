@@ -140,6 +140,7 @@ export default {
           name: 'dueDeliveryTimes',
           data: {
             datetype: 'daterange',
+            valueFormat: 'yyyy-MM-dd HH:mm:ss',
             isBlock: true
           }
         }
@@ -173,18 +174,19 @@ export default {
           label: '订单类型'
         },
         {
-          prop: 'cTime',
+          prop: 'ctime',
           label: '创建时间',
+          width: '250px',
           render: (h, data) => {
             let { row = {} } = data
-            if (Array.isArray(row['cTime'])) {
+            if (Array.isArray(row['ctime'])) {
               return (
-                row['cTime'].map(item => {
+                row['ctime'].map(item => {
                   if (!item.timeStamp) return ''
                   return (
                     <div>
                       <span>{item.typeDes}:</span>
-                      <span>{date(item.timeStamp, 'yyyy-MM-dd hh:mm:ss')}</span>
+                      <span>{date(+new Date(item.timeStamp), 'yyyy-MM-dd hh:mm:ss')}</span>
                     </div>
                   )
                 })
@@ -199,11 +201,11 @@ export default {
           width: '150',
           render: (h, data) => {
             let { row = {} } = data
-            let dueDeliveryTime = row.dueDeliveryTime ? row.dueDeliveryTime : 0
+            let dueDeliveryTime = row.dueDeliveryTime ? +new Date(row.dueDeliveryTime) : 0
             let offsetDays = (dueDeliveryTime - new Date().getTime()) / 1000 / 60 / 60 / 24
             return (
               <div>
-                <p>{date(row.dueDeliveryTime, 'yyyy-MM-dd hh:mm:ss')}</p>
+                <p>{date(dueDeliveryTime, 'yyyy-MM-dd hh:mm:ss')}</p>
                 <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${parseInt(offsetDays)}天` : '已超期'}</span>
               </div>
             )
@@ -216,6 +218,7 @@ export default {
         {
           prop: 'shippedNum',
           label: '发货数量',
+          fixed: 'right',
           render: (h, data) => {
             let { row = {} } = data
             return (
@@ -239,12 +242,11 @@ export default {
       return this.selections.length > 0
     },
     canExport () {
-      return true
-      // return this.selections.length > 0
+      return this.selections.length > 0
     },
     skuNumber () {
       return this.selections.reduce((prev, next) => {
-        prev += next
+        prev += next.shippedNum
         return prev
       }, 0)
     }
@@ -323,7 +325,9 @@ export default {
         ids: this.selections.map(item => item.id)
       }).then(res => {
         if (res.success) {
-          this.$message.success('生成发货单(FH202012310001)成功')
+          this.$message.success(`生成发货单(${res.data})成功`)
+          this.selections = []
+          this.gotoPage()
         }
       }).finally(() => {
         this.loading = false
@@ -339,6 +343,7 @@ export default {
         },
         afterLoad: () => {
           this.loading = false
+          this.selections = []
           this.$store.dispatch('CLOSE_LOADING')
         },
         successFn: () => { },
@@ -347,8 +352,8 @@ export default {
     },
     openSplitDialog (row) {
       this.dialogForm = {
-        orderId: row.orderId,
-        sku: row.sku,
+        id: row.id,
+        sku: row.baseInfo.sku,
         src: row.baseInfo.imageUrl,
         merchantSku: row.baseInfo.merchantSku,
         requiredNum: row.requiredNum,
@@ -359,12 +364,13 @@ export default {
     },
     submitSplitOrder (submitData) {
       GoodsApi.groupSplite({
-        orderId: submitData.orderId,
+        id: submitData.id,
         sku: submitData.sku,
-        saveRequiredNum: submitData.retainRequiredNum
+        saveRequiredNum: parseInt(submitData.retainRequiredNum)
       }).then(res => {
         this.showSplitOrderDialog = false
         this.gotoPage()
+        this.$message.success(`拆单成功`)
       })
     }
   }

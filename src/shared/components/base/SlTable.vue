@@ -22,6 +22,7 @@
         :label="item.label"
         :width="item.width"
         :key="item.label"
+        :fixed="item.fixed"
       >
         <template slot-scope="scope">
           <SlImage size="10rem" :src="scope.row[item.prop]" />
@@ -35,6 +36,7 @@
         :width="item.width"
         :show-overflow-tooltip="tooltip"
         :key="item.label"
+        :fixed="item.fixed"
       >
         <template slot="header">
           <SlTableHeaderFormat v-if="item.headerRender" :column="item" :render="item.headerRender"></SlTableHeaderFormat>
@@ -84,7 +86,7 @@
         </template>
       </el-table-column>
     </template>
-    <el-table-column width="180px" align="center" label="操作" v-if="operate">
+    <el-table-column width="180px" align="center" label="操作" v-if="operate" fixed>
       <template slot-scope="scope">
         <slot name="operation" :row="scope.row"></slot>
       </template>

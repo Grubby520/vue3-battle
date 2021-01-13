@@ -68,7 +68,7 @@
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 format="yyyy-MM-dd"
-                value-format="timestamp"
+                :value-format="item.data.valueFormat?item.data.valueFormat:'timestamp'"
               ></el-date-picker>
             </el-form-item>
           </template>
