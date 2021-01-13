@@ -140,7 +140,6 @@ export default {
           name: 'dueDeliveryTimes',
           data: {
             datetype: 'daterange',
-            valueFormat: 'yyyy-MM-dd HH:mm:ss',
             isBlock: true
           }
         }
