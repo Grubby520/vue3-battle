@@ -367,9 +367,11 @@ export default {
         sku: submitData.sku,
         saveRequiredNum: parseInt(submitData.retainRequiredNum)
       }).then(res => {
-        this.showSplitOrderDialog = false
-        this.gotoPage()
-        this.$message.success(`拆单成功`)
+        if (res.success) {
+          this.showSplitOrderDialog = false
+          this.gotoPage()
+          this.$message.success(`拆单成功`)
+        }
       })
     }
   }
