@@ -62,6 +62,7 @@
         :tableData="tableData"
         :columns="columns"
         :operate="false"
+        :tooltip="false"
       ></SlTable>
     </SlListView>
     <!-- 拆单对话框 -->
@@ -74,7 +75,7 @@
 </template>
 
 <script>
-import { date, exportFileFromRemote } from '@shared/util'
+import { exportFileFromRemote } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
@@ -185,7 +186,7 @@ export default {
                   return (
                     <div>
                       <span>{item.typeDes}:</span>
-                      <span>{date(+new Date(item.timeStamp), 'yyyy-MM-dd hh:mm:ss')}</span>
+                      <span>{item.timeStamp}</span>
                     </div>
                   )
                 })
@@ -204,7 +205,7 @@ export default {
             let offsetDays = (dueDeliveryTime - new Date().getTime()) / 1000 / 60 / 60 / 24
             return (
               <div>
-                <p>{date(dueDeliveryTime, 'yyyy-MM-dd hh:mm:ss')}</p>
+                <p>{dueDeliveryTime}</p>
                 <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${parseInt(offsetDays)}天` : '已超期'}</span>
               </div>
             )

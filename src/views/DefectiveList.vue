@@ -19,6 +19,7 @@
         :columns="columns"
         :selection="false"
         :operate="false"
+        :tooltip="false"
       ></SlTable>
     </SlListView>
   </div>

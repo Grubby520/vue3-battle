@@ -94,6 +94,4 @@ export default {
 }
 </script>
 <style lang="scss">
-.sl-single-select {
-}
 </style>

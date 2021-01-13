@@ -71,6 +71,7 @@
         :columns="columns"
         :selection="false"
         :operate="false"
+        :tooltip="false"
       ></SlTable>
     </SlListView>
   </div>
@@ -127,7 +128,7 @@ export default {
         {
           type: 'input',
           label: '发货单号',
-          name: 'sku'
+          name: 'shippedNum'
         },
         {
           type: 'single-select',
@@ -289,15 +290,22 @@ export default {
     switchNav (index) {
       this.resetParams()
       this.activeIndex = this.query.tabType = index
+      if (this.activeIndex !== '-1') {
+        this.deleteSearchItem('orderState')
+      } else {
+        this.addSearchItem('orderState')
+      }
       this.gotoPage()
     },
     checkedListChange (type, value) {
       this.resetParams()
+      this.activeIndex = this.query.tabType + ''
       if (typeof value !== 'undefined') {
         this.query.type = type
         this.query.dayNum = value
         this.statistics[type] = value
       }
+      this.addSearchItem('orderState')
       this.gotoPage()
     },
     resetParams () {
@@ -318,6 +326,30 @@ export default {
         cEndTime: cTimes[1] ? cTimes[1] : '',
         uStartTime: uTimes[0] ? uTimes[0] : '',
         uEndTime: uTimes[1] ? uTimes[1] : ''
+      }
+    },
+    addSearchItem (name = 'orderState') {
+      let index = this.searchItems.findIndex(item => item.name === name)
+      let itemMap = {
+        orderState: {
+          type: 'single-select',
+          label: '订单状态',
+          name: 'orderState',
+          data: {
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'PURCHASE_ORDER_STATE' }
+          }
+        }
+      }
+      // 加上订单状态搜索条件
+      if (index === -1) {
+        this.searchItems.unshift(itemMap[name])
+      }
+    },
+    deleteSearchItem (name = 'orderState') {
+      let index = this.searchItems.findIndex(item => item.name === name)
+      if (index !== -1) {
+        this.searchItems.splice(index, 1)
       }
     }
   }
