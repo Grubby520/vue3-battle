@@ -251,7 +251,7 @@ export default {
     }
   },
   mounted () {
-    this.getSwitchNavs()
+
   },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
