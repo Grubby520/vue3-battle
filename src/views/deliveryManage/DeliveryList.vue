@@ -30,11 +30,11 @@
           mode="horizontal"
           @select="switchNav"
         >
-          <el-menu-item
-            v-for="(item,index) in navList"
-            :key="'index'+index"
-            :index="item.index+''"
-          >{{item.name}}({{item.amount?item.amount:0}})</el-menu-item>
+          <el-menu-item index="0">全部({{tableData.length}})</el-menu-item>
+          <el-menu-item index="1">全部待发货({{navInfo.totalWait}})</el-menu-item>
+          <el-menu-item index="2">1日未发货({{navInfo.totalWaitOneDay}})</el-menu-item>
+          <el-menu-item index="3">2日未发货({{navInfo.totalWaitTwoDay}})</el-menu-item>
+          <el-menu-item index="4">3日未发货({{navInfo.totalWaitThreeDay}})</el-menu-item>
         </el-menu>
       </div>
       <el-table
@@ -58,8 +58,8 @@
         <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
         <el-table-column label="最晚交货时间" width="180px" align="center">
           <template slot-scope="scope">
-            <span>{{scope.row.lastDeliveryTimeS | dateFormat('yy-MM-dd HH:mm:ss')}}</span>
-            <span>还剩下：{{parseInt((Date.parse(new Date)-scope.row.lastDeliveryTimeS)/1000/3600/24)}}天</span>
+            <span>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd HH:mm:ss')}}</span>
+            <span>还剩下：{{parseInt((Date.parse(new Date)-scope.row.lastDeliveryTimeS * 1000)/1000/3600/24)}}天</span>
           </template>
         </el-table-column>
         <el-table-column label="最晚交货时间" width="200px" align="center">
@@ -77,15 +77,18 @@
               物流单号：
               <a>{{scope.row.logisticsNumber}}</a>
             </p>
-            <el-button type="primary" @click="modifyLogistNo(scope.row)">修改物流单号</el-button>
+            <el-button
+              type="primary"
+              @click="modifyLogistNo(scope.row)"
+            >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180px" align="center">
+        <el-table-column label="操作" width="180px" align="center" fixed="right">
           <template slot-scope="scope">
             <el-button @click="odmDetail(scope.row,'modify')" type="text">修改</el-button>
-            <el-button @click="odmDetail('see',row)" type="text">查看</el-button>
-            <el-button @click="exportExcle('modify',row)" type="text">导出表格</el-button>
-            <el-button @click="printOrder('modify',row)" type="text">打印发货单</el-button>
+            <el-button @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
+            <el-button @click="exportExcle" type="text">导出表格</el-button>
+            <el-button @click="printOrder(scope.row)" type="text">打印发货单</el-button>
             <el-button @click="printBatch(scope.row)" type="text">打印批次号</el-button>
           </template>
         </el-table-column>
@@ -98,12 +101,14 @@
     <!-- 发货单详情 -->
     <shipping-details ref="shippingDetail"></shipping-details>
     <print-batch-no ref="printBatch"></print-batch-no>
+    <print-invoice ref="printInvoice"></print-invoice>
   </div>
 </template>
 
 <script>
 import logisticsInfo from './LogisticsInfoDialog'
-import PrintBatchNo from './printBatchNo'
+import PrintBatchNo from './PrintBatchNo'
+import PrintInvoice from './PrintInvoice'
 import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
 import ShippingDetails from './ShippingDetailsDiaolog'
 import GoodsUrl from '@api/goods/goodsUrl.js'
@@ -170,11 +175,12 @@ const pickerOptions = {
 }
 export default {
   name: 'DeliveryList',
-  components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo },
+  components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo, PrintInvoice },
   data () {
     return {
       page: {
         pageIndex: 1,
+        pageSize: 10,
         total: 0
       },
       searchQuery: {},
@@ -225,13 +231,13 @@ export default {
           name: 'orderState',
           data: {
             remoteUrl: GoodsUrl.statusList,
-            params: { data: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
+            params: { dataCode: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
           }
         }
       ],
+      navInfo: {},
       tableData: [],
-      activeIndex: '0',
-      navList: [{ 'index': 0, 'name': '全部', 'value': 0, 'amount': 50 }, { 'index': 1, 'name': '已入驻', 'value': 1, 'amount': 28 }]
+      activeIndex: '0'
     }
   },
   methods: {
@@ -244,14 +250,24 @@ export default {
       this.$refs.listView.loading = false
     },
 
-    handleSelectionChange () { },
-    switchNav () { },
+    handleSelectionChange (val) {
+      console.log(val)
+    },
+
+    switchNav (val) {
+      console.log(val)
+    },
 
     getInvoiceList (params) {
-      GOODS_API.invoiceList(params).then(data => {
-        this.page.pageIndex = data.pageIndex
-        this.page.pageSize = data.pageSize
-        this.tableData = data.deliveryOrderList
+      GOODS_API.invoiceList(params).then(res => {
+        if (res) {
+          let data = res.data
+          this.page.pageIndex = data.pageIndex
+          this.page.pageSize = data.pageSize
+          this.page.total = data.total
+          this.tableData = data.deliveryOrderList
+          this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
+        }
       })
     },
 
@@ -261,62 +277,49 @@ export default {
     },
 
     async odmDetail (row, type) {
-      // let res = await GOODS_API.getInvoiceDetail(row.id)
-      let data = { type: type, dialogVisible: true, row: row }
-      this.$refs.shippingDetail.show(data)
+      let res = await GOODS_API.getInvoiceDetail(row.id)
+      if (res) {
+        let data = { type: type, dialogVisible: true, row: row, shippingDeatils: res.data }
+        if (type === 'modify') {
+          data.onClick = (data) => {
+            row.deliveryNum = data
+          }
+        }
+        this.$refs.shippingDetail.show(data)
+      }
     },
 
-    modifyLogistNo (row) {
-      let data = Object.assign({ showDiaolog: true }, row)
-      this.$refs.logisticsNo.show(data)
+    async modifyLogistNo (row) {
+      let res = await GOODS_API.logisticsCompany()
+      if (res) {
+        let arr = res.data
+        let data = Object.assign({
+          onClick: (data) => {
+            row.logisticsNumber = data
+          }
+        }, { showDiaolog: true, row: row, companyList: arr })
+        this.$refs.logisticsNo.show(data)
+      }
     },
 
     printBatch (row) {
-      let data = [
-        {
-          'skuCode': 'CPCP40562009',
-          'purchaseBatchNo': 2001831,
-          'productVariantAttributes': [
-            '浅卡其色',
-            '裤子均码'
-          ],
-          'locationCode': 'A-01',
-          'purchaseOrderNumber': '20001673',
-          'printedAt': '2021-01-11 20:42:58',
-          'printedAtStr': null,
-          'printCount': null,
-          'productVariantAttributesStr': null
-        },
-        {
-          'skuCode': 'CPCP40562007',
-          'purchaseBatchNo': 2001832,
-          'productVariantAttributes': [
-            '浅卡其色',
-            'OPPO A3S'
-          ],
-          'locationCode': 'A-01',
-          'purchaseOrderNumber': '20001673',
-          'printedAt': '2021-01-11 20:42:58',
-          'printedAtStr': null,
-          'printCount': null,
-          'productVariantAttributesStr': null
-        },
-        {
-          'skuCode': 'CPCP40562008',
-          'purchaseBatchNo': 2001833,
-          'productVariantAttributes': [
-            '浅卡其色',
-            '25.0 cm * 7.5 cm * 6.5 cm'
-          ],
-          'locationCode': 'A-01',
-          'purchaseOrderNumber': '20001673',
-          'printedAt': '2021-01-11 20:42:58',
-          'printedAtStr': null,
-          'printCount': null,
-          'productVariantAttributesStr': null
+      GOODS_API.printNo(row.id).then(data => {
+        if (data) {
+          this.$refs.printBatch.show(data)
         }
-      ]
-      this.$refs.printBatch.show(data)
+      })
+    },
+
+    async printOrder (row) {
+      let res = await GOODS_API.printInvoice(row.id)
+      console.log(res)
+      // if (res.success) {
+      //   console.log(res)
+      //   // this.$refs.printInvoice.show(res.data)
+      // }
+    },
+
+    exportExcle () {
     }
   },
 

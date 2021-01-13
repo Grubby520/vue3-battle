@@ -11,9 +11,14 @@
       <el-table-column prop="singleTime" label="组单时间" align="center"></el-table-column>
     </el-table>
     <h4>SKU明细</h4>
-    <el-table :data="shippingDeatilData" style="width: 100%" border max-height="200px">
+    <el-table
+      :data="shippingDeatilData.deliveryOrderList"
+      style="width: 100%"
+      border
+      max-height="200px"
+    >
       <el-table-column prop="skuCode" label="SKU" width="80px" align="center"></el-table-column>
-      <el-table-column prop="orderNumber" label="订单号" width="80px" align="center"></el-table-column>
+      <el-table-column prop="purchaseOrderNum" label="订单号" width="80px" align="center"></el-table-column>
       <el-table-column prop="supplierSkuCode" label="商家SKU" width="80px" align="center"></el-table-column>
       <el-table-column prop="name" label="商品名称" width="120px" align="center"></el-table-column>
       <el-table-column label="图片" width="100px" align="center">
@@ -25,7 +30,8 @@
       <el-table-column prop="requireNum" label="订单需求量" width="90px" align="center"></el-table-column>
       <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center">
         <template slot-scope="scope">
-          <el-input-number v-model="scope.row.deliveryNum" :controls="false"></el-input-number>
+          <el-input-number v-model="scope.row.deliveryNum" :controls="false" v-if="type=='modify'"></el-input-number>
+          <span v-else>{{scope.row.deliveryNum}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="shelvedNum" label="上架数量" width="80px" align="center"></el-table-column>
@@ -39,7 +45,9 @@
   </el-dialog>
 </template>
 <script>
-import { cloneDeep as _cloneDeep } from 'lodash'
+import { cloneDeep as _cloneDeep, differenceBy as _differenceBy, forEach as _forEach } from 'lodash'
+import GOODS_API from '@api/goods'
+import { Message } from 'element-ui'
 export default {
   name: 'ShippingDetails',
   data () {
@@ -49,21 +57,59 @@ export default {
       statusList: ['待发货', '已发货', '已到货', '异常到货', '已完成'],
       tableData: [],
       originData: [],
-      shippingDeatilData: [{ date: '19647064', src: 'http://srm-storage-test.oss-cn-shanghai.aliyuncs.com/srm/goods/prodcut/1609148703-62dc5530-64a3-4483-b509-18e6714aa66c.jpeg', name: '12321', num: '312' }]
+      shippingDeatilData: {},
+      onClick: () => { }
     }
   },
   methods: {
     show (data) {
-      console.log(data)
       this.tableData = [].concat(data.row)
       this.shippingDeatilData = data.shippingDeatils
       this.originData = _cloneDeep(data.shippingDeatils)
       this.type = data.type
       this.dialogVisible = data.dialogVisible
+      if (data.type === 'modify') {
+        this.onClick = data.onClick
+      }
     },
 
     save () {
+      let arr = this.diffData()
+      if (arr.length > 0) {
+        let params = {
+          id: this.originData.id,
+          list: arr
+        }
+        GOODS_API.modifyInvoice(params).then(res => {
+          if (res.success) {
+            let num = this.shippingDeatilData.deliveryOrderList.reduce((sum, item) => {
+              return sum + Number(item.deliveryNum)
+            }, 0)
+            this.onClick(num)
+            this.dialogVisible = false
+          }
+        })
+      } else {
+        Message({
+          showClose: true,
+          message: '没做修改',
+          type: 'warning'
+        })
+      }
+    },
 
+    diffData () {
+      let arr = _differenceBy(this.shippingDeatilData.deliveryOrderList, this.originData.deliveryOrderList, 'deliveryNum')
+      let arrList = []
+      if (arr.length > 0) {
+        _forEach(arr, (item) => {
+          let obj = {}
+          obj.id = item.id
+          obj.deliveryNum = item.deliveryNum
+          arrList.push(obj)
+        })
+      }
+      return arrList
     }
   }
 }

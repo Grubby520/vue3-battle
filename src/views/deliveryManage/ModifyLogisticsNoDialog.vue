@@ -8,18 +8,18 @@
     <div class="logistics-info">
       <p>发货单信息</p>
       <ul>
-        <li>发货单号：2835001</li>
-        <li>推单时间：2020-12-04 13:58:08</li>
-        <li>数量总计：173</li>
-        <li>采购总金额：1730.00</li>
+        <li>发货单号：{{logisticsInfo.orderNumber}}</li>
+        <li>组单时间：{{logisticsInfo.singleTime}}</li>
+        <li>数量总计：{{logisticsInfo.deliveryNum}}</li>
+        <li>采购总金额：{{logisticsInfo.totalPrice}}</li>
       </ul>
     </div>
     <div class="receiving-address">
       <p>确认收货地址</p>
       <ul>
-        <li>收货地址：xxxxxxxxxxxxxxxxxxxxxxxx</li>
-        <li>收件人：xxxxx</li>
-        <li>联系方式：13912341234</li>
+        <li>收货地址：{{logisticsInfo.consigneeAddress}}</li>
+        <li>收件人：{{logisticsInfo.consigneeName}}</li>
+        <li>联系方式：{{logisticsInfo.consigneePhone}}</li>
       </ul>
     </div>
     <div class="notice line-h40">
@@ -27,40 +27,64 @@
     </div>
     <div class="logistics-no">
       <el-form ref="form" :model="form" label-width="80px" class="logistics-form">
-        <el-form-item label="活动区域">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+        <el-form-item label="物流商">
+          <el-select v-model="form.id" placeholder="物流商">
+            <el-option
+              v-for="item in companyList"
+              :key="item.id"
+              :label="item.logisticsCompanyName"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="活动名称">
-          <el-input v-model="form.name"></el-input>
+        <el-form-item label="快递单号">
+          <el-input v-model="form.logisticsNumber"></el-input>
         </el-form-item>
       </el-form>
     </div>
     <div slot="footer">
-      <el-button type="primary">修改</el-button>
+      <el-button type="primary" @click="submit">{{this.logisticsInfo.logisticsNumber ? '修改':'添加'}}</el-button>
     </div>
   </el-dialog>
 </template>
 <script>
 import { cloneDeep as _cloneDeep } from 'lodash'
+import GOODS_API from '@api/goods'
+
 export default {
   name: 'ModifyLogisticsNo',
   data () {
     return {
       showDiaolog: false,
       logisticsInfo: {},
+      companyList: [],
       form: {
-        region: '',
-        name: ''
-      }
+        id: '',
+        logisticsNumber: ''
+      },
+      onClick: () => { }
     }
   },
   methods: {
     show (data) {
-      this.logisticsInfo = _cloneDeep(data)
+      this.logisticsInfo = _cloneDeep(data.row)
+      this.form = {
+        logisticsNumber: data.row.logisticsNumber
+      }
+
+      this.companyList = _cloneDeep(data.companyList)
       this.showDiaolog = data.showDiaolog
+      this.onClick = data.onClick
+    },
+    submit () {
+      let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
+
+      GOODS_API.modifyLogisticsNo(data).then(res => {
+        if (res) {
+          this.onClick(this.form.logisticsNumber)
+          this.showDiaolog = false
+        }
+      })
     }
   }
 }

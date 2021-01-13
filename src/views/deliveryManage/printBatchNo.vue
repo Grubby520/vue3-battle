@@ -1,8 +1,6 @@
 <template>
   <div>
-    <!-- <el-dialog :title="title" :visible.sync="visible" :lock-scroll="false" :close-on-click-modal="false"
-    @opened="handleOpened" append-to-body width="450px">-->
-    <div class="sku-container-purchase">
+    <div class="sku-container-purchase" v-show="visible">
       <div class="sku-print" ref="print" id="printMe">
         <div
           class="sku-info batch-no-print"
@@ -24,7 +22,7 @@
           </ul>
           <ul
             class="bill-number"
-            style="font-size: 7.5pt!important; list-style-type: none; margin: -1mm 0 0 0; padding:0;"
+            style="font-size: 7.5pt!important; list-style-type: none; margin: -1mm 10mm 0 0; padding:0;"
           >
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm; word-break:break-all;"
@@ -42,7 +40,6 @@
         </div>
       </div>
     </div>
-    <!-- </el-dialog> -->
   </div>
 </template>
 
@@ -61,6 +58,7 @@ export default {
   },
   methods: {
     show (data) {
+      this.appendStyle()
       this.visible = true
       this.skuArr = []
       if (data) {
@@ -90,6 +88,7 @@ export default {
           type: 'warning',
           customClass: 'z-index sku-print'
         })
+        this.visible = false
       }
     },
     toPrint () {
@@ -97,7 +96,10 @@ export default {
       let sl = new SlPrint({
         ids: '#printMe',
         endCallback () {
-          console.log(1231)
+          let listA = document.getElementById('list-b')
+          if (listA) {
+            listA.parentNode.removeChild(document.getElementById('list-b'))
+          }
         }
       })
       setTimeout(function () {
@@ -105,25 +107,34 @@ export default {
           sl.init()
         })
       }, 1000)
+    },
+
+    appendStyle () {
+      var css = `
+       @media print {
+    @page {
+        size: 59.5mm 39mm;
+        margin: 0 auto;
+    }
+    .bill-number {
+        font-size: 7.5pt;
+    }
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+    }
+      `
+      var head = document.head || document.getElementsByTagName('head')[0]
+      var style = document.createElement('style')
+      style.setAttribute('type', 'text/css')
+      style.id = 'list-b'
+      style.appendChild(document.createTextNode(css))
+      head.appendChild(style)
     }
   }
 }
 </script>
-<style media="print" type="text/css">
-@media print {
-  @page {
-    size: 59.5mm 39mm;
-    margin: 0 auto;
-  }
-  .bill-number {
-    font-size: 7.5pt;
-  }
-  ul {
-    padding: 0;
-    margin: 0;
-  }
-}
-</style>
 <style lang='scss' >
 .z-index.sku-print {
   z-index: 9999 !important;
@@ -131,9 +142,10 @@ export default {
 </style>
 <style scoped lang="scss">
 .sku-container-purchase {
-  position: absolute;
+  position: relative;
   width: 59.5mm;
   height: 38mm;
+  left: -10px;
   overflow: hidden;
   margin: 0 auto 25px auto;
   clip-path: polygon(0px 0px, 0px 0px, 0px 0px, 0px 0px);

@@ -1,5 +1,5 @@
 export default class {
-  constructor (option) {
+  constructor(option) {
     this.standards = {
       strict: 'strict',
       loose: 'loose',
@@ -82,16 +82,7 @@ export default class {
         links += `<link type="text/css" rel="stylesheet" href="${item.href}" >`
       }
     })
-    // const _links = document.querySelectorAll('link');
-    // if (typeof _links === 'object' || _links.length > 0) {
-    //   // 复制所有link标签
-    //   for (let i = 0; i < _links.length; i++) {
-    //     let item = _links[i];
-    //     if (item.href.indexOf('.css') >= 0) {
-    //       links += `<link type="text/css" rel="stylesheet" href="${item.href}" >`;
-    //     }
-    //   }
-    // }
+
     // 循环获取style标签的样式
     let domStyle = document.styleSheets
     if (domStyle && domStyle.length > 0) {
