@@ -7,6 +7,7 @@
         </el-col>
         <el-col
           v-for="(item,index) in items"
+          class="form-item-col"
           :xs="24"
           :sm="24"
           :md="24"
@@ -139,6 +140,10 @@ export default {
 }
 </script>
 <style lang="scss">
+.form-item-col {
+  height: 50px;
+}
+
 .block /deep/ {
   .el-select {
     display: block;
