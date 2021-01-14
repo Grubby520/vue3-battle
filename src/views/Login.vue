@@ -77,19 +77,19 @@ export default {
             password: valueToMd5(this.loginForm.password)
           }).then(res => {
             if (res.success) {
-              // this.GET_USER_INFO().then(data => {
-              //   if (data) {
-              //     if (this.enterMainPage) {
-              //       this.$router.push('home/recommend-products/list')
-              //       return
-              //     }
-              //     if (this.enterRegisterPage) {
-              //       this.$router.push('/register')
-              //       return
-              //     }
-              //     this.$router.push('/registerProgress')
-              //   }
-              // })
+              this.GET_USER_INFO().then(data => {
+                if (data) {
+                  if (this.enterMainPage) {
+                    this.$router.push('home/recommend-products/list')
+                    return
+                  }
+                  if (this.enterRegisterPage) {
+                    this.$router.push('/register')
+                    return
+                  }
+                  this.$router.push('/registerProgress')
+                }
+              })
               this.$router.push('home/recommend-products/list')
             }
           }).finally(() => {

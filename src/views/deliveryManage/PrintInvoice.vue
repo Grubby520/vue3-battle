@@ -3,7 +3,7 @@
     <div class="sku-container" style="display:none">
       <div class="sku-print" id="print" ref="print">
         <div class="tittle">
-          <h3>商家名：12321</h3>
+          <h3>商家名：{{info.merchantName}}</h3>
           <div class="barcode">
             <!-- <svg :class="'barcodeSvg'+index" /> -->
           </div>
@@ -17,7 +17,7 @@
           </div>
           <div>
             <p>SPU总数：{{info.spuTotal}}</p>
-            <p>需求总件数：</p>
+            <p>需求总件数：{{info.requireNum}}</p>
             <p>需求实际发货数量：{{info.deliveryGoodsNum}}</p>
           </div>
         </div>
@@ -29,8 +29,8 @@
           </el-table-column>
           <el-table-column prop="spu" label="SPU" align="center"></el-table-column>
           <el-table-column prop="sku" label="SKU" align="center"></el-table-column>
-          <el-table-column prop="skuColor" label="sku颜色" align="center" width="80px"></el-table-column>
-          <el-table-column prop="skuSize" label="商品名称" align="center"></el-table-column>
+          <el-table-column prop="skuAttribute" label="SKU销售属性" align="center" width="80px"></el-table-column>
+          <el-table-column prop="goodsName" label="商品名称" align="center"></el-table-column>
           <el-table-column prop="merchantDropSize" label="上架吊牌尺" align="center" width="100px"></el-table-column>
           <el-table-column prop="requireNum" label="需求总量" align="center"></el-table-column>
           <el-table-column prop="deliveryGoodsNum" label="实际发货数量" align="center" width="100px"></el-table-column>
