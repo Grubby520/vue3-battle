@@ -118,7 +118,7 @@ export const homeRoutes = [
           icon: 'el-icon-paperclip',
           code: 'menu_odm_upload_list'
         },
-        component: () => import('@/views/deliveryManage/DeliveryList.vue')
+        component: () => import('@/views/DeliveryList.vue')
       },
       {
         path: 'purchase-list',

@@ -122,6 +122,10 @@ const GOODS_API = {
 
   batchPrintNo (data) {
     post(URL.printNo, data)
+  },
+
+  ecxportExcle (data) {
+    return put(URL.ecxportExcle, data)
   }
 
 }
