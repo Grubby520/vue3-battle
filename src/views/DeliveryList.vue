@@ -100,7 +100,7 @@
               v-if="[0,1].includes(Number(scope.row.orderStatus))"
             >修改</el-button>
             <el-button @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
-            <el-button @click="exportExcle" type="text">导出表格</el-button>
+            <el-button @click="exportExcle(scope.row)" type="text">导出表格</el-button>
             <el-button @click="printOrder(scope.row)" type="text">打印发货单</el-button>
             <el-button @click="printBatch(scope.row)" type="text">打印批次号</el-button>
           </template>
@@ -119,74 +119,15 @@
 </template>
 
 <script>
-import logisticsInfo from './LogisticsInfoDialog'
-import PrintBatchNo from './PrintBatchNo'
-import PrintInvoice from './PrintInvoice'
-import ModifyLogisticsNo from './ModifyLogisticsNoDialog'
-import ShippingDetails from './ShippingDetailsDiaolog'
+import logisticsInfo from './deliveryManage/LogisticsInfoDialog'
+import PrintBatchNo from './deliveryManage/PrintBatchNo'
+import PrintInvoice from './deliveryManage/PrintInvoice'
+import ModifyLogisticsNo from './deliveryManage/ModifyLogisticsNoDialog'
+import ShippingDetails from './deliveryManage/ShippingDetailsDiaolog'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GOODS_API from '@api/goods'
 import { Message } from 'element-ui'
-const pickerOptions = {
-  shortcuts: [
-    {
-      text: '今天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 0)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '昨天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近三天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 3)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近一周',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近15天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 15)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近30天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近90天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-        picker.$emit('pick', [start, end])
-      }
-    }]
-}
+import { find as _find } from 'lodash'
 export default {
   name: 'DeliveryList',
   components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo, PrintInvoice },
@@ -207,7 +148,7 @@ export default {
         {
           type: 'input',
           label: '订单号',
-          name: 'orderNumber'
+          name: 'purchaseOrderNumber'
         },
         {
           type: 'input',
@@ -225,8 +166,7 @@ export default {
           name: 'cTime',
           data: {
             datetype: 'daterange',
-            isBlock: true,
-            pickerOptions: pickerOptions
+            isBlock: true
           }
         },
         {
@@ -235,14 +175,13 @@ export default {
           name: 'uTime',
           data: {
             datetype: 'daterange',
-            pickerOptions: pickerOptions,
             isBlock: true
           }
         },
         {
           type: 'single-select',
           label: '订单状态',
-          name: 'orderState',
+          name: 'status',
           data: {
             remoteUrl: GoodsUrl.statusList,
             params: { dataCode: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
@@ -264,7 +203,24 @@ export default {
     },
 
     gotoPage (pageSize = 10, pageIndex = 1) {
-      this.$refs.listView.loading = false
+      let params = this.getParams(pageSize, pageIndex)
+      console.log(this.activeIndex)
+      if (this.activeIndex > 0) {
+        delete params.status
+        params.type = this.activeIndex
+      }
+      GOODS_API.invoiceList(params).then(res => {
+        if (res) {
+          let data = res.data
+          this.page.pageIndex = data.pageIndex
+          this.page.pageSize = data.pageSize
+          this.page.total = data.total
+          this.tableData = data.deliveryOrderList
+          this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
+        }
+      }).finally(() => {
+        this.$refs.listView.loading = false
+      })
     },
 
     handleSelectionChange (val) {
@@ -272,7 +228,43 @@ export default {
     },
 
     switchNav (val) {
-      console.log(val)
+      let arr = _find(this.searchItems, { name: 'status' })
+      this.activeIndex = val
+      if (val > 0) {
+        if (arr) {
+          this.searchItems.pop()
+        }
+      } else {
+        if (!arr) {
+          let obj = {
+            type: 'single-select',
+            label: '订单状态',
+            name: 'status',
+            data: {
+              remoteUrl: GoodsUrl.statusList,
+              params: { dataCode: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
+            }
+          }
+          this.searchItems.push(obj)
+        }
+      }
+      let params = this.getParams(10, 1)
+      if (val > 0) {
+        delete params.status
+        params.type = val
+      }
+      this.getInvoiceList(params)
+    },
+
+    getParams (pageSize, pageIndex) {
+      let [singleTimeStart, singleTimeEnd] = this.searchQuery.cTime
+      let [latestDeliveryTimeStart, latestDeliveryTimeEnd] = this.searchQuery.uTime
+      let params = Object.assign({ singleTimeStart, singleTimeEnd, latestDeliveryTimeStart, latestDeliveryTimeEnd }, this.searchQuery)
+      delete params.cTime
+      delete params.uTime
+      params.pageSize = pageSize
+      params.pageIndex = pageIndex
+      return params
     },
 
     getInvoiceList (params) {
@@ -340,7 +332,11 @@ export default {
       }
     },
 
-    exportExcle () {
+    exportExcle (row) {
+      let params = {
+        deliveryOrderId: row.id
+      }
+      GOODS_API.ecxportExcle(params)
     },
 
     batchPrintNo () {
@@ -360,7 +356,7 @@ export default {
   },
 
   mounted () {
-    this.getInvoiceList(this.page)
+    // this.getInvoiceList(this.page)
   }
 }
 </script>
