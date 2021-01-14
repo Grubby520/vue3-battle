@@ -90,7 +90,6 @@ export default {
                   this.$router.push('/registerProgress')
                 }
               })
-              this.$router.push('home/recommend-products/list')
             }
           }).finally(() => {
             this.isLoading = false
