@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import { date } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsApi from '@api/goods'
 
@@ -85,7 +84,7 @@ export default {
           label: '销售属性'
         },
         {
-          prop: 'exceptionType',
+          prop: 'exceptionTypeName',
           label: '异常类型'
         },
         {
@@ -93,7 +92,7 @@ export default {
           label: '异常数量'
         },
         {
-          prop: 'exceptionDealType',
+          prop: 'exceptionDealTypeName',
           label: '处理方式'
         },
         {
@@ -120,29 +119,9 @@ export default {
           prop: '',
           label: '时间',
           width: '200',
-          render: function (h, data) {
-            let { row = {} } = data
-            let cTimeArr = [
-              {
-                timeStamp: row.createTime,
-                typeDes: '创建时间'
-              },
-              {
-                timeStamp: row.updateTime,
-                typeDes: '更新时间'
-              }
-            ]
-            return (
-              cTimeArr.map(item => {
-                if (!item.timeStamp) return ''
-                return (
-                  <div>
-                    <span>{item.typeDes}:</span>
-                    <span>{date(item.timeStamp, 'yyyy-MM-dd hh:mm:ss')}</span>
-                  </div>
-                )
-              })
-            )
+          pre: {
+            createTime: '创建时间',
+            updateTime: '更新时间'
           }
         }
       ]

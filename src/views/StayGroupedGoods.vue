@@ -205,7 +205,7 @@ export default {
             let offsetDays = (dueDeliveryTime - new Date().getTime()) / 1000 / 60 / 60 / 24
             return (
               <div>
-                <p>{dueDeliveryTime}</p>
+                <p>{row.dueDeliveryTime}</p>
                 <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${parseInt(offsetDays)}天` : '已超期'}</span>
               </div>
             )
@@ -239,10 +239,10 @@ export default {
   },
   computed: {
     canGenerateInvoice () {
-      return this.selections.length > 0
+      return this.selections.length > 0 // 后续会加权限控制
     },
     canExport () {
-      return this.selections.length > 0
+      return this.selections.length > 0 // 后续会加权限控制
     },
     skuNumber () {
       return this.selections.reduce((prev, next) => {

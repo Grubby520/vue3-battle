@@ -184,11 +184,11 @@ export default {
           label: '销售属性'
         },
         {
-          prop: 'orderType',
+          prop: 'orderTypeDes',
           label: '订单类型'
         },
         {
-          prop: 'orderState',
+          prop: 'orderStateDes',
           label: '订单状态'
         },
         {
