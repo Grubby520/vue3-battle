@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote } from '@shared/util'
+import { exportFileFromRemote, date } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
@@ -163,7 +163,16 @@ export default {
         },
         {
           prop: 'productName',
-          label: '商品名称'
+          label: '商品名称',
+          width: '225',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip content={row.productName} placement="top" effect="light">
+                <ellipsis text={row.productName} lineNum={2} tagName="p" width='225px'></ellipsis>
+              </el-tooltip>
+            )
+          }
         },
         {
           prop: 'sellProperty',
@@ -203,6 +212,7 @@ export default {
             let { row = {} } = data
             let dueDeliveryTime = row.dueDeliveryTime ? +new Date(row.dueDeliveryTime) : 0
             let offsetDays = (dueDeliveryTime - new Date().getTime()) / 1000 / 60 / 60 / 24
+            if (!row.dueDeliveryTime) return ''
             return (
               <div>
                 <p>{row.dueDeliveryTime}</p>
@@ -336,7 +346,7 @@ export default {
     exportDetail () {
       exportFileFromRemote({
         url: GoodsUrl.groupExport,
-        name: `发货商品详情-${+new Date()}.xlsx`,
+        name: `待发货SKU维度详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING')

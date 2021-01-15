@@ -48,7 +48,7 @@
                 <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
                 <SlImage
                   size="10rem"
-                  :src="item.prop?scope.row[item.prop][item.isInImg]:scope.row[item.isInImg]"
+                  :src="item.prop?scope.row[item.prop]?scope.row[item.prop][item.isInImg]:'':scope.row[item.isInImg]"
                 />
               </el-col>
 

@@ -1,8 +1,10 @@
 import Vue from 'vue'
+import VueTextEllipsis from 'vue-text-ellipsis'
 import ECharts from './echarts'
 import Moment from './moment'
 Vue.use(ECharts)
 Vue.use(Moment)
+Vue.use(VueTextEllipsis, {})
 
 const requireInstance = require.context('../', true, /\.vue$/)
 function importAllComponents (r) {
