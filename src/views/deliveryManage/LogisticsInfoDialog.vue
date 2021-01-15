@@ -4,7 +4,7 @@
       <h3>物流信息</h3>
       <div class="logistics-info">
         <div>
-          <p>物流单号：{{logisticsInfo.logisticsNo}}</p>
+          <p>物流单号：{{logisticsInfo.logisticsNumber}}</p>
           <p>发货时间：{{logisticsInfo.deliveryTime}}</p>
         </div>
         <div>
@@ -32,6 +32,7 @@ export default {
   methods: {
     show (data) {
       this.logisticsInfo = data.row
+      console.log(this.logisticsInfo)
       this.isShowLogistics = data.isShowLogistics
       this.tableData = data.info
     }

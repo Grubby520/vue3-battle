@@ -70,7 +70,8 @@ export default {
     show (data) {
       this.logisticsInfo = _cloneDeep(data.row)
       this.form = {
-        logisticsNumber: data.row.logisticsNumber
+        logisticsNumber: data.row.logisticsNumber,
+        id: data.row.logisticsCompanyId
       }
 
       this.companyList = _cloneDeep(data.companyList)

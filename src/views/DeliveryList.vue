@@ -335,8 +335,13 @@ export default {
 
     printBatch (row) {
       GOODS_API.printNo(row.id).then(data => {
-        if (data) {
-          this.$refs.printBatch.show(data)
+        if (data.success) {
+          this.$refs.printBatch.show(data.data)
+        } else {
+          Message({
+            message: data.error.message,
+            type: 'error'
+          })
         }
       })
     },

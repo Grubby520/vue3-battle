@@ -125,7 +125,7 @@ const GOODS_API = {
   },
 
   ecxportExcle (data) {
-    return put(URL.ecxportExcle, data)
+    return get(URL.ecxportExcle, data)
   }
 
 }
