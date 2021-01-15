@@ -179,7 +179,7 @@ export default {
           label: '销售属性'
         },
         {
-          prop: 'orderType',
+          prop: 'orderTypeDes',
           label: '订单类型'
         },
         {
