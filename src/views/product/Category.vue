@@ -13,6 +13,11 @@
 import CategoryCascader from './CategoryCascader'
 import { throttle } from '@/shared/util'
 export default {
+  props: {
+    mode: { type: String, required: false, default: 'create' },
+    id: { type: [Number, String], required: false, default: '' },
+    categoryId: { type: [Number, String], required: false, default: undefined }
+  },
   components: { CategoryCascader },
   data () {
     return {
@@ -33,9 +38,15 @@ export default {
       if (current && current.leaf) {
         const categoryId = current.id
         this.$router.push({
-          path: '/home/recommend-products/productDetail'
+          path: '/home/recommend-products/productDetail',
+          query: {
+            cateLabels: this.cateLabels,
+            categoryId: categoryId,
+            categoryLevel: current.categoryLevel,
+            mode: this.mode,
+            id: this.id
+          }
         })
-        this.$store.commit('product/CATEGORY_DATA', { cateLabels: this.cateLabels, categoryLevel: current.categoryLevel, categoryId: categoryId })
       } else {
         this._throttle()
       }

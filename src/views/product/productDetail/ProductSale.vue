@@ -31,7 +31,6 @@
               clearable
               isObj
               placeholder="请选择颜色"
-              :disabled="mode === 'view'"
               @change="selectChange($event, 'color')"
             />
           </el-form-item>
@@ -195,11 +194,6 @@ export default {
     },
     checkout () {
       this.$refs.form.validate(valid => {
-        if (valid) {
-          console.log(true)
-        } else {
-          console.log(false)
-        }
       })
     }
   }

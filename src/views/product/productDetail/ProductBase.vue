@@ -9,7 +9,7 @@
           <el-form-item
             label="商品类目"
             prop="categoryId"
-          >{{categoryInfo.cateLabels ? categoryInfo.cateLabels :form.categoryName }}</el-form-item>
+          >{{productParams.cateLabels ? productParams.cateLabels :form.categoryName }}</el-form-item>
           <el-form-item label="商品名称" prop="title">
             <el-input
               clearable
@@ -100,7 +100,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productInfo', 'categoryInfo'])
+    ...mapGetters('product', ['productParams'])
   },
   watch: {
     // 'productBasicInfo': {

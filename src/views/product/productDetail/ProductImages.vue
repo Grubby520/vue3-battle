@@ -16,13 +16,13 @@
           <div class="ProductImages-images--content">
             <span>*</span>
             <SlUploadImages
-              :class="{'upload-disabled': mode === 'view'}"
+              :class="{'upload-disabled': mode}"
               class="width:100px;"
               v-model="productImages"
               :imageType="0"
               :limit="8"
               :multiple="true"
-              :disabled="mode === 'view'"
+              :disabled="mode"
             />
             <template v-for="(item, index) in [1,2,3,4,5,6,7]">
               <div v-if="index >= productImages.length" :key="index" class="dashed-box">
@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
@@ -54,6 +55,12 @@ export default {
   },
   mounted () {
 
+  },
+  computed: {
+    ...mapGetters('product', ['productParams']),
+    mode () {
+      return this.productParams.mode === 'view'
+    }
   },
   methods: {
 

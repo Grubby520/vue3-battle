@@ -1,24 +1,22 @@
 export default {
   namespaced: true,
   state: {
-    productInfo: null,
+    productParams: null,
     categoryInfo: null,
     sizeOptions: []
   },
   getters: {
-    // 上传Spu数据结果
-    productInfo: (state) => state.productInfo ? state.productInfo : {},
-    categoryInfo: (state) => state.categoryInfo,
+    productParams: (state) => state.productInfo ? state.productInfo : {},
+    // categoryInfo: (state) => state.categoryInfo,
     sizeOptions: (state) => state.sizeOptions
   },
   mutations: {
-    // Spu数据结果
-    PRODUCT_DATA: (store, data) => {
+    PRODUCT_PARAMS: (store, data) => {
       store.productInfo = data
     },
-    CATEGORY_DATA: (store, data) => {
-      store.categoryInfo = data
-    },
+    // CATEGORY_DATA: (store, data) => {
+    //   store.categoryInfo = data
+    // },
     SIZEOPTIONS: (store, data) => {
       store.sizeOptions = data
     }
