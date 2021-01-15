@@ -14,7 +14,7 @@
       </div>
       <el-table :data="tableData" style="width: 100%" border max-height="240px">
         <el-table-column prop="date" label="时间" width="120px" align="center"></el-table-column>
-        <el-table-column prop="name" label="物流信息" align="center"></el-table-column>
+        <el-table-column prop="content" label="物流信息" align="center"></el-table-column>
       </el-table>
     </div>
   </el-dialog>
@@ -32,9 +32,8 @@ export default {
   methods: {
     show (data) {
       this.logisticsInfo = data.row
-      console.log(this.logisticsInfo)
       this.isShowLogistics = data.isShowLogistics
-      this.tableData = data.info
+      this.tableData = data.info.trackingInfoDetailList
     }
   }
 }

@@ -293,8 +293,15 @@ export default {
         logisticsCompanyCode: row.courierCode
       }
       let res = await GOODS_API.getLogisticsInfo(params)
-      let data = { isShowLogistics: true, info: res.data, row: row }
-      this.$refs.logisticsInfo.show(data)
+      if (res.success) {
+        let data = { isShowLogistics: true, info: res.data[0], row: row }
+        this.$refs.logisticsInfo.show(data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
+      }
     },
 
     async odmDetail (row, type) {
