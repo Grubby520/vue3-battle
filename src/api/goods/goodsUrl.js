@@ -16,7 +16,7 @@ export default {
   invoiceDetail: baseURL + 'invoice/invoice-detail', // 发货单详情
   logisticsCompany: baseURL + 'invoice/logistics-company', // 获取物流商信息
   logisticsInfo: baseURL + 'invoice/logisticsInformation', // 获取物流信息
-  ecxportExcle: baseURL + 'export/delivery-order', // 导出表格
+  ecxportExcle: baseURL + 'invoice/export/delivery-order', // 导出表格
   printInvoice: baseURL + 'invoice/print', // 打印发货单
   printNo: baseURL + 'invoice/gen-pre-invoice-batch-no', // 打印批次号
   modifyInvoice: baseURL + 'invoice/update-invoice', // 发货单修改

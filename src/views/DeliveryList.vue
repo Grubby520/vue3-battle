@@ -127,6 +127,7 @@ import ModifyLogisticsNo from './deliveryManage/ModifyLogisticsNoDialog'
 import ShippingDetails from './deliveryManage/ShippingDetailsDiaolog'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GOODS_API from '@api/goods'
+import { exportFileFromRemote, date } from '@shared/util'
 import { Message } from 'element-ui'
 import { find as _find } from 'lodash'
 export default {
@@ -366,10 +367,25 @@ export default {
     },
 
     exportExcle (row) {
-      let params = {
-        deliveryOrderId: row.id
-      }
-      GOODS_API.ecxportExcle(params)
+      exportFileFromRemote({
+        url: GoodsUrl.ecxportExcle + '?deliveryOrderId=' + row.id,
+        name: `发货单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
+        beforeLoad: () => {
+          this.loading = true
+          this.$store.dispatch('OPEN_LOADING')
+        },
+        afterLoad: () => {
+          this.loading = false
+          this.selections = []
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
+      })
+      // let params = {
+      //   deliveryOrderId: row.id
+      // }
+      // GOODS_API.ecxportExcle(params)
     },
 
     batchPrintNo () {
