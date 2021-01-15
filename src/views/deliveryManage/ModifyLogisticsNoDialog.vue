@@ -88,9 +88,14 @@ export default {
       }
       let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
       GOODS_API.modifyLogisticsNo(data).then(res => {
-        if (res) {
+        if (res.success) {
           this.onClick(this.form.logisticsNumber)
           this.showDiaolog = false
+        } else {
+          Message({
+            message: res.error.message,
+            type: 'error'
+          })
         }
       })
     }

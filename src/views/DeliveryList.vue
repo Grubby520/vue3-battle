@@ -62,10 +62,11 @@
         <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
         <el-table-column label="最晚交货时间" width="180px" align="center">
           <template slot-scope="scope">
-            <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd HH:mm:ss')}}</p>
+            <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd')}}</p>
             <p
               style="color:red"
-            >还剩下：{{parseInt((Date.parse(new Date)-scope.row.lastDeliveryTimeS * 1000)/1000/3600/24)}}天</p>
+              v-if="parseInt((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24) > 0"
+            >还剩下：{{parseInt((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
           </template>
         </el-table-column>
         <el-table-column label="进度时间" width="200px" align="center">
@@ -210,13 +211,18 @@ export default {
         params.type = this.activeIndex
       }
       GOODS_API.invoiceList(params).then(res => {
-        if (res) {
+        if (res.success) {
           let data = res.data
           this.page.pageIndex = data.pageIndex
           this.page.pageSize = data.pageSize
           this.page.total = data.total
           this.tableData = data.deliveryOrderList
           this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
+        } else {
+          Message({
+            type: 'error',
+            message: res.error.message
+          })
         }
       }).finally(() => {
         this.$refs.listView.loading = false
@@ -293,7 +299,7 @@ export default {
 
     async odmDetail (row, type) {
       let res = await GOODS_API.getInvoiceDetail(row.id)
-      if (res) {
+      if (res.success) {
         let data = { type: type, dialogVisible: true, row: row, shippingDeatils: res.data }
         if (type === 'modify') {
           data.onClick = (data) => {
@@ -301,12 +307,17 @@ export default {
           }
         }
         this.$refs.shippingDetail.show(data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
       }
     },
 
     async modifyLogistNo (row) {
       let res = await GOODS_API.logisticsCompany()
-      if (res) {
+      if (res.success) {
         let arr = res.data
         let data = Object.assign({
           onClick: (data) => {
@@ -314,6 +325,11 @@ export default {
           }
         }, { showDiaolog: true, row: row, companyList: arr })
         this.$refs.logisticsNo.show(data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
       }
     },
 
@@ -329,6 +345,11 @@ export default {
       let res = await GOODS_API.printInvoice(row.id)
       if (res.success) {
         this.$refs.printInvoice.show(res.data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
       }
     },
 
