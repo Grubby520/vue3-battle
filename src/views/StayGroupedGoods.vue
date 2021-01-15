@@ -97,7 +97,7 @@ export default {
       tableData: [],
       selections: [],
       extraQuery: {
-        tabType: -1
+        type: -1
       },
       formQuery: {
       },
@@ -289,7 +289,7 @@ export default {
     },
     switchNav (index) {
       this.selections = []
-      this.activeIndex = this.extraQuery.tabType = index
+      this.activeIndex = this.extraQuery.type = index
       this.gotoPage()
     },
     generateParams (pageSize, pageIndex) {
