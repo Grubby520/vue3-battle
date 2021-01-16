@@ -97,7 +97,7 @@ export const homeRoutes = [
     path: 'delivery-manage',
     name: '发货管理',
     meta: {
-      icon: 'el-icon-goods',
+      icon: 'el-icon-box',
       code: 'menu_goods_management'
     },
     component: ParentMenuRoute,
