@@ -61,7 +61,13 @@
                     :rules="rules[item.name]"
                     class="ProductSale-from__content"
                   >
-                    <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
+                    <div v-if="item.status==='text'">
+                      {{
+                      item.name ===showAttrName[scope.row.colorId].name ?
+                      showAttrName[scope.row.colorId].value :
+                      showAttrName[scope.row.sizeId].value
+                      }}
+                    </div>
                     <el-input
                       v-else
                       v-model="scope.row[item.name]"
@@ -106,11 +112,12 @@ export default {
       },
       colorOptions: [],
       sizeOptions: [],
+      showAttrName: [],
       rules: {
         sizes: [emptyValidator('请选择尺寸', 'change')],
         colors: [emptyValidator('请选择颜色', 'change')],
-        supplyPrice: [emptyValidator('请输入值')],
-        supplierSkuCode: [emptyValidator('请输入值')]
+        supplyPrice: [emptyValidator('请输入供货价格')],
+        supplierSkuCode: [emptyValidator('请输入商家SKU编码')]
       },
       tableHeadData: [// 表头字段
         {
@@ -148,25 +155,9 @@ export default {
   },
   mounted () {
     this.load()
-    this.addListItem()
   },
   methods: {
     load () {
-      this.getAllSaleAttrs()
-    },
-    removeSizeTag (tag) {
-      this.form.sizes.splice(this.form.sizes.findIndex(size => size.id === tag.id), 1)
-      const { sizes, colors } = this.form
-      this.addListItem(sizes, colors)
-      this.$store.commit('product/SIZEOPTIONS', sizes)
-      this.$refs.form.validateField('sizes') // 重新校验表单
-    },
-    selectChange (e, attribute) {
-      this.$refs.form.validateField('colors') // 重新校验表单
-      const { sizes, colors } = this.form
-      this.addListItem(sizes, colors)
-    },
-    getAllSaleAttrs () {
       let params = {
         type: 'NEW_ATTRIBUTE'
       }
@@ -198,6 +189,11 @@ export default {
           })
       }
     },
+    selectChange (e, attribute) {
+      this.$refs.form.validateField('colors') // 重新校验表单
+      const { sizes, colors } = this.form
+      this.addListItem(sizes, colors)
+    },
     openDialog (type, data = '') {
       let dialog = null
       switch (type) {
@@ -211,24 +207,45 @@ export default {
       dialog.open(type, data)
       dialog = null
     },
+    removeSizeTag (tag) {
+      this.form.sizes.splice(this.form.sizes.findIndex(size => size.id === tag.id), 1)
+      const { sizes, colors } = this.form
+      this.addListItem(sizes, colors)
+      this.$store.commit('product/SIZEOPTIONS', sizes)
+      this.$refs.form.validateField('sizes') // 重新校验表单
+    },
     sizeSelectConfirm (val) {
       this.form.sizes = val
-      this.$refs.form.validateField('sizes') // 重新校验表单
-      this.$store.commit('product/SIZEOPTIONS', val)
       this.addListItem(val, this.form.colors)
+      this.$store.commit('product/SIZEOPTIONS', val)
+      this.$refs.form.validateField('sizes') // 重新校验表单
     },
     addListItem (sizes, colors) {
       // 增加行
       const condition = (sizes && sizes.length > 0) || (colors && colors)
+      const show = {}
+      const attr = []
       if (condition) {
-        const arr = []
         colors.forEach(color => {
           sizes.forEach(size => {
-            const addItem = { size: size, 'color': color }
-            arr.push(addItem)
+            show[size.id] = { value: size.attrTermName, name: 'size' }
+            show[color.id] = { value: color.attrTermName, name: 'color' }
+            const addItem = {
+              attributesId: '1111',
+              'sizeId': size.id,
+              'colorId': color.id,
+              supplyPrice: '',
+              supplierSkuCode: '',
+              tagSize: '',
+              weight: ''
+            }
+            attr.push(addItem)
           })
         })
-        this.form.info = arr
+        // 需要展示的列表尺寸和颜色name
+        this.showAttrName = show
+        // 保存需要的数据结构
+        this.form.info = attr
       }
     },
     hideDialog () {
