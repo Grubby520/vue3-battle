@@ -14,7 +14,7 @@
           class="ProductSale-form"
         >
           <el-form-item label="尺码" prop="sizes">
-            <span class="ProductSale-sizes" @click="openDialog">添加尺码</span>
+            <span class="ProductSale-sizes" @click="openDialog('size')">添加尺码</span>
             <el-tag
               style="margin: 0 0 5px 10px"
               v-for="(tag, index) in form.sizes"
@@ -43,8 +43,8 @@
           <div class="ProductSale-table">
             <el-table :data="form.info" row-key="key" border>
               <el-table-column
-                v-for="item in tableHeadData"
-                :key="item.key"
+                v-for="(item,index) in tableHeadData"
+                :key="index"
                 :width="item.width"
                 align="center"
               >
@@ -62,19 +62,30 @@
                     class="ProductSale-from__content"
                   >
                     <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
-                    <el-input v-else v-model="scope.row[item.name]" />
+                    <el-input
+                      v-else
+                      v-model="scope.row[item.name]"
+                      v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ?numberRule[item.name] :''"
+                    />
                   </el-form-item>
                 </template>
               </el-table-column>
             </el-table>
+            <el-row class="ProductSale-from__batch">
+              <SlSpace />
+              <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
+            </el-row>
           </div>
         </el-form>
       </div>
+      <!-- 尺码弹框 -->
       <ProductSizeDialog
         ref="ProductSizeDialog"
         :sizeOptions="sizeOptions"
         @confirm="sizeSelectConfirm"
       />
+      <!-- 批量设置弹窗 -->
+      <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
     </el-card>
   </div>
 </template>
@@ -82,9 +93,10 @@
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
+import BatchAttributes from './batchAttributes'
 import { emptyValidator } from '@shared/validate'
 export default {
-  components: { ProductSizeDialog },
+  components: { ProductSizeDialog, BatchAttributes },
   data () {
     return {
       form: {
@@ -127,7 +139,11 @@ export default {
           name: 'weight',
           label: '带包装重量（G）'
         }
-      ]
+      ],
+      numberRule: {
+        'supplyPrice': { type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2 },
+        'weight': { type: 'integer', max: 999999, compareLength: true, includeZero: true }
+      }
     }
   },
   mounted () {
@@ -182,9 +198,17 @@ export default {
           })
       }
     },
-    openDialog () {
-      let dialog = this.$refs.ProductSizeDialog
-      dialog.open()
+    openDialog (type, data = '') {
+      let dialog = null
+      switch (type) {
+        case 'batchAttributes':
+          dialog = this.$refs.batchAttributes
+          // data = this.productSalesAttributeList
+          break
+        case 'size':
+          dialog = this.$refs.ProductSizeDialog
+      }
+      dialog.open(type, data)
       dialog = null
     },
     sizeSelectConfirm (val) {
@@ -200,12 +224,15 @@ export default {
         const arr = []
         colors.forEach(color => {
           sizes.forEach(size => {
-            const addItem = { size: size, 'color': color, 'key': Date.now(), isEdit: true }
+            const addItem = { size: size, 'color': color }
             arr.push(addItem)
           })
         })
         this.form.info = arr
       }
+    },
+    hideDialog () {
+
     },
     checkout () {
       this.$refs.form.validate(valid => {
@@ -232,9 +259,13 @@ export default {
       justify-content: center;
       align-items: center;
     }
+    &__batch {
+      display: flex;
+      margin-top: 1rem;
+    }
   }
   &-table {
-    padding: 0 0 0 120px;
+    padding: 0 0 0 12rem;
     /deep/.el-form-item__content {
       margin-left: 0 !important;
     }

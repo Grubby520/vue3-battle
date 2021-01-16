@@ -16,9 +16,9 @@
             <el-input clearable v-model="form.nvcolors" />
           </el-form-item>
           <el-form-item label="尺寸" prop="sizes" class="ProductAttr-input">
-            <el-select>
+            <!-- <el-select>
               <el-option></el-option>
-            </el-select>
+            </el-select>-->
           </el-form-item>
           <el-form-item label="颜色" prop="colors">
             <SlSelect
@@ -45,7 +45,7 @@
 export default {
   data () {
     return {
-      form: {},
+      form: { colors: [] },
       options: [],
       rules: {}
     }

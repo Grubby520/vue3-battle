@@ -8,10 +8,9 @@
         <el-form :model="form" ref="form" class="ProductSize-from">
           <div class="ProductSize-from__table">
             <el-table :data="form.info" style="width:100%;" row-key="key" border>
-              {{tableHeadData}}
               <el-table-column
-                v-for="item in tableHeadData"
-                :key="item.key"
+                v-for="(item,index) in tableHeadData"
+                :key="index"
                 :label="item.label"
                 :width="item.width"
                 align="center"
@@ -89,7 +88,7 @@ export default {
       if (condition) {
         const arr = []
         sizes.forEach(size => {
-          const addItem = { size: size, 'key': Date.now(), isEdit: true }
+          const addItem = { size: size }
           arr.push(addItem)
         })
         this.form.info = arr
