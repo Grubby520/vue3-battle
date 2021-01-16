@@ -48,7 +48,7 @@
   </el-dialog>
 </template>
 <script>
-import { cloneDeep as _cloneDeep } from 'lodash'
+import { cloneDeep as _cloneDeep, find as _find } from 'lodash'
 import GOODS_API from '@api/goods'
 import { Message } from 'element-ui'
 
@@ -90,7 +90,14 @@ export default {
       let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
       GOODS_API.modifyLogisticsNo(data).then(res => {
         if (res.success) {
-          this.onClick(this.form.logisticsNumber)
+          let obj = _find(this.companyList, (item) => item.id === this.form.id)
+          let params = {
+            courierCode: obj.courierCode,
+            courierName: obj.courierName,
+            logisticsCompanyName: obj.logisticsCompanyName,
+            logisticsNumber: this.form.logisticsNumber
+          }
+          this.onClick(params)
           this.showDiaolog = false
         } else {
           Message({

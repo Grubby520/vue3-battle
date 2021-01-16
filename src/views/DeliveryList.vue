@@ -330,7 +330,10 @@ export default {
         let arr = res.data
         let data = Object.assign({
           onClick: (data) => {
-            row.logisticsNumber = data
+            row.logisticsNumber = data.logisticsNumber
+            row.courierCode = data.courierCode
+            row.courierName = data.courierName
+            row.logisticsCompanyName = data.logisticsCompanyName
           }
         }, { showDiaolog: true, row: row, companyList: arr })
         this.$refs.logisticsNo.show(data)
