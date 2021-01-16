@@ -70,23 +70,23 @@
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
+import { emptyValidator } from '@shared/validate'
 export default {
   components: { ProductSizeDialog },
   data () {
     return {
       form: {
-        info: [
-        ],
+        info: [],
         sizes: [],
         colors: []
       },
       colorOptions: [],
       sizeOptions: [],
       rules: {
-        sizes: [{ required: true }],
-        colors: [{ required: true }],
-        supplyPrice: [{ required: true, message: '请输入值' }],
-        supplierSkuCode: [{ required: true, message: '请输入值' }]
+        sizes: [emptyValidator('请选择尺寸', 'change')],
+        colors: [emptyValidator('请选择颜色', 'change')],
+        supplyPrice: [emptyValidator('请输入值', 'blur')],
+        supplierSkuCode: [emptyValidator('请输入值', 'blur')]
       },
       tableHeadData: [// 表头字段
         {
@@ -131,8 +131,10 @@ export default {
       const { sizes, colors } = this.form
       this.addListItem(sizes, colors)
       this.$store.commit('product/SIZEOPTIONS', sizes)
+      this.$refs.form.validateField('sizes') // 重新校验表单
     },
     selectChange (e, attribute) {
+      this.$refs.form.validateField('colors') // 重新校验表单
       const { sizes, colors } = this.form
       this.addListItem(sizes, colors)
     },
@@ -175,6 +177,7 @@ export default {
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
+      this.$refs.form.validateField('sizes') // 重新校验表单
       this.$store.commit('product/SIZEOPTIONS', val)
       this.addListItem(val, this.form.colors)
     },
@@ -195,6 +198,9 @@ export default {
     checkout () {
       this.$refs.form.validate(valid => {
       })
+    },
+    validateSizes () {
+
     }
   }
 }
@@ -223,6 +229,10 @@ export default {
   }
   /deep/.stl-big-data-select {
     width: 700px;
+  }
+  /deep/.el-form-item--small .el-form-item__error {
+    width: 300px;
+    text-align: left;
   }
 }
 </style>
