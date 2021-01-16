@@ -90,16 +90,17 @@
             <el-button
               type="primary"
               @click="modifyLogistNo(scope.row)"
+              v-if="[0,1].includes(Number(scope.row.orderStatus))"
             >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px" align="center" fixed="right">
           <template slot-scope="scope">
-            <el-button
+            <!-- <el-button
               @click="odmDetail(scope.row,'modify')"
               type="text"
               v-if="[0,1].includes(Number(scope.row.orderStatus))"
-            >修改</el-button>
+            >修改</el-button>-->
             <el-button @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
             <el-button @click="exportExcle(scope.row)" type="text">导出表格</el-button>
             <el-button @click="printOrder(scope.row)" type="text">打印发货单</el-button>
@@ -190,7 +191,7 @@ export default {
           }
         }
       ],
-      orderStatusList: ['待发货', '已发货 ', '已到货', '异常到货', '已完成'],
+      orderStatusList: ['待发货', '已发货 ', '已到货', '异常到货', '已完成', '已取消'],
       navInfo: {},
       tableData: [],
       activeIndex: '0',
