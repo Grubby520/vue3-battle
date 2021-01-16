@@ -4,6 +4,7 @@
     class="tableData"
     @selection-change="handleSelectionChange"
     :border="border"
+    :row-key="rowKey"
     size="mini"
     ref="multipleTable"
   >
@@ -120,7 +121,7 @@ export default {
         return []
       }
     },
-
+    rowKey: { type: String, required: false, default: undefined },
     border: { type: Boolean, required: false, default: true },
     selection: { type: Boolean, required: false, default: true },
     operate: { type: Boolean, required: false, default: true },

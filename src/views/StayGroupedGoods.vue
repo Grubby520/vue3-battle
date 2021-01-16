@@ -63,6 +63,7 @@
         :columns="columns"
         :operate="false"
         :tooltip="false"
+        rowKey="id"
       ></SlTable>
     </SlListView>
     <!-- 拆单对话框 -->

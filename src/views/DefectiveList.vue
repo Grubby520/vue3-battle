@@ -20,6 +20,7 @@
         :selection="false"
         :operate="false"
         :tooltip="false"
+        rowKey="id"
       ></SlTable>
     </SlListView>
   </div>
