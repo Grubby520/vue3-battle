@@ -6,7 +6,13 @@
         <el-button @click="checkout">点击校验表单</el-button>
       </div>
       <div class="form">
-        <el-form :model="form" :rules="rules" ref="form" class="ProductSale-from">
+        <el-form
+          :model="form"
+          :rules="rules"
+          ref="form"
+          label-width="120px"
+          class="ProductSale-form"
+        >
           <el-form-item label="尺码" prop="sizes">
             <span class="ProductSale-sizes" @click="openDialog">添加尺码</span>
             <el-tag
@@ -21,9 +27,9 @@
           </el-form-item>
           <el-form-item label="颜色" prop="colors">
             <SlSelect
+              :options="colorOptions"
               ref="colorSelect"
               v-model="form.colors"
-              :options="colorOptions"
               label="attrTermName"
               value="id"
               filterable
@@ -34,28 +40,34 @@
               @change="selectChange($event, 'color')"
             />
           </el-form-item>
-          <el-table :data="form.info" style="width:100%;" row-key="key" border>
-            <el-table-column
-              v-for="item in tableHeadData"
-              :key="item.key"
-              :width="item.width"
-              align="center"
-            >
-              <template slot="header">
-                <span
-                  class="ProductSale-from__icon"
-                  v-if="['supplyPrice','supplierSkuCode'].includes(item.name)"
-                >*</span>
-                <span>{{item.label}}</span>
-              </template>
-              <template slot-scope="scope">
-                <el-form-item :prop="`info.${scope.$index}.${item.name}`" :rules="rules[item.name]">
-                  <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
-                  <el-input v-else v-model="scope.row[item.name]" />
-                </el-form-item>
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="ProductSale-table">
+            <el-table :data="form.info" row-key="key" border>
+              <el-table-column
+                v-for="item in tableHeadData"
+                :key="item.key"
+                :width="item.width"
+                align="center"
+              >
+                <template slot="header">
+                  <span
+                    class="ProductSale-from__icon"
+                    v-if="['supplyPrice','supplierSkuCode'].includes(item.name)"
+                  >*</span>
+                  <span>{{item.label}}</span>
+                </template>
+                <template slot-scope="scope">
+                  <el-form-item
+                    :prop="`info.${scope.$index}.${item.name}`"
+                    :rules="rules[item.name]"
+                    class="ProductSale-from__content"
+                  >
+                    <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
+                    <el-input v-else v-model="scope.row[item.name]" />
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </el-form>
       </div>
       <ProductSizeDialog
@@ -85,8 +97,8 @@ export default {
       rules: {
         sizes: [emptyValidator('请选择尺寸', 'change')],
         colors: [emptyValidator('请选择颜色', 'change')],
-        supplyPrice: [emptyValidator('请输入值', 'blur')],
-        supplierSkuCode: [emptyValidator('请输入值', 'blur')]
+        supplyPrice: [emptyValidator('请输入值')],
+        supplierSkuCode: [emptyValidator('请输入值')]
       },
       tableHeadData: [// 表头字段
         {
@@ -210,11 +222,21 @@ export default {
 .ProductSale {
   margin-bottom: 2rem;
   &-from {
-    padding: 0 12rem;
     &__icon {
       display: inline-block;
       margin-right: 0.5rem;
       color: red;
+    }
+    &__content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  &-table {
+    padding: 0 0 0 120px;
+    /deep/.el-form-item__content {
+      margin-left: 0 !important;
     }
   }
   &-sizes {
@@ -223,16 +245,6 @@ export default {
   }
   .el-card {
     overflow: unset !important;
-  }
-  /deep/.el-form-item__content {
-    display: inline-block;
-  }
-  /deep/.stl-big-data-select {
-    width: 700px;
-  }
-  /deep/.el-form-item--small .el-form-item__error {
-    width: 300px;
-    text-align: left;
   }
 }
 </style>

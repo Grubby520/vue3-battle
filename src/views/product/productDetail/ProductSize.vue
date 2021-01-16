@@ -5,24 +5,26 @@
         <span>尺码表</span>
       </div>
       <div class="form">
-        <el-form :model="form" ref="form" class="productFrom">
-          <el-table :data="form.info" style="width:100%;" row-key="key" border>
-            {{tableHeadData}}
-            <el-table-column
-              v-for="item in tableHeadData"
-              :key="item.key"
-              :label="item.label"
-              :width="item.width"
-              align="center"
-            >
-              <template slot-scope="scope">
-                <el-form-item>
-                  <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
-                  <el-input v-else v-model="scope.row[item.name]" />
-                </el-form-item>
-              </template>
-            </el-table-column>
-          </el-table>
+        <el-form :model="form" ref="form" class="ProductSize-from">
+          <div class="ProductSize-from__table">
+            <el-table :data="form.info" style="width:100%;" row-key="key" border>
+              {{tableHeadData}}
+              <el-table-column
+                v-for="item in tableHeadData"
+                :key="item.key"
+                :label="item.label"
+                :width="item.width"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-form-item>
+                    <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
+                    <el-input v-else v-model="scope.row[item.name]" />
+                  </el-form-item>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </el-form>
       </div>
     </el-card>
@@ -100,8 +102,13 @@ export default {
 <style scoped lang="scss">
 .ProductSize {
   margin-bottom: 2rem;
-  .productFrom {
-    padding: 0 120px;
+  &-from {
+    padding: 0 0 0 120px;
+    &__table {
+      /deep/ .el-form-item {
+        margin-bottom: 0 !important;
+      }
+    }
   }
 }
 </style>
