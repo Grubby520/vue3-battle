@@ -70,6 +70,9 @@ axiosInstance.interceptors.response.use(
         case '200017': // feign调用失败
           errorMessageTip(error.message)
           break
+        case '100005': // 失效的token
+          errorMessageTip('身份验证信息失效,请重新登录')
+          break
       }
     }
 
@@ -100,8 +103,7 @@ axiosInstance.interceptors.response.use(
           break
         case 401:
           err.message = errorData.error.message
-          store.dispatch('user/RESET_USER_DATA')
-          router.push('/login')
+          redirectToLogin()
           break
         case 404: err.message = `访问资源不存在`
           break
@@ -127,6 +129,11 @@ axiosInstance.interceptors.response.use(
     }
     return Promise.reject(err)
   })
+
+function redirectToLogin () {
+  store.dispatch('user/RESET_USER_DATA')
+  router.push('/login')
+}
 
 function addLoadingConfigToHeader (config) {
   if (config && config.addLoading !== undefined) {
