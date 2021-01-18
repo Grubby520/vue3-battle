@@ -93,6 +93,11 @@ export default {
         })
         this.form.info = arr
       }
+    },
+    result () {
+      return new Promise(resolve => {
+        resolve({ 'productSize': [] })
+      })
     }
   }
 }

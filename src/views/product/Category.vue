@@ -42,7 +42,7 @@ export default {
           query: {
             cateLabels: this.cateLabels,
             categoryId: categoryId,
-            categoryLevel: current.categoryLevel,
+            categoryPath: current.categoryLevel,
             mode: this.mode,
             id: this.id
           }

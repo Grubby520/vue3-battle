@@ -66,8 +66,7 @@ import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
 export default {
   props: {
-    isStatus: { type: Boolean, required: false, default: false },
-    productBasicInfo: { type: Object, required: false, default: () => { } }
+    isStatus: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
@@ -100,43 +99,36 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams'])
+    ...mapGetters('product', ['productParams', 'productBasicInfo'])
   },
   watch: {
-    // 'productBasicInfo': {
-    //   handler (newValue) {
-    //     const keys = Object.keys(newValue)
-    //     if (keys.length > 0) {
-    //       for (let key of keys) {
-    //         // 判断传入的数据是否都是当前页面需要的参数
-    //         if (Object.prototype.hasOwnProperty.call(this.form, key)) {
-    //           this.form = newValue
-    //           this.form[key] = newValue[key]
-    //         }
-    //       }
-    //     }
-    //     this.form.categoryId = this.categoryInfo.categoryId
-    //   },
-    //   immediate: true
-    // }
+    'productBasicInfo': {
+      handler (newValue) {
+        const keys = Object.keys(newValue)
+        if (keys.length > 0) {
+          for (let key of keys) {
+            // 判断传入的数据是否都是当前页面需要的参数
+            if (Object.prototype.hasOwnProperty.call(this.form, key)) {
+              this.form = newValue
+              this.form[key] = newValue[key]
+            }
+          }
+        }
+        this.form.categoryId = newValue.categoryId
+      },
+      immediate: true
+    }
+  },
+  mounted () {
+    this.form.categoryId = this.productParams.categoryId
+    this.$refs.form.validateField('categoryId')
   },
   methods: {
-    commmitInfo () {
-      // const _this = this
-      // return new Promise((resolve, reject) => {
-      //   this.$refs['form'].validate((valid) => {
-      //     if (valid) {
-      //       // 返回数据包含页面需要使用数据form 和传入所有数据
-      //       Object.assign(this.productBasicInfo, _this.form)
-      //       resolve({ 'productBasicInfo': this.productBasicInfo })
-      //     } else {
-      //       setTimeout(() => {
-      //         this.$message.error('基本信息：请填写必填项')
-      //       })
-      //       reject(new Error('ProductBase'))
-      //     }
-      //   })
-      // })
+    result () {
+      return new Promise((resolve, reject) => {
+        Object.assign(this.productBasicInfo, this.form)
+        resolve({ 'productBasicInfo': this.productBasicInfo || [] })
+      })
     },
     productValidata () {
       return {

@@ -18,7 +18,7 @@
         <div class="check-area">
           <el-checkbox-group v-model="checkedSizes">
             <template v-for="(item, index) in sizeOptions">
-              <el-checkbox :key="index" :label="item.id">{{item.attrTermName}}</el-checkbox>
+              <el-checkbox :key="index" :label="item.id">{{item.name}}</el-checkbox>
             </template>
           </el-checkbox-group>
         </div>

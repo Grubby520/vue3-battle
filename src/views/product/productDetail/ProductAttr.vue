@@ -42,6 +42,7 @@
 </template>
 
 <script>
+// import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
@@ -56,9 +57,17 @@ export default {
   mounted () {
 
   },
+  computed: {
+    // ...mapGetters('product', ['productCustomizeAttributeList'])
+  },
   methods: {
     selectChange (e, attribute) {
       this.$refs.form.validateField('colors') // 重新校验表单
+    },
+    result () {
+      return new Promise(resolve => {
+        resolve({ 'productCustomAttributes': [] })
+      })
     }
   }
 }
