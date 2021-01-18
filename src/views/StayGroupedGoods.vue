@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date } from '@shared/util'
+import { exportFileFromRemote, date, errorMessageTip } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
@@ -115,7 +115,7 @@ export default {
         {
           type: 'input',
           label: '供方货号',
-          name: 'suppierId'
+          name: 'supplierNum'
         },
         {
           type: 'input',
@@ -260,6 +260,22 @@ export default {
         prev += next.shippedNum
         return prev
       }, 0)
+    },
+    hasRepeatOrderIdAndSkucode () {
+      let tempMap = {}
+      for (let i = 0, len = this.selections.length; i < len; i++) {
+        let item = this.selections[i]
+        let key = item.orderId + item.baseInfo.sku
+        if (!tempMap[key]) {
+          tempMap[key] = 1
+        } else {
+          tempMap[key]++
+        }
+        if (tempMap[key] > 1) {
+          return true
+        }
+      }
+      return false
     }
   },
   mounted () {
@@ -306,23 +322,19 @@ export default {
     },
     validateGenerateInvoice () {
       let skuTotal = this.selections.length
+
       if (skuTotal > 50) {
-        this.$message({
-          showClose: true,
-          message: '总SKU个数超过50，不能生成发货单',
-          type: 'error',
-          duration: 4500
-        })
+        errorMessageTip('总SKU个数超过50，不能生成发货单')
         return false
       }
 
       if (this.skuNumber > 200) {
-        this.$message({
-          showClose: true,
-          message: '总发货数量超过200，不能生成发货单',
-          type: 'error',
-          duration: 4500
-        })
+        errorMessageTip('总发货数量超过200，不能生成发货单')
+        return false
+      }
+
+      if (this.hasRepeatOrderIdAndSkucode) {
+        errorMessageTip('一个发货单上不能存在两条订单号和SKU都相同的记录')
         return false
       }
       return true
