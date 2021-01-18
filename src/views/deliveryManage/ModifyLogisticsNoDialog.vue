@@ -28,14 +28,22 @@
     <div class="logistics-no">
       <el-form ref="form" :model="form" label-width="80px" class="logistics-form" :rules="rules">
         <el-form-item label="物流商" prop="id">
-          <el-select v-model="form.id" placeholder="物流商" filterable>
+          <!-- <el-select v-model="form.id" placeholder="物流商" filterable>
             <el-option
               v-for="item in companyList"
               :key="item.id"
               :label="item.logisticsCompanyName"
               :value="item.id"
             ></el-option>
-          </el-select>
+          </el-select>-->
+          <sl-select
+            v-model="form.id"
+            :options="companyList"
+            :maxHeight="200"
+            filterable
+            label="logisticsCompanyName"
+            value="id"
+          ></sl-select>
         </el-form-item>
         <el-form-item label="快递单号" prop="logisticsNumber">
           <el-input v-model="form.logisticsNumber"></el-input>
@@ -105,7 +113,8 @@ export default {
                 courierCode: obj.courierCode,
                 courierName: obj.courierName,
                 logisticsCompanyName: obj.logisticsCompanyName,
-                logisticsNumber: this.form.logisticsNumber
+                logisticsNumber: this.form.logisticsNumber,
+                logisticsCompanyId: this.form.id
               }
               this.onClick(params)
               this.showDiaolog = false
