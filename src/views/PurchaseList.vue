@@ -198,7 +198,7 @@ export default {
           label: '订单进度',
           headerRender: function (h, column) {
             return (
-              <div>订单进度<p class="color-text--yellow">(需求数/组单数/发货数/到货数)</p></div>
+              <div>订单进度<p class="color-text--gray-mid">(需求数/组单数/发货数/上架数)</p></div>
             )
           },
           render: function (h, data) {
