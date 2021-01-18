@@ -1,5 +1,11 @@
 <template>
-  <el-dialog title="提示" :visible.sync="isShowLogistics" width="40%" center class="logistics-dialog">
+  <el-dialog
+    title="物流信息"
+    :visible.sync="isShowLogistics"
+    width="40%"
+    center
+    class="logistics-dialog"
+  >
     <div class="content">
       <h3>物流信息</h3>
       <div class="logistics-info">
@@ -45,6 +51,7 @@ export default {
   }
 }
 .logistics-info {
+  margin: 16px 0;
   display: flex;
   justify-content: space-between;
 }

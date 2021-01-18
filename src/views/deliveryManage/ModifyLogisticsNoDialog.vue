@@ -26,8 +26,8 @@
       <p>请务必确保此发货单对应的物流单号填写正确，物流单号填写错误或者未填写则仓库无法签收此包裹！</p>
     </div>
     <div class="logistics-no">
-      <el-form ref="form" :model="form" label-width="80px" class="logistics-form">
-        <el-form-item label="物流商">
+      <el-form ref="form" :model="form" label-width="80px" class="logistics-form" :rules="rules">
+        <el-form-item label="物流商" prop="id">
           <el-select v-model="form.id" placeholder="物流商" filterable>
             <el-option
               v-for="item in companyList"
@@ -37,7 +37,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="快递单号">
+        <el-form-item label="快递单号" prop="logisticsNumber">
           <el-input v-model="form.logisticsNumber"></el-input>
         </el-form-item>
       </el-form>
@@ -58,6 +58,14 @@ export default {
     return {
       showDiaolog: false,
       logisticsInfo: {},
+      rules: {
+        id: [
+          { required: true, message: '请选择物流商', trigger: 'change' }
+        ],
+        logisticsNumber: [
+          { required: true, message: '请输入物流号', trigger: 'blur' }
+        ]
+      },
       companyList: [],
       form: {
         id: '',
@@ -79,7 +87,7 @@ export default {
       this.onClick = data.onClick
     },
     submit () {
-      if (this.logisticsInfo.logisticsNumber === this.form.logisticsNumber) {
+      if (this.logisticsInfo.logisticsNumber === this.form.logisticsNumber && this.logisticsInfo.logisticsCompanyId === this.form.id) {
         Message({
           showClose: true,
           message: '没做修改',
@@ -87,22 +95,26 @@ export default {
         })
         return
       }
-      let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
-      GOODS_API.modifyLogisticsNo(data).then(res => {
-        if (res.success) {
-          let obj = _find(this.companyList, (item) => item.id === this.form.id)
-          let params = {
-            courierCode: obj.courierCode,
-            courierName: obj.courierName,
-            logisticsCompanyName: obj.logisticsCompanyName,
-            logisticsNumber: this.form.logisticsNumber
-          }
-          this.onClick(params)
-          this.showDiaolog = false
-        } else {
-          Message({
-            message: res.error.message,
-            type: 'error'
+      this.$refs['form'].validate((valid) => {
+        if (valid) {
+          let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
+          GOODS_API.modifyLogisticsNo(data).then(res => {
+            if (res.success) {
+              let obj = _find(this.companyList, (item) => item.id === this.form.id)
+              let params = {
+                courierCode: obj.courierCode,
+                courierName: obj.courierName,
+                logisticsCompanyName: obj.logisticsCompanyName,
+                logisticsNumber: this.form.logisticsNumber
+              }
+              this.onClick(params)
+              this.showDiaolog = false
+            } else {
+              Message({
+                message: res.error.message,
+                type: 'error'
+              })
+            }
           })
         }
       })
