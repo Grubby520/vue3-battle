@@ -177,7 +177,8 @@ export default {
         },
         {
           prop: 'sellProperty',
-          label: '销售属性'
+          label: '销售属性',
+          width: '150'
         },
         {
           prop: 'orderTypeDes',
@@ -208,7 +209,7 @@ export default {
         {
           prop: 'dueDeliveryTime',
           label: '应交货时间',
-          width: '150',
+          width: '100',
           render: (h, data) => {
             let { row = {} } = data
             let dueDeliveryTime = row.dueDeliveryTime ? +new Date(row.dueDeliveryTime) : 0
@@ -216,7 +217,7 @@ export default {
             if (!row.dueDeliveryTime) return ''
             return (
               <div>
-                <p>{row.dueDeliveryTime}</p>
+                <p>{date(dueDeliveryTime, 'yyyy-MM-dd')}</p>
                 <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${parseInt(offsetDays)}天` : '已超期'}</span>
               </div>
             )
@@ -229,7 +230,6 @@ export default {
         {
           prop: 'shippedNum',
           label: '发货数量',
-          fixed: 'right',
           render: (h, data) => {
             let { row = {} } = data
             return (

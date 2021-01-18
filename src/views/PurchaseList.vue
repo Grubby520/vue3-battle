@@ -79,6 +79,7 @@
 </template>
 
 <script>
+import { date } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsApi from '@api/goods'
 
@@ -238,7 +239,15 @@ export default {
         {
           prop: 'dueDeliveryTime',
           label: '应交货时间',
-          width: '150'
+          width: '100',
+          render: (h, data) => {
+            let { row = {} } = data
+            let dueDeliveryTime = row.dueDeliveryTime ? +new Date(row.dueDeliveryTime) : 0
+            if (!row.dueDeliveryTime) return ''
+            return (
+              <p>{date(dueDeliveryTime, 'yyyy-MM-dd')}</p>
+            )
+          }
         },
         {
           prop: 'shippedNum',
