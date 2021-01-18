@@ -87,7 +87,7 @@
         </template>
       </el-table-column>
     </template>
-    <el-table-column width="180px" align="center" label="操作" v-if="operate" fixed>
+    <el-table-column width="180px" align="center" label="操作" v-if="operate" fixed="right">
       <template slot-scope="scope">
         <slot name="operation" :row="scope.row"></slot>
       </template>
