@@ -23,7 +23,7 @@
       <div slot="search">
         <SlSearchForm ref="searchForm" v-model="searchQuery" :items="searchItems"></SlSearchForm>
       </div>
-      <el-button type="primary" @click="batchPrintNo">批量打印批次号</el-button>
+      <el-button type="primary" @click="batchPrintNo">批量导出批次号</el-button>
       <div class="switch-nav">
         <el-menu
           :default-active="activeIndex"
@@ -399,7 +399,23 @@ export default {
         this.selectdChange.forEach((item) => {
           arr.push(item.id)
         })
-        GOODS_API.batchPrintNo({ ids: arr })
+        exportFileFromRemote({
+          url: GoodsUrl.printNo,
+          name: `批量导出批次号.zip`,
+          params: { ids: arr.join(',') },
+          beforeLoad: () => {
+            this.loading = true
+            this.$store.dispatch('OPEN_LOADING')
+          },
+          afterLoad: () => {
+            this.loading = false
+            this.selections = []
+            this.$store.dispatch('CLOSE_LOADING')
+          },
+          successFn: () => { },
+          errorFn: () => { }
+        })
+        // GOODS_API.batchPrintNo({ ids: arr.join(',') })
       } else {
         Message({
           message: '请至少选择一条发货记录',

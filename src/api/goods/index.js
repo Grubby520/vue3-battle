@@ -121,7 +121,7 @@ const GOODS_API = {
   },
 
   batchPrintNo (data) {
-    post(URL.printNo, data)
+    get(URL.printNo, data)
   },
 
   ecxportExcle (data) {
