@@ -78,7 +78,16 @@ export default {
       columns: [
         {
           prop: 'name',
-          label: '商品名称'
+          label: '商品名称',
+          width: '225',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip content={row.name} placement="top" effect="light">
+                <ellipsis text={row.name} lineNum={2} tagName="p" width='225px'></ellipsis>
+              </el-tooltip>
+            )
+          }
         },
         {
           prop: 'attributesName',
