@@ -110,7 +110,7 @@ export default {
           label: '详情'
         },
         {
-          prop: 'purchaseOrderId',
+          prop: 'purchaseOrderNum',
           label: '采购单号'
         },
         {
