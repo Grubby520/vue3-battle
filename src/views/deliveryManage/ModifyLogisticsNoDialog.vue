@@ -115,7 +115,7 @@ export default {
                 logisticsCompanyName: obj.logisticsCompanyName,
                 logisticsNumber: this.form.logisticsNumber,
                 logisticsCompanyId: this.form.id,
-                type: 2
+                type: 1
               }
               this.onClick(params)
               this.showDiaolog = false
