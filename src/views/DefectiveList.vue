@@ -49,7 +49,7 @@ export default {
         {
           type: 'input',
           label: '物流单号',
-          name: 'logisticsNo'
+          name: 'logisticsNumber'
         },
         {
           type: 'input',
