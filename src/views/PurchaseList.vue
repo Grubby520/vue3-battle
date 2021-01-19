@@ -168,7 +168,7 @@ export default {
         {
           prop: 'baseInfo',
           label: '基本信息',
-          width: '300',
+          width: '280',
           isInImg: 'imageUrl',
           pre: {
             supplierItemNo: '供方货号',
@@ -179,7 +179,16 @@ export default {
         },
         {
           prop: 'productName',
-          label: '商品名称'
+          label: '商品名称',
+          width: '225',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip content={row.productName} placement="top" effect="light">
+                <ellipsis text={row.productName} lineNum={2} tagName="p" width='225px'></ellipsis>
+              </el-tooltip>
+            )
+          }
         },
         {
           prop: 'sellProperty',
@@ -196,9 +205,10 @@ export default {
         {
           prop: 'orderPlan',
           label: '订单进度',
+          width: '150',
           headerRender: function (h, column) {
             return (
-              <div>订单进度<p class="color-text--gray-mid">(需求数/组单数/发货数/上架数)</p></div>
+              <div>订单进度<p class="color-text--gray-mid" style="transform:scale(0.8);font-weight:normal">(需求数/组单数/发货数/上架数)</p></div>
             )
           },
           render: function (h, data) {
