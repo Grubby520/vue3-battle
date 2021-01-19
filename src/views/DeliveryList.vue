@@ -80,7 +80,7 @@
         <el-table-column prop="settleOrderNumber" label="结算单ID" width="100px" align="center"></el-table-column>
         <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
           <template slot-scope="scope">
-            <p>
+            <p v-if="scope.row.logisticsNumber">
               物流单号：
               <el-button
                 @click="openLogistisInfoDialog(scope.row)"

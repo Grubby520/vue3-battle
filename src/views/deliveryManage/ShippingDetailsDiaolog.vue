@@ -36,7 +36,7 @@
       </el-table-column>
       <el-table-column prop="shelvedNum" label="上架数量" width="50" align="center"></el-table-column>
       <el-table-column prop="purchasePrice" label="供货价（￥）" width="60" align="center"></el-table-column>
-      <el-table-column prop="totalPurchasePrice" label="总金额（￥）" width="60" align="center"></el-table-column>
+      <el-table-column prop="totalPurchasePrice" label="总金额（￥）" align="center"></el-table-column>
     </el-table>
     <div slot="footer" v-if="this.type == 'modify'">
       <el-button type="primary" plain @click="dialogVisible = false">取消</el-button>
