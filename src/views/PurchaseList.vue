@@ -297,6 +297,7 @@ export default {
         if (success) {
           this.tableData = data.list
           this.page.total = data.total
+          this.page.pageIndex = data.pageNum
         }
       }).finally(() => {
         this.$refs.listView.loading = false
@@ -305,6 +306,7 @@ export default {
     },
     reset () {
       this.resetParams()
+      this.query.tabType = this.activeIndex
       this.$refs.listView.refresh()
     },
     switchNav (index) {

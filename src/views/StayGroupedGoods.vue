@@ -290,6 +290,7 @@ export default {
         if (success) {
           this.tableData = data.list
           this.page.total = data.total
+          this.page.pageIndex = data.pageNum
         }
       }).finally(() => {
         this.$refs.listView.loading = false
