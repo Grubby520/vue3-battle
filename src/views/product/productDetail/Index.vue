@@ -86,12 +86,20 @@ export default {
         })
     },
     create () {
-      // console.log('11111111111111111111111111111')
       const result = this.getResult()
       Promise.all(result)
         .then((res) => {
-          // const { productBasicInfo, productImageList, productSale, productSizes, productAttr } = res.data
-          // console.log('res', res)
+          // const { productBasicInfo, productImageList, productSale, productSizes, productAttr } = res
+          // const bodyParams = {
+          //   ...productBasicInfo,
+          //   categoryId: this.categoryId,
+          //   categoryPath: this.categoryPath,
+          //   productImageList,
+          //   productSale,
+          //   productSizes,
+          //   productAttr
+          // }
+          // console.log('bodyParams', bodyParams)
         })
     },
     modify () { },
@@ -101,7 +109,6 @@ export default {
       for (const ref in this.$refs) {
         result.push(this.$refs[ref].result())
       }
-      // console.log('result', result)
       return result
     }
   }

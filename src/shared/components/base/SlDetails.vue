@@ -42,16 +42,24 @@ export default {
     doSave () {
       this.loading = true
       if (this.references && this.form) {
-        this.references[this.form].validate(valid => {
-          if (valid) {
-            // 表单校验成功
-            this.ds()
-            this.loading = false
-          } else {
-            this.loading = false
-            return false
+        const result = []
+        for (const ref in this.references) {
+          if (Object.hasOwnProperty.call(this.references, ref)) {
+            const currentRef = this.references[ref]
+            currentRef.$refs[this.form].validate(valid => {
+              // console.log(currentRef, valid)
+              result.push(valid)
+            })
           }
-        })
+        }
+        if (result.every(item => item === true)) {
+          // 所有表单校验通过
+          this.ds()
+          this.loading = false
+        } else {
+          this.loading = false
+          return false
+        }
       } else {
         this.ds()
       }

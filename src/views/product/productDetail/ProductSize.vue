@@ -2,12 +2,12 @@
   <div class="ProductSize">
     <el-card>
       <div slot="header" class="title">
-        <span>尺码表</span>
+        <span>尺码表{{sizeattr.name}}</span>
       </div>
       <div class="form">
         <el-form :model="form" ref="form" class="ProductSize-from">
           <div class="ProductSize-from__table">
-            <el-table :data="form.info" style="width:100%;" row-key="key" border>
+            <el-table :data="form.productSizeTemplates" style="width:100%;" row-key="key" border>
               <el-table-column
                 v-for="(item,index) in tableHeadData"
                 :key="index"
@@ -17,7 +17,7 @@
               >
                 <template slot-scope="scope">
                   <el-form-item>
-                    <div v-if="item.status==='text'">{{scope.row[item.name].attrTermName}}</div>
+                    <div v-if="item.status==='text'">{{showLabels[scope.row.attributeTermId+'']}}</div>
                     <el-input v-else v-model="scope.row[item.name]" />
                   </el-form-item>
                 </template>
@@ -32,71 +32,68 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import axios from 'axios'
 export default {
   data () {
     return {
       form: {
-        info: []
+        productSizeTemplates: []
       },
-      tableHeadData: [// 表头字段
-        {
-          name: 'size',
-          label: '尺码',
-          status: 'text'
-        },
-        {
-          name: 'supplyPrice',
-          label: '胸围'
-        },
-        {
-          name: 'supplierSkuCode',
-          label: '腰围'
-        },
-        {
-          name: 'tagSize',
-          label: '臀围'
-        },
-        {
-          name: 'back',
-          label: '背长'
-        }
-      ]
+      showLabels: {},
+      tableData: []
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeOptions'])
+    ...mapGetters('product', ['sizeOptions', 'sizeattr']),
+    tableHeadData () {
+      // 表头信息
+      const sizes = {
+        name: 'size',
+        label: this.sizeattr.name,
+        status: 'text'
+      }
+      const headData = this.tableData
+      this.sizeattr.name && headData.unshift(sizes)
+      return headData
+    }
   },
   watch: {
     'sizeOptions': {
       handler (newValue) {
+        this.load(newValue)
         this.addListItem(newValue)
       },
       immediate: true,
       deep: true
     }
   },
-  created () {
-
-  },
-  mounted () {
-
-  },
   methods: {
+    load () {
+      axios.get('http://10.250.0.66:7300/mock/6006379be8759301dc974c8b/exaple/attrs')
+        .then(res => {
+          this.tableData = res.data
+        })
+    },
     addListItem (sizes) {
       // 增加行
-      const condition = (sizes && sizes.length > 0)
-      if (condition) {
-        const arr = []
-        sizes.forEach(size => {
-          const addItem = { size: size }
-          arr.push(addItem)
-        })
-        this.form.info = arr
-      }
+      const productSizeTemplates = []
+      const showLabels = {}
+      sizes.forEach(size => {
+        const addItem = {
+          attributeTermId: size.id,
+          attributeId: this.sizeattr.attributeId,
+          sizePositions: []
+        }
+        productSizeTemplates.push(addItem)
+        showLabels[size.id] = size.name
+        this.form.productSizeTemplates.push(addItem)
+      })
+      this.form.productSizeTemplates = productSizeTemplates
+      this.showLabels = showLabels
     },
     result () {
       return new Promise(resolve => {
-        resolve({ 'productSize': [] })
+        resolve({ 'productSize': this.form })
       })
     }
   }

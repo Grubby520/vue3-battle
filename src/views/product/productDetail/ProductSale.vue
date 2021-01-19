@@ -12,7 +12,7 @@
           label-width="120px"
           class="ProductSale-form"
         >
-          <el-form-item label="尺码" prop="sizes">
+          <el-form-item :label="showSaleLabel['size']" prop="sizes">
             <span class="ProductSale-sizes" @click="openDialog('size')">添加尺码</span>
             <el-tag
               style="margin: 0 0 5px 10px"
@@ -24,7 +24,11 @@
               @close="removeSizeTag(tag)"
             >{{tag.name}}</el-tag>
           </el-form-item>
-          <el-form-item label="颜色" prop="colors" v-if="colorOptions && colorOptions.length>0">
+          <el-form-item
+            :label="showSaleLabel['color']"
+            prop="colors"
+            v-if="colorOptions && colorOptions.length>0"
+          >
             <SlSelect
               :options="colorOptions"
               ref="colorSelect"
@@ -36,12 +40,12 @@
               clearable
               isObj
               placeholder="请选择颜色"
-              @change="selectChange($event, 'color')"
+              @change="selectChange($event, 'colors')"
             />
           </el-form-item>
           <el-form-item
-            label="规格"
-            prop="specification"
+            :label="showSaleLabel['specification']"
+            prop="specifications"
             v-if="specificationOptions && specificationOptions.length>0"
           >
             <SlSelect
@@ -55,11 +59,11 @@
               clearable
               isObj
               placeholder="请选择规格"
-              @change="selectChange($event, 'specification')"
+              @change="selectChange($event, 'specifications')"
             />
           </el-form-item>
           <div class="ProductSale-table">
-            <el-table :data="form.ProductSalesAttribute" row-key="key" border>
+            <el-table :data="form.productCategorySalesAttributes" row-key="key" border>
               <el-table-column
                 v-for="(item,index) in tableHeadData"
                 :key="index"
@@ -75,17 +79,17 @@
                 </template>
                 <template slot-scope="scope">
                   <el-form-item
-                    :prop="`ProductSalesAttribute.${scope.$index}.${item.name}`"
+                    :prop="`productCategorySalesAttributes.${scope.$index}.${item.name}`"
                     :rules="rules[item.name]"
                     class="ProductSale-from__content"
                   >
-                    <div v-if="item.status==='text'">
-                      {{
-                      item.name ===showAttrName[scope.row.colorId].name ?
-                      showAttrName[scope.row.colorId].value :
-                      showAttrName[scope.row.sizeId].value
-                      }}
-                    </div>
+                    <template v-if="item.extendCode">
+                      <!-- <div v-for="(tableAttr,index) in scope.row" :key="index">
+                        <span
+                          v-if="tableLabel[tableAttr.attributeTermId+''].extendCode === item.extendCode"
+                        >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
+                      </div>-->
+                    </template>
                     <el-input
                       v-else
                       v-model="scope.row[item.name]"
@@ -126,32 +130,24 @@ export default {
   data () {
     return {
       form: {
-        ProductSalesAttribute: [],
+        productCategorySalesAttributes: [],
         sizes: [],
-        colors: []
+        colors: [],
+        specifications: []
       },
       colorOptions: [],
       sizeOptions: [],
       specificationOptions: [],
-      showAttrName: [],
+      showSaleLabel: {},
+      tableLabel: [],
       rules: {
         sizes: [emptyValidator('请选择尺寸', 'change')],
         colors: [emptyValidator('请选择颜色', 'change')],
-        specification: [emptyValidator('请选择颜色', 'change')],
+        specifications: [emptyValidator('请选择规格', 'change')],
         supplyPrice: [emptyValidator('请输入供货价格')],
         supplierSkuCode: [emptyValidator('请输入商家SKU编码')]
       },
-      tableHeadData: [// 表头字段
-        // {
-        //   name: 'size',
-        //   label: '尺码',
-        //   status: 'text'
-        // },
-        // {
-        //   name: 'color',
-        //   label: '颜色',
-        //   status: 'text'
-        // },
+      tableHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
           label: '供货价格（RMB）'
@@ -176,72 +172,78 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'productBasicInfo'])
+    ...mapGetters('product', ['productParams', 'productBasicInfo']),
+    changeForm () {
+      const { sizes, colors, specifications } = this.form
+      return [
+        sizes || [],
+        colors || [],
+        specifications || []
+      ]
+    }
+  },
+  watch: {
+    'changeForm': {
+      // 监听尺码/颜色/规格变化
+      handler (newValue, oldValue) {
+        this.form.productCategorySalesAttributes = this.getCombination(newValue)
+      },
+      immediate: true,
+      deep: true
+    }
   },
   mounted () {
     this.load()
   },
   methods: {
     load () {
-      // let params = {
-      //   type: 'NEW_ATTRIBUTE'
-      // }
-      // RecommendApi.allByUser(params).then(res => {
-      //   if (res.data) {
-      //     this.getSaleAttr(res.data)
-      //     this.tableHead = [
-      //       // {: attr}
-      //     ]
-      //   }
-      // })
       axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
         .then(res => {
           const data = res.data.data
+          // form 颜色/尺寸/规格动态展示的lable
+          const showSaleLabel = {}
           data.forEach(item => {
             switch (item.extendCode) {
               case 'NZ012':
-                this.specificationOptions = item.terms
-                this.tableHeadData.unshift({ name: 'specification', label: '规格', status: 'text' })
+                this.specificationOptions = this.addExtendCode(item.terms, item.extendCode)
+                this.tableHeadData.unshift({ name: 'specification', label: item.name, extendCode: item.extendCode })
+                showSaleLabel['specification'] = item.name
                 break
               case 'NZ010':
-                this.colorOptions = item.terms
-                this.tableHeadData.unshift({ name: 'color', label: '颜色', status: 'text' })
+                this.colorOptions = this.addExtendCode(item.terms, item.extendCode)
+                this.tableHeadData.unshift({ name: 'color', label: item.name, extendCode: item.extendCode })
+                showSaleLabel['color'] = item.name
                 break
               case 'NZ011':
-                this.sizeOptions = item.terms
-                this.tableHeadData.unshift({ name: 'size', label: '尺码', status: 'text' })
+                this.sizeOptions = this.addExtendCode(item.terms, item.extendCode)
+                this.tableHeadData.unshift({ name: 'size', label: item.name, extendCode: item.extendCode })
+                showSaleLabel['size'] = item.name
+                this.$store.commit('product/SIZEATTR', { name: item.name, attributeTermId: item.id, attributeId: 11111 })
                 break
             }
           })
+          this.showSaleLabel = showSaleLabel
         })
     },
-    // getSaleAttr (attrType) {
-    //   // // 获取颜色和尺寸数据
-    //   const types = {}
-    //   types['color'] = attrType[0].id
-    //   types['size'] = attrType[1].id
-    //   for (const type in types) {
-    //     RecommendApi.getAttrList(types[type], { categoryId: this.categoryId, type: 'NEW_ATTRIBUTE' })
-    //       .then(res => {
-    //         if (res.data) {
-    //           const attr = res.data.filter(item => item.state !== 'OFF')
-    //           switch (type) {
-    //             case 'color':
-    //               this.colorOptions = attr
-    //               break
-    //             case 'size':
-    //               this.sizeOptions = attr
-    //               break
-    //           }
-    //           console.log(this.colorOptions)
-    //           console.log(this.sizeOptions)
-    //         }
-    //       })
-    //   }
-    // },
+    addExtendCode (arr, extendCode) {
+      // 尺寸/尺码/规格添加标识
+      return arr.map(item => {
+        item.extendCode = extendCode
+        return item
+      })
+    },
     selectChange (e, attribute) {
-      const { sizes, colors } = this.form
-      this.refreshValidate(sizes, colors, attribute)
+      this.$refs.form.validateField(attribute) // 重新校验表单
+    },
+    removeSizeTag (tag) {
+      this.form.sizes = this.form.sizes.filter(item => item.id !== tag.id)
+      this.$refs.form.validateField('sizes')
+      this.$store.commit('product/SIZEOPTIONS', this.form.sizes)
+    },
+    sizeSelectConfirm (val) {
+      this.form.sizes = val
+      this.$store.commit('product/SIZEOPTIONS', val)
+      this.$refs.form.validateField('sizes')
     },
     openDialog (type, data = '') {
       let dialog = null
@@ -256,63 +258,39 @@ export default {
       dialog.open(type, data)
       dialog = null
     },
-    removeSizeTag (tag) {
-      this.form.sizes.splice(this.form.sizes.findIndex(size => size.id === tag.id), 1)
-      const { sizes, colors } = this.form
-      this.refreshValidate(sizes, colors, 'sizes')
-    },
-    sizeSelectConfirm (val) {
-      this.form.sizes = val
-      this.refreshValidate(val, this.form.colors, 'sizes')
-    },
-    refreshValidate (sizes, colors, filed) {
-      this.addListItem(sizes, colors)
-      filed === 'sizes' && this.$store.commit('product/SIZEOPTIONS', sizes)
-      this.$refs.form.validateField(filed) // 重新校验表单
-    },
-    addListItem (sizes, colors) {
-      // 增加行
-      const condition = (sizes && sizes.length > 0) || (colors && colors)
-      const show = {}
-      const attr = []
-      if (condition) {
-        colors.forEach(color => {
-          sizes.forEach(size => {
-            show[size.id] = { value: size.name, name: 'size' }
-            show[color.id] = { value: color.name, name: 'color' }
-            const addItem = {
-              productCategorySalesAttributes: [
-                {
-                  'attributeId': '表头尺码',
-                  'attributeTermId': size.id
-                },
-                {
-                  'attributeId': '表头颜色id',
-                  'attributeTermId': color.id
-                }
-              ],
-              productId: this.productParams.id,
-              skuCode: '',
-              supplyPrice: '',
-              supplierSkuCode: '',
-              tagSize: '',
-              weight: ''
-            }
-            attr.push(addItem)
+    getCombination (array) {
+      let resultArry = []
+      const tableLabel = {}
+      array.forEach((arrItem) => {
+        if (arrItem && arrItem.length === 0) return
+        if (resultArry.length === 0) {
+          resultArry = arrItem
+        } else {
+          const emptyArray = []
+          resultArry.forEach((item) => {
+            arrItem.forEach((value) => {
+              if (Array.isArray(item)) {
+                tableLabel[value.id] = { name: value.name, extendCode: value.extendCode, id: value.id }
+                emptyArray.push([...item, { attributeTermId: value.id, attributeId: 1111 }])
+              } else {
+                tableLabel[item.id] = { name: item.name, extendCode: item.extendCode, id: item.id }
+                tableLabel[value.id] = { name: value.name, extendCode: value.extendCode, id: value.id }
+                emptyArray.push([{ attributeTermId: item.id, attributeId: 1111 }, { attributeTermId: value.id, attributeId: 1111 }])
+              }
+            })
           })
-        })
-        // 需要展示的列表尺寸和颜色name
-        this.showAttrName = show
-        // 保存需要的数据结构
-        this.form.ProductSalesAttribute = attr
-      }
+          resultArry = emptyArray
+        }
+      })
+      this.tableLabel = tableLabel
+      return resultArry
     },
     hideDialog () {
 
     },
     result () {
       return new Promise(resolve => {
-        resolve({ 'productSalesAttributes': [] })
+        resolve({ 'productCategorySalesAttributes': [] })
       })
     }
   }

@@ -3,16 +3,18 @@ export default {
   state: {
     productParams: null,
     sizeOptions: [],
+    sizeattr: {},
     productBasicInfo: [],
     productCustomizeAttributeList: [],
     productSalesAttributeList: []
   },
   getters: {
-    productParams: (state) => state.productInfo ? state.productInfo : {},
-    sizeOptions: (state) => state.sizeOptions,
-    productBasicInfo: (state) => state.productBasicInfo || [],
-    productCustomizeAttributeList: (state) => state.productCustomizeAttributeList || [],
-    productSalesAttributeList: (state) => state.productSalesAttributeList || []
+    productParams: state => state.productInfo ? state.productInfo : {},
+    sizeOptions: state => state.sizeOptions,
+    productBasicInfo: state => state.productBasicInfo || [],
+    productCustomizeAttributeList: state => state.productCustomizeAttributeList || [],
+    productSalesAttributeList: state => state.productSalesAttributeList || [],
+    sizeattr: state => state.sizeattr || {}
   },
   mutations: {
     PRODUCT_PARAMS: (store, data) => {
@@ -20,6 +22,9 @@ export default {
     },
     SIZEOPTIONS: (store, data) => {
       store.sizeOptions = data
+    },
+    SIZEATTR: (store, data) => {
+      store.sizeattr = data
     },
     PRODUCTBASICINFO: (store, data) => {
       store.productBasicInfo = data
