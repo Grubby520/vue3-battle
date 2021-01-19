@@ -159,7 +159,8 @@ export default {
           pre: {
             supplierItemNo: '供方货号',
             merchantSku: '商家SKU',
-            sku: 'SKU'
+            sku: 'SKU',
+            spu: 'SPU'
           }
         },
         {

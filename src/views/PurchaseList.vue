@@ -130,7 +130,7 @@ export default {
         {
           type: 'input',
           label: '发货单号',
-          name: 'shippedNum'
+          name: 'deliveryId'
         },
         {
           type: 'single-select',
