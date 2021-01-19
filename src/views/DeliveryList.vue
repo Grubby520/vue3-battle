@@ -334,6 +334,7 @@ export default {
             row.courierName = data.courierName
             row.logisticsCompanyName = data.logisticsCompanyName
             row.logisticsCompanyId = data.logisticsCompanyId
+            row.orderStatus = data.type
           }
         }, { showDiaolog: true, row: row, companyList: arr })
         this.$refs.logisticsNo.show(data)

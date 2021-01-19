@@ -86,8 +86,8 @@ export default {
     show (data) {
       this.logisticsInfo = _cloneDeep(data.row)
       this.form = {
-        logisticsNumber: data.row.logisticsNumber,
-        id: data.row.logisticsCompanyId
+        logisticsNumber: data.row.logisticsNumber || '',
+        id: data.row.logisticsCompanyId || ''
       }
 
       this.companyList = _cloneDeep(data.companyList)
@@ -114,7 +114,8 @@ export default {
                 courierName: obj.courierName,
                 logisticsCompanyName: obj.logisticsCompanyName,
                 logisticsNumber: this.form.logisticsNumber,
-                logisticsCompanyId: this.form.id
+                logisticsCompanyId: this.form.id,
+                type: 2
               }
               this.onClick(params)
               this.showDiaolog = false
