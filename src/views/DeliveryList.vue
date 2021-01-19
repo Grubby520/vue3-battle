@@ -376,21 +376,15 @@ export default {
         url: GoodsUrl.ecxportExcle + '?deliveryOrderId=' + row.id,
         name: `发货单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
-          this.loading = true
           this.$store.dispatch('OPEN_LOADING')
         },
         afterLoad: () => {
-          this.loading = false
           this.selections = []
           this.$store.dispatch('CLOSE_LOADING')
         },
         successFn: () => { },
         errorFn: () => { }
       })
-      // let params = {
-      //   deliveryOrderId: row.id
-      // }
-      // GOODS_API.ecxportExcle(params)
     },
 
     batchPrintNo () {
@@ -404,11 +398,9 @@ export default {
           name: `批量导出批次号.zip`,
           params: { ids: arr.join(',') },
           beforeLoad: () => {
-            this.loading = true
             this.$store.dispatch('OPEN_LOADING')
           },
           afterLoad: () => {
-            this.loading = false
             this.selections = []
             this.$store.dispatch('CLOSE_LOADING')
           },
