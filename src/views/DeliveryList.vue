@@ -31,7 +31,7 @@
           mode="horizontal"
           @select="switchNav"
         >
-          <el-menu-item index="0">全部({{tableData.length}})</el-menu-item>
+          <el-menu-item index="0">全部({{page.total}})</el-menu-item>
           <el-menu-item index="1">全部待发货({{navInfo.totalWait}})</el-menu-item>
           <el-menu-item index="2">1日未发货({{navInfo.totalWaitOneDay}})</el-menu-item>
           <el-menu-item index="3">2日未发货({{navInfo.totalWaitTwoDay}})</el-menu-item>
@@ -207,7 +207,6 @@ export default {
 
     gotoPage (pageSize = 10, pageIndex = 1) {
       let params = this.getParams(pageSize, pageIndex)
-      console.log(this.activeIndex)
       if (this.activeIndex > 0) {
         delete params.status
         params.type = this.activeIndex
@@ -376,21 +375,15 @@ export default {
         url: GoodsUrl.ecxportExcle + '?deliveryOrderId=' + row.id,
         name: `发货单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
-          this.loading = true
           this.$store.dispatch('OPEN_LOADING')
         },
         afterLoad: () => {
-          this.loading = false
           this.selections = []
           this.$store.dispatch('CLOSE_LOADING')
         },
         successFn: () => { },
         errorFn: () => { }
       })
-      // let params = {
-      //   deliveryOrderId: row.id
-      // }
-      // GOODS_API.ecxportExcle(params)
     },
 
     batchPrintNo () {
@@ -404,11 +397,9 @@ export default {
           name: `批量导出批次号.zip`,
           params: { ids: arr.join(',') },
           beforeLoad: () => {
-            this.loading = true
             this.$store.dispatch('OPEN_LOADING')
           },
           afterLoad: () => {
-            this.loading = false
             this.selections = []
             this.$store.dispatch('CLOSE_LOADING')
           },

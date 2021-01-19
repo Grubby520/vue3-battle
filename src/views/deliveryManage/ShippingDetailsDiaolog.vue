@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" width="50%" center>
+  <el-dialog :visible.sync="dialogVisible" width="60%" center>
     <h4>发货单（2835001）详情</h4>
     <el-table :data="tableData" style="width: 100%" border>
       <el-table-column prop="orderNumber" label="发货单号" align="center"></el-table-column>
@@ -15,28 +15,28 @@
       :data="shippingDeatilData.deliveryOrderList"
       style="width: 100%"
       border
-      max-height="200px"
+      max-height="360px"
     >
-      <el-table-column prop="skuCode" label="SKU" width="80px" align="center"></el-table-column>
-      <el-table-column prop="purchaseOrderNum" label="订单号" width="80px" align="center"></el-table-column>
-      <el-table-column prop="supplierSkuCode" label="商家SKU" width="80px" align="center"></el-table-column>
-      <el-table-column prop="name" label="商品名称" width="120px" align="center"></el-table-column>
-      <el-table-column label="图片" width="100px" align="center">
+      <el-table-column prop="skuCode" label="SKU" width="80" align="center"></el-table-column>
+      <el-table-column prop="purchaseOrderNum" label="订单号" width="80" align="center"></el-table-column>
+      <el-table-column prop="supplierSkuCode" label="商家SKU" width="100" align="center"></el-table-column>
+      <el-table-column prop="name" label="商品名称" width="200" align="center"></el-table-column>
+      <el-table-column label="图片" width="100" align="center">
         <template slot-scope="scope">
           <SlImage size="8rem" :src="scope.row.itemImage" />
         </template>
       </el-table-column>
-      <el-table-column prop="attributesName" label="销售属性" width="80px" align="center"></el-table-column>
-      <el-table-column prop="requireNum" label="订单需求量" width="90px" align="center"></el-table-column>
-      <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center">
+      <el-table-column prop="attributesName" label="销售属性" width="100" align="center"></el-table-column>
+      <el-table-column prop="requireNum" label="订单需求量" width="60" align="center"></el-table-column>
+      <el-table-column prop="deliveryNum" label="实际发货数量" width="60" align="center">
         <template slot-scope="scope">
           <el-input-number v-model="scope.row.deliveryNum" :controls="false" v-if="type=='modify'"></el-input-number>
           <span v-else>{{scope.row.deliveryNum}}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="shelvedNum" label="上架数量" width="80px" align="center"></el-table-column>
-      <el-table-column prop="purchasePrice" label="供货价（￥）" width="100px" align="center"></el-table-column>
-      <el-table-column prop="totalPurchasePrice" label="总金额（￥）" width="100px" align="center"></el-table-column>
+      <el-table-column prop="shelvedNum" label="上架数量" width="50" align="center"></el-table-column>
+      <el-table-column prop="purchasePrice" label="供货价（￥）" width="60" align="center"></el-table-column>
+      <el-table-column prop="totalPurchasePrice" label="总金额（￥）" width="60" align="center"></el-table-column>
     </el-table>
     <div slot="footer" v-if="this.type == 'modify'">
       <el-button type="primary" plain @click="dialogVisible = false">取消</el-button>
@@ -116,7 +116,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 /deep/.el-dialog {
-  height: 500px;
+  height: 600px;
 }
 /deep/ .el-input-number--small {
   width: 80px;
