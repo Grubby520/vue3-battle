@@ -76,18 +76,18 @@
                   >*</span>
                   <span>{{item.label}}</span>
                 </template>
-                <template slot-scope="scope">
+                <template slot-scope="scope" v-if="showTable">
                   <el-form-item
                     :prop="`productCategorySalesAttributes.${scope.$index}.${item.name}`"
                     :rules="rules[item.name]"
                     class="ProductSale-from__content"
                   >
                     <template v-if="item.extendCode">
-                      <!-- <div v-for="(tableAttr,index) in scope.row" :key="index">
+                      <div v-for="(tableAttr,index) in scope.row" :key="index">
                         <span
                           v-if="tableLabel[tableAttr.attributeTermId+''].extendCode === item.extendCode"
                         >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
-                      </div>-->
+                      </div>
                     </template>
                     <el-input
                       v-else
@@ -179,13 +179,35 @@ export default {
         colors || [],
         specifications || []
       ]
+    },
+    showTable () {
+      // 多个属性，需要都选择值以后才显示插入表格中
+      const { sizes, colors, specifications } = this.form
+      const len = []
+      const showAttrs = {
+        'size': sizes.length,
+        'color': colors.length,
+        'specification': specifications.length
+      }
+      Object.keys(this.showSaleLabel).forEach(item => {
+        len.push(showAttrs[item])
+      })
+      return len.every(item => item > 0)
     }
   },
   watch: {
     'changeForm': {
       // 监听尺码/颜色/规格变化
       handler (newValue, oldValue) {
-        this.form.productCategorySalesAttributes = this.getCombination(newValue)
+        // 多个属性都选择了数据数据添加到table中，否则就重置table
+        switch (this.showTable) {
+          case true:
+            this.form.productCategorySalesAttributes = this.getCombination(newValue)
+            break
+          case false:
+            this.form.productCategorySalesAttributes = []
+            break
+        }
       },
       immediate: true,
       deep: true

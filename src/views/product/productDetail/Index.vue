@@ -48,7 +48,6 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
-      loading: false
     }
   },
   watch: {
@@ -82,8 +81,7 @@ export default {
       // 保存数据
       this.getResult()
         .then(res => {
-          console.log('res', res)
-          this.loading = false
+          // console.log('res', res)
           switch (this.$refs.control.someBtnParams) {
             case 0:
               break
