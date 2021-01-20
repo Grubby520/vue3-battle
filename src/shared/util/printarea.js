@@ -35,14 +35,12 @@ export default class {
       try {
         let box = document.getElementById(this.settings.id)
         let canvasList = this.elsdom.querySelectorAll('.canvasImg')
-        console.log(this.elsdom)
         for (let i = 0; i < canvasList.length; i++) {
           let _parent = canvasList[i].parentNode
           _parent.removeChild(canvasList[i])
         }
         box.parentNode.removeChild(box)
       } catch (e) {
-        console.log(e)
       }
     }
     if (window.ActiveXObject) {
@@ -95,7 +93,6 @@ export default class {
             }
           }
         } catch (e) {
-          console.log(domStyle[i].href + e)
         }
       }
     }
