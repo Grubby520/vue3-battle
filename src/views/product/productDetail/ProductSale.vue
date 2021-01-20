@@ -31,7 +31,6 @@
           >
             <SlSelect
               :options="colorOptions"
-              ref="colorSelect"
               v-model="form.colors"
               label="name"
               value="id"
@@ -290,7 +289,8 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        resolve({ 'productCategorySalesAttributes': [] })
+        const { productCategorySalesAttributes } = this.form
+        resolve({ 'productCategorySalesAttributes': productCategorySalesAttributes || [] })
       })
     }
   }

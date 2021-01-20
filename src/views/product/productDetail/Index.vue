@@ -1,23 +1,26 @@
 <template>
   <div class="product">
     <div :class="{'view-container': isStatus}">
-      <ProductBase ref="productBase"></ProductBase>
-      <ProductImages ref="productImages"></ProductImages>
-      <ProductSale ref="productSale"></ProductSale>
-      <ProductSize ref="productSize"></ProductSize>
-      <ProductAttr ref="productAttr"></ProductAttr>
+      <ProductBase ref="productBase" />
+      <ProductImages ref="productImages" />
+      <ProductSale ref="productSale" />
+      <ProductSize ref="productSize" />
+      <ProductAttr ref="productAttr" />
     </div>
-    <SlDetails
-      :references="$refs"
-      form="form"
-      :mode="mode"
-      :create="create"
-      :load="load"
-      :modify="modify"
-      :cancel="cancel "
-      saveText="确定"
-      cancelText="取消"
-    />
+    <div class="product-btn">
+      <SlDetails
+        ref="control"
+        :references="$refs"
+        form="form"
+        :mode="mode"
+        :create="create"
+        :load="load"
+        :modify="modify"
+        :cancel="cancel "
+        :saveText="[{0:'确定'},{1:'提交'}]"
+        cancelText="取消"
+      />
+    </div>
   </div>
 </template>
 
@@ -45,14 +48,8 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
-
+      loading: false
     }
-  },
-  created () {
-
-  },
-  mounted () {
-
   },
   watch: {
     '$props': {
@@ -65,11 +62,7 @@ export default {
   },
   computed: {
     isStatus () {
-      if (this.mode !== 'view') {
-        return false
-      } else {
-        return true
-      }
+      return this.mode === 'view'
     }
   },
   methods: {
@@ -86,30 +79,46 @@ export default {
         })
     },
     create () {
-      const result = this.getResult()
-      Promise.all(result)
-        .then((res) => {
-          // const { productBasicInfo, productImageList, productSale, productSizes, productAttr } = res
-          // const bodyParams = {
-          //   ...productBasicInfo,
-          //   categoryId: this.categoryId,
-          //   categoryPath: this.categoryPath,
-          //   productImageList,
-          //   productSale,
-          //   productSizes,
-          //   productAttr
-          // }
-          // console.log('bodyParams', bodyParams)
+      // 保存数据
+      this.getResult()
+        .then(res => {
+          console.log('res', res)
+          this.loading = false
+          switch (this.$refs.control.someBtnParams) {
+            case 0:
+              break
+            case 1:
+              break
+          }
         })
     },
-    modify () { },
-    cancel () { },
+    modify () {
+      // 编辑数据
+    },
+    cancel () {
+      // 取消
+      this.$router.push({ path: '/home/recommend-products/list' })
+    },
     getResult () {
+      // 获取需要保存/提交的数据
       const result = []
       for (const ref in this.$refs) {
-        result.push(this.$refs[ref].result())
+        const condition = Object.keys(this.$refs[ref].$refs).length > 0
+        condition && result.push(this.$refs[ref].result())
       }
-      return result
+      return Promise.all(result)
+        .then((res) => {
+          const [{ productBasicInfo }, { productImages }, { productCategorySalesAttributes }, { productSize }, { productCustomAttributes }] = res
+          return {
+            ...productBasicInfo,
+            categoryId: this.categoryId,
+            categoryPath: this.categoryPath,
+            productImages,
+            productCategorySalesAttributes,
+            productSize,
+            productCustomAttributes
+          }
+        })
     }
   }
 }
@@ -119,6 +128,12 @@ export default {
 .product {
   width: 95%;
   margin: 0 auto;
+  &-btn {
+    display: flex-start;
+    .addbtn {
+      margin-right: 10px;
+    }
+  }
   /deep/.title {
     font-size: 1.6rem;
     font-weight: bold;

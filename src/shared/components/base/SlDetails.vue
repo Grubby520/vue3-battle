@@ -1,7 +1,16 @@
 <template>
   <div class="detailControl">
     <div :class="[isRight=== true ? 'detailCenteRight' : 'detailCenter']">
-      <el-button type="primary" @click="doSave" :loading="loading">{{saveText}}</el-button>
+      <template v-if="Array.isArray(saveText)">
+        <el-button
+          v-for="(btn,index) in saveText"
+          :key="index"
+          type="primary"
+          @click="doSave(index)"
+          :loading="loading"
+        >{{btn[index]}}</el-button>
+      </template>
+      <el-button v-else type="primary" @click="doSave" :loading="loading">{{saveText}}</el-button>
       <el-button :class="[cancelText===true ? 'noneShow':'']" @click="cancel">{{cancelText}}</el-button>
     </div>
   </div>
@@ -19,12 +28,13 @@ export default {
     references: { type: Object, required: false, default: undefined },
     form: { type: String, required: false, default: undefined },
     cancelText: { type: String, required: false, default: undefined },
-    saveText: { type: String, required: false, default: undefined },
+    saveText: { type: [String, Array], required: false, default: undefined },
     isRight: { type: Boolean, required: false, default: false }
   },
   data () {
     return {
-      loading: false
+      loading: false,
+      someBtnParams: undefined
     }
   },
   mounted () {
@@ -34,43 +44,57 @@ export default {
     refresh () {
       setTimeout(_ => {
         if (this.mode !== 'create') {
-          this.action = 'load'
           this.load()
         }
       }, 0)
     },
-    doSave () {
-      this.loading = true
+    doSave (someBtnParams) {
       if (this.references && this.form) {
-        const result = []
-        for (const ref in this.references) {
-          if (Object.hasOwnProperty.call(this.references, ref)) {
-            const currentRef = this.references[ref]
-            currentRef.$refs[this.form].validate(valid => {
-              // console.log(currentRef, valid)
-              result.push(valid)
-            })
-          }
-        }
-        if (result.every(item => item === true)) {
-          // 所有表单校验通过
+        const len = Object.keys(this.references)
+        len.length > 1 ? this.validateSomeForms(someBtnParams) : this.validateForm()
+      }
+    },
+    validateForm () {
+      // 单独校验表单
+      this.references[this.form].validate(valid => {
+        if (valid) {
+          // 表单校验成功
+          this.loading = true
           this.ds()
-          this.loading = false
         } else {
           this.loading = false
           return false
         }
-      } else {
+      })
+    },
+    validateSomeForms (someBtnParams) {
+      // 校验多个表单
+      const result = []
+      for (const ref in this.references) {
+        const currentRef = this.references[ref]
+        if (Object.keys(currentRef.$refs).length > 0) {
+          currentRef.$refs[this.form].validate(valid => {
+            result.push(valid)
+          })
+        }
+      }
+      if (result.every(item => item === true)) {
+        // 所有表单校验通过
+        this.loading = true
         this.ds()
+        this.someBtnParams = someBtnParams
+      } else {
+        this.loading = false
+        return false
       }
     },
     ds () {
       if (this.mode === 'create') {
-        this.action = 'create'
+        this.loading = false
         this.create()
       } else {
-        this.action = 'modify'
         this.modify()
+        this.loading = false
       }
     }
   }
@@ -84,6 +108,8 @@ export default {
   .detailCenter {
     text-align: center;
     margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
   }
   .detailCenteRight {
     float: right;

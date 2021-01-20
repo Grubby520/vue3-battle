@@ -22,7 +22,6 @@
           </el-form-item>
           <el-form-item label="颜色" prop="colors">
             <SlSelect
-              ref="colorSelect"
               v-model="form.colors"
               :options="options"
               label="attrTermName"
