@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="dialogVisible" width="60%" center>
+  <el-dialog :visible.sync="dialogVisible" width="60%" center :before-close="handleClose">
     <h4>发货单（2835001）详情</h4>
     <el-table :data="tableData" style="width: 100%" border>
       <el-table-column prop="orderNumber" label="发货单号" align="center"></el-table-column>
@@ -64,7 +64,7 @@ export default {
   methods: {
     show (data) {
       this.tableData = [].concat(data.row)
-      this.shippingDeatilData = data.shippingDeatils
+      this.shippingDeatilData = _cloneDeep(data.shippingDeatils)
       this.originData = _cloneDeep(data.shippingDeatils)
       this.type = data.type
       this.dialogVisible = data.dialogVisible
@@ -110,6 +110,13 @@ export default {
         })
       }
       return arrList
+    },
+
+    handleClose (done) {
+      this.tableData = []
+      this.originData = []
+      this.shippingDeatilData = {}
+      done()
     }
   }
 }
