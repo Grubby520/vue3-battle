@@ -155,11 +155,6 @@ export default {
         },
         {
           type: 'input',
-          label: '供方货号',
-          name: 'supplierItemNumber'
-        },
-        {
-          type: 'input',
           label: 'SKU',
           name: 'sku'
         },
