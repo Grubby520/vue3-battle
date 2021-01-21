@@ -20,13 +20,7 @@
           :loading="loading"
           :disabled="!canGenerateInvoice"
         >生成发货单</el-button>
-        <el-button
-          type="primary"
-          @click="exportDetail"
-          :loading="loading"
-          :disabled="!canExport"
-          plain
-        >导出待发货商品详情</el-button>
+        <el-button type="primary" @click="exportDetail" :loading="loading" plain>导出待发货商品详情</el-button>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
@@ -255,9 +249,6 @@ export default {
   },
   computed: {
     canGenerateInvoice () {
-      return this.selections.length > 0 // 后续会加权限控制
-    },
-    canExport () {
       return this.selections.length > 0 // 后续会加权限控制
     },
     skuTypeNumber () {
