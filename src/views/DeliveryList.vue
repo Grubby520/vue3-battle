@@ -259,8 +259,14 @@ export default {
     },
 
     getParams (pageSize, pageIndex) {
-      let [singleTimeStart, singleTimeEnd] = this.searchQuery.cTime
-      let [latestDeliveryTimeStart, latestDeliveryTimeEnd] = this.searchQuery.uTime
+      let [singleTimeStart, singleTimeEnd] = ['', '']
+      let [latestDeliveryTimeStart, latestDeliveryTimeEnd] = ['', '']
+      if (this.searchQuery.cTime) {
+        [singleTimeStart, singleTimeEnd] = this.searchQuery.cTime
+      }
+      if (this.searchQuery.uTime) {
+        [latestDeliveryTimeStart, latestDeliveryTimeEnd] = this.searchQuery.uTime
+      }
       let params = Object.assign({ singleTimeStart, singleTimeEnd, latestDeliveryTimeStart, latestDeliveryTimeEnd }, this.searchQuery)
       delete params.cTime
       delete params.uTime
