@@ -51,7 +51,7 @@
         </el-menu>
         <div class="choosed-sku-statistics">
           选中SKU：
-          <span>SKU款数({{selections.length}})</span>&nbsp;&nbsp;
+          <span>SKU款数({{skuTypeNumber}})</span>&nbsp;&nbsp;
           <span>SKU件数({{skuNumber}})</span>
         </div>
       </div>
@@ -260,6 +260,19 @@ export default {
     canExport () {
       return this.selections.length > 0 // 后续会加权限控制
     },
+    skuTypeNumber () {
+      let typeMap = {}
+      let total = 0
+      this.selections.forEach(item => {
+        if (item.baseInfo) {
+          if (!typeMap[item.baseInfo.sku]) {
+            typeMap[item.baseInfo.sku] = 1
+            total++
+          }
+        }
+      })
+      return total
+    },
     skuNumber () {
       return this.selections.reduce((prev, next) => {
         prev += next.shippedNum
@@ -327,9 +340,7 @@ export default {
       }
     },
     validateGenerateInvoice () {
-      let skuTotal = this.selections.length
-
-      if (skuTotal > 50) {
+      if (this.skuTypeNumber > 50) {
         errorMessageTip('总SKU个数超过50，不能生成发货单')
         return false
       }
