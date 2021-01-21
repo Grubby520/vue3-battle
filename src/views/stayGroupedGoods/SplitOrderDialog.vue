@@ -107,6 +107,9 @@ export default {
       handler: function (val, oldVal) {
         this.form = Object.assign({}, val)
         this.computeNum(this.form.retainRequiredNum)
+        if (this.form.retainRequiredNum === 0) { // 为0时,清空该表单项
+          this.form.retainRequiredNum = undefined
+        }
       },
       immediate: true,
       deep: true
