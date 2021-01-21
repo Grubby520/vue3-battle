@@ -222,7 +222,7 @@ export default {
             return (
               <div>
                 <p>{date(dueDeliveryTime, 'yyyy-MM-dd')}</p>
-                <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${parseInt(offsetDays)}天` : '已超期'}</span>
+                <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${Math.ceil(offsetDays)}天` : '已超期'}</span>
               </div>
             )
           }

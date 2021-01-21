@@ -65,8 +65,8 @@
             <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd')}}</p>
             <p
               style="color:red"
-              v-if="parseInt((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24) > 0"
-            >还剩下：{{parseInt((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
+              v-if="Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24) > 0"
+            >还剩下：{{Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
           </template>
         </el-table-column>
         <el-table-column label="进度时间" width="200px" align="center">
