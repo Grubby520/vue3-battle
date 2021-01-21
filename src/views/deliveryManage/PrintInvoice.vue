@@ -40,6 +40,8 @@
 <script>
 // import JsBarcode from 'jsbarcode'
 import SlPrint from '@/shared/util/printarea.js'
+import { cloneDeep as _cloneDeep } from 'lodash'
+
 export default {
   name: 'PrintInvoice',
   data () {
@@ -50,7 +52,7 @@ export default {
   },
   methods: {
     show (data) {
-      this.info = data
+      this.info = _cloneDeep(data)
       this.appendStyle()
       this.toPrint()
     },
@@ -61,9 +63,9 @@ export default {
         ids: '#print-a',
         endCallback () {
           let listA = document.getElementById('list-a')
+          vm.info = {}
           if (listA) {
             listA.parentNode.removeChild(document.getElementById('list-a'))
-            this.info = {}
           }
         }
       })
