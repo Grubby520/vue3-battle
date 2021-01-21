@@ -1,41 +1,39 @@
 <template>
-  <div>
-    <div class="sku-container" style="display:none">
-      <div class="sku-print" id="print" ref="print">
-        <div class="tittle">
-          <h3>商家名：{{info.merchantName}}</h3>
-          <div class="barcode">
-            <!-- <svg :class="'barcodeSvg'+index" /> -->
-          </div>
+  <div class="sku-container" v-show="false">
+    <div class="sku-print" id="print-a" ref="print">
+      <div class="tittle">
+        <h3>商家名：{{info.merchantName}}</h3>
+        <div class="barcode">
+          <!-- <svg :class="'barcodeSvg'+index" /> -->
         </div>
-        <div class="info">
-          <div>
-            <p>发货单ID：{{info.deliveryNum}}</p>
-            <p>组单时间：{{info.combineTime}}</p>
-            <p>需到货时间：{{info.requireTime}}</p>
-            <p>采购员：{{info.operateName}}</p>
-          </div>
-          <div>
-            <p>SPU总数：{{info.spuTotal}}</p>
-            <p>需求总件数：{{info.requireNum}}</p>
-            <p>需求实际发货数量：{{info.deliveryGoodsNum}}</p>
-          </div>
-        </div>
-        <el-table :data="info.items" style="width: 100%" border>
-          <el-table-column label="图片" align="center" width="120px">
-            <template slot-scope="scope">
-              <SlImage size="8rem" :src="scope.row.image" />
-            </template>
-          </el-table-column>
-          <el-table-column prop="spu" label="SPU" align="center"></el-table-column>
-          <el-table-column prop="sku" label="SKU" align="center"></el-table-column>
-          <el-table-column prop="skuAttribute" label="SKU销售属性" align="center" width="80px"></el-table-column>
-          <el-table-column prop="goodsName" label="商品名称" align="center"></el-table-column>
-          <el-table-column prop="merchantDropSize" label="上架吊牌尺" align="center" width="100px"></el-table-column>
-          <el-table-column prop="requireNum" label="需求总量" align="center"></el-table-column>
-          <el-table-column prop="deliveryGoodsNum" label="实际发货数量" align="center" width="100px"></el-table-column>
-        </el-table>
       </div>
+      <div class="info">
+        <div>
+          <p>发货单ID：{{info.deliveryNum}}</p>
+          <p>组单时间：{{info.combineTime}}</p>
+          <p>需到货时间：{{info.requireTime}}</p>
+          <p>采购员：{{info.operateName}}</p>
+        </div>
+        <div>
+          <p>SPU总数：{{info.spuTotal}}</p>
+          <p>需求总件数：{{info.requireNum}}</p>
+          <p>需求实际发货数量：{{info.deliveryGoodsNum}}</p>
+        </div>
+      </div>
+      <el-table :data="info.items" style="width: 100%" border>
+        <el-table-column label="图片" align="center" width="120px">
+          <template slot-scope="scope">
+            <SlImage size="8rem" :src="scope.row.image" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="spu" label="SPU" align="center"></el-table-column>
+        <el-table-column prop="sku" label="SKU" align="center"></el-table-column>
+        <el-table-column prop="skuAttribute" label="SKU销售属性" align="center" width="80px"></el-table-column>
+        <el-table-column prop="goodsName" label="商品名称" align="center"></el-table-column>
+        <el-table-column prop="merchantDropSize" label="上架吊牌尺" align="center" width="100px"></el-table-column>
+        <el-table-column prop="requireNum" label="需求总量" align="center"></el-table-column>
+        <el-table-column prop="deliveryGoodsNum" label="实际发货数量" align="center" width="100px"></el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
@@ -61,7 +59,7 @@ export default {
     toPrint () {
       const vm = this
       let sl = new SlPrint({
-        ids: '#print',
+        ids: '#print-a',
         endCallback () {
           let listA = document.getElementById('list-a')
           if (listA) {
@@ -81,7 +79,7 @@ export default {
         @media print {
           @page {
             size: A4;
-            margin: 0 auto;
+            margin: 20px auto 0;
           }
       }
       `
@@ -95,20 +93,8 @@ export default {
   }
 }
 </script>
-
-<style media="print" type="text/css" scoped>
-.sku-container {
-  @media print {
-    @page {
-      size: A4;
-      margin: 0 auto;
-    }
-  }
-}
-</style>
 <style scoped lang="scss">
 .sku-print {
-  margin-top: 20px;
   width: 100%;
   .tittle {
     text-align: center;
