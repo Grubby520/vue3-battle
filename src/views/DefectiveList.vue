@@ -77,6 +77,20 @@ export default {
       ],
       columns: [
         {
+          prop: '',
+          label: '基本信息',
+          width: '250',
+          isInImg: 'imageUrl',
+          pre: {
+            supplierItemNo: '供方货号',
+            supplierSkuCode: '商家SKU',
+            skuCode: 'SKU'
+          },
+          data: {
+            imgSize: '5rem'
+          }
+        },
+        {
           prop: 'name',
           label: '商品名称',
           width: '225',
