@@ -17,7 +17,7 @@
         <el-checkbox-group v-model="form.skuList" @change="handleCheckSku">
           <el-checkbox
             v-for="(sku, index) in skuList"
-            :label="sku.colorAttributeId"
+            :label="sku.attributeTermId"
             :key="index"
           >{{sku.colorAttributeName}}</el-checkbox>
         </el-checkbox-group>
@@ -86,7 +86,7 @@ export default {
       this.checkAll = skuList.length === this.skuList.length
     },
     handleCheckAllSku (isChecked) {
-      this.form.skuList = isChecked ? this.skuList.map((sku) => sku.colorAttributeId) : []
+      this.form.skuList = isChecked ? this.skuList.map((sku) => sku.attributeTermId) : []
     },
     /**
     * 打开弹窗
@@ -97,19 +97,22 @@ export default {
       this.dialogType = dialogType
       this.show = true
       data = data || []
-      this.skuList = this.deduplication(data, 'colorAttributeId').map((sku) => {
-        return {
-          colorAttributeId: sku.colorAttributeId,
-          colorAttributeName: sku.colorAttributeName
-        }
-      })
-      this.form.sizeList = this.deduplication(data, 'sizeAttributeId').map((sku) => {
-        return {
-          sizeAttributeId: sku.sizeAttributeId,
-          sizeAttributeName: sku.sizeAttributeName,
-          weight: ''
-        }
-      })
+      const { sizes, colors } = data
+      this.skuList = this.deduplication(colors, 'id')
+        .map((sku) => {
+          return {
+            attributeTermId: sku.id,
+            colorAttributeName: sku.name
+          }
+        })
+      this.form.sizeList = this.deduplication(sizes, 'id')
+        .map((sku) => {
+          return {
+            attributeTermId: sku.id,
+            sizeAttributeName: sku.name,
+            weight: ''
+          }
+        })
     },
     /**
      * 对象数组去重
@@ -135,7 +138,7 @@ export default {
       this.show = false
     },
     hide () {
-      this.$emit('hide', this.dialogType, !this.isCancel, this.form)
+      this.$emit('hide', this.form)
       this.resetData()
     },
     // 重置弹窗数据

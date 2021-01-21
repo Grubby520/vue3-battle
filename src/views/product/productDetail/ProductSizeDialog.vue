@@ -108,7 +108,7 @@ export default {
       // }
       RecommendApi.pageList(2)
         .then(res => {
-          console.log('sizessssss', res.data)
+          // console.log('sizessssss', res.data)
         })
     },
     handleConfirm () {

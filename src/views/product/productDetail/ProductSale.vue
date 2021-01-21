@@ -87,7 +87,6 @@
                         v-for="(tableAttr,index) in scope.row.productCategorySalesAttributes"
                         :key="index"
                       >
-                        <!-- {{tableAttr}} -->
                         <span
                           v-if="tableLabel[tableAttr.attributeTermId+''].extendCode === item.extendCode"
                         >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
@@ -148,8 +147,8 @@ export default {
         sizes: [emptyValidator('请选择尺寸', 'change')],
         colors: [emptyValidator('请选择颜色', 'change')],
         specifications: [emptyValidator('请选择规格', 'change')],
-        supplyPrice: [emptyValidator('请输入供货价格')],
-        weight: [emptyValidator('请输入带包装重量')]
+        supplyPrice: [emptyValidator('请输入供货价格', ['change', 'blur'])],
+        weight: [emptyValidator('请输入带包装重量'), ['change', 'blur']]
       },
       tableHeadData: [ // 表头字段
         {
@@ -207,7 +206,7 @@ export default {
         // 多个属性都选择了数据数据添加到table中，否则就重置table
         switch (this.showTable) {
           case true:
-            this.form.productSalesAttributes = this.getCombination(newValue)
+            this.form.productSalesAttributes = this.addTableItems(newValue)
             break
           case false:
             this.form.productSalesAttributes = []
@@ -284,7 +283,7 @@ export default {
       dialog.open(type, data)
       dialog = null
     },
-    getCombination (array) {
+    addTableItems (array) {
       // 销售属性值的排列组合
       let resultArry = []
       const tableLabel = {}
@@ -319,9 +318,24 @@ export default {
       })
     },
     hideDialog (val) {
-      // const batchAttrs = val
-      // const { skuList, supplyPrice, sizeList } = val
-      this.form.productSalesAttributes.forEach(item => {
+      // 批量录入回填
+      const { skuList, supplyPrice, sizeList } = val
+      // 颜色和供货价格
+      let hasNeedSku = skuList.length > 0 && supplyPrice
+      let sizeMap = new Map()
+      sizeList.forEach((size) => {
+        // 尺码和重量
+        if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
+      })
+      this.form.productSalesAttributes.forEach((item, index) => {
+        let saleAttrIds = []
+        item.productCategorySalesAttributes.forEach((attribute) => {
+          saleAttrIds.push(attribute.attributeTermId)
+        })
+        const includeBatchColor = saleAttrIds.find(i => skuList.includes(i))
+        const includeBatchSize = saleAttrIds.find(i => sizeMap.get(i))
+        if (hasNeedSku && includeBatchColor) item.supplyPrice = supplyPrice
+        if (includeBatchSize) item.weight = sizeMap.get(includeBatchSize)
       })
     },
     result () {

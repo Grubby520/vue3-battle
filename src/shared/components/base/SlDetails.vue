@@ -58,7 +58,6 @@ export default {
       // 单独校验表单
       this.references[this.form].validate(valid => {
         if (valid) {
-          // 表单校验成功
           this.loading = true
           this.ds()
         } else {
@@ -82,6 +81,7 @@ export default {
         // 所有表单校验通过
         this.loading = true
         this.ds()
+        // 多个保存按钮调用不同接口标识
         this.someBtnParams = someBtnParams
       } else {
         this.loading = false
