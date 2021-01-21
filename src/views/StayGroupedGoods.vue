@@ -322,8 +322,8 @@ export default {
         ...this.extraQuery,
         pageIndex,
         pageSize,
-        dueDeliveryStartTime: dueDeliveryTimes[0] ? dueDeliveryTimes[0] : '',
-        dueDeliveryEndTime: dueDeliveryTimes[1] ? dueDeliveryTimes[1] : ''
+        dueDeliveryStartTime: dueDeliveryTimes && dueDeliveryTimes[0] ? dueDeliveryTimes[0] : '',
+        dueDeliveryEndTime: dueDeliveryTimes && dueDeliveryTimes[1] ? dueDeliveryTimes[1] : ''
       }
     },
     validateGenerateInvoice () {

@@ -347,10 +347,10 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        cStartTime: cTimes[0] ? cTimes[0] : '',
-        cEndTime: cTimes[1] ? cTimes[1] : '',
-        uStartTime: uTimes[0] ? uTimes[0] : '',
-        uEndTime: uTimes[1] ? uTimes[1] : ''
+        cStartTime: cTimes && cTimes[0] ? cTimes[0] : '',
+        cEndTime: cTimes && cTimes[1] ? cTimes[1] : '',
+        uStartTime: uTimes && uTimes[0] ? uTimes[0] : '',
+        uEndTime: uTimes && uTimes[1] ? uTimes[1] : ''
       }
     },
     addSearchItem (name = 'orderState') {
