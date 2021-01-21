@@ -62,7 +62,7 @@
             />
           </el-form-item>
           <div class="ProductSale-table">
-            <el-table :data="form.productCategorySalesAttributes" row-key="key" border>
+            <el-table :data="form.productSalesAttributes" row-key="key" border>
               <el-table-column
                 v-for="(item,index) in tableHeadData"
                 :key="index"
@@ -72,18 +72,22 @@
                 <template slot="header">
                   <span
                     class="ProductSale-from__icon"
-                    v-if="['supplyPrice','supplierSkuCode'].includes(item.name)"
+                    v-if="['supplyPrice','weight'].includes(item.name)"
                   >*</span>
                   <span>{{item.label}}</span>
                 </template>
-                <template slot-scope="scope" v-if="showTable">
+                <template slot-scope="scope">
                   <el-form-item
-                    :prop="`productCategorySalesAttributes.${scope.$index}.${item.name}`"
+                    :prop="`productSalesAttributes.${scope.$index}.${item.name}`"
                     :rules="rules[item.name]"
                     class="ProductSale-from__content"
                   >
                     <template v-if="item.extendCode">
-                      <div v-for="(tableAttr,index) in scope.row" :key="index">
+                      <div
+                        v-for="(tableAttr,index) in scope.row.productCategorySalesAttributes"
+                        :key="index"
+                      >
+                        <!-- {{tableAttr}} -->
                         <span
                           v-if="tableLabel[tableAttr.attributeTermId+''].extendCode === item.extendCode"
                         >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
@@ -92,7 +96,7 @@
                     <el-input
                       v-else
                       v-model="scope.row[item.name]"
-                      v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ?numberRule[item.name] :''"
+                      v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
                     />
                   </el-form-item>
                 </template>
@@ -109,6 +113,7 @@
       <ProductSizeDialog
         ref="ProductSizeDialog"
         :sizeOptions="sizeOptions"
+        :formSizes="form.sizes"
         @confirm="sizeSelectConfirm"
       />
       <!-- 批量设置弹窗 -->
@@ -129,7 +134,7 @@ export default {
   data () {
     return {
       form: {
-        productCategorySalesAttributes: [],
+        productSalesAttributes: [],
         sizes: [],
         colors: [],
         specifications: []
@@ -144,7 +149,7 @@ export default {
         colors: [emptyValidator('请选择颜色', 'change')],
         specifications: [emptyValidator('请选择规格', 'change')],
         supplyPrice: [emptyValidator('请输入供货价格')],
-        supplierSkuCode: [emptyValidator('请输入商家SKU编码')]
+        weight: [emptyValidator('请输入带包装重量')]
       },
       tableHeadData: [ // 表头字段
         {
@@ -202,10 +207,10 @@ export default {
         // 多个属性都选择了数据数据添加到table中，否则就重置table
         switch (this.showTable) {
           case true:
-            this.form.productCategorySalesAttributes = this.getCombination(newValue)
+            this.form.productSalesAttributes = this.getCombination(newValue)
             break
           case false:
-            this.form.productCategorySalesAttributes = []
+            this.form.productSalesAttributes = []
             break
         }
       },
@@ -271,7 +276,7 @@ export default {
       switch (type) {
         case 'batchAttributes':
           dialog = this.$refs.batchAttributes
-          // data = this.productSalesAttributeList
+          data = this.form
           break
         case 'size':
           dialog = this.$refs.ProductSizeDialog
@@ -280,8 +285,10 @@ export default {
       dialog = null
     },
     getCombination (array) {
+      // 销售属性值的排列组合
       let resultArry = []
       const tableLabel = {}
+      const tableBase = { supplyPrice: '', supplierSkuCode: '', tagSize: '', weight: '' }
       array.forEach((arrItem) => {
         if (arrItem && arrItem.length === 0) return
         if (resultArry.length === 0) {
@@ -291,11 +298,11 @@ export default {
           resultArry.forEach((item) => {
             arrItem.forEach((value) => {
               if (Array.isArray(item)) {
-                tableLabel[value.id] = { name: value.name, extendCode: value.extendCode, id: value.id }
+                tableLabel[value.id] = value
                 emptyArray.push([...item, { attributeTermId: value.id, attributeId: 1111 }])
               } else {
-                tableLabel[item.id] = { name: item.name, extendCode: item.extendCode, id: item.id }
-                tableLabel[value.id] = { name: value.name, extendCode: value.extendCode, id: value.id }
+                tableLabel[item.id] = item
+                tableLabel[value.id] = value
                 emptyArray.push([{ attributeTermId: item.id, attributeId: 1111 }, { attributeTermId: value.id, attributeId: 1111 }])
               }
             })
@@ -304,15 +311,23 @@ export default {
         }
       })
       this.tableLabel = tableLabel
-      return resultArry
+      return resultArry.map(item => {
+        return {
+          productCategorySalesAttributes: item,
+          ...tableBase
+        }
+      })
     },
-    hideDialog () {
-
+    hideDialog (val) {
+      // const batchAttrs = val
+      // const { skuList, supplyPrice, sizeList } = val
+      this.form.productSalesAttributes.forEach(item => {
+      })
     },
     result () {
       return new Promise(resolve => {
-        const { productCategorySalesAttributes } = this.form
-        resolve({ 'productCategorySalesAttributes': productCategorySalesAttributes || [] })
+        const { productSalesAttributes } = this.form
+        resolve({ 'productSalesAttributes': productSalesAttributes || [] })
       })
     }
   }

@@ -55,22 +55,14 @@
 </template>
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
-
+import { mapGetters } from 'vuex'
 export default {
   props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
     formSizes: {
       type: Array,
       default: function () {
         return []
       }
-    },
-    categoryId: {
-      type: [Number, String],
-      default: ''
     },
     sizeOptions: {
       type: Array,
@@ -98,31 +90,26 @@ export default {
     }
   },
   computed: {
-
+    ...mapGetters('product', ['productParams'])
   },
   watch: {
-    visible (val) {
-      this.dialogVisible = val
-      this.checkedSizes = this.formSizes.map(item => item.id)
-    },
     formSizes (val) {
       this.checkedSizes = val.map(item => item.id)
-    },
-    'categoryId': {
-      handler (val) {
-        if (val) {
-          // this.getSizeTable()
-        }
-      },
-      immediate: true
     }
-  },
-  mounted () {
-
   },
   methods: {
     open () {
       this.dialogVisible = true
+      this.getSizeTable()
+    },
+    getSizeTable () {
+      // let params = {
+      //   categoryId: this.productParams.categoryId
+      // }
+      RecommendApi.pageList(2)
+        .then(res => {
+          console.log('sizessssss', res.data)
+        })
     },
     handleConfirm () {
       let formSizes = this.sizeOptions.filter(item => this.checkedSizes.includes(item.id))
@@ -131,18 +118,6 @@ export default {
     },
     handleClose () {
       Object.assign(this.$data, this.$options.data.call(this))
-    },
-    getSizeTable () {
-      let params = {
-        categoryId: this.categoryId
-      }
-      RecommendApi.allByUser(params).then(res => {
-        if (res.data) {
-          let { sizeTable, columns } = res.data
-          this.sizeTable = sizeTable
-          this.columns = columns
-        }
-      })
     }
   }
 }
