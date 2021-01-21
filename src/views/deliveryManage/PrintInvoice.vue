@@ -45,7 +45,6 @@ export default {
   data () {
     return {
       info: {},
-      tableData: [],
       visible: false
     }
   },
@@ -64,6 +63,7 @@ export default {
           let listA = document.getElementById('list-a')
           if (listA) {
             listA.parentNode.removeChild(document.getElementById('list-a'))
+            this.info = {}
           }
         }
       })
