@@ -40,6 +40,7 @@
             v-model="form.id"
             :options="companyList"
             :maxHeight="200"
+            clearable
             filterable
             label="logisticsCompanyName"
             value="id"
