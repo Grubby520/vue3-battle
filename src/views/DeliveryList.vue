@@ -31,7 +31,7 @@
           mode="horizontal"
           @select="switchNav"
         >
-          <el-menu-item index="0">全部({{page.total}})</el-menu-item>
+          <el-menu-item index="0">全部({{count}})</el-menu-item>
           <el-menu-item index="1">全部待发货({{navInfo.totalWait}})</el-menu-item>
           <el-menu-item index="2">1日未发货({{navInfo.totalWaitOneDay}})</el-menu-item>
           <el-menu-item index="3">2日未发货({{navInfo.totalWaitTwoDay}})</el-menu-item>
@@ -190,7 +190,8 @@ export default {
       navInfo: {},
       tableData: [],
       activeIndex: '0',
-      selectdChange: []
+      selectdChange: [],
+      count: 0
     }
   },
 
@@ -212,6 +213,7 @@ export default {
           this.page.pageIndex = data.pageIndex
           this.page.pageSize = data.pageSize
           this.page.total = data.total
+          this.count = data.count
           this.tableData = data.deliveryOrderList
           this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
         } else {
@@ -282,6 +284,7 @@ export default {
           this.page.pageIndex = data.pageIndex
           this.page.pageSize = data.pageSize
           this.page.total = data.total
+          this.count = data.count
           this.tableData = data.deliveryOrderList
           this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
         }
