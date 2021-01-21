@@ -30,7 +30,7 @@
         <el-table-column prop="sku" label="SKU" align="center"></el-table-column>
         <el-table-column prop="skuAttribute" label="SKU销售属性" align="center" width="80px"></el-table-column>
         <el-table-column prop="goodsName" label="商品名称" align="center"></el-table-column>
-        <el-table-column prop="merchantDropSize" label="上架吊牌尺" align="center" width="100px"></el-table-column>
+        <el-table-column prop="merchantDropSize" label="商家吊牌尺码" align="center" width="100px"></el-table-column>
         <el-table-column prop="requireNum" label="需求总量" align="center"></el-table-column>
         <el-table-column prop="deliveryGoodsNum" label="实际发货数量" align="center" width="100px"></el-table-column>
       </el-table>
