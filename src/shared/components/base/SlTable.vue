@@ -45,15 +45,18 @@
         <template slot-scope="scope">
           <div class="tableData-col">
             <el-row type="flex" align="middle">
-              <el-col :span="10" v-if="item.isInImg">
+              <el-col
+                v-if="item.isInImg"
+                :span="null"
+                :style="{maxWidth:item.data && item.data.imgSize || '10rem',marginRight:'0.5rem'}"
+              >
                 <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
                 <SlImage
-                  size="10rem"
+                  :size="item.data && item.data.imgSize || '10rem'"
                   :src="item.prop?scope.row[item.prop]?scope.row[item.prop][item.isInImg]:'':scope.row[item.isInImg]"
                 />
               </el-col>
-
-              <el-col :span="item.isInImg?14:24">
+              <el-col :span="item.isInImg?null:24">
                 <div v-if="item.pre" :class="{'tableData-col-pre' : !item.isInImg && item.pre }">
                   <div class="tableData-col-con">
                     <div v-for="(value, key) in item.pre" :key="key">
@@ -170,6 +173,9 @@ export default {
   }
   /deep/ .cell {
     text-align: center;
+    .sl-popper {
+      vertical-align: middle;
+    }
   }
 }
 </style>

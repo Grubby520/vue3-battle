@@ -168,13 +168,16 @@ export default {
         {
           prop: 'baseInfo',
           label: '基本信息',
-          width: '280',
+          width: '250',
           isInImg: 'imageUrl',
           pre: {
             supplierItemNo: '供方货号',
             merchantSku: '商家SKU',
             sku: 'SKU',
             spu: 'SPU'
+          },
+          data: {
+            imgSize: '5rem'
           }
         },
         {
