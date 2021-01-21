@@ -1,5 +1,5 @@
 <template>
-  <div class="ProductSale">
+  <div class="ProductSale" v-if="!saleAttrNone">
     <el-card>
       <div slot="header" class="title">
         <span>销售属性</span>
@@ -175,7 +175,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'productBasicInfo']),
+    ...mapGetters('product', ['productParams', 'productBasicInfo', 'saleAttrNone']),
     changeForm () {
       const { sizes, colors, specifications } = this.form
       return [
@@ -247,6 +247,9 @@ export default {
                 break
             }
           })
+          // 判断是否有销售属性
+          const saleAttrNone = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
+          this.$store.commit('product/SALEATTRNONE', saleAttrNone.length)
           this.showSaleLabel = showSaleLabel
         })
     },

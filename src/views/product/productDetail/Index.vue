@@ -1,5 +1,12 @@
 <template>
   <div class="product">
+    <el-alert
+      v-if="saleAttrNone"
+      :title="`${cateLabels}品类未配置销售属性，无法创建产品`"
+      type="error"
+      effect="dark"
+      style="margin-bottom: 1rem;"
+    />
     <div :class="{'view-container': isStatus}">
       <ProductBase ref="productBase" />
       <ProductImages ref="productImages" />
@@ -31,7 +38,7 @@ import ProductSale from './ProductSale'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-
+import { mapGetters } from 'vuex'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -60,6 +67,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('product', ['saleAttrNone']),
     isStatus () {
       return this.mode === 'view'
     }
