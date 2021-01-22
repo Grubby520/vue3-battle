@@ -1,5 +1,6 @@
 const baseURL = '/srm-goods-service'
 const productUrl = '/product-service'
+// const plmUrl = 'plm-product-service'
 
 const RECOMMENDURLS = {
   // odm 列表页
@@ -28,7 +29,10 @@ const RECOMMENDURLS = {
   // 属性项列表,颜色、尺寸
   getAttrList: productUrl + '/attribute/list-term/',
   // 根据用户获取颜色尺寸id
-  allByUser: productUrl + '/attribute/all_by_user/'
+  allByUser: productUrl + '/attribute/all_by_user/',
+
+  // 尺码对照表
+  pageList: 'http://10.250.0.68:8301' + '/size-table/category-id/'
 }
 
 export default RECOMMENDURLS

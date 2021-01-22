@@ -3,10 +3,12 @@ export default {
   state: {
     productParams: null,
     sizeOptions: [],
-    sizeattr: {},
+    sizeAttr: {},
     productBasicInfo: [],
     productCustomizeAttributeList: [],
-    productSalesAttributeList: []
+    productSalesAttributeList: [],
+    saleAttrNone: undefined,
+    sizestandard: []
   },
   getters: {
     productParams: state => state.productInfo ? state.productInfo : {},
@@ -14,7 +16,9 @@ export default {
     productBasicInfo: state => state.productBasicInfo || [],
     productCustomizeAttributeList: state => state.productCustomizeAttributeList || [],
     productSalesAttributeList: state => state.productSalesAttributeList || [],
-    sizeattr: state => state.sizeattr || {}
+    sizeAttr: state => state.sizeAttr || {},
+    saleAttrNone: state => state.saleAttrNone === 0,
+    sizestandard: state => state.sizestandard || []
   },
   mutations: {
     PRODUCT_PARAMS: (store, data) => {
@@ -24,7 +28,7 @@ export default {
       store.sizeOptions = data
     },
     SIZEATTR: (store, data) => {
-      store.sizeattr = data
+      store.sizeAttr = data
     },
     PRODUCTBASICINFO: (store, data) => {
       store.productBasicInfo = data
@@ -34,11 +38,13 @@ export default {
     },
     PRODUCTSALESATTRIBUTELIST: (store, data) => {
       store.productSalesAttributeList = data
+    },
+    SALEATTRNONE: (store, data) => {
+      store.saleAttrNone = data
+    },
+    SIZESTANDARD: (store, data) => {
+      store.sizestandard = data
     }
-
-    // PRODUCTIMAGES: (store, data) => {
-    //   store.productimages = data
-    // }
   },
   actions: {
     // 设置上传Spu数据结果

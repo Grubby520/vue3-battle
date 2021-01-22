@@ -2,7 +2,7 @@
   <div class="ProductSize">
     <el-card>
       <div slot="header" class="title">
-        <span>尺码表{{sizeattr.name}}</span>
+        <span>尺码表</span>
       </div>
       <div class="form">
         <el-form :model="form" ref="form" class="ProductSize-from">
@@ -44,16 +44,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeOptions', 'sizeattr']),
+    ...mapGetters('product', ['sizeOptions', 'sizeAttr']),
     tableHeadData () {
       // 表头信息
       const sizes = {
         name: 'size',
-        label: this.sizeattr.name,
+        label: this.sizeAttr.name,
         status: 'text'
       }
       const headData = this.tableData
-      this.sizeattr.name && headData.unshift(sizes)
+      this.sizeAttr.name && headData.unshift(sizes)
       return headData
     }
   },
@@ -81,7 +81,7 @@ export default {
       sizes.forEach(size => {
         const addItem = {
           attributeTermId: size.id,
-          attributeId: this.sizeattr.attributeId,
+          attributeId: this.sizeAttr.attributeId,
           sizePositions: []
         }
         productSizeTemplates.push(addItem)

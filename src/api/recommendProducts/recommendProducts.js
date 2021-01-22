@@ -64,6 +64,11 @@ const RECOMMEND = {
   // 根据用户获取颜色尺寸id
   allByUser (params) {
     return get(RECOMMENDURLS.allByUser, params)
+  },
+
+  // 尺码对照表
+  pageList (id) {
+    return get(RECOMMENDURLS.pageList + id)
   }
 }
 export default RECOMMEND

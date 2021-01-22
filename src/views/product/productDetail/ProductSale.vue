@@ -243,8 +243,11 @@ export default {
                 this.sizeOptions = this.addExtendCode(item.terms, item.extendCode)
                 this.tableHeadData.unshift({ name: 'size', label: item.name, extendCode: item.extendCode })
                 showSaleLabel['size'] = item.name
-                this.$store.commit('product/SIZEATTR', { name: item.name, attributeTermId: item.id, attributeId: 11111 })
+                this.$store.commit('product/SIZEATTR', { name: item.name, attributeTermId: item.id, attributeId: 11111, terms: item.terms })
                 break
+              case 'NZ013':
+                // 尺码标准
+                this.$store.commit('product/SIZESTANDARD', { terms: item.terms })
             }
           })
           // 判断是否有销售属性

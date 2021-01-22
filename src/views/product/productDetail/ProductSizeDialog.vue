@@ -30,15 +30,17 @@
             max-height="400"
             style="width: 100%; margin-bottom: 1rem;"
           >
-            <template v-for="(colVal, colKey) in columns">
-              <el-table-column
-                :key="colKey"
-                :prop="colKey"
-                :label="colVal"
-                min-width="80px"
-                align="center"
-              ></el-table-column>
-            </template>
+            <el-table-column
+              v-for="(item,index) in tableHeadData"
+              :label="item.name"
+              :key="index"
+              align="center"
+            >
+              <template slot-scope="scope">
+                <span v-if="item.id === 'size'">{{scope.row.size.name}}</span>
+                <span v-else>{{showControlDataItem(scope.row[item.id])}}</span>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
@@ -75,22 +77,47 @@ export default {
     return {
       dialogVisible: false,
       checkedSizes: [],
-      sizeTable: [{
-        size: 'xl',
-        code: 2,
-        circle1: 44,
-        circle2: 25
-      }],
-      columns: {
-        size: '尺码段',
-        code: '欧美码',
-        circle1: '胸围（CM）',
-        circle2: '腰围（CM）'
-      }
+      sizeContrastTableList: []
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams'])
+    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizestandard']),
+    tableHeadData () {
+      // 表头数据信息
+      const standardData = this.sizestandard.terms
+      const tableHeader = standardData.filter(size => this.sizeContrastTableList.some(com => size.id === com.sizeStandardId))
+      const sizeHeader = {
+        id: 'size',
+        name: '尺码段'
+      }
+      return [sizeHeader, ...tableHeader]
+    },
+    sizeTable () {
+      const sizeSegments = {}
+      // 表格尺码段列数据
+      const attributes = this.sizeAttr.terms
+      // 表格数据处理前需要先排序
+      const sizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
+      // sizeSegmentId 属性值id  sizeStandardId尺码标准id（表头）
+      sizeTable.forEach(size => {
+        if (!sizeSegments[size.sizeSegmentId]) {
+          sizeSegments[size.sizeSegmentId] = [size]
+        } else {
+          sizeSegments[size.sizeSegmentId].push(size)
+        }
+      })
+
+      const tableRows = []
+      for (const key in sizeSegments) {
+        const rowData = {}
+        rowData.size = attributes.find(col => `${col.id}` === key)
+        sizeSegments[key].forEach(size => {
+          rowData[size.sizeStandardId] = [size.minValue, size.maxValue, size.id]
+        })
+        tableRows.push(rowData)
+      }
+      return tableRows
+    }
   },
   watch: {
     formSizes (val) {
@@ -108,8 +135,32 @@ export default {
       // }
       RecommendApi.pageList(2)
         .then(res => {
-          // console.log('sizessssss', res.data)
+          this.sizeContrastTableList = res.data.sizeContrastTableList
         })
+    },
+    sortTable (arr, key) {
+      return arr.sort((a, b) => {
+        const x = a[key]
+        const y = b[key]
+        return x < y ? -1 : x > y ? 1 : 0
+      })
+    },
+    /**
+     * 展示尺码对照表的数据项
+     * @param {Array} data 数据项
+     * * data[0] 最小值
+     * * data[1] 最大值
+     */
+    showControlDataItem (data) {
+      if (data) {
+        if (data.length < 0 || data.length > 3) {
+          return ''
+        } else if (data[0] === data[1]) {
+          return data[0]
+        } else {
+          return [data[0], data[1]].join(' ~ ')
+        }
+      }
     },
     handleConfirm () {
       let formSizes = this.sizeOptions.filter(item => this.checkedSizes.includes(item.id))

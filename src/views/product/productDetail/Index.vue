@@ -91,8 +91,10 @@ export default {
         .then(res => {
           // console.log('res', res)
           switch (this.$refs.control.someBtnParams) {
+            // 确定
             case 0:
               break
+            // 提交
             case 1:
               break
           }
@@ -137,7 +139,7 @@ export default {
   &-btn {
     display: flex-start;
     .addbtn {
-      margin-right: 10px;
+      margin-right: 1rem;
     }
   }
   /deep/.title {
