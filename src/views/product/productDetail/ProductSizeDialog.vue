@@ -1,59 +1,53 @@
 <template>
-  <el-dialog
-    title="尺码设置"
-    :visible.sync="dialogVisible"
-    width="70%"
-    :before-close="handleClose"
-    :close-on-click-modal="false"
-  >
-    <div class="tip-area">
-      <p class="tip-title">注意事项：</p>
-      <p class="tip-item">1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；</p>
-      <p class="tip-item">2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；</p>
-    </div>
+  <div class="sizeDialog">
+    <el-dialog
+      title="尺码设置"
+      :visible.sync="dialogVisible"
+      width="70%"
+      :before-close="handleClose"
+      :close-on-click-modal="false"
+    >
+      <div class="hintTiles">
+        <p v-for="(hint,index) in hints" :key="index">{{hint}}</p>
+      </div>
 
-    <div class="size-area">
-      <span class="check-title">尺码</span>
-      <div class="size-content">
-        <div class="check-area">
-          <el-checkbox-group v-model="checkedSizes">
-            <template v-for="(item, index) in sizeOptions">
-              <el-checkbox :key="index" :label="item.id">{{item.name}}</el-checkbox>
-            </template>
-          </el-checkbox-group>
-        </div>
-        <div class="table-area">
-          <h2>尺码对照表</h2>
-          <el-table
-            :data="sizeTable"
-            border
-            max-height="400"
-            style="width: 100%; margin-bottom: 1rem;"
-          >
-            <el-table-column
-              v-for="(item,index) in tableHeadData"
-              :label="item.name"
-              :key="index"
-              align="center"
-            >
-              <template slot-scope="scope">
-                <span v-if="item.id === 'size'">{{scope.row.size.name}}</span>
-                <span v-else>{{showControlDataItem(scope.row[item.id])}}</span>
+      <div class="sizeDialog-title">
+        <span>尺码</span>
+      </div>
+      <div class="sizeDialog-area">
+        <div class="sizeDialog-area__content">
+          <div class="check-area">
+            <el-checkbox-group v-model="checkedSizes">
+              <template v-for="(item, index) in sizeOptions">
+                <el-checkbox :key="index" :label="item.id">{{item.name}}</el-checkbox>
               </template>
-            </el-table-column>
-          </el-table>
+            </el-checkbox-group>
+          </div>
+          <div class="table-area">
+            <h2>尺码对照表</h2>
+            <el-table :data="sizeTable" border max-height="400">
+              <el-table-column
+                v-for="(item,index) in tableHeadData"
+                :label="item.name"
+                :key="index"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <span v-if="item.id === 'size'">{{scope.row.size.name}}</span>
+                  <span v-else>{{showControlDataItem(scope.row[item.id])}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="tip-area">
-      <p class="tip-item tip-center">已存在的属性值不可取消，若要修改SKU的颜色、尺码属性值，请联系商品负责人进行修改</p>
-    </div>
-    <span slot="footer" class="dialog-footer">
-      <el-button @click="handleClose">取 消</el-button>
-      <el-button type="primary" @click="handleConfirm">确 定</el-button>
-    </span>
-  </el-dialog>
+      <p class="sizeDialog-warm">已存在的属性值不可取消，若要修改SKU的颜色、尺码属性值，请联系商品负责人进行修改</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleClose">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
@@ -77,7 +71,8 @@ export default {
     return {
       dialogVisible: false,
       checkedSizes: [],
-      sizeContrastTableList: []
+      sizeContrastTableList: [],
+      hints: ['注意事项：', '1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；', '2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；']
     }
   },
   computed: {
@@ -174,59 +169,59 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.tip-area {
-  color: #f56c6c;
-  padding-bottom: 2rem;
-  line-height: 2rem;
-  .tip-item {
-    margin-left: 2rem;
+.sizeDialog {
+  .hint {
+    color: #f56c6c;
+    padding-bottom: 2rem;
+    line-height: 2rem;
   }
-  .tip-center {
-    text-align: center;
+  .hintTiles {
+    @extend .hint;
+    p:nth-child(n + 2) {
+      margin-left: 2rem;
+    }
+  }
+  $textAlign: center;
+  &-warm {
+    @extend .hintTiles;
+    text-align: $textAlign;
     padding-top: 3rem;
   }
-}
-.size-area {
-  position: relative;
-  padding: 4rem;
-  margin-top: 4rem;
-  background: #fff6f6;
-  .check-title {
-    position: absolute;
-    top: -4rem;
-    left: 0;
+  &-title {
+    height: 4rem;
     width: 10rem;
     line-height: 4rem;
-    padding-bottom: 5px;
-    text-align: center;
-    border: 1px solid #fff6f6;
-    border-bottom: none;
     background: #fff6f6;
+    text-align: $textAlign;
+    border: 1 solid #ebeef5;
     border-radius: 5px;
   }
-  .size-content {
-    background: white;
+  &-area {
+    padding: 4rem;
+    background: #fff6f6;
+    &__content {
+      background: white;
+      .check-area {
+        padding: 4rem 4rem 3rem;
+        border: 1px solid #ebeef5;
+        margin-bottom: 2rem;
+        /deep/ .el-checkbox {
+          margin-bottom: 1rem;
+        }
+      }
+      .table-area {
+        h2 {
+          text-align: $textAlign;
+          margin-bottom: 2rem;
+        }
+      }
+    }
   }
-}
-.check-area {
-  position: relative;
-  padding: 4rem 4rem 3rem;
-  border: 1px solid #ebeef5;
-  margin-bottom: 2rem;
-  /deep/ .el-checkbox {
-    margin-bottom: 1rem;
-  }
-}
-.table-area {
-  h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-}
-/deep/ .el-dialog__footer {
-  text-align: center;
-  .el-button {
-    margin-right: 4rem;
+  /deep/ .el-dialog__footer {
+    text-align: $textAlign;
+    .el-button {
+      margin-right: 4rem;
+    }
   }
 }
 </style>
