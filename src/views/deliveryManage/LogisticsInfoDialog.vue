@@ -10,7 +10,7 @@
       <h3>物流信息</h3>
       <div class="logistics-info">
         <div class="line-hight32">
-          <p>物流单号：{{logisticsInfo.logisticsNumber}}</p>
+          <p>物流单号：{{logisticsInfo.logisticsNumber}}（{{logisticsInfo.logisticsCompanyName}}）</p>
           <p>发货时间：{{logisticsInfo.deliveryTime}}</p>
         </div>
         <div class="line-hight32">
