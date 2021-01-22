@@ -18,7 +18,7 @@
         <div>
           <p>SPU总数：{{info.spuTotal}}</p>
           <p>需求总件数：{{info.requireNum}}</p>
-          <p>需求实际发货数量：{{info.deliveryGoodsNum}}</p>
+          <p>实际发货件数：{{info.deliveryGoodsNum}}</p>
         </div>
       </div>
       <el-table :data="info.items" style="width: 100%" border>
