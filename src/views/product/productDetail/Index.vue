@@ -24,7 +24,7 @@
         :load="load"
         :modify="modify"
         :cancel="cancel "
-        :saveText="[{0:'确定'},{1:'提交'}]"
+        :saveText="saveText"
         cancelText="取消"
       />
     </div>
@@ -55,6 +55,7 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
+      productStatus: undefined
     }
   },
   watch: {
@@ -70,6 +71,9 @@ export default {
     ...mapGetters('product', ['saleAttrNone']),
     isStatus () {
       return this.mode === 'view'
+    },
+    saveText () {
+      return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     }
   },
   methods: {
@@ -83,6 +87,8 @@ export default {
           this.$store.commit('product/PRODUCTCUSTOMIZEATTRIBUTELIST', productCustomizeAttributeList || [])
           // 销售属性
           this.$store.commit('product/PRODUCTSALESATTRIBUTELIST', productSalesAttributeList || [])
+          // this.isStatus = res.status
+          this.productStatus = 2
         })
     },
     create () {

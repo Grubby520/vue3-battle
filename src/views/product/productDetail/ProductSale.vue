@@ -12,7 +12,7 @@
           label-width="120px"
           class="ProductSale-form"
         >
-          <el-form-item :label="showSaleLabel['size']" prop="sizes">
+          <el-form-item :label="showSaleLabel.size" prop="sizes">
             <span class="ProductSale-sizes" @click="openDialog('size')">添加尺码</span>
             <el-tag
               style="margin: 0 0 5px 10px"
@@ -25,7 +25,7 @@
             >{{tag.name}}</el-tag>
           </el-form-item>
           <el-form-item
-            :label="showSaleLabel['color']"
+            :label="showSaleLabel.color"
             prop="colors"
             v-if="colorOptions && colorOptions.length>0"
           >
@@ -83,6 +83,7 @@
                     class="ProductSale-from__content"
                   >
                     <template v-if="item.extendCode">
+                      <!-- 动态销售属性表头(尺码/规格/颜色) -->
                       <div
                         v-for="(tableAttr,index) in scope.row.productCategorySalesAttributes"
                         :key="index"
@@ -92,6 +93,7 @@
                         >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
                       </div>
                     </template>
+                    <!-- 固定销售属性表头 -->
                     <el-input
                       v-else
                       v-model="scope.row[item.name]"
@@ -185,7 +187,7 @@ export default {
       ]
     },
     showTable () {
-      // 多个属性，需要都选择值以后才显示插入表格中
+      // 多个属性，需要都选择值以后数据插入表格中
       const { sizes, colors, specifications } = this.form
       const len = []
       const showAttrs = {
@@ -202,7 +204,7 @@ export default {
   watch: {
     'changeForm': {
       // 监听尺码/颜色/规格变化
-      handler (newValue, oldValue) {
+      handler (newValue) {
         // 多个属性都选择了数据数据添加到table中，否则就重置table
         switch (this.showTable) {
           case true:
@@ -227,29 +229,35 @@ export default {
           const data = res.data.data
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}
+          const grade = (showSaleLabel, item, type) => {
+            this[`${type}Options`] = this.addExtendCode(item.terms, item.extendCode)
+            this.tableHeadData.unshift({ name: type, label: item.name, extendCode: item.extendCode })
+            showSaleLabel[type] = item.name
+          }
           data.forEach(item => {
             switch (item.extendCode) {
+              // 规格
               case 'NZ012':
-                this.specificationOptions = this.addExtendCode(item.terms, item.extendCode)
-                this.tableHeadData.unshift({ name: 'specification', label: item.name, extendCode: item.extendCode })
-                showSaleLabel['specification'] = item.name
+                grade(showSaleLabel, item, 'specification')
                 break
+              // 颜色
               case 'NZ010':
-                this.colorOptions = this.addExtendCode(item.terms, item.extendCode)
-                this.tableHeadData.unshift({ name: 'color', label: item.name, extendCode: item.extendCode })
-                showSaleLabel['color'] = item.name
+                grade(showSaleLabel, item, 'color')
                 break
+              // 尺码
               case 'NZ011':
-                this.sizeOptions = this.addExtendCode(item.terms, item.extendCode)
-                this.tableHeadData.unshift({ name: 'size', label: item.name, extendCode: item.extendCode })
-                showSaleLabel['size'] = item.name
+                grade(showSaleLabel, item, 'size')
                 this.$store.commit('product/SIZEATTR', { name: item.name, attributeTermId: item.id, attributeId: 11111, terms: item.terms })
                 break
+              // 尺码标准
               case 'NZ013':
-                // 尺码标准
                 this.$store.commit('product/SIZESTANDARD', { terms: item.terms })
             }
           })
+
+          // 商品属性（其他属性）
+          const customAttributesData = data.filter(item => item.type.value === 4)
+          this.$store.commit('product/CUSTOMATTRIBUTESDATA', customAttributesData)
           // 判断是否有销售属性
           const saleAttrNone = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
           this.$store.commit('product/SALEATTRNONE', saleAttrNone.length)
@@ -289,39 +297,55 @@ export default {
       dialog.open(type, data)
       dialog = null
     },
-    addTableItems (array) {
-      // 销售属性值的排列组合
+    addTableItems (attrArr) {
       let resultArry = []
       const tableLabel = {}
-      const tableBase = { supplyPrice: '', supplierSkuCode: '', tagSize: '', weight: '' }
-      array.forEach((arrItem) => {
-        if (arrItem && arrItem.length === 0) return
-        if (resultArry.length === 0) {
-          resultArry = arrItem
-        } else {
-          const emptyArray = []
-          resultArry.forEach((item) => {
-            arrItem.forEach((value) => {
-              if (Array.isArray(item)) {
-                tableLabel[value.id] = value
-                emptyArray.push([...item, { attributeTermId: value.id, attributeId: 1111 }])
-              } else {
+      const tableBase = {
+        supplyPrice: '',
+        supplierSkuCode: '',
+        tagSize: '',
+        weight: ''
+      }
+      const hasNoneAttr = attrArr.flat().length !== 0
+      const hasAttrLen = attrArr.filter(item => item.length > 0)
+      if (hasNoneAttr) {
+        attrArr.forEach((arrItem) => {
+          if (arrItem && arrItem.length === 0) return
+          if (resultArry.length === 0) {
+            if (hasAttrLen > 1) {
+              resultArry = arrItem
+            } else {
+              // 销售属性只有其中一个属性情况
+              arrItem.forEach(item => {
                 tableLabel[item.id] = item
-                tableLabel[value.id] = value
-                emptyArray.push([{ attributeTermId: item.id, attributeId: 1111 }, { attributeTermId: value.id, attributeId: 1111 }])
-              }
+                resultArry.push([{ attributeTermId: item.id, attributeId: 1111 }])
+              })
+            }
+          } else {
+            const emptyArray = []
+            resultArry.forEach((item) => {
+              arrItem.forEach((value) => {
+                if (Array.isArray(item)) {
+                  tableLabel[value.id] = value
+                  emptyArray.push([...item, { attributeTermId: value.id, attributeId: 1111 }])
+                } else {
+                  tableLabel[item.id] = item
+                  tableLabel[value.id] = value
+                  emptyArray.push([{ attributeTermId: item.id, attributeId: 1111 }, { attributeTermId: value.id, attributeId: 1111 }])
+                }
+              })
             })
-          })
-          resultArry = emptyArray
-        }
-      })
-      this.tableLabel = tableLabel
-      return resultArry.map(item => {
-        return {
-          productCategorySalesAttributes: item,
-          ...tableBase
-        }
-      })
+            resultArry = emptyArray
+          }
+        })
+        this.tableLabel = tableLabel
+        return resultArry.map(item => {
+          return {
+            productCategorySalesAttributes: item,
+            ...tableBase
+          }
+        })
+      }
     },
     hideDialog (val) {
       // 批量录入回填
