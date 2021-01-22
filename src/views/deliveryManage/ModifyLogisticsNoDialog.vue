@@ -1,6 +1,6 @@
 <template>
   <el-dialog :visible.sync="showDiaolog" width="50%" center>
-    <h4 slot="title">{{form.id?'修改':'添加'}}物流</h4>
+    <h4 slot="title">{{isEdit?'修改':'添加'}}物流</h4>
     <el-alert
       title="注意！"
       type="warning"
@@ -71,6 +71,7 @@ export default {
   data () {
     return {
       showDiaolog: false,
+      isEdit: false,
       logisticsInfo: {},
       rules: {
         id: [
@@ -91,6 +92,7 @@ export default {
   methods: {
     show (data) {
       this.logisticsInfo = _cloneDeep(data.row)
+      this.isEdit = !!data.row.logisticsNumber
       this.form = {
         logisticsNumber: data.row.logisticsNumber || '',
         id: data.row.logisticsCompanyId || ''
