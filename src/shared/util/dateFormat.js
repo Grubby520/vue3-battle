@@ -104,36 +104,30 @@ export function getDatePickerOptions (type = 'daterange') {
   const shortcutClick = function (shortcutType) {
     return function (picker) {
       let start = null
-      let end = null
+      let end = getNowDate('end-ymd')
       let datevalue = null
+      let nowDateTime = getNowDate('start-ymd').getTime()
       switch (shortcutType) {
         case 'today':
           start = getNowDate('start-ymd')
-          end = getNowDate('end-ymd')
           break
         case 'yesterday':
-          end = getNowDate('start-ymd')
-          start = new Date(end.getTime() - 3600 * 1000 * 24 * 1)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 1)
           break
         case '3d':
-          end = getNowDate('start-ymd')
-          start = new Date(end.getTime() - 3600 * 1000 * 24 * 3)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 3)
           break
         case '7d':
-          end = getNowDate('start-ymd')
-          start = new Date(end.getTime() - 3600 * 1000 * 24 * 7)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 7)
           break
         case '15d':
-          end = getNowDate('start-ymd')
-          start = new Date(end.getTime() - 3600 * 1000 * 24 * 15)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 15)
           break
         case '30d':
-          end = getNowDate('start-ymd')
-          start = new Date(end.getTime() - 3600 * 1000 * 24 * 30)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 30)
           break
         case '90d':
-          end = getNowDate('start-ymd')
-          start = new Date(end.getTime() - 3600 * 1000 * 24 * 90)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 90)
           break
       }
 

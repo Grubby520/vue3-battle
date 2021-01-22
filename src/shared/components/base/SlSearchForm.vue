@@ -70,6 +70,7 @@
                 :picker-options="item.data.pickerOptions ? item.data.pickerOptions : getDatePickerOptions(item.data.datetype)"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
+                :default-time="['00:00:00','23:59:59']"
                 :format="item.data.format?item.data.format:'yyyy-MM-dd'"
                 :value-format="item.data.valueFormat?item.data.valueFormat:'yyyy-MM-dd HH:mm:ss'"
               ></el-date-picker>
