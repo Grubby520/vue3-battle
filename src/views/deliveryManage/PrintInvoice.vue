@@ -21,20 +21,34 @@
           <p>实际发货件数：{{info.deliveryGoodsNum}}</p>
         </div>
       </div>
-      <el-table :data="info.items" style="width: 100%" border>
-        <el-table-column label="图片" align="center" width="120px">
-          <template slot-scope="scope">
-            <SlImage size="8rem" :src="scope.row.image" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="spu" label="SPU" align="center"></el-table-column>
-        <el-table-column prop="sku" label="SKU" align="center"></el-table-column>
-        <el-table-column prop="skuAttribute" label="SKU销售属性" align="center" width="80px"></el-table-column>
-        <el-table-column prop="goodsName" label="商品名称" align="center"></el-table-column>
-        <el-table-column prop="merchantTagSize" label="商家吊牌尺码" align="center" width="100px"></el-table-column>
-        <el-table-column prop="requireNum" label="需求总量" align="center"></el-table-column>
-        <el-table-column prop="deliveryGoodsNum" label="实际发货数量" align="center" width="100px"></el-table-column>
-      </el-table>
+      <div class="print-table">
+        <table style="width: 100%">
+          <thead>
+            <th>图片</th>
+            <th>SPU</th>
+            <th>SKU</th>
+            <th>SKU销售属性</th>
+            <th>商品名称</th>
+            <th>商家吊牌尺码</th>
+            <th>需求总量</th>
+            <th>实际发货数量</th>
+          </thead>
+          <tbody>
+            <tr v-for="(item,index) in info.items" :key="'row_'+index">
+              <td>
+                <SlImage size="8rem" :src="item.image" />
+              </td>
+              <td>{{item.spu}}</td>
+              <td>{{item.sku}}</td>
+              <td>{{item.skuAttribute}}</td>
+              <td>{{item.goodsName}}</td>
+              <td>{{item.merchantTagSize}}</td>
+              <td>{{item.requireNum}}</td>
+              <td>{{item.deliveryGoodsNum}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -123,15 +137,28 @@ export default {
     justify-content: space-between;
     font-size: 20px;
   }
-}
-// /deep/ .el-table td,
-// .el-table th.is-leaf {
-//   border: 1px solid #333;
-// }
 
-// .el-table--border td,
-// .el-table--border th,
-// .el-table__body-wrapper .el-table--border.is-scrolling-left ~ .el-table__fixed {
-//   border: 1px solid #333;
-// }
+  .print-table {
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      border: 1px solid #ebeef5;
+    }
+    th,
+    td {
+      line-height: 1.5;
+      text-align: center;
+      border-top: 1px solid #ebeef5;
+      border-right: 1px solid #ebeef5;
+    }
+
+    th {
+      padding: 1em;
+    }
+
+    td {
+      padding: 0.5em;
+    }
+  }
+}
 </style>
