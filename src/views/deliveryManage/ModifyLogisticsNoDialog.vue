@@ -1,10 +1,12 @@
 <template>
   <el-dialog :visible.sync="showDiaolog" width="50%" center>
-    <h4 slot="title">添加物流</h4>
-    <div class="notice">
-      <p>注意！</p>
-      <p class="text-i">一个发货单必须只对应一个包裹发货，请根据实际情况确认可一次性发货的SKU。如果无法一次性全部发货，请将相应不能发货的SKU从发货单里面删除。</p>
-    </div>
+    <h4 slot="title">{{form.id?'修改':'添加'}}物流</h4>
+    <el-alert
+      title="注意！"
+      type="warning"
+      :closable="false"
+      description="一个发货单必须只对应一个包裹发货，请根据实际情况确认可一次性发货的SKU。如果无法一次性全部发货，请将相应不能发货的SKU从发货单里面删除。"
+    ></el-alert>
     <div class="logistics-info">
       <p>发货单信息</p>
       <ul>
@@ -22,9 +24,12 @@
         <li>联系方式：{{logisticsInfo.consigneePhone}}</li>
       </ul>
     </div>
-    <div class="notice line-h40">
-      <p>请务必确保此发货单对应的物流单号填写正确，物流单号填写错误或者未填写则仓库无法签收此包裹！</p>
-    </div>
+    <el-alert
+      title
+      type="warning"
+      :closable="false"
+      description="请务必确保此发货单对应的物流单号填写正确，物流单号填写错误或者未填写则仓库无法签收此包裹！"
+    ></el-alert>
     <div class="logistics-no">
       <el-form ref="form" :model="form" label-width="80px" class="logistics-form" :rules="rules">
         <el-form-item label="物流商" prop="id">
@@ -140,19 +145,6 @@ export default {
 }
 p {
   font-size: 12px;
-}
-.notice {
-  padding: 0 4px;
-  background: rgba(244, 164, 96, 0.2);
-  border-radius: 4px;
-  line-height: 18px;
-  color: rgba(255, 140, 0, 0.8);
-  .text-i {
-    text-indent: 2em;
-  }
-}
-.line-h40 {
-  line-height: 40px;
 }
 .logistics-info {
   margin: 8px 0;
