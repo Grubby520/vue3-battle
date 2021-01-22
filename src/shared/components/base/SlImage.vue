@@ -6,16 +6,10 @@
     :styleSetting="{border: '1px solid rgba(0, 0, 0, .2)'}"
   >
     <div slot="pop" class="sl-image-pop" :style="{'width': popSize, 'height': popSize}">
-      <img class="sl-image--popimg" :src="loadingImg" :onerror="errorImg" :onload="loadedImg" />
+      <img class="sl-image--popimg" :src="src" :onerror="errorImg" />
     </div>
     <div class="sl-image" :style="{ ...styleSetting, 'width': size, 'height': size}">
-      <img
-        class="sl-image--img"
-        :src="loadingImg"
-        :onerror="errorImg"
-        :onload="loadedImg"
-        @click="handleImgClick"
-      />
+      <img class="sl-image--img" :src="src" :onerror="errorImg" @click="handleImgClick" />
       <slot></slot>
     </div>
   </SlPoper>
@@ -57,8 +51,7 @@ export default {
     return {
       defaultImg,
       loadingImg,
-      errorImg: 'this.onload=null;this.src = "' + defaultImg + '"',
-      loadedImg: 'this.onload=null;this.src = "' + this.src + '"'
+      errorImg: 'this.onload=null;this.src = "' + defaultImg + '"'
     }
   },
   methods: {
