@@ -4,7 +4,8 @@
       <div class="tittle">
         <h3>商家名：{{info.merchantName}}</h3>
         <div class="barcode">
-          <!-- <svg :class="'barcodeSvg'+index" /> -->
+          <p>{{info.deliveryNum}}</p>
+          <svg class="barcodeSvg" />
         </div>
       </div>
       <div class="info">
@@ -38,7 +39,7 @@
   </div>
 </template>
 <script>
-// import JsBarcode from 'jsbarcode'
+import JsBarcode from 'jsbarcode'
 import SlPrint from '@/shared/util/printarea.js'
 import { cloneDeep as _cloneDeep } from 'lodash'
 
@@ -54,6 +55,11 @@ export default {
     show (data) {
       this.info = _cloneDeep(data)
       this.appendStyle()
+      JsBarcode('.barcodeSvg', data.deliveryNum, {
+        height: 18,
+        fontSize: 0,
+        margin: 0
+      })
       this.toPrint()
     },
 
@@ -100,8 +106,15 @@ export default {
   width: 100%;
   .tittle {
     text-align: center;
+    display: flex;
+    justify-content: space-between;
     h3 {
       font-size: 28px;
+      text-align: center;
+      width: 60%;
+    }
+    .barcode {
+      width: 40%;
     }
   }
   .info {
@@ -111,4 +124,14 @@ export default {
     font-size: 20px;
   }
 }
+// /deep/ .el-table td,
+// .el-table th.is-leaf {
+//   border: 1px solid #333;
+// }
+
+// .el-table--border td,
+// .el-table--border th,
+// .el-table__body-wrapper .el-table--border.is-scrolling-left ~ .el-table__fixed {
+//   border: 1px solid #333;
+// }
 </style>
