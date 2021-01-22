@@ -129,6 +129,9 @@ export default {
     }
     .barcode {
       width: 40%;
+      p {
+        margin-bottom: 5px;
+      }
     }
   }
   .info {
