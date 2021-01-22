@@ -169,7 +169,7 @@ export default {
         },
         {
           type: 'date',
-          label: '最晚收货时间',
+          label: '最晚交货时间',
           name: 'uTime',
           data: {
             datetype: 'daterange',
