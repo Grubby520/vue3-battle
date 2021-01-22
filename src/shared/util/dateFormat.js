@@ -112,6 +112,7 @@ export function getDatePickerOptions (type = 'daterange') {
           start = getNowDate('start-ymd')
           break
         case 'yesterday':
+          end = new Date(end - 3600 * 1000 * 24 * 1)
           start = new Date(nowDateTime - 3600 * 1000 * 24 * 1)
           break
         case '3d':
