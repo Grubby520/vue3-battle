@@ -82,63 +82,105 @@ export function date (val, format) {
 }
 
 // element-日期组件使用
-export const datePickerOptions = {
-  shortcuts: [
-    {
-      text: '今天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 0)
-        picker.$emit('pick', [start, end])
+export function getNowDate (type) {
+  const date = new Date()
+  switch (type) {
+    case 'start-ymd':
+      date.setHours(0)
+      date.setMinutes(0)
+      date.setSeconds(0)
+      break
+    case 'end-ymd':
+      date.setHours(23)
+      date.setMinutes(59)
+      date.setSeconds(59)
+      break
+  }
+
+  return date
+}
+
+export function getDatePickerOptions (type = 'daterange') {
+  const shortcutClick = function (shortcutType) {
+    return function (picker) {
+      let start = null
+      let end = null
+      let datevalue = null
+      switch (shortcutType) {
+        case 'today':
+          start = getNowDate('start-ymd')
+          end = getNowDate('end-ymd')
+          break
+        case 'yesterday':
+          end = getNowDate('start-ymd')
+          start = new Date(end.getTime() - 3600 * 1000 * 24 * 1)
+          break
+        case '3d':
+          end = getNowDate('start-ymd')
+          start = new Date(end.getTime() - 3600 * 1000 * 24 * 3)
+          break
+        case '7d':
+          end = getNowDate('start-ymd')
+          start = new Date(end.getTime() - 3600 * 1000 * 24 * 7)
+          break
+        case '15d':
+          end = getNowDate('start-ymd')
+          start = new Date(end.getTime() - 3600 * 1000 * 24 * 15)
+          break
+        case '30d':
+          end = getNowDate('start-ymd')
+          start = new Date(end.getTime() - 3600 * 1000 * 24 * 30)
+          break
+        case '90d':
+          end = getNowDate('start-ymd')
+          start = new Date(end.getTime() - 3600 * 1000 * 24 * 90)
+          break
       }
-    }, {
-      text: '昨天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1)
-        picker.$emit('pick', [start, end])
+
+      switch (type) {
+        case 'daterange':
+          datevalue = [start, end]
+          break
+        case 'date':
+          datevalue = start
+          break
       }
-    }, {
-      text: '最近三天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 3)
-        picker.$emit('pick', [start, end])
+      picker.$emit('pick', datevalue)
+    }
+  }
+
+  const datePickerOptions = {
+    shortcuts: [
+      {
+        text: '今天',
+        onClick: shortcutClick('today')
+      },
+      {
+        text: '昨天',
+        onClick: shortcutClick('yesterday')
+      },
+      {
+        text: '最近三天',
+        onClick: shortcutClick('3d')
+      },
+      {
+        text: '最近一周',
+        onClick: shortcutClick('7d')
+      },
+      {
+        text: '最近15天',
+        onClick: shortcutClick('15d')
+      },
+      {
+        text: '最近30天',
+        onClick: shortcutClick('30d')
+      },
+      {
+        text: '最近90天',
+        onClick: shortcutClick('90d')
       }
-    }, {
-      text: '最近一周',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近15天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 15)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近30天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-        picker.$emit('pick', [start, end])
-      }
-    }, {
-      text: '最近90天',
-      onClick (picker) {
-        const end = new Date()
-        const start = new Date()
-        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-        picker.$emit('pick', [start, end])
-      }
-    }]
+    ]
+  }
+
+  return datePickerOptions
 }

@@ -67,7 +67,7 @@
                 :type="item.data.datetype"
                 placeholder="选择日期"
                 unlink-panels
-                :picker-options="item.data.pickerOptions ? item.data.pickerOptions : datePickerOptions"
+                :picker-options="item.data.pickerOptions ? item.data.pickerOptions : getDatePickerOptions(item.data.datetype)"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 :format="item.data.format?item.data.format:'yyyy-MM-dd'"
@@ -81,7 +81,7 @@
   </div>
 </template>
 <script>
-import { datePickerOptions } from '@shared/util/dateFormat'
+import { getDatePickerOptions } from '@shared/util/dateFormat'
 
 export default {
   name: 'SlSearchForm',
@@ -109,7 +109,7 @@ export default {
       options: {},
       resetForm: {},
       form: {},
-      datePickerOptions: datePickerOptions
+      getDatePickerOptions: getDatePickerOptions
     }
   },
   methods: {
