@@ -148,7 +148,7 @@ export default {
         {
           prop: 'baseInfo',
           label: '基本信息',
-          width: '250',
+          width: '200',
           isInImg: 'imageUrl',
           pre: {
             supplierItemNo: '供方货号',

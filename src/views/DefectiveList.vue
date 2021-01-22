@@ -79,7 +79,7 @@ export default {
         {
           prop: '',
           label: '基本信息',
-          width: '250',
+          width: '200',
           isInImg: 'imageUrl',
           pre: {
             supplierItemNo: '供方货号',
@@ -132,8 +132,13 @@ export default {
           label: '发货单号'
         },
         {
-          prop: 'logisticsNumber',
-          label: '物流单号'
+          prop: '',
+          label: '物流单号',
+          width: '150',
+          pre: {
+            oldLogisticsNumber: '发货物流',
+            logisticsNumber: '退货物流'
+          }
         },
         {
           prop: 'operateName',
