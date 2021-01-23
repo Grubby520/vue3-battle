@@ -83,7 +83,7 @@
                     class="ProductSale-from__content"
                   >
                     <template v-if="item.extendCode">
-                      <!-- 动态销售属性表头(尺码/规格/颜色) -->
+                      <!-- 动态销售属性(尺码/规格/颜色) -->
                       <div
                         v-for="(tableAttr,index) in scope.row.productCategorySalesAttributes"
                         :key="index"
@@ -93,7 +93,7 @@
                         >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
                       </div>
                     </template>
-                    <!-- 固定销售属性表头 -->
+                    <!-- 供货价格/sku/吊牌/带包装 -->
                     <el-input
                       v-else
                       v-model="scope.row[item.name]"

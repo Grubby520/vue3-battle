@@ -1,6 +1,6 @@
 <template>
   <div class="ProductSize">
-    <el-card v-if="sizestandard.terms.length > 0">
+    <el-card v-if="sizestandard.terms&&sizestandard.terms.length > 0">
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>

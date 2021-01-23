@@ -79,7 +79,7 @@ export default {
     ...mapGetters('product', ['productParams', 'sizeAttr', 'sizestandard']),
     tableHeadData () {
       // 表头数据信息
-      const standardData = this.sizestandard.terms
+      const standardData = this.sizestandard.terms || []
       const tableHeader = standardData.filter(size => this.sizeContrastTableList.some(com => size.id === com.sizeStandardId))
       const sizeHeader = {
         id: 'size',
