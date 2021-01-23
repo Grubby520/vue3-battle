@@ -1,71 +1,107 @@
 <template>
   <div class="ProductAttr">
     <el-card>
-      <div slot="header" class="title">
-        <span>商品属性</span>
-      </div>
-      <div class="form">
-        <el-form
-          :model="form"
-          :rules="rules"
-          ref="form"
-          label-width="120px"
-          class="ProductAttr-form"
-        >
-          <el-form-item label="女装颜色" prop="nvcolors" class="ProductAttr-input">
-            <el-input clearable v-model="form.nvcolors" />
-          </el-form-item>
-          <el-form-item label="尺寸" prop="sizes" class="ProductAttr-input">
-            <!-- <el-select>
-              <el-option></el-option>
-            </el-select>-->
-          </el-form-item>
-          <el-form-item label="颜色" prop="colors">
-            <SlSelect
-              v-model="form.colors"
-              :options="options"
-              label="attrTermName"
-              value="id"
-              filterable
-              multiple
-              clearable
-              isObj
-              placeholder="请选择颜色"
-              @change="selectChange($event, 'color')"
-            />
-          </el-form-item>
-        </el-form>
-      </div>
+      <el-form :model="form" ref="attributes" label-width="200px">
+        <el-row :gutter="8">
+          <el-col
+            :span="12"
+            v-for="(attribute, index) in form.attributesData"
+            :key="attribute.attributeId"
+          >
+            <el-form-item
+              :label="attribute.name"
+              :prop="'attributesData.'+index+'.value'"
+              :rules="[{required: attribute.required, message: `${attribute.name}是必填项`, trigger: attribute.termValueType === 1 ? 'change' : 'blur'}]"
+            >
+              <template slot="label">
+                <span :title="attribute.name">{{attribute.name}}</span>
+              </template>
+              <component
+                v-model="attribute.value"
+                :is="itemType(attribute)"
+                :multiple="attribute.checkbox"
+                clearable
+                filterable
+              >
+                <el-option
+                  v-for="(term, index) in attribute.terms"
+                  :key="index"
+                  :label="term.name"
+                  :value="term.id"
+                ></el-option>
+              </component>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
     </el-card>
   </div>
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
+import { deepClone } from '@shared/util'
+import { mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      form: { colors: [] },
-      options: [],
-      rules: {}
+      form: {
+        attributesData: []
+      },
+      dataMap: new Map()
     }
   },
   created () {
 
   },
   mounted () {
-
   },
   computed: {
-    // ...mapGetters('product', ['productCustomizeAttributeList'])
+    ...mapGetters('product', ['customAttributesData', 'productCustomizeAttributeList'])
+  },
+  watch: {
+    customAttributesData: {
+      handler (attributesData) {
+        const attributes = deepClone(attributesData)
+        this.form.attributesData = attributes.filter((attribute) => attribute.usable) // 属性是可用的
+          .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
+          .map((attribute) => {
+            const attributeData = this.dataMap.get(attribute.attributeId)
+            return {
+              id: attributeData.id || null,
+              attributeId: attribute.id,
+              name: attribute.name,
+              termValueType: attribute.termValueType.value,
+              checkbox: attribute.checkbox,
+              required: attribute.required,
+              terms: attribute.terms,
+              value: attributeData.attributeValues || attribute.checkbox ? [] : undefined
+            }
+          })
+      },
+      deep: true,
+      immediate: true
+    },
+    productCustomizeAttributeList (attributesData) {
+      this.dataMap.clear()
+      attributesData.forEach((attributeData) => {
+        this.dataMap.set(attributeData.attributeId, attributeData)
+      })
+    }
   },
   methods: {
-    selectChange (e, attribute) {
-      this.$refs.form.validateField('colors') // 重新校验表单
+    itemType (item) {
+      return item.termValueType === 1 ? 'el-select' : 'el-input'
     },
     result () {
       return new Promise(resolve => {
-        resolve({ 'productCustomAttributes': [] })
+        const data = this.form.attributesData.map((attribute) => {
+          return {
+            attributeId: attribute.attributeId,
+            attributeValues: attribute.checkbox ? attribute.value : [attribute.value],
+            id: attribute.id
+          }
+        })
+        resolve({ 'productCustomAttributes': data })
       })
     }
   }
@@ -75,20 +111,8 @@ export default {
 <style scoped lang="scss">
 .ProductAttr {
   margin-bottom: 2rem;
-  &-form {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-  &-input {
-    width: 334px;
-  }
-  /deep/.stl-big-data-select .selected-tags {
-    width: 210px;
-    border: 1px solid #dcdfe6;
-  }
-  /deep/.el-icon-arrow-down {
-    color: #dcdfe6;
+  /deep/.el-select {
+    width: 100%;
   }
 }
 </style>
