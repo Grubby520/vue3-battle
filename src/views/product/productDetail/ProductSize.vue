@@ -1,24 +1,23 @@
 <template>
   <div class="ProductSize">
-    <el-card>
+    <el-card v-if="sizestandard.terms.length > 0">
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
       <div class="form">
         <el-form :model="form" ref="form" class="ProductSize-from">
           <div class="ProductSize-from__table">
-            <el-table :data="form.productSizeTemplates" style="width:100%;" row-key="key" border>
+            <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
               <el-table-column
                 v-for="(item,index) in tableHeadData"
                 :key="index"
-                :label="item.label"
-                :width="item.width"
+                :label="item.name"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-form-item>
                     <div v-if="item.status==='text'">{{showLabels[scope.row.attributeTermId+'']}}</div>
-                    <el-input v-else v-model="scope.row[item.name]" />
+                    <el-input v-else v-model="scope.row[item.id]" />
                   </el-form-item>
                 </template>
               </el-table-column>
@@ -32,35 +31,31 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import axios from 'axios'
 export default {
   data () {
     return {
       form: {
-        productSizeTemplates: []
+        sizeInfoList: []
       },
       showLabels: {},
       tableData: []
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeOptions', 'sizeAttr']),
+    ...mapGetters('product', ['sizeOptions', 'sizeAttr', 'sizestandard']),
     tableHeadData () {
       // 表头信息
       const sizes = {
-        name: 'size',
-        label: this.sizeAttr.name,
+        id: 'size',
+        name: this.sizeAttr.name,
         status: 'text'
       }
-      const headData = this.tableData
-      this.sizeAttr.name && headData.unshift(sizes)
-      return headData
+      return this.deduplication([sizes, ...this.sizestandard.terms], 'id')
     }
   },
   watch: {
     'sizeOptions': {
       handler (newValue) {
-        this.load(newValue)
         this.addListItem(newValue)
       },
       immediate: true,
@@ -68,32 +63,43 @@ export default {
     }
   },
   methods: {
-    load () {
-      axios.get('http://10.250.0.66:7300/mock/6006379be8759301dc974c8b/exaple/attrs')
-        .then(res => {
-          this.tableData = res.data
-        })
-    },
     addListItem (sizes) {
       // 增加行
-      const productSizeTemplates = []
+      const sizeInfoList = []
       const showLabels = {}
       sizes.forEach(size => {
         const addItem = {
           attributeTermId: size.id,
-          attributeId: this.sizeAttr.attributeId,
-          sizePositions: []
+          attributeId: this.sizeAttr.attributeId
         }
-        productSizeTemplates.push(addItem)
+        sizeInfoList.push(addItem)
         showLabels[size.id] = size.name
-        this.form.productSizeTemplates.push(addItem)
+        this.form.sizeInfoList.push(addItem)
       })
-      this.form.productSizeTemplates = productSizeTemplates
+      this.form.sizeInfoList = sizeInfoList
       this.showLabels = showLabels
+    },
+    deduplication (data, primaryKey) {
+      // 数组对象去重
+      return data.reduce((pre, cur) => {
+        const locationData = pre.find((item) => item[primaryKey] === cur[primaryKey])
+        return locationData ? pre : pre.concat(cur)
+      }, [])
     },
     result () {
       return new Promise(resolve => {
-        resolve({ 'productSize': this.form })
+        const productSize = this.form.sizeInfoList.map((size) => {
+          const { attributeTermId, attributeId, ...rest } = size
+          const sizePositions = []
+          for (const key in rest) {
+            const sizeItem = {}
+            sizeItem['attributeTermId'] = key
+            sizeItem['value'] = rest[key]
+            sizePositions.push(sizeItem)
+          }
+          return { sizePositions, attributeTermId, attributeId }
+        })
+        resolve({ 'productSize': productSize })
       })
     }
   }
