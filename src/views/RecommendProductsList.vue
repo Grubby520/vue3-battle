@@ -21,7 +21,12 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
-        <!-- <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button> -->
+        <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button>
+        <el-button
+          type="primary"
+          @click="productDetail('create','')"
+          class="recommond-create"
+        >创建产品（新）</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -38,6 +43,11 @@
             type="text"
             v-if="[0].includes(row.productStatus)"
           >编辑</el-button>
+          <el-button
+            @click="productDetail('modify',row)"
+            type="text"
+            v-if="[0].includes(row.productStatus)"
+          >编辑（新）</el-button>
           <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
           <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
@@ -251,6 +261,17 @@ export default {
         this.$router.push({ path: '/home/recommend-products/odmDetail', query: { mode: status, id, categoryId, supplierItemNo } })
       } else {
         this.$router.push({ path: '/home/recommend-products/odmOneDetails', query: { categoryId, mode: status, id, supplierItemNo } })
+      }
+    },
+    productDetail (status, row) {
+      const { id, categoryId, supplierItemNo } = row
+      const params = { mode: status, id, categoryId, supplierItemNo }
+      switch (status) {
+        case 'create':
+          this.$router.push({ path: '/home/recommend-products/category', query: params })
+          break
+        default:
+          this.$router.push({ path: '/home/recommend-products/productDetail', query: params })
       }
     }
   }

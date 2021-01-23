@@ -1,14 +1,23 @@
 export default {
   namespaced: true,
   state: {
+    // 创建产品需要的所有参数
     productParams: null,
-    sizeOptions: [],
     sizeAttr: {},
+    // 回显基本属性
     productBasicInfo: [],
+    // 回显商品属性
     productCustomizeAttributeList: [],
+    // 回显销售属性
     productSalesAttributeList: [],
+    // 品类上未绑定销售属性
     saleAttrNone: undefined,
-    sizestandard: []
+    // 品类绑定的尺寸
+    sizeOptions: [],
+    // 品类绑定标准属性
+    sizestandard: [],
+    // 品类商品属性
+    customAttributesData: []
   },
   getters: {
     productParams: state => state.productInfo ? state.productInfo : {},
@@ -18,7 +27,8 @@ export default {
     productSalesAttributeList: state => state.productSalesAttributeList || [],
     sizeAttr: state => state.sizeAttr || {},
     saleAttrNone: state => state.saleAttrNone === 0,
-    sizestandard: state => state.sizestandard || []
+    sizestandard: state => state.sizestandard || [],
+    customAttributesData: state => state.customAttributesData || []
   },
   mutations: {
     PRODUCT_PARAMS: (store, data) => {
@@ -44,12 +54,10 @@ export default {
     },
     SIZESTANDARD: (store, data) => {
       store.sizestandard = data
+    },
+    CUSTOMATTRIBUTESDATA: (store, data) => {
+      store.customAttributesData = data
     }
   },
-  actions: {
-    // 设置上传Spu数据结果
-    // setImportSpuResultData: ({ commit }, resultData) => {
-    //   commit('IMPORT_SPU_RESULT_DATA', resultData)
-    // }
-  }
+  actions: {}
 }

@@ -252,12 +252,14 @@ export default {
               // 尺码标准
               case 'NZ013':
                 this.$store.commit('product/SIZESTANDARD', { terms: item.terms })
+                break
+              default:
+                // 商品属性（其他属性）
+                const customAttributesData = data.filter(item => item.type.value === 4)
+                this.$store.commit('product/CUSTOMATTRIBUTESDATA', customAttributesData)
             }
           })
 
-          // 商品属性（其他属性）
-          const customAttributesData = data.filter(item => item.type.value === 4)
-          this.$store.commit('product/CUSTOMATTRIBUTESDATA', customAttributesData)
           // 判断是否有销售属性
           const saleAttrNone = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
           this.$store.commit('product/SALEATTRNONE', saleAttrNone.length)
