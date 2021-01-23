@@ -142,6 +142,7 @@ export default {
       colorOptions: [],
       sizeOptions: [],
       specificationOptions: [],
+      attributeId: undefined,
       showSaleLabel: {},
       tableLabel: [],
       tableHeadData: [ // 表头字段
@@ -223,6 +224,7 @@ export default {
       axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
         .then(res => {
           const data = res.data.data
+          this.attributeId = data.id
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}
           const grade = (showSaleLabel, item, type) => {
@@ -243,7 +245,7 @@ export default {
               // 尺码
               case 'NZ011':
                 grade(showSaleLabel, item, 'size')
-                this.$store.commit('product/SIZEATTR', { name: item.name, attributeTermId: item.id, attributeId: 11111, terms: item.terms })
+                this.$store.commit('product/SIZEATTR', { name: item.name, attributeId: data.id, terms: item.terms })
                 break
               // 尺码标准
               case 'NZ013':
@@ -316,7 +318,7 @@ export default {
               // 销售属性只有其中一个属性情况
               arrItem.forEach(item => {
                 tableLabel[item.id] = item
-                resultArry.push([{ attributeTermId: item.id, attributeId: 1111 }])
+                resultArry.push([{ attributeTermId: item.id, attributeId: this.attributeId }])
               })
             }
           } else {
@@ -325,11 +327,14 @@ export default {
               arrItem.forEach((value) => {
                 if (Array.isArray(item)) {
                   tableLabel[value.id] = value
-                  emptyArray.push([...item, { attributeTermId: value.id, attributeId: 1111 }])
+                  emptyArray.push([...item, { attributeTermId: value.id, attributeId: this.attributeId }])
                 } else {
                   tableLabel[item.id] = item
                   tableLabel[value.id] = value
-                  emptyArray.push([{ attributeTermId: item.id, attributeId: 1111 }, { attributeTermId: value.id, attributeId: 1111 }])
+                  emptyArray.push([
+                    { attributeTermId: item.id, attributeId: this.attributeId },
+                    { attributeTermId: value.id, attributeId: this.attributeId }
+                  ])
                 }
               })
             })
