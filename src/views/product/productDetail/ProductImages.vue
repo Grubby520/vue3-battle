@@ -87,7 +87,7 @@ export default {
     result () {
       return new Promise((resolve, reject) => {
         if (this.productImages.length > 0) {
-          resolve({ 'productImages': this.productImages })
+          resolve({ 'productImages': this.productImages || [] })
         }
       })
     }

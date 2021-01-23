@@ -23,7 +23,7 @@
         :create="create"
         :load="load"
         :modify="modify"
-        :cancel="cancel "
+        :cancel="cancel"
         :saveText="saveText"
         cancelText="取消"
       />
