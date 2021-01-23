@@ -85,7 +85,7 @@ export default {
         id: 'size',
         name: '尺码段'
       }
-      return [sizeHeader, ...tableHeader]
+      return this.sizeContrastTableList && this.sizeContrastTableList.length > 0 ? [sizeHeader, ...tableHeader] : []
     },
     sizeTable () {
       const sizeSegments = {}
@@ -130,7 +130,7 @@ export default {
       // }
       RecommendApi.pageList(2)
         .then(res => {
-          this.sizeContrastTableList = res.data.sizeContrastTableList
+          this.sizeContrastTableList = res.data.sizeContrastTableList || []
         })
     },
     sortTable (arr, key) {
