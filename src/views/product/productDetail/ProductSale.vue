@@ -5,14 +5,12 @@
         <span>销售属性</span>
       </div>
       <div class="form">
-        <el-form
-          :model="form"
-          :rules="rules"
-          ref="form"
-          label-width="120px"
-          class="ProductSale-form"
-        >
-          <el-form-item :label="showSaleLabel.size" prop="sizes">
+        <el-form :model="form" ref="form" label-width="120px" class="ProductSale-form">
+          <el-form-item
+            :label="showSaleLabel.size"
+            prop="sizes"
+            :rules="[{required: true, message: '请添加尺码', trigger:'blur' }]"
+          >
             <span class="ProductSale-sizes" @click="openDialog('size')">添加尺码</span>
             <el-tag
               style="margin: 0 0 5px 10px"
@@ -28,6 +26,7 @@
             :label="showSaleLabel.color"
             prop="colors"
             v-if="colorOptions && colorOptions.length>0"
+            :rules="[{required: true, message: '请选择颜色', trigger:'change' }]"
           >
             <SlSelect
               :options="colorOptions"
@@ -46,6 +45,7 @@
             :label="showSaleLabel['specification']"
             prop="specifications"
             v-if="specificationOptions && specificationOptions.length>0"
+            :rules="[{required: true, message: '请选择', trigger:'change' }]"
           >
             <SlSelect
               :options="specificationOptions"
@@ -79,7 +79,7 @@
                 <template slot-scope="scope">
                   <el-form-item
                     :prop="`productSalesAttributes.${scope.$index}.${item.name}`"
-                    :rules="rules[item.name]"
+                    :rules="[{required: item.required, message: `${item.message}`, trigger:'blur' }]"
                     class="ProductSale-from__content"
                   >
                     <template v-if="item.extendCode">
@@ -127,7 +127,6 @@
 // import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
 import BatchAttributes from './batchAttributes'
-import { emptyValidator } from '@shared/validate'
 import { mapGetters } from 'vuex'
 import axios from 'axios'
 export default {
@@ -145,17 +144,12 @@ export default {
       specificationOptions: [],
       showSaleLabel: {},
       tableLabel: [],
-      rules: {
-        sizes: [emptyValidator('请选择尺寸', 'change')],
-        colors: [emptyValidator('请选择颜色', 'change')],
-        specifications: [emptyValidator('请选择规格', 'change')],
-        supplyPrice: [emptyValidator('请输入供货价格', ['change', 'blur'])],
-        weight: [emptyValidator('请输入带包装重量'), ['change', 'blur']]
-      },
       tableHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
-          label: '供货价格（RMB）'
+          label: '供货价格（RMB）',
+          required: true,
+          message: '请输入供货价格'
         },
         {
           name: 'supplierSkuCode',
@@ -167,7 +161,9 @@ export default {
         },
         {
           name: 'weight',
-          label: '带包装重量（G）'
+          label: '带包装重量（G）',
+          required: true,
+          message: '请输入带包装重量'
         }
       ],
       numberRule: {

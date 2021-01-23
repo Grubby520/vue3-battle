@@ -4,39 +4,41 @@
       <div slot="header" class="title">
         <span>商品属性</span>
       </div>
-      <el-form :model="form" ref="attributes" label-width="200px">
-        <el-row :gutter="8">
-          <el-col
-            :span="12"
-            v-for="(attribute, index) in form.attributesData"
-            :key="attribute.attributeId"
-          >
-            <el-form-item
-              :label="attribute.name"
-              :prop="'attributesData.'+index+'.value'"
-              :rules="[{required: attribute.required, message: `${attribute.name}是必填项`, trigger: attribute.termValueType === 1 ? 'change' : 'blur'}]"
+      <div class="form">
+        <el-form :model="form" ref="form" label-width="200px">
+          <el-row :gutter="8">
+            <el-col
+              :span="12"
+              v-for="(attribute, index) in form.attributesData"
+              :key="attribute.attributeId"
             >
-              <template slot="label">
-                <span :title="attribute.name">{{attribute.name}}</span>
-              </template>
-              <component
-                v-model="attribute.value"
-                :is="itemType(attribute)"
-                :multiple="attribute.checkbox"
-                clearable
-                filterable
+              <el-form-item
+                :label="attribute.name"
+                :prop="'attributesData.'+index+'.value'"
+                :rules="[{required: attribute.required, message: `${attribute.name}是必填项`, trigger: attribute.termValueType === 1 ? 'change' : 'blur'}]"
               >
-                <el-option
-                  v-for="(term, index) in attribute.terms"
-                  :key="index"
-                  :label="term.name"
-                  :value="term.id"
-                ></el-option>
-              </component>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+                <template slot="label">
+                  <span :title="attribute.name">{{attribute.name}}</span>
+                </template>
+                <component
+                  v-model="attribute.value"
+                  :is="itemType(attribute)"
+                  :multiple="attribute.checkbox"
+                  clearable
+                  filterable
+                >
+                  <el-option
+                    v-for="(term, index) in attribute.terms"
+                    :key="index"
+                    :label="term.name"
+                    :value="term.id"
+                  ></el-option>
+                </component>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+      </div>
     </el-card>
   </div>
 </template>
@@ -108,7 +110,7 @@ export default {
             id: attribute.id
           }
         })
-        resolve({ 'productCustomAttributes': data })
+        resolve({ 'productCustomAttributes': data || [] })
       })
     }
   }
