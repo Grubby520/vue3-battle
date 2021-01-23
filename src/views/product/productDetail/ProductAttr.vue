@@ -1,6 +1,9 @@
 <template>
-  <div class="ProductAttr">
+  <div class="ProductAttr" v-if="form.attributesData.length>0">
     <el-card>
+      <div slot="header" class="title">
+        <span>商品属性</span>
+      </div>
       <el-form :model="form" ref="attributes" label-width="200px">
         <el-row :gutter="8">
           <el-col
@@ -65,7 +68,7 @@ export default {
         this.form.attributesData = attributes.filter((attribute) => attribute.usable) // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
           .map((attribute) => {
-            const attributeData = this.dataMap.get(attribute.attributeId)
+            const attributeData = this.dataMap.get(attribute.attributeId) || {}
             return {
               id: attributeData.id || null,
               attributeId: attribute.id,
@@ -81,11 +84,15 @@ export default {
       deep: true,
       immediate: true
     },
-    productCustomizeAttributeList (attributesData) {
-      this.dataMap.clear()
-      attributesData.forEach((attributeData) => {
-        this.dataMap.set(attributeData.attributeId, attributeData)
-      })
+    productCustomizeAttributeList: {
+      handler (attributesData) {
+        this.dataMap.clear()
+        attributesData.forEach((attributeData) => {
+          this.dataMap.set(attributeData.attributeId, attributeData)
+        })
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
