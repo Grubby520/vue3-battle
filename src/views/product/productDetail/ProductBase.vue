@@ -10,10 +10,10 @@
             label="商品类目"
             prop="categoryId"
           >{{productParams.cateLabels ? productParams.cateLabels :form.categoryName }}</el-form-item>
-          <el-form-item label="商品名称" prop="title">
+          <el-form-item label="商品名称" prop="name">
             <el-input
               clearable
-              v-model.trim="form.title"
+              v-model.trim="form.name"
               placeholder="商品名称字数仅限20个字以内"
               maxlength="20"
             />
@@ -26,8 +26,8 @@
               placeholder="请输入供方货号"
             />
           </el-form-item>
-          <el-form-item label="品牌" prop="title">
-            <el-input clearable v-model.trim="form.title" placeholder="请填写品牌" maxlength="20" />
+          <el-form-item label="品牌" prop="brand">
+            <el-input clearable v-model.trim="form.brand" placeholder="请填写品牌" maxlength="20" />
           </el-form-item>
           <el-form-item label="商品描述" prop="description">
             <el-input
@@ -87,8 +87,9 @@ export default {
       },
       rules: {
         categoryId: [{ required: true }],
-        title: [{ required: true, message: '请输入品牌名称+商品名称', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
         supplierItemNo: [this.productValidata()],
+        brand: [{ required: true, message: '请输入品牌名称', trigger: 'blur' }],
         description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
