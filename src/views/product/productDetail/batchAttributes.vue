@@ -125,12 +125,6 @@ export default {
         return locationData ? pre : pre.concat(cur)
       }, [])
     },
-    /**
-    * 初始化表单数据
-    */
-    initData () {
-
-    },
     // 提交表单数据
     confirm () {
       // 表单业务操作完毕，关闭弹窗
