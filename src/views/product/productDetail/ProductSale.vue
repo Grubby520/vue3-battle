@@ -359,8 +359,11 @@ export default {
         return result
       }
     },
+    /**
+     * 批量录入回填
+     * @param {Array} val 需要回填的数据
+     */
     hideDialog (val) {
-      // 批量录入回填
       const { skuList, supplyPrice, sizeList } = val
       // 颜色和供货价格
       let hasNeedSku = skuList.length > 0 && supplyPrice
@@ -390,6 +393,10 @@ export default {
         })
       })
     },
+    /**
+     * 销售属性变化根据暂存数据进行回显赋值
+     * * @param {Array} result 销售属性变化后的数据结构
+     */
     stashTableInfo (result) {
       this.stashLastData()
       if (result && result.length > 0) {
