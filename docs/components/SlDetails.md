@@ -1,9 +1,19 @@
-#### **详情**
+#### **表单提交**
 
-```vue
-< SlDetails ref="control" :references="$refs" form="form" :mode="mode"
-:create="create" :load="load" :modify="modify" :isRight="true" :cancel ="cancel
-" saveText="确定" cancelText="取消" />
+```html
+<SlDetails
+  ref="control"
+  :references="$refs"
+  form="form"
+  :mode="mode"
+  :create="create"
+  :load="load"
+  :modify="modify"
+  :isRight="true"
+  :cancel="cancel"
+  saveText="确定"
+  cancelText="取消"
+/>
 ```
 
 #### **Table Attributes**
