@@ -111,12 +111,7 @@
         </el-form>
       </div>
       <!-- 尺码弹框 -->
-      <ProductSizeDialog
-        ref="ProductSizeDialog"
-        :sizeOptions="sizeOptions"
-        :formSizes="form.sizes"
-        @confirm="sizeSelectConfirm"
-      />
+      <ProductSizeDialog ref="ProductSizeDialog" @confirm="sizeSelectConfirm" />
       <!-- 批量设置弹窗 -->
       <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
     </el-card>
@@ -142,6 +137,7 @@ export default {
       colorOptions: [],
       sizeOptions: [],
       specificationOptions: [],
+      stashTableData: new Map(),
       attributeId: undefined,
       showSaleLabel: {},
       tableLabel: [],
@@ -287,16 +283,27 @@ export default {
     openDialog (type, data = '') {
       let dialog = null
       switch (type) {
+        // 批量录入弹框
         case 'batchAttributes':
           dialog = this.$refs.batchAttributes
           data = this.form
           break
+        // 选择尺寸弹框
         case 'size':
           dialog = this.$refs.ProductSizeDialog
+          const { sizes, productSalesAttributes } = this.form
+          data = {
+            'sizeOptions': this.sizeOptions || [],
+            'formSizes': sizes || [],
+            'productSalesAttributes': productSalesAttributes || []
+          }
       }
       dialog.open(type, data)
       dialog = null
     },
+    /**
+     * 添加尺寸、颜色、规格添加表格数据
+     */
     addTableItems (attrArr) {
       let resultArry = []
       const tableLabel = {}
@@ -342,12 +349,14 @@ export default {
           }
         })
         this.tableLabel = tableLabel
-        return resultArry.map(item => {
+        const result = resultArry.map(item => {
           return {
             productCategorySalesAttributes: item,
             ...tableBase
           }
         })
+        this.stashTableInfo(result)
+        return result
       }
     },
     hideDialog (val) {
@@ -370,6 +379,35 @@ export default {
         if (hasNeedSku && includeBatchColor) item.supplyPrice = supplyPrice
         if (includeBatchSize) item.weight = sizeMap.get(includeBatchSize)
       })
+    },
+    /**
+      * 暂存尺码销售属性之前的记录
+      */
+    stashLastData () {
+      this.form.productSalesAttributes.forEach((tableItem, tableIndex) => {
+        Object.keys(tableItem).forEach((item, index) => {
+          this.stashTableData.set(`${tableIndex}${item}${index}`, tableItem[item])
+        })
+      })
+    },
+    stashTableInfo (result) {
+      this.stashLastData()
+      if (result && result.length > 0) {
+        result.forEach((tableItem, tableIndex) => {
+          const stashDataItem = {}
+          const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
+          Object.keys(tableItem).forEach((item, index) => {
+            const value = this.stashTableData.get(`${tableIndex}${item}${index}`)
+            stashDataItem[item] = value
+            const salesAttributes = stashDataItem.productCategorySalesAttributes || []
+            const stashIds = salesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
+            if (tableItemIds === stashIds) {
+              Object.assign(tableItem, stashDataItem)
+            }
+          })
+        })
+        return result
+      }
     },
     result () {
       return new Promise(resolve => {

@@ -53,24 +53,12 @@
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
 export default {
-  props: {
-    formSizes: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    },
-    sizeOptions: {
-      type: Array,
-      default: function () {
-        return []
-      }
-    }
-  },
   data () {
     return {
       dialogVisible: false,
       checkedSizes: [],
+      sizeOptions: [],
+      formSizes: [],
       sizeContrastTableList: [],
       hints: ['注意事项：', '1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；', '2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；']
     }
@@ -120,7 +108,10 @@ export default {
     }
   },
   methods: {
-    open () {
+    open (type, data) {
+      const { sizeOptions, formSizes } = data
+      this.sizeOptions = sizeOptions
+      this.formSizes = formSizes
       this.dialogVisible = true
       this.getSizeTable()
     },
