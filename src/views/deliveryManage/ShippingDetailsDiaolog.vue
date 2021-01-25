@@ -1,9 +1,9 @@
 <template>
   <el-dialog :visible.sync="dialogVisible" width="60%" center :before-close="handleClose">
-    <h4>发货单（2835001）详情</h4>
+    <h4>发货单（{{shippingDeatilData.orderNumber}}）详情</h4>
     <el-table :data="tableData" style="width: 100%" border>
       <el-table-column prop="orderNumber" label="发货单号" align="center"></el-table-column>
-      <el-table-column prop="orderNumber" label="发货状态" align="center">
+      <el-table-column label="发货状态" align="center">
         <template slot-scope="scope">{{statusList[scope.row.orderStatus]}}</template>
       </el-table-column>
       <el-table-column prop="orderRequireNum" label="需求数量" align="center"></el-table-column>
