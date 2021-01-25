@@ -6,7 +6,7 @@
           class="sku-info batch-no-print"
           v-for="(item, index) in skuArr"
           :key="index"
-          style="width: 59.5mm; height: 39mm; background: #fff; overflow: hidden; page-break-after: always; padding-top:1mm; padding-right: 1mm;
+          style="width: 59.5mm; height: 38mm; background: #fff; overflow: hidden; page-break-before: always; padding-top:1mm; padding-right: 1mm;
                         padding-left: 1mm; margin-top:0!important; position:relative;"
         >
           <ul
@@ -22,10 +22,10 @@
           </ul>
           <ul
             class="bill-number"
-            style="font-size: 7.5pt!important; list-style-type: none; margin: -1mm 10mm 0 0; padding:0;"
+            style="font-size: 7.5pt!important; list-style-type: none; margin: 0.1mm 5mm 0 0; padding:0;"
           >
             <li
-              style="text-align: right; line-height: 1.1; margin-bottom:0.5mm; word-break:break-all;"
+              style="text-align: right; line-height: 1.1; margin-bottom:0.1mm; word-break:break-all;"
             >Att:{{item.productVariantAttributes && item.productVariantAttributes.join('/') || ''}}</li>
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
@@ -112,18 +112,18 @@ export default {
     appendStyle () {
       var css = `
        @media print {
-    @page {
-        size: 59.5mm 39mm;
-        margin: 0 auto;
-    }
-    .bill-number {
-        font-size: 7.5pt;
-    }
-    ul {
-        padding: 0;
-        margin: 0;
-    }
-    }
+        @page {
+          size: 59.5mm 40mm;
+          margin: 0 auto;
+        }
+        .bill-number {
+          font-size: 7.5pt;
+        }
+        ul {
+          padding: 0;
+          margin:0;
+        }
+      }
       `
       var head = document.head || document.getElementsByTagName('head')[0]
       var style = document.createElement('style')
@@ -142,12 +142,13 @@ export default {
 </style>
 <style scoped lang="scss">
 .sku-container-purchase {
-  position: relative;
+  position: absolute;
+  top: 0;
+  z-index: -11111;
   width: 59.5mm;
   height: 38mm;
-  left: -10px;
   overflow: hidden;
-  margin: 0 auto 25px auto;
+  margin: 0 auto 0 auto;
   clip-path: polygon(0px 0px, 0px 0px, 0px 0px, 0px 0px);
 }
 </style>
