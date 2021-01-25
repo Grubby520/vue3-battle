@@ -54,7 +54,7 @@ export default {
     return {
       dialogVisible: false,
       type: 'see',
-      statusList: ['待发货', '已发货', '已到货', '异常到货', '已完成'],
+      statusList: ['待发货', '已发货', '已到货', '异常到货', '已完成', '已取消'],
       tableData: [],
       originData: [],
       shippingDeatilData: {},
