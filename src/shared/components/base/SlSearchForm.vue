@@ -22,7 +22,7 @@
           >
             <el-input
               :placeholder="item.label"
-              v-model="form[item.name]"
+              v-model.trim="form[item.name]"
               @input="formChange"
               clearable
             ></el-input>
