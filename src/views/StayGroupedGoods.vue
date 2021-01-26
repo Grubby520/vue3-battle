@@ -406,6 +406,8 @@ export default {
           this.showSplitOrderDialog = false
           this.gotoPage()
           this.$message.success(`拆单成功`)
+        } else {
+          res.error ? errorMessageTip(res.error.message) : void (0)
         }
       })
     }
