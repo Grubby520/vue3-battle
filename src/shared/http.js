@@ -101,6 +101,8 @@ axiosInstance.interceptors.response.use(
           break
         case 505: err.message = `HTTP版本不受支持`
           break
+        case 506: err.message = `发货单已取消，无法打印批次号` // 特殊处理发货单取消，因为下载的时候，无法捕获到success为false的情况
+          break
         case 401:
           err.message = errorData.error.message
           redirectToLogin()
