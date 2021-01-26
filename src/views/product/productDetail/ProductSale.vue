@@ -217,14 +217,14 @@ export default {
   },
   methods: {
     load () {
-      axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
+      axios.get('http://152.136.21.21:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
         .then(res => {
           const data = res.data.data
           this.attributeId = data.id
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}
           const grade = (showSaleLabel, item, type) => {
-            this[`${type}Options`] = this.addExtendCode(item.terms, item.extendCode)
+            this[`${type}Options`] = this.addExtendCode(item.terms, item.extendCode, item.id)
             this.tableHeadData.unshift({ name: type, label: item.name, extendCode: item.extendCode })
             showSaleLabel[type] = item.name
           }
@@ -260,10 +260,11 @@ export default {
           this.showSaleLabel = showSaleLabel
         })
     },
-    addExtendCode (arr, extendCode) {
+    addExtendCode (arr, extendCode, attributeId) {
       // 尺寸/尺码/规格添加标识
       return arr.map(item => {
         item.extendCode = extendCode
+        item.attributeId = attributeId
         return item
       })
     },
@@ -325,7 +326,7 @@ export default {
               // 销售属性只有其中一个属性情况
               arrItem.forEach(item => {
                 tableLabel[item.id] = item
-                resultArry.push([{ attributeTermId: item.id, attributeId: this.attributeId }])
+                resultArry.push([{ attributeTermId: item.id, attributeId: item.attributeId }])
               })
             }
           } else {
@@ -334,13 +335,13 @@ export default {
               arrItem.forEach((value) => {
                 if (Array.isArray(item)) {
                   tableLabel[value.id] = value
-                  emptyArray.push([...item, { attributeTermId: value.id, attributeId: this.attributeId }])
+                  emptyArray.push([...item, { attributeTermId: value.id, attributeId: value.attributeId }])
                 } else {
                   tableLabel[item.id] = item
                   tableLabel[value.id] = value
                   emptyArray.push([
-                    { attributeTermId: item.id, attributeId: this.attributeId },
-                    { attributeTermId: value.id, attributeId: this.attributeId }
+                    { attributeTermId: item.id, attributeId: item.attributeId },
+                    { attributeTermId: value.id, attributeId: value.attributeId }
                   ])
                 }
               })
