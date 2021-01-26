@@ -7,6 +7,7 @@
       @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
+      :pageSize="page.pageSize"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
@@ -98,6 +99,7 @@ export default {
       },
       page: {
         pageIndex: 1,
+        pageSize: 10,
         total: 0
       },
       searchItems: [
@@ -298,7 +300,8 @@ export default {
         if (success) {
           this.tableData = data.list
           this.page.total = data.total
-          this.page.pageIndex = data.pageNum
+          this.page.pageIndex = pageIndex
+          this.page.pageSize = pageSize
         }
       }).finally(() => {
         this.$refs.listView.loading = false

@@ -19,6 +19,7 @@
       @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
+      :pageSize="page.pageSize"
     >
       <div slot="search">
         <SlSearchForm ref="searchForm" v-model="searchQuery" :items="searchItems"></SlSearchForm>

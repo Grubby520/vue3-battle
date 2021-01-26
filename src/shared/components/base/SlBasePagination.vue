@@ -4,6 +4,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page.sync="page.pageIndex"
+      :page-size.sync="page.pageSize"
       :page-sizes="pageSizes"
       layout="total, sizes, prev, pager, next, jumper"
       background
@@ -21,6 +22,10 @@ export default {
     },
     pageIndex: {
       type: Number
+    },
+    pageSize: {
+      type: Number,
+      default: 10
     }
   },
   data () {
@@ -40,7 +45,18 @@ export default {
         }
       },
       immediate: true
+    },
+    pageSize: {
+      handler (val, oldVal) {
+        if (val !== oldVal) {
+          this.page.pageSize = val
+        }
+      },
+      immediate: true
     }
+  },
+  mounted () {
+
   },
   methods: {
     // 每页查看条数变化
