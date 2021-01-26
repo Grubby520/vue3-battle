@@ -138,7 +138,7 @@
         <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入运营手机号"></el-input>
       </el-form-item>
       <el-form-item label="运营QQ号码" prop="contactQq">
-        <el-input v-model="form.contactQq" maxlength="150" clearable placeholder="请输入QQ号码"></el-input>
+        <el-input v-model="form.contactQq" maxlength="15" clearable placeholder="请输入QQ号码"></el-input>
       </el-form-item>
     </el-form>
   </div>
