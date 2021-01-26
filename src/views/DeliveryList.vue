@@ -102,9 +102,21 @@
               v-if="[0,1].includes(Number(scope.row.orderStatus))"
             >修改</el-button>-->
             <el-button @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
-            <el-button @click="exportExcle(scope.row)" type="text">导出表格</el-button>
-            <el-button @click="printOrder(scope.row)" type="text">打印发货单</el-button>
-            <el-button @click="printBatch(scope.row)" type="text">打印批次号</el-button>
+            <el-button
+              @click="exportExcle(scope.row)"
+              type="text"
+              v-if="scope.row.orderStatus != 5"
+            >导出表格</el-button>
+            <el-button
+              @click="printOrder(scope.row)"
+              type="text"
+              v-if="scope.row.orderStatus != 5"
+            >打印发货单</el-button>
+            <el-button
+              @click="printBatch(scope.row)"
+              type="text"
+              v-if="scope.row.orderStatus != 5"
+            >打印批次号</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,7 +124,7 @@
     <!-- 物流信息dialog -->
     <logistics-info ref="logisticsInfo"></logistics-info>
     <!-- 修改物理单号 -->
-    <modify-logistics-no ref="logisticsNo"></modify-logistics-no>
+    <modify-logistics-no ref="logisticsNo"></modify-logistics-no>5
     <!-- 发货单详情 -->
     <shipping-details ref="shippingDetail"></shipping-details>
     <print-batch-no ref="printBatch"></print-batch-no>
