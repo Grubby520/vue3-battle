@@ -10,7 +10,7 @@
     :lock-scroll="false"
     :append-to-body="true"
   >
-    <el-form ref="dialogForm" :model="form" :rules="rules" label-width="100px">
+    <el-form v-if="dialogVisible" ref="dialogForm" :model="form" :rules="rules" label-width="100px">
       <el-row type="flex">
         <el-col :span="6" class="align-center" style="min-width:10em">
           <SlImage size="10em" :src="form.src" />
@@ -29,7 +29,7 @@
           <el-form-item label="保留需求数" prop="retainRequiredNum">
             <el-input
               v-model="form.retainRequiredNum"
-              v-slFormatNumber="{ type: 'integer', max: form.requiredNum?parseInt(form.requiredNum)-1:999999, compareLength: false, includeZero: false }"
+              v-slFormatNumber="retainRequiredNumFormat"
               @input="computeNum"
               placeholder="填写大于0、小于原需求的正整数"
             ></el-input>
@@ -118,7 +118,11 @@ export default {
       this.$emit('update:showDialog', val)
     }
   },
-  computed: {},
+  computed: {
+    retainRequiredNumFormat () {
+      return { type: 'integer', max: this.form.requiredNum ? parseInt(this.form.requiredNum) - 1 : 999999, compareLength: false, includeZero: false }
+    }
+  },
   methods: {
     computeNum (val) {
       this.form.shippedNum = this.form.requiredNum - val
