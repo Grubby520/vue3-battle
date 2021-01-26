@@ -61,7 +61,7 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters('product', ['customAttributesData', 'productCustomizeAttributeList'])
+    ...mapGetters('product', ['customAttributesData', 'productCustomAttributes'])
   },
   watch: {
     customAttributesData: {
@@ -86,7 +86,7 @@ export default {
       deep: true,
       immediate: true
     },
-    productCustomizeAttributeList: {
+    productCustomAttributes: {
       handler (attributesData) {
         this.dataMap.clear()
         attributesData.forEach((attributeData) => {
@@ -110,6 +110,7 @@ export default {
             id: attribute.id
           }
         })
+        console.log('productCustomAttributes', data)
         resolve({ 'productCustomAttributes': data || [] })
       })
     }

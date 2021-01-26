@@ -170,7 +170,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'productBasicInfo', 'saleAttrNone']),
+    ...mapGetters('product', ['productParams', 'productBasicInfo', 'saleAttrNone', 'productSalesAttributeDetailVO']),
     changeForm () {
       const { sizes, colors, specifications } = this.form
       return [
@@ -210,6 +210,13 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    'productSalesAttributeDetailVO': {
+      handler (newValue) {
+        const { productCategorySalesAttributeSelectedList, productSalesAttributes } = newValue
+        this.form.productSalesAttributes = productSalesAttributes
+        console.log('productCategorySalesAttributeSelectedList', productCategorySalesAttributeSelectedList)
+      }
     }
   },
   mounted () {
@@ -223,7 +230,7 @@ export default {
           this.attributeId = data.id
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}
-          const grade = (showSaleLabel, item, type) => {
+          const buildSaleData = (showSaleLabel, item, type) => {
             this[`${type}Options`] = this.addExtendCode(item.terms, item.extendCode, item.id)
             this.tableHeadData.unshift({ name: type, label: item.name, extendCode: item.extendCode })
             showSaleLabel[type] = item.name
@@ -232,15 +239,15 @@ export default {
             switch (item.extendCode) {
               // 规格
               case 'NZ012':
-                grade(showSaleLabel, item, 'specification')
+                buildSaleData(showSaleLabel, item, 'specification')
                 break
               // 颜色
               case 'NZ010':
-                grade(showSaleLabel, item, 'color')
+                buildSaleData(showSaleLabel, item, 'color')
                 break
               // 尺码
               case 'NZ011':
-                grade(showSaleLabel, item, 'size')
+                buildSaleData(showSaleLabel, item, 'size')
                 this.$store.commit('product/SIZEATTR', { name: item.name, attributeId: data.id, terms: item.terms })
                 break
               // 尺码标准
@@ -292,11 +299,10 @@ export default {
         // 选择尺寸弹框
         case 'size':
           dialog = this.$refs.ProductSizeDialog
-          const { sizes, productSalesAttributes } = this.form
+          const { sizes } = this.form
           data = {
             'sizeOptions': this.sizeOptions || [],
-            'formSizes': sizes || [],
-            'productSalesAttributes': productSalesAttributes || []
+            'formSizes': sizes || []
           }
       }
       dialog.open(type, data)
@@ -396,12 +402,12 @@ export default {
     },
     /**
      * 销售属性变化根据暂存数据进行回显赋值
-     * * @param {Array} result 销售属性变化后的数据结构
+     * * @param {Array} saleData 销售属性变化后的数据结构
      */
-    stashTableInfo (result) {
+    stashTableInfo (saleData) {
       this.stashLastData()
-      if (result && result.length > 0) {
-        result.forEach((tableItem, tableIndex) => {
+      if (saleData && saleData.length > 0) {
+        saleData.forEach((tableItem, tableIndex) => {
           const stashDataItem = {}
           const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
           Object.keys(tableItem).forEach((item, index) => {
@@ -414,7 +420,7 @@ export default {
             }
           })
         })
-        return result
+        return saleData
       }
     },
     result () {

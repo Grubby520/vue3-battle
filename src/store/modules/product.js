@@ -5,11 +5,13 @@ export default {
     productParams: null,
     sizeAttr: {},
     // 回显基本属性
-    productBasicInfo: [],
+    productbasic: [],
     // 回显商品属性
-    productCustomizeAttributeList: [],
+    productCustomAttributes: [],
     // 回显销售属性
-    productSalesAttributeList: [],
+    productSalesAttributeDetailVO: [],
+    // 回显图片
+    productImages: [],
     // 品类上未绑定销售属性
     saleAttrNone: undefined,
     // 品类绑定的尺寸
@@ -22,9 +24,10 @@ export default {
   getters: {
     productParams: state => state.productInfo ? state.productInfo : {},
     sizeOptions: state => state.sizeOptions,
-    productBasicInfo: state => state.productBasicInfo || [],
-    productCustomizeAttributeList: state => state.productCustomizeAttributeList || [],
-    productSalesAttributeList: state => state.productSalesAttributeList || [],
+    productbasic: state => state.productbasic || [],
+    productCustomAttributes: state => state.productCustomAttributes || [],
+    productSalesAttributeDetailVO: state => state.productSalesAttributeDetailVO || [],
+    productImagesIInfo: state => state.productImages || [],
     sizeAttr: state => state.sizeAttr || {},
     saleAttrNone: state => state.saleAttrNone === 0,
     sizestandard: state => state.sizestandard || [],
@@ -40,14 +43,17 @@ export default {
     SIZEATTR: (store, data) => {
       store.sizeAttr = data
     },
-    PRODUCTBASICINFO: (store, data) => {
-      store.productBasicInfo = data
+    PRODUCTBASIC: (store, data) => {
+      store.productbasic = data
     },
-    PRODUCTCUSTOMIZEATTRIBUTELIST: (store, data) => {
-      store.productCustomizeAttributeList = data
+    PRODUCTCUSTOMATTRIBUTES: (store, data) => {
+      store.productCustomAttributes = data
     },
-    PRODUCTSALESATTRIBUTELIST: (store, data) => {
-      store.productSalesAttributeList = data
+    PRODUCTSALESATTRIBUTEDETAILVO: (store, data) => {
+      store.productSalesAttributeDetailVO = data
+    },
+    PRODUCTIMAGES: (store, data) => {
+      store.productImages = data
     },
     SALEATTRNONE: (store, data) => {
       store.saleAttrNone = data

@@ -68,13 +68,13 @@ export default {
 
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'productBasicInfo']),
+    ...mapGetters('product', ['productParams', 'productImagesIInfo']),
     mode () {
       return this.productParams.mode === 'view'
     }
   },
   watch: {
-    'productBasicInfo.productImageList': {
+    'productImagesIInfo': {
       handler (newVal) {
         if (newVal && newVal.length > 0) {
           this.productImages = newVal

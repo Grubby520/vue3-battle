@@ -37,7 +37,8 @@ import ProductAttr from './ProductAttr'
 import ProductSale from './ProductSale'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
-import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+// import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import axios from 'axios'
 import { mapGetters } from 'vuex'
 export default {
   props: {
@@ -60,7 +61,7 @@ export default {
   },
   watch: {
     '$props': {
-      handler (newValue) {
+      handler () {
         this.$store.commit('product/PRODUCT_PARAMS', this.$props)
       },
       immediate: true,
@@ -78,17 +79,19 @@ export default {
   },
   methods: {
     load () {
-      RecommondApi.recommendDetail(this.id)
+      // RecommondApi.recommendDetail(this.id)
+      axios.get('http://152.136.21.21:7300/mock/600fb0aafdd97627d2722680/erp-plm2/product/detail')
         .then(res => {
-          const { productBasicInfo, productCustomizeAttributeList, productSalesAttributeList } = res.data
+          const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data.data
           // 基础属性
-          this.$store.commit('product/PRODUCTBASICINFO', productBasicInfo || [])
+          this.$store.commit('product/PRODUCTBASIC', rest || [])
           // 商品属性
-          this.$store.commit('product/PRODUCTCUSTOMIZEATTRIBUTELIST', productCustomizeAttributeList || [])
+          this.$store.commit('product/PRODUCTCUSTOMATTRIBUTES', productCustomAttributes || [])
           // 销售属性
-          this.$store.commit('product/PRODUCTSALESATTRIBUTELIST', productSalesAttributeList || [])
-          // this.isStatus = res.status
-          this.productStatus = 2
+          this.$store.commit('product/PRODUCTSALESATTRIBUTEDETAILVO', productSalesAttributeDetailVO || [])
+          // 图片属性
+          this.$store.commit('product/PRODUCTIMAGES', productImages || [])
+          this.productStatus = status
         })
     },
     create () {
