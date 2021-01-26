@@ -47,7 +47,7 @@
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" :selectable="checkSelectable"></el-table-column>
         <el-table-column prop="date" label="发货单号" width="120px" align="center">
           <template slot-scope="scope">
             <el-button @click="odmDetail(scope.row,'see')" type="text">{{scope.row.orderNumber}}</el-button>
@@ -124,7 +124,7 @@
     <!-- 物流信息dialog -->
     <logistics-info ref="logisticsInfo"></logistics-info>
     <!-- 修改物理单号 -->
-    <modify-logistics-no ref="logisticsNo"></modify-logistics-no>5
+    <modify-logistics-no ref="logisticsNo"></modify-logistics-no>
     <!-- 发货单详情 -->
     <shipping-details ref="shippingDetail"></shipping-details>
     <print-batch-no ref="printBatch"></print-batch-no>
@@ -203,11 +203,16 @@ export default {
       tableData: [],
       activeIndex: '0',
       selectdChange: [],
-      count: 0
+      count: 0,
+      selectionsDisabled: []
     }
   },
 
   methods: {
+    checkSelectable (row) {
+      return row.orderStatus !== 5
+    },
+
     reset () {
       this.$refs.searchForm.reset()
       this.$refs.listView.refresh()
