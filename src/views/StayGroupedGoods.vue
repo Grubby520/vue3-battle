@@ -362,6 +362,8 @@ export default {
           this.$message.success(`生成发货单(${res.data})成功`)
           this.selections = []
           this.gotoPage()
+        } else {
+          res.error ? errorMessageTip(res.error.message) : void (0)
         }
       }).finally(() => {
         this.loading = false

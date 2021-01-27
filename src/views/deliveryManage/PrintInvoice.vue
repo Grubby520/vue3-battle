@@ -27,11 +27,11 @@
             <th>图片</th>
             <th>SPU</th>
             <th>SKU</th>
-            <th>SKU销售属性</th>
-            <th>商品名称</th>
-            <th>商家吊牌尺码</th>
-            <th>需求总量</th>
-            <th>实际发货数量</th>
+            <th style="width:150px">SKU销售属性</th>
+            <th style="width:200px">商品名称</th>
+            <th style="width:100px">商家吊牌尺码</th>
+            <th style="width:50px">需求总量</th>
+            <th style="width:50px">实际发货数量</th>
           </thead>
           <tbody>
             <tr v-for="(item,index) in info.items" :key="'row_'+index">
@@ -139,6 +139,7 @@ export default {
     display: flex;
     justify-content: space-between;
     font-size: 20px;
+    line-height: 1.5;
   }
 
   .print-table {
