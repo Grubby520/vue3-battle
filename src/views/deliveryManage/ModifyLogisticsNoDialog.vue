@@ -133,6 +133,9 @@ export default {
                 message: res.error.message,
                 type: 'error'
               })
+              if (Number(res.error.code) === 500007) {
+                location.reload()
+              }
             }
           })
         }
