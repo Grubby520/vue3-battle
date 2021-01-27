@@ -136,7 +136,7 @@ export default {
               if (Number(res.error.code) === 500007) {
                 setTimeout(() => {
                   location.reload()
-                }, 5000)
+                }, 3000)
               }
             }
           })
