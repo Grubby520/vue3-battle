@@ -10,15 +10,26 @@ export const homeRoutes = [
     },
     component: () => import('@/views/Index.vue')
   },
-  // {
-  //   path: 'my-file',
-  //   name: '我的档案',
-  //   meta: {
-  //     icon: 'el-icon-postcard',
-  //     code: 'menu_my_info'
-  //   },
-  //   component: () => import('@/views/MyFile.vue')
-  // },
+  {
+    path: 'basic',
+    name: '基础资料',
+    meta: {
+      icon: 'el-icon-folder',
+      code: 'menu_my_info'
+    },
+    component: ParentMenuRoute,
+    children: [
+      {
+        path: 'my-file',
+        name: '基础资料',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_my_info'
+        },
+        component: () => import('@/views/MyFile.vue')
+      }
+    ]
+  },
   {
     path: 'recommend-products',
     name: '商品管理',
@@ -28,22 +39,22 @@ export const homeRoutes = [
     },
     component: ParentMenuRoute,
     children: [
-      // {
-      //   path: 'odmOneDetails',
-      //   name: '创建产品',
-      //   meta: {
-      //     icon: 'el-icon-paperclip',
-      //     code: 'menu_create_product'
-      //   },
-      //   props: route => {
-      //     return {
-      //       id: route.query.id,
-      //       mode: route.query.mode,
-      //       categoryId: route.query.categoryId
-      //     }
-      //   },
-      //   component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
-      // },
+      {
+        path: 'odmOneDetails',
+        name: '创建产品',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_create_product'
+        },
+        props: route => {
+          return {
+            id: route.query.id,
+            mode: route.query.mode,
+            categoryId: route.query.categoryId
+          }
+        },
+        component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
+      },
       {
         path: 'list',
         name: '商品列表',
@@ -90,6 +101,26 @@ export const homeRoutes = [
           notMenu: true
         },
         component: () => import('@/views/ImportProductImgs')
+      }
+    ]
+  },
+  {
+    path: 'finance',
+    name: '财务管理',
+    meta: {
+      icon: 'el-icon-bank-card',
+      code: 'menu_my_info'
+    },
+    component: ParentMenuRoute,
+    children: [
+      {
+        path: 'bank',
+        name: '收款银行',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_my_info'
+        },
+        component: () => import('@/views/Bank.vue')
       }
     ]
   }

@@ -15,7 +15,9 @@ const USER_API = {
   isCertificationNoExist: (params) => get(URL.certificationNoExist, params),
   isSupplierNameExist: (params) => get(URL.supplierNameExist, params),
   protocolConfirm: () => put(URL.protocolConfirm),
-  getSupplierDetail: (params) => get(URL.supplierDetail, params)
+  getSupplierDetail: (params) => get(URL.supplierDetail, params),
+  getSupplierBasicInfo: (params) => get(URL.supplierBasic, params),
+  getSupplierBankInfo: (params) => get(URL.supplierBank, params)
 }
 
 export default USER_API

@@ -9,7 +9,7 @@
       label-width="12rem"
       label-position="left"
     >
-      <SlContentTitle text="基础信息" line></SlContentTitle>
+      <SlContentTitle text="基础信息" :textStyle="titleTextStyle" line></SlContentTitle>
       <el-form-item label="公司名称" prop="supplierName">
         <el-input
           v-model="form.supplierName"
@@ -42,7 +42,7 @@
         <SlAreaCascader v-model="form.address"></SlAreaCascader>
       </el-form-item>
 
-      <SlContentTitle text="经营信息" line></SlContentTitle>
+      <SlContentTitle text="经营信息" :textStyle="titleTextStyle" line></SlContentTitle>
       <el-form-item label="主要交易类型" prop="tradeType">
         <el-checkbox-group v-model="form.tradeType">
           <el-checkbox
@@ -95,7 +95,7 @@
       </el-form-item>
       <!-- 审核拒绝再次编辑时不编辑账号注册模块 -->
       <template v-if="!supplierId">
-        <SlContentTitle text="账号注册" line></SlContentTitle>
+        <SlContentTitle text="账号注册" :textStyle="titleTextStyle" line></SlContentTitle>
         <el-form-item label="邮箱" prop="userName">
           <el-input v-model="form.userName" clearable placeholder="用于登录,请务必填写正确的邮箱"></el-input>
         </el-form-item>
@@ -123,7 +123,7 @@
         </el-form-item>
       </template>
 
-      <SlContentTitle text="联系人" line></SlContentTitle>
+      <SlContentTitle text="联系人" :textStyle="titleTextStyle" line></SlContentTitle>
       <el-form-item label="运营负责人" prop="contactName">
         <el-input
           v-model="form.contactName"
@@ -138,7 +138,7 @@
         <el-input v-model="form.contactNumber" type="tel" clearable placeholder="请输入运营手机号"></el-input>
       </el-form-item>
       <el-form-item label="运营QQ号码" prop="contactQq">
-        <el-input v-model="form.contactQq" maxlength="150" clearable placeholder="请输入QQ号码"></el-input>
+        <el-input v-model="form.contactQq" maxlength="15" clearable placeholder="请输入QQ号码"></el-input>
       </el-form-item>
     </el-form>
   </div>
@@ -287,6 +287,9 @@ export default {
         contactQq: [
           qqValidator()
         ]
+      },
+      titleTextStyle: {
+        margin: '1em 0 1em 0'
       }
     }
   },

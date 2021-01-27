@@ -9,7 +9,8 @@ import {
   idCardReg,
   bankCardNumberReg,
   emptyReg,
-  qqReg
+  qqReg,
+  telePhoneReg
 } from './regular.js'
 
 /**
@@ -195,6 +196,18 @@ export const qqValidator = function (errorMsg = '请输入正确的qq号', trigg
   }
   return {
     validator: generateFormItemValidator(qqReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+// 国内固定电话
+export const telePhoneValidator = function (errorMsg = '请输入正确的电话号码', trigger = 'blur', required = false) {
+  if (!required) {
+    return generateNotRequiredValidator(errorMsg, telePhoneReg, trigger)
+  }
+  return {
+    validator: generateFormItemValidator(telePhoneReg, errorMsg),
     message: errorMsg,
     trigger: trigger
   }

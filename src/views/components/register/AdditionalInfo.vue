@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form ref="form" :model="form" :rules="rules" label-width="12rem" label-position="left">
-      <SlContentTitle text="收款信息" line></SlContentTitle>
+      <SlContentTitle text="收款信息" :textStyle="{margin: '1em 0 1em 0'}" line></SlContentTitle>
       <el-form-item label="收款币种" prop="currency">
         <el-select v-model="form.currency" filterable clearable placeholder="请选择" disabled>
           <el-option

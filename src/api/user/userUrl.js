@@ -15,5 +15,7 @@ export default {
   certificationNoExist: baseURL + 'supplier/certification/exist',
   supplierNameExist: baseURL + 'supplier/supplier-name/exist',
   protocolConfirm: baseURL + 'supplier/agreement/confirm',
-  supplierDetail: baseURL + 'supplier/detail'
+  supplierDetail: baseURL + 'supplier/detail',
+  supplierBasic: baseURL + 'supplier/detail/basic',
+  supplierBank: baseURL + 'supplier/detail/bank'
 }
