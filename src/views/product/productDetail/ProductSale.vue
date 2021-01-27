@@ -263,7 +263,7 @@ export default {
               // 尺码
               case 'NZ011':
                 buildSaleData(showSaleLabel, item, 'size')
-                this.$store.commit('product/SIZEATTR', { name: item.name, attributeId: data.id, terms: item.terms })
+                this.$store.commit('product/SIZEATTR', { name: item.name, attributeId: item.id, terms: item.terms })
                 break
               // 尺码标准
               case 'NZ013':
@@ -371,7 +371,6 @@ export default {
           }
         })
         return this.stashTableInfo(result)
-        // return result
       }
     },
     /**
@@ -432,11 +431,7 @@ export default {
           const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
           const stashIds =
             stashDataItem.productCategorySalesAttributes && stashDataItem.productCategorySalesAttributes.length > 0 ? stashDataItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('') : undefined
-          if (tableItemIds === stashIds) {
-            return stashDataItem
-          } else {
-            return tableItem
-          }
+          return tableItemIds === stashIds ? stashDataItem : tableItem
         })
       }
     },

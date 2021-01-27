@@ -91,6 +91,8 @@ export default {
           this.$store.commit('product/PRODUCTSALESATTRIBUTEDETAILVO', productSalesAttributeDetailVO || [])
           // 图片属性
           this.$store.commit('product/PRODUCTIMAGES', productImages || [])
+          // 尺码表
+          this.$store.commit('product/PRODUCTSIZE', productSize || [])
           this.productStatus = status
         })
     },

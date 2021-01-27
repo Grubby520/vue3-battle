@@ -12,6 +12,8 @@ export default {
     productSalesAttributeDetailVO: [],
     // 回显图片
     productImages: [],
+    // 回显尺码表
+    productsize: [],
     // 品类上未绑定销售属性
     saleAttrNone: undefined,
     // 品类绑定的尺寸
@@ -28,6 +30,7 @@ export default {
     productCustomAttributes: state => state.productCustomAttributes || [],
     productSalesAttributeDetailVO: state => state.productSalesAttributeDetailVO || [],
     productImagesIInfo: state => state.productImages || [],
+    productsize: state => state.productsize || [],
     sizeAttr: state => state.sizeAttr || {},
     saleAttrNone: state => state.saleAttrNone === 0,
     sizestandard: state => state.sizestandard || [],
@@ -54,6 +57,9 @@ export default {
     },
     PRODUCTIMAGES: (store, data) => {
       store.productImages = data
+    },
+    PRODUCTSIZE: (store, data) => {
+      store.productsize = data
     },
     SALEATTRNONE: (store, data) => {
       store.saleAttrNone = data
