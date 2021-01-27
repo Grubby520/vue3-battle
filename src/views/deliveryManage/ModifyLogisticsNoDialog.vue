@@ -113,7 +113,8 @@ export default {
       }
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id }, this.form)
+          let type = this.isEdit ? 'modify' : 'add'
+          let data = Object.assign({ deliveryOrderId: this.logisticsInfo.id, type: type }, this.form)
           GOODS_API.modifyLogisticsNo(data).then(res => {
             if (res.success) {
               let obj = _find(this.companyList, (item) => item.id === this.form.id)
