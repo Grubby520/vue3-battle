@@ -137,8 +137,8 @@ export default {
       colorOptions: [],
       sizeOptions: [],
       specificationOptions: [],
+      catagoryData: [],
       stashTableData: new Map(),
-      attributeId: undefined,
       showSaleLabel: {},
       tableLabel: [],
       tableHeadData: [ // 表头字段
@@ -170,7 +170,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'productBasicInfo', 'saleAttrNone', 'productSalesAttributeDetailVO']),
+    ...mapGetters('product', ['productParams', 'saleAttrNone', 'productSalesAttributeDetailVO']),
     changeForm () {
       const { sizes, colors, specifications } = this.form
       return [
@@ -215,7 +215,22 @@ export default {
       handler (newValue) {
         const { productCategorySalesAttributeSelectedList, productSalesAttributes } = newValue
         this.form.productSalesAttributes = productSalesAttributes
-        console.log('productCategorySalesAttributeSelectedList', productCategorySalesAttributeSelectedList)
+        // 回显销售id获取分类销售属性name
+        const saleAttrs = {}
+        productCategorySalesAttributeSelectedList.find(cateSale => {
+          const saleAttrItem = []
+          const attributeTermId = cateSale.attributeTermId
+          this.catagoryData.forEach(cata => {
+            if (cata.id === cateSale.attributeId) {
+              const terms = cata.terms
+              const findSaleAttr = terms.filter(ter => attributeTermId.find(attr => ter.id === attr))
+              saleAttrItem.push(findSaleAttr)
+              saleAttrs[cata.extendCode] = saleAttrItem
+            }
+          })
+        })
+        this.form.sizes.push(...saleAttrs['NZ011'].flat())
+        this.form.colors.push(...saleAttrs['NZ010'].flat())
       }
     }
   },
@@ -224,10 +239,10 @@ export default {
   },
   methods: {
     load () {
-      axios.get('http://152.136.21.21:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
+      axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
         .then(res => {
           const data = res.data.data
-          this.attributeId = data.id
+          this.catagoryData = data
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}
           const buildSaleData = (showSaleLabel, item, type) => {
@@ -267,9 +282,9 @@ export default {
           this.showSaleLabel = showSaleLabel
         })
     },
-    addExtendCode (arr, extendCode, attributeId) {
+    addExtendCode (saleAttrItem, extendCode, attributeId) {
       // 尺寸/尺码/规格添加标识
-      return arr.map(item => {
+      return saleAttrItem.map(item => {
         item.extendCode = extendCode
         item.attributeId = attributeId
         return item
@@ -314,23 +329,17 @@ export default {
     addTableItems (attrArr) {
       let resultArry = []
       const tableLabel = {}
-      const tableBase = {
-        supplyPrice: '',
-        supplierSkuCode: '',
-        tagSize: '',
-        weight: ''
-      }
       const hasNoneAttr = attrArr.flat().length !== 0
       const hasAttrLen = attrArr.filter(item => item.length > 0)
       if (hasNoneAttr) {
-        attrArr.forEach((arrItem) => {
-          if (arrItem && arrItem.length === 0) return
+        attrArr.forEach((saleAttrItemItem) => {
+          if (saleAttrItemItem && saleAttrItemItem.length === 0) return
           if (resultArry.length === 0) {
             if (hasAttrLen > 1) {
-              resultArry = arrItem
+              resultArry = saleAttrItemItem
             } else {
               // 销售属性只有其中一个属性情况
-              arrItem.forEach(item => {
+              saleAttrItemItem.forEach(item => {
                 tableLabel[item.id] = item
                 resultArry.push([{ attributeTermId: item.id, attributeId: item.attributeId }])
               })
@@ -338,7 +347,7 @@ export default {
           } else {
             const emptyArray = []
             resultArry.forEach((item) => {
-              arrItem.forEach((value) => {
+              saleAttrItemItem.forEach((value) => {
                 if (Array.isArray(item)) {
                   tableLabel[value.id] = value
                   emptyArray.push([...item, { attributeTermId: value.id, attributeId: value.attributeId }])
@@ -358,12 +367,11 @@ export default {
         this.tableLabel = tableLabel
         const result = resultArry.map(item => {
           return {
-            productCategorySalesAttributes: item,
-            ...tableBase
+            productCategorySalesAttributes: item
           }
         })
-        this.stashTableInfo(result)
-        return result
+        return this.stashTableInfo(result)
+        // return result
       }
     },
     /**
@@ -401,26 +409,35 @@ export default {
       })
     },
     /**
-     * 销售属性变化根据暂存数据进行回显赋值
+     * 销售属性变化根据暂存数据/编辑状态进行回显赋值
      * * @param {Array} saleData 销售属性变化后的数据结构
      */
     stashTableInfo (saleData) {
       this.stashLastData()
       if (saleData && saleData.length > 0) {
-        saleData.forEach((tableItem, tableIndex) => {
+        const showDatas = JSON.parse(JSON.stringify(saleData))
+        return showDatas.map((tableItem, tableIndex) => {
           const stashDataItem = {}
-          const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
+          tableItem = {
+            ...tableItem,
+            supplyPrice: '',
+            supplierSkuCode: '',
+            tagSize: '',
+            weight: ''
+          }
           Object.keys(tableItem).forEach((item, index) => {
             const value = this.stashTableData.get(`${tableIndex}${item}${index}`)
             stashDataItem[item] = value
-            const salesAttributes = stashDataItem.productCategorySalesAttributes || []
-            const stashIds = salesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
-            if (tableItemIds === stashIds) {
-              Object.assign(tableItem, stashDataItem)
-            }
           })
+          const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
+          const stashIds =
+            stashDataItem.productCategorySalesAttributes && stashDataItem.productCategorySalesAttributes.length > 0 ? stashDataItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('') : undefined
+          if (tableItemIds === stashIds) {
+            return stashDataItem
+          } else {
+            return tableItem
+          }
         })
-        return saleData
       }
     },
     result () {

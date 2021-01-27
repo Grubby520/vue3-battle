@@ -80,7 +80,7 @@ export default {
   methods: {
     load () {
       // RecommondApi.recommendDetail(this.id)
-      axios.get('http://152.136.21.21:7300/mock/600fb0aafdd97627d2722680/erp-plm2/product/detail')
+      axios.get('http://10.250.0.66:7300/mock/600fb0aafdd97627d2722680/erp-plm2/product/detail')
         .then(res => {
           const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data.data
           // 基础属性
