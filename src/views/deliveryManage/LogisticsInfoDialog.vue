@@ -39,7 +39,7 @@ export default {
     show (data) {
       this.logisticsInfo = data.row
       this.isShowLogistics = data.isShowLogistics
-      this.tableData = data.info.trackingInfoDetailList
+      this.tableData = data.info ? data.info.trackingInfoDetailList : []
     }
   }
 }
