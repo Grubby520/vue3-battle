@@ -362,8 +362,6 @@ export default {
           this.$message.success(`生成发货单(${res.data})成功`)
           this.selections = []
           this.gotoPage()
-        } else {
-          res.error ? errorMessageTip(res.error.message) : void (0)
         }
       }).finally(() => {
         this.loading = false
@@ -408,8 +406,6 @@ export default {
           this.showSplitOrderDialog = false
           this.gotoPage()
           this.$message.success(`拆单成功`)
-        } else {
-          res.error ? errorMessageTip(res.error.message) : void (0)
         }
       })
     }

@@ -62,6 +62,7 @@ axiosInstance.interceptors.response.use(
         case '200005': // 当前账号已冻结
         case '200006': // 供应商信息保存失败
         case '200007': // 供应商注册信息更新失败:审核未通过情况下允许此操作
+        case '200010':
         case '500001': // 参数异常
         case '500002': // 数据不存在
         case '500003': // 数据冲突
