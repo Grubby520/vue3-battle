@@ -18,7 +18,7 @@
                 :rules="[{required: attribute.required, message: `${attribute.name}是必填项`, trigger: attribute.termValueType === 1 ? 'change' : 'blur'}]"
               >
                 <template slot="label">
-                  <span :title="attribute.name">{{attribute.name}}</span>
+                  <span :title="attribute.name">{{attribute.name}}{{attribute.checkbox}}</span>
                 </template>
                 <component
                   v-model="attribute.value"
@@ -61,16 +61,26 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters('product', ['customAttributesData', 'productCustomAttributes'])
+    ...mapGetters('product', ['customAttributesData', 'productCustomAttributes']),
+    customAttributes () {
+      const { customAttributesData, productCustomAttributes } = this
+      return { customAttributesData, productCustomAttributes }
+    }
   },
   watch: {
-    customAttributesData: {
-      handler (attributesData) {
-        const attributes = deepClone(attributesData)
+    customAttributes: {
+      handler (data) {
+        const attributesList = data.customAttributesData
+        const attributesData = data.productCustomAttributes
+        this.dataMap.clear()
+        attributesData.forEach((attributeData) => {
+          this.dataMap.set(`${attributeData.attributeId}`, attributeData)
+        })
+        const attributes = deepClone(attributesList)
         this.form.attributesData = attributes.filter((attribute) => attribute.usable) // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
           .map((attribute) => {
-            const attributeData = this.dataMap.get(attribute.attributeId) || {}
+            const attributeData = this.dataMap.get(`${attribute.id}`) || {}
             return {
               id: attributeData.id || null,
               attributeId: attribute.id,
@@ -79,19 +89,9 @@ export default {
               checkbox: attribute.checkbox,
               required: attribute.required,
               terms: attribute.terms,
-              value: attributeData.attributeValues || attribute.checkbox ? [] : undefined
+              value: attributeData.attributeValues || (attribute.checkbox ? [] : undefined)
             }
           })
-      },
-      deep: true,
-      immediate: true
-    },
-    productCustomAttributes: {
-      handler (attributesData) {
-        this.dataMap.clear()
-        attributesData.forEach((attributeData) => {
-          this.dataMap.set(attributeData.attributeId, attributeData)
-        })
       },
       deep: true,
       immediate: true
@@ -110,7 +110,6 @@ export default {
             id: attribute.id
           }
         })
-        console.log('productCustomAttributes', data)
         resolve({ 'productCustomAttributes': data || [] })
       })
     }
