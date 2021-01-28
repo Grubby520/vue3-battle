@@ -25,7 +25,7 @@ axiosInstance.interceptors.request.use(config => {
   const userKey = getCookie('userKey')
 
   if (config.headers['addLoading']) {
-    store.dispatch('OPEN_LOADING', true)
+    store.dispatch('OPEN_LOADING', { isCount: true })
     delete config.headers['addLoading']
   }
 

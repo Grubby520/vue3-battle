@@ -398,7 +398,7 @@ export default {
         url: GoodsUrl.ecxportExcle + '?deliveryOrderId=' + row.id,
         name: `发货单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
-          this.$store.dispatch('OPEN_LOADING')
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
         },
         afterLoad: () => {
           this.selections = []
@@ -420,7 +420,7 @@ export default {
           name: `批量导出批次号.zip`,
           params: { ids: arr.join(',') },
           beforeLoad: () => {
-            this.$store.dispatch('OPEN_LOADING')
+            this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
           },
           afterLoad: () => {
             this.selections = []

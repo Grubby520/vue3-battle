@@ -377,7 +377,7 @@ export default {
         name: `待发货SKU维度详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
           this.loading = true
-          this.$store.dispatch('OPEN_LOADING')
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
         },
         afterLoad: () => {
           this.loading = false
