@@ -195,6 +195,9 @@ export default {
               return (
                 row['ctime'].map(item => {
                   if (!item.timeStamp) return ''
+                  if (row['ctime'].length === 1) {
+                    return (<span>{item.timeStamp}</span>)
+                  }
                   return (
                     <div>
                       <span>{item.typeDes}:</span>
