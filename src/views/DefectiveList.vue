@@ -101,7 +101,7 @@ export default {
             return (
               <el-tooltip placement="top" effect="light">
                 <div slot="content" style="max-width:300px">{row.name}</div>
-                <ellipsis text={row.name} lineNum={2} tagName="p" width='225px'></ellipsis>
+                <p v-slClamp={{ clamp: 2 }}>{row.name}</p>
               </el-tooltip>
             )
           }
