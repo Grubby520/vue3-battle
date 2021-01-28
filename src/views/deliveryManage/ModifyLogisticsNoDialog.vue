@@ -129,10 +129,12 @@ export default {
               this.onClick(params)
               this.showDiaolog = false
             } else {
-              Message({
-                message: res.error.message,
-                type: 'error'
-              })
+              if (Number(res.error.code) !== 900001) {
+                Message({
+                  message: res.error.message,
+                  type: 'error'
+                })
+              }
               if (Number(res.error.code) === 500007) {
                 setTimeout(() => {
                   location.reload()
