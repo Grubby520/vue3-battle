@@ -99,7 +99,8 @@ export default {
           render: (h, data) => {
             let { row = {} } = data
             return (
-              <el-tooltip content={row.name} placement="top" effect="light">
+              <el-tooltip placement="top" effect="light">
+                <div slot="content" style="max-width:300px">{row.name}</div>
                 <ellipsis text={row.name} lineNum={2} tagName="p" width='225px'></ellipsis>
               </el-tooltip>
             )
