@@ -62,12 +62,9 @@
 </template>
 
 <script>
-import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+// import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
 export default {
-  props: {
-    // isStatus: { type: Boolean, required: false, default: false }
-  },
   data () {
     return {
       hasPattern: false,
@@ -135,22 +132,23 @@ export default {
       return {
         required: true,
         validator: (rule, value, callback) => {
-          if (!value) {
-            callback(new Error('供方货号不能为空'))
-          } else {
-            if (value === this.supplierItemNo) {
-              callback()
-            } else {
-              RecommondApi.checkItem(value)
-                .then(res => {
-                  if (res.data) {
-                    callback(new Error('同一个供应商下，供方SPU唯一'))
-                  } else {
-                    callback()
-                  }
-                })
-            }
-          }
+          callback()
+          // if (!value) {
+          //   callback(new Error('供方货号不能为空'))
+          // } else {
+          //   if (value === this.supplierItemNo) {
+          //     callback()
+          //   } else {
+          //     RecommondApi.checkItem(value)
+          //       .then(res => {
+          //         if (res.data) {
+          //           callback(new Error('同一个供应商下，供方SPU唯一'))
+          //         } else {
+          //           callback()
+          //         }
+          //       })
+          //   }
+          // }
         },
         trigger: 'blur'
       }

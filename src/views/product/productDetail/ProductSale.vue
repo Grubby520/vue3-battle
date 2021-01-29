@@ -429,8 +429,7 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        const { productSalesAttributes } = this.form
-        resolve({ 'productSalesAttributes': productSalesAttributes || [] })
+        resolve({ 'productSalesAttributes': this.form.productSalesAttributes || [] })
       })
     }
   }

@@ -76,13 +76,6 @@ export default {
       return this.mode === 'view'
     },
     saveText () {
-      // if (!this.saveText) {
-      //   return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
-      // } else {
-      //   return []
-      // }
-      // console.log('isStatus', this.isStatus)
-      // return []
       switch (this.isStatus) {
         case true:
           return []
@@ -114,12 +107,12 @@ export default {
       // 保存数据
       this.getResult()
         .then(res => {
-          // console.log('res', res)
+          // console.log('222222222222222', res)
           switch (this.$refs.control.someBtnParams) {
             // 确定
             case 0:
               break
-            // 提交
+            // 提交(确定补充信息)
             case 1:
               break
           }
@@ -127,6 +120,18 @@ export default {
     },
     modify () {
       // 编辑数据
+      this.getResult()
+        .then(res => {
+          // console.log('res1111111111111', res)
+          switch (this.$refs.control.someBtnParams) {
+            // 确定
+            case 0:
+              break
+            // 提交(确定补充信息)
+            case 1:
+              break
+          }
+        })
     },
     cancel () {
       // 取消
@@ -141,13 +146,13 @@ export default {
       }
       return Promise.all(result)
         .then((res) => {
-          const [{ productBasicInfo }, { productImages }, { productCategorySalesAttributes }, { productSize }, { productCustomAttributes }] = res
+          const [{ productBasicInfo }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
           return {
             ...productBasicInfo,
             categoryId: this.categoryId,
             categoryPath: this.categoryPath,
             productImages,
-            productCategorySalesAttributes,
+            productSalesAttributes,
             productSize,
             productCustomAttributes
           }
