@@ -31,7 +31,7 @@
           </el-form-item>
           <el-form-item label="商品描述" prop="description">
             <el-input
-              v-if="!isStatus"
+              v-if="productParams.mode!== 'view'"
               type="textarea"
               rows="5"
               clearable
@@ -44,7 +44,7 @@
           </el-form-item>
           <el-form-item label="商品备注">
             <el-input
-              v-if="!isStatus"
+              v-if="productParams.mode!== 'view'"
               type="textarea"
               rows="5"
               maxlength="500"
@@ -66,7 +66,7 @@ import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
 export default {
   props: {
-    isStatus: { type: Boolean, required: false, default: false }
+    // isStatus: { type: Boolean, required: false, default: false }
   },
   data () {
     return {

@@ -105,7 +105,11 @@
             </el-table>
             <el-row class="ProductSale-from__batch">
               <SlSpace />
-              <el-button type="primary" @click="openDialog('batchAttributes')">批量录入</el-button>
+              <el-button
+                type="primary"
+                @click="openDialog('batchAttributes')"
+                v-if="productParams.mode!== 'view'"
+              >批量录入</el-button>
             </el-row>
           </div>
         </el-form>

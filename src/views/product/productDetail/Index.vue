@@ -8,7 +8,7 @@
       style="margin-bottom: 1rem;"
     />
     <div :class="{'view-container': isStatus}">
-      <ProductBase ref="productBase" :isStatus="isStatus" />
+      <ProductBase ref="productBase" />
       <ProductImages ref="productImages" />
       <ProductSale ref="productSale" />
       <ProductSize ref="productSize" />
