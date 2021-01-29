@@ -148,37 +148,65 @@
           <el-form-item label="法人身份证:">
             <el-row>
               <el-col :span="1" style="min-width:120px">
-                <SlImage size="10rem" :src="form.certification.idCardFront" />
+                <SlImage
+                  v-show="form.certification.idCardFront"
+                  size="10rem"
+                  :src="form.certification.idCardFront"
+                />
               </el-col>
               <el-col :span="1" style="min-width:120px">
-                <SlImage size="10rem" :src="form.certification.idCardBack" />
+                <SlImage
+                  v-show="form.certification.idCardBack"
+                  size="10rem"
+                  :src="form.certification.idCardBack"
+                />
               </el-col>
             </el-row>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="营业执照:">
-            <SlImage size="10rem" :src="form.certification.certificationImage" />
+            <SlImage
+              v-show="form.certification.certificationImage"
+              size="10rem"
+              :src="form.certification.certificationImage"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="组织机构代码证:">
-            <SlImage size="10rem" :src="form.certification.organizationImage" />
+            <SlImage
+              v-show="form.certification.organizationImage"
+              size="10rem"
+              :src="form.certification.organizationImage"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="税务登记证:">
-            <SlImage size="10rem" :src="form.certification.taxRegisterImage" />
+            <SlImage
+              v-show="form.certification.taxRegisterImage"
+              size="10rem"
+              :src="form.certification.taxRegisterImage"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="企业股东证截图:">
-            <SlImage size="10rem" :src="form.certification.companyShareholderImage" />
+            <SlImage
+              v-show="form.certification.companyShareholderImage"
+              size="10rem"
+              :src="form.certification.companyShareholderImage"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="收款委托书:">
-            <SlImage size="10rem" :src="form.certification.payeeDelegationImage" />
+            <SlImage
+              v-show="form.certification.payeeDelegationImage"
+              size="10rem"
+              :src="form.certification.payeeDelegationImage"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -250,11 +278,9 @@ export default {
   methods: {
     getDetails (supplierId) {
       this.loading = true
-      // UserApi.getSupplierBankInfo({ supplierId }).then(res => {
-      // })
-      UserApi.getSupplierDetail({ supplierId }).then(res => {
+      UserApi.getSupplierBankInfo({ supplierId }).then(res => {
         if (res.success) {
-          let { bankInfo = {}, certification = {} } = res.data
+          let { bankInfo = {}, certification = {} } = res.data || {}
           this.form.bankInfo = bankInfo
           this.form.certification = certification
         }

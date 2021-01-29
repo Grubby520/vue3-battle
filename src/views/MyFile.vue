@@ -189,11 +189,11 @@ export default {
   methods: {
     getDetails (supplierId) {
       this.loading = true
-      // UserApi.getSupplierBasicInfo({ supplierId }).then(res => {
-      // })
-      UserApi.getSupplierDetail({ supplierId }).then(res => {
+      UserApi.getSupplierBasicInfo({ supplierId }).then(res => {
         if (res.success) {
-          let { baseInfo = {}, shippingAddress = {} } = res.data
+          let { baseInfo = {}, shippingAddress = {} } = res.data || {}
+          baseInfo = baseInfo || {}
+          shippingAddress = shippingAddress || {}
           this.form.baseInfo = {
             supplierName: baseInfo.supplierName,
             userName: baseInfo.userName,
@@ -218,18 +218,24 @@ export default {
     save () {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          // this.loading = true
-          // let params = {
-          //   ...this.form,
-          //   address: JSON.stringify(this.form.address)
-          // }
-          // UserApi.docModify(params).then(res => {
-          //   if (res.success) {
-          //     this.$message.success('保存成功')
-          //   }
-          // }).finally(() => {
-          //   this.loading = false
-          // })
+          this.loading = true
+          let params = {
+            provinces: this.form.shippingAddress.provinces ? JSON.stringify(this.form.shippingAddress.provinces) : null,
+            address: this.form.shippingAddress.address,
+            recipientName: this.form.shippingAddress.contactName,
+            recipientCellphone: this.form.shippingAddress.contactCellphone,
+            recipientTelephone: this.form.shippingAddress.contactTelephone,
+            contactName: this.form.baseInfo.contactName,
+            contactNumber: this.form.baseInfo.contactNumber,
+            contactQq: this.form.baseInfo.contactQq
+          }
+          UserApi.supplierUpdate(params).then(res => {
+            if (res.success) {
+              this.$message.success('保存成功')
+            }
+          }).finally(() => {
+            this.loading = false
+          })
         }
       })
     }
