@@ -8,7 +8,7 @@
       style="margin-bottom: 1rem;"
     />
     <div :class="{'view-container': isStatus}">
-      <ProductBase ref="productBase" />
+      <ProductBase ref="productBase" :isStatus="isStatus" />
       <ProductImages ref="productImages" />
       <ProductSale ref="productSale" />
       <ProductSize ref="productSize" />
@@ -76,7 +76,19 @@ export default {
       return this.mode === 'view'
     },
     saveText () {
-      return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+      // if (!this.saveText) {
+      //   return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+      // } else {
+      //   return []
+      // }
+      // console.log('isStatus', this.isStatus)
+      // return []
+      switch (this.isStatus) {
+        case true:
+          return []
+        default:
+          return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+      }
     }
   },
   methods: {

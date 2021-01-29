@@ -465,5 +465,8 @@ export default {
   .el-card {
     overflow: unset !important;
   }
+  /deep/.el-input--small .el-input__inner {
+    text-align: center;
+  }
 }
 </style>

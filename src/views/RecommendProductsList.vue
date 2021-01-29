@@ -49,6 +49,7 @@
             v-if="[0].includes(row.productStatus)"
           >编辑（新）</el-button>
           <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
+          <el-button @click="productDetail('view',row)" type="text">查看(新)</el-button>
           <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
