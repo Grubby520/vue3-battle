@@ -43,50 +43,51 @@
           <SlTableHeaderFormat v-if="item.headerRender" :column="item" :render="item.headerRender"></SlTableHeaderFormat>
         </template>
         <template slot-scope="scope">
-          <div class="tableData-col">
-            <el-row type="flex" align="middle">
-              <el-col
-                v-if="item.isInImg"
-                :span="null"
-                :style="{maxWidth:item.data && item.data.imgSize || '10rem',marginRight:'0.5rem'}"
-              >
-                <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
-                <SlImage
-                  :size="item.data && item.data.imgSize || '10rem'"
-                  :src="item.prop?scope.row[item.prop]?scope.row[item.prop][item.isInImg]:'':scope.row[item.isInImg]"
-                />
-              </el-col>
-              <el-col :span="item.isInImg?null:24">
-                <div v-if="item.pre" :class="{'tableData-col-pre' : !item.isInImg && item.pre }">
-                  <div class="tableData-col-con">
-                    <div v-for="(value, key) in item.pre" :key="key">
-                      <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
-                      <template v-if="!item.prop">
-                        <p v-if="scope.row[key]">
-                          <span>{{ value }}:</span>
-                          <span>{{ scope.row[key] }}</span>
-                        </p>
-                      </template>
-                      <template v-else>
-                        <p v-if="scope.row[item.prop] && scope.row[item.prop][key]">
-                          <span>{{ value }}:</span>
-                          <span>{{ scope.row[item.prop][key] }}</span>
-                        </p>
-                      </template>
-                    </div>
-                  </div>
+          <el-row class="tableData-col" type="flex" align="middle">
+            <el-col
+              v-if="item.isInImg"
+              :span="null"
+              :style="{maxWidth:item.data && item.data.imgSize || '10rem',marginRight:'0.5rem'}"
+            >
+              <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
+              <SlImage
+                :size="item.data && item.data.imgSize || '10rem'"
+                :src="item.prop?scope.row[item.prop]?scope.row[item.prop][item.isInImg]:'':scope.row[item.isInImg]"
+              />
+            </el-col>
+            <el-col :span="item.isInImg?null:24">
+              <template v-if="item.pre">
+                <div
+                  class="tableData-col-con"
+                  v-for="(value, key) in item.pre"
+                  :key="key"
+                  :class="{'pre' : !item.isInImg && item.pre }"
+                >
+                  <!--如果item.prop为空,表示数据直接取row中的字段,否则取item.prop的下级字段-->
+                  <template v-if="!item.prop">
+                    <p v-if="scope.row[key]">
+                      <span>{{ value }}:</span>
+                      <span>{{ scope.row[key] }}</span>
+                    </p>
+                  </template>
+                  <template v-else>
+                    <p v-if="scope.row[item.prop] && scope.row[item.prop][key]">
+                      <span>{{ value }}:</span>
+                      <span>{{ scope.row[item.prop][key] }}</span>
+                    </p>
+                  </template>
                 </div>
-                <SlTableColFormat
-                  v-else-if="item.render"
-                  :row="scope.row"
-                  :column="item"
-                  :index="scope.$index"
-                  :render="item.render"
-                ></SlTableColFormat>
-                <div v-else class="tableData-col-text">{{scope.row[item.prop] }}</div>
-              </el-col>
-            </el-row>
-          </div>
+              </template>
+              <SlTableColFormat
+                v-else-if="item.render"
+                :row="scope.row"
+                :column="item"
+                :index="scope.$index"
+                :render="item.render"
+              ></SlTableColFormat>
+              <div v-else class="tableData-col-text">{{scope.row[item.prop] }}</div>
+            </el-col>
+          </el-row>
         </template>
       </el-table-column>
     </template>
@@ -152,23 +153,11 @@ export default {
 <style lang="scss">
 .tableData {
   &-col {
-    &-img {
-      width: 10rem;
-      height: 10rem;
-      margin-right: 1rem;
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-    &-pre {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
     &-con {
       text-align: left;
+      &.pre {
+        text-align: center;
+      }
     }
   }
   /deep/ .cell {
