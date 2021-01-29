@@ -1,6 +1,6 @@
-const baseURL = '/srm-goods-service'
-const productUrl = '/product-service'
-// const plmUrl = 'plm-product-service'
+const baseURL = '/api/v1/srm-goods-service'
+const productUrl = '/api/v1/product-service'
+const plmUrl = 'plm-product-service'
 
 const RECOMMENDURLS = {
   // odm 列表页
@@ -32,7 +32,9 @@ const RECOMMENDURLS = {
   allByUser: productUrl + '/attribute/all_by_user/',
 
   // 尺码对照表
-  pageList: 'http://10.250.0.68:8301' + '/size-table/category-id/'
+  pageList: plmUrl + '/size-table/category-id/',
+  // 分类获取属性值
+  plmCategoryAttrs: plmUrl + '/plm-category'
 }
 
 export default RECOMMENDURLS

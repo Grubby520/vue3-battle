@@ -39,7 +39,7 @@ export default {
       },
       showLabels: {},
       tableData: [],
-      stashTableData: []
+      stashTableData: new Map()
     }
   },
   computed: {
@@ -66,7 +66,11 @@ export default {
       handler (newValue) {
         if (newValue && newValue.length > 0) {
           const sizeInfoList = newValue.map(size => {
-            return { attributeId: size.attributeId, attributeTermId: size.attributeTermId }
+            const standardIds = size.sizePositions.reduce((init, a) => {
+              init[a.attributeTermId] = a.value
+              return init
+            }, {})
+            return { ...standardIds, attributeId: size.attributeId, attributeTermId: size.attributeTermId }
           })
           this.addListItem(sizeInfoList)
         }
@@ -81,13 +85,14 @@ export default {
       const sizeInfoList = []
       const showLabels = {}
       sizes.forEach(size => {
+        const { attributeTermId, ...rest } = size
         const addItem = {
-          attributeTermId: size.id || size.attributeTermId,
-          attributeId: this.sizeAttr.attributeId
+          attributeId: this.sizeAttr.attributeId,
+          attributeTermId: size.id || attributeTermId,
+          ...rest
         }
-        sizeInfoList.push(addItem)
         size.id ? showLabels[size.id] = size.name : showLabels[size.attributeTermId] = this.sizeAttr.terms.find(attr => attr.id === size.attributeTermId).name
-        this.form.sizeInfoList.push(addItem)
+        sizeInfoList.push(addItem)
       })
       this.showLabels = showLabels
       this.form.sizeInfoList = this.stashTableInfo(sizeInfoList)
@@ -103,27 +108,24 @@ export default {
     * 暂存尺码之前输入记录和回显
     */
     stashLastData () {
-      this.stashTableData = this.form.sizeInfoList
+      const sizeInfoList = this.form.sizeInfoList || []
+      sizeInfoList.forEach((stashSize) => {
+        this.stashTableData.set(`${stashSize.attributeTermId}`, stashSize)
+      })
     },
     /**
-  * 销售属性变化根据暂存数据/编辑状态进行回显赋值
-  * * @param {Array} saleData 销售属性变化后的数据结构
+     * 销售属性变化根据暂存数据/编辑状态进行回显赋值
+     * * @param {Array} saleData 销售属性变化后的数据结构
   */
     stashTableInfo (sizeInfoList) {
-      const productsize = this.productsize.sizeInfoList || [] // 回显
-      const showSizeInfoList = sizeInfoList || []
-      showSizeInfoList.forEach(size => {
-        productsize.forEach(product => {
-          const sizesIds = {}
-          product.sizePositions.forEach(option => {
-            sizesIds[`${option.attributeTermId}`] = option.value
-          })
-          if (size.attributeTermId === product.attributeTermId) {
-            Object.assign(size, { 'attributeTermId': product.attributeTermId, ...sizesIds })
-          }
+      this.stashLastData()
+      if (sizeInfoList && sizeInfoList.length > 0) {
+        sizeInfoList.forEach((tableItem) => {
+          const value = this.stashTableData.get(`${tableItem.attributeTermId}`)
+          Object.assign(tableItem, value)
         })
-      })
-      return showSizeInfoList
+        return sizeInfoList
+      }
     },
     result () {
       return new Promise(resolve => {

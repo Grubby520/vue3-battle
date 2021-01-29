@@ -69,6 +69,10 @@ const RECOMMEND = {
   // 尺码对照表
   pageList (id) {
     return get(RECOMMENDURLS.pageList + id)
+  },
+  // 分类获取属性值
+  plmCategoryAttrs (id, params) {
+    return get(`${RECOMMENDURLS.plmCategoryAttrs}/${id}/attribute-and-term`, params)
   }
 }
 export default RECOMMEND

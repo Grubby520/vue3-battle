@@ -240,6 +240,7 @@ export default {
   methods: {
     load () {
       axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
+        // RecommendApi.plmCategoryAttrs(2, { system: 2 })
         .then(res => {
           const data = res.data.data
           this.catagoryData = data
@@ -340,7 +341,7 @@ export default {
             } else {
               // 销售属性只有其中一个属性情况
               saleAttrItemItem.forEach(item => {
-                tableLabel[item.id] = item
+                this.$set(tableLabel, item.id, item)
                 resultArry.push([{ attributeTermId: item.id, attributeId: item.attributeId }])
               })
             }
@@ -349,11 +350,11 @@ export default {
             resultArry.forEach((item) => {
               saleAttrItemItem.forEach((value) => {
                 if (Array.isArray(item)) {
-                  tableLabel[value.id] = value
+                  this.$set(tableLabel, value.id, value)
                   emptyArray.push([...item, { attributeTermId: value.id, attributeId: value.attributeId }])
                 } else {
-                  tableLabel[item.id] = item
-                  tableLabel[value.id] = value
+                  this.$set(tableLabel, item.id, item)
+                  this.$set(tableLabel, value.id, value)
                   emptyArray.push([
                     { attributeTermId: item.id, attributeId: item.attributeId },
                     { attributeTermId: value.id, attributeId: value.attributeId }
@@ -401,10 +402,9 @@ export default {
       * 暂存尺码销售属性之前的记录
       */
     stashLastData () {
-      this.form.productSalesAttributes.forEach((tableItem, tableIndex) => {
-        Object.keys(tableItem).forEach((item, index) => {
-          this.stashTableData.set(`${tableIndex}${item}${index}`, tableItem[item])
-        })
+      this.form.productSalesAttributes.forEach(tableItem => {
+        const salesAttributeIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
+        this.stashTableData.set(`${salesAttributeIds}`, tableItem)
       })
     },
     /**
@@ -415,24 +415,12 @@ export default {
       this.stashLastData()
       if (saleData && saleData.length > 0) {
         const showDatas = JSON.parse(JSON.stringify(saleData))
-        return showDatas.map((tableItem, tableIndex) => {
-          const stashDataItem = {}
-          tableItem = {
-            ...tableItem,
-            supplyPrice: '',
-            supplierSkuCode: '',
-            tagSize: '',
-            weight: ''
-          }
-          Object.keys(tableItem).forEach((item, index) => {
-            const value = this.stashTableData.get(`${tableIndex}${item}${index}`)
-            stashDataItem[item] = value
-          })
+        showDatas.map(tableItem => {
           const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
-          const stashIds =
-            stashDataItem.productCategorySalesAttributes && stashDataItem.productCategorySalesAttributes.length > 0 ? stashDataItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('') : undefined
-          return tableItemIds === stashIds ? stashDataItem : tableItem
+          const value = this.stashTableData.get(`${tableItemIds}`)
+          Object.assign(tableItem, value)
         })
+        return showDatas
       }
     },
     result () {
