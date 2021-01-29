@@ -1,5 +1,5 @@
-const baseURL = '/api/v1/srm-goods-service'
-const productUrl = '/api/v1/product-service'
+const baseURL = '/srm-goods-service'
+const productUrl = '/product-service'
 const plmUrl = 'plm-product-service'
 
 const RECOMMENDURLS = {

@@ -24,7 +24,7 @@ export default {
     customAttributesData: []
   },
   getters: {
-    productParams: state => state.productInfo ? state.productInfo : {},
+    productParams: state => state.productParams || {},
     sizeOptions: state => state.sizeOptions,
     productbasic: state => state.productbasic || [],
     productCustomAttributes: state => state.productCustomAttributes || [],
@@ -38,7 +38,7 @@ export default {
   },
   mutations: {
     PRODUCT_PARAMS: (store, data) => {
-      store.productInfo = data
+      store.productParams = data
     },
     SIZEOPTIONS: (store, data) => {
       store.sizeOptions = data
@@ -69,6 +69,14 @@ export default {
     },
     CUSTOMATTRIBUTESDATA: (store, data) => {
       store.customAttributesData = data
+    },
+    REMOVESTASHATTRS: (store, data) => {
+      console.log('store', store)
+      store.productbasic = [store.cateLabels]
+      store.productCustomAttributes = data
+      store.productSalesAttributeDetailVO = data
+      store.productImages = data
+      store.productsize = data
     }
   },
   actions: {}

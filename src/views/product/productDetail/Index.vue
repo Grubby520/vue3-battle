@@ -63,6 +63,8 @@ export default {
     '$props': {
       handler () {
         this.$store.commit('product/PRODUCT_PARAMS', this.$props)
+        // 清除编辑状态的数据
+        this.mode === 'create' && this.$store.commit('product/REMOVESTASHATTRS', [])
       },
       immediate: true,
       deep: true
