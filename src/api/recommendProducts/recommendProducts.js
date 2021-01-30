@@ -81,6 +81,18 @@ const RECOMMEND = {
   // 保存
   productSave (params) {
     return post(RECOMMENDURLS.productSave, params)
+  },
+  // 保存提交
+  productSaveSubmit (params) {
+    return post(RECOMMENDURLS.productSaveSubmit, params)
+  },
+  // 补充信息
+  replenish (params) {
+    return put(RECOMMENDURLS.replenish, params)
+  },
+  // 详情
+  product (params) {
+    return get(`${RECOMMENDURLS.product}/${params}`)
   }
 }
 export default RECOMMEND

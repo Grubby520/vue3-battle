@@ -38,7 +38,13 @@ const RECOMMENDURLS = {
   // 校验供应商是否存在
   checkedItemNo: baseURL + '/product/check-exists/',
   // 创建产品保存
-  productSave: baseURL + '/product/save'
+  productSave: baseURL + '/product/save',
+  // 保存提交
+  productSaveSubmit: baseURL + '/product/save-and-submit',
+  // 补充信息
+  replenish: baseURL + '/product​/replenish',
+  // 详情
+  product: baseURL + '/product'
 }
 
 export default RECOMMENDURLS

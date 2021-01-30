@@ -38,7 +38,7 @@ import ProductSale from './ProductSale'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-import axios from 'axios'
+// import axios from 'axios'
 import { mapGetters } from 'vuex'
 export default {
   props: {
@@ -86,10 +86,10 @@ export default {
   },
   methods: {
     load () {
-      // RecommondApi.recommendDetail(this.id)
-      axios.get('http://10.250.0.66:7300/mock/600fb0aafdd97627d2722680/erp-plm2/product/detail')
+      RecommondApi.product(this.id)
+        // axios.get('http://10.250.0.66:7300/mock/600fb0aafdd97627d2722680/erp-plm2/product/detail')
         .then(res => {
-          const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data.data
+          const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data
           // 基础属性
           this.$store.commit('product/PRODUCTBASIC', rest || [])
           // 商品属性
@@ -99,7 +99,7 @@ export default {
           // 图片属性
           this.$store.commit('product/PRODUCTIMAGES', productImages || [])
           // 尺码表
-          this.$store.commit('product/PRODUCTSIZE', productSize || [])
+          this.$store.commit('product/PRODUCTSIZE', productSize || {})
           this.productStatus = status
         })
     },
@@ -107,7 +107,28 @@ export default {
       // 保存数据
       this.getResult()
         .then(res => {
-          // console.log('222222222222222', res)
+          switch (this.$refs.control.someBtnParams) {
+            // 确定
+            case 0:
+              RecommondApi.productSave(res)
+                .then(res => {
+                  console.log('res', '创建成功')
+                })
+              break
+            // 提交
+            case 1:
+              RecommondApi.productSaveSubmit(res)
+                .then(res => {
+                  console.log('res', '提交成功')
+                })
+              break
+          }
+        })
+    },
+    modify () {
+      // 编辑数据
+      this.getResult()
+        .then(res => {
           switch (this.$refs.control.someBtnParams) {
             // 确定
             case 0:
@@ -118,24 +139,16 @@ export default {
               break
             // 提交(确定补充信息)
             case 1:
+              RecommondApi.productSaveSubmit(res)
+                .then(res => {
+                  console.log('res', '提交成功')
+                })
               break
           }
         })
-    },
-    modify () {
-      // 编辑数据
-      this.getResult()
-        .then(res => {
-          // console.log('res1111111111111', res)
-          switch (this.$refs.control.someBtnParams) {
-            // 确定
-            case 0:
-              break
-            // 提交(确定补充信息)
-            case 1:
-              break
-          }
-        })
+      // const interface = {
+      //   0: RecommondApi.productSave(res)
+      // }
     },
     cancel () {
       // 取消
@@ -151,6 +164,8 @@ export default {
       return Promise.all(result)
         .then((res) => {
           const [{ productbasic }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
+          productbasic.id = this.id
+          productSize.id = this.id
           return {
             ...productbasic,
             categoryId: this.categoryId,
