@@ -81,6 +81,12 @@ export default {
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
+            const attributeValues = attributeData.attributeValues
+            let value = attributeValues
+            // 如果值存在 且是数组 且不是多选
+            if (value && Array.isArray(attributeValues) && !attribute.checkbox) {
+              value = attributeValues.length > 0 ? attributeValues[0] : undefined
+            }
             return {
               id: attributeData.id || null,
               attributeId: attribute.id,
@@ -89,7 +95,7 @@ export default {
               checkbox: attribute.checkbox,
               required: attribute.required,
               terms: attribute.terms,
-              value: attributeData.attributeValues || (attribute.checkbox ? [] : undefined)
+              value: value
             }
           })
       },
