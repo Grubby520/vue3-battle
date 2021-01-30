@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     cateLabels () {
-      return this.currentNodes.reduce((init, a) => init.concat(a.label), []).join('>')
+      return this.currentNodes.reduce((init, a) => init.concat(a.name), []).join('>')
     }
   },
   methods: {

@@ -129,17 +129,20 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        const productSize = this.form.sizeInfoList.map((size) => {
-          const { attributeTermId, attributeId, ...rest } = size
-          const sizePositions = []
-          for (const key in rest) {
-            const sizeItem = {}
-            sizeItem['attributeTermId'] = key
-            sizeItem['value'] = rest[key]
-            sizePositions.push(sizeItem)
-          }
+        let productSize = {}
+        const sizeInfoList = this.form.sizeInfoList.map((size) => {
+          const { attributeTermId, attributeId } = size
+          const sizestandard = this.sizestandard.terms.map(standard => standard.id)
+          const sizePositions = sizestandard.map(key => {
+            if (size[key]) {
+              return { 'attributeTermId': key, value: size[key] }
+            } else {
+              return { 'attributeTermId': key, value: '' }
+            }
+          })
           return { sizePositions, attributeTermId, attributeId }
         })
+        productSize['sizeInfoList'] = sizeInfoList
         resolve({ 'productSize': productSize })
       })
     }

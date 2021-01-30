@@ -73,6 +73,14 @@ const RECOMMEND = {
   // 分类获取属性值
   plmCategoryAttrs (id, params) {
     return get(`${RECOMMENDURLS.plmCategoryAttrs}/${id}/attribute-and-term`, params)
+  },
+  // 校验供应商是否存在
+  checkedItemNo (params) {
+    return get(`${RECOMMENDURLS.checkedItemNo}${params}`)
+  },
+  // 保存
+  productSave (params) {
+    return post(RECOMMENDURLS.productSave, params)
   }
 }
 export default RECOMMEND

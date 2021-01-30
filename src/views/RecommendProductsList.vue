@@ -38,22 +38,18 @@
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
-          <el-button
-            @click="odmDetail('modify',row)"
-            type="text"
-            v-if="[0].includes(row.productStatus)"
-          >编辑</el-button>
+          <el-button @click="odmDetail('modify',row)" type="text" v-if="[0].includes(row.status)">编辑</el-button>
           <el-button
             @click="productDetail('modify',row)"
             type="text"
-            v-if="[0].includes(row.productStatus)"
+            v-if="[0].includes(row.status)"
           >编辑（新）</el-button>
           <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
           <el-button @click="productDetail('view',row)" type="text">查看(新)</el-button>
-          <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
-          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
-          <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
-          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.productStatus===2">修改</el-button>
+          <el-button type="text" @click="recommon(row)" v-if="row.status===0">提交</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.status===1">撤回</el-button>
+          <el-button type="text" @click="deleteProduct(row)" v-if="row.status===0">删除</el-button>
+          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.status===2">修改</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -95,7 +91,7 @@ export default {
           type: 'single-select',
           label: '状态',
           isLabel: true,
-          name: 'productStatus',
+          name: 'status',
           data: {
             remoteUrl: RecommondUrl.recommendstatus,
             options: []
@@ -123,7 +119,7 @@ export default {
           label: '商品描述'
         },
         {
-          prop: 'productStatusName',
+          prop: 'statusName',
           label: '状态'
         },
         {
@@ -192,11 +188,12 @@ export default {
               const cateName = data.categoryName.split('>')
               data.categoryName = cateName.join('/')
             }
+            data.src = data.productImageUrlList[0]
           })
           this.tableData = list
           this.$refs.listView.loading = false
           // 待推品复选框置灰数据
-          this.selectionsDisabled = list.filter(item => item.productStatus !== 0)
+          this.selectionsDisabled = list.filter(item => item.status !== 0)
           this.page.total = total
         })
     },

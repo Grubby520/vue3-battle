@@ -4,6 +4,8 @@ const URL = {
   // 生成预上传链接接口
   generatePreUploadUrl: '/srm-common-service/aliyun-oss/upload-presigned',
   // 分类树
-  categoryUrl: '/product-service/category/tree'
+  categoryUrl: '/product-service/category/tree',
+  // plm 分类树
+  plmCategory: '/plm-product-service/plm-category/tree'
 }
 export default URL

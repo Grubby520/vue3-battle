@@ -18,7 +18,7 @@
                 :rules="[{required: attribute.required, message: `${attribute.name}是必填项`, trigger: attribute.termValueType === 1 ? 'change' : 'blur'}]"
               >
                 <template slot="label">
-                  <span :title="attribute.name">{{attribute.name}}{{attribute.checkbox}}</span>
+                  <span :title="attribute.name">{{attribute.name}}</span>
                 </template>
                 <component
                   v-model="attribute.value"

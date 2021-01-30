@@ -37,7 +37,7 @@ import ProductAttr from './ProductAttr'
 import ProductSale from './ProductSale'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
-// import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import axios from 'axios'
 import { mapGetters } from 'vuex'
 export default {
@@ -111,6 +111,10 @@ export default {
           switch (this.$refs.control.someBtnParams) {
             // 确定
             case 0:
+              RecommondApi.productSave(res)
+                .then(res => {
+                  console.log('res', '创建成功')
+                })
               break
             // 提交(确定补充信息)
             case 1:
@@ -146,9 +150,9 @@ export default {
       }
       return Promise.all(result)
         .then((res) => {
-          const [{ productBasicInfo }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
+          const [{ productbasic }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
           return {
-            ...productBasicInfo,
+            ...productbasic,
             categoryId: this.categoryId,
             categoryPath: this.categoryPath,
             productImages,

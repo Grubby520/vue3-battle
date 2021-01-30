@@ -123,11 +123,11 @@
 </template>
 
 <script>
-// import RecommendApi from '@api/recommendProducts/recommendProducts'
+import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
 import BatchAttributes from './batchAttributes'
 import { mapGetters } from 'vuex'
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   components: { ProductSizeDialog, BatchAttributes },
   data () {
@@ -153,7 +153,7 @@ export default {
           message: '请输入供货价格'
         },
         {
-          name: 'supplierSkuCode',
+          name: 'skuCode',
           label: '商家SKU编码'
         },
         {
@@ -243,10 +243,10 @@ export default {
   },
   methods: {
     load () {
-      axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
-        // RecommendApi.plmCategoryAttrs(2, { system: 2 })
+      // axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
+      RecommendApi.plmCategoryAttrs(this.productParams.categoryId, { system: 2 })
         .then(res => {
-          const data = res.data.data
+          const data = res.data
           this.catagoryData = data
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}

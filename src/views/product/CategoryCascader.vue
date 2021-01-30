@@ -9,7 +9,7 @@
           :key="index"
           @click="change(ca, optionIndex)"
         >
-          <span>{{ca.label}}</span>
+          <span>{{ca.name}}</span>
           <i class="el-icon-arrow-right icon" v-if="!ca.leaf"></i>
         </div>
       </div>
@@ -47,7 +47,7 @@ export default {
   methods: {
     load () {
       this.loading = true
-      CommonApi.category({ type: 1 })
+      CommonApi.plmCategory()
         .then(res => {
           this.options.push(res.data)
           this.changeInitData(res.data)
@@ -77,17 +77,17 @@ export default {
     },
     updateNodes (level, currentId, data) {
       // 当前点击父级节点下的所有值
-      this.$set(this.currentEl, level, { id: currentId, label: data.label, categoryLevel: data.path, leaf: data.leaf })
+      this.$set(this.currentEl, level, { id: currentId, name: data.name, categoryLevel: data.path, leaf: data.leaf })
       this.highlightSign(this.options, level, currentId)
       // 更新点击后的子级节点
       if (data.children.length > 0) this.$set(this.options, level + 1, data.children)
     },
     highlightSign (options, level, currentId) {
-      options[level].forEach((cur, curIndex) => {
+      options[level].forEach((cur) => {
         // 子级同级切换，不是当前id就删除isActive
         cur.id !== currentId ? delete cur.isActive : this.$set(cur, 'isActive', true)
         // 删除子级的isActive
-        cur.children.forEach((el, index) => {
+        cur.children.forEach((el) => {
           el.isActive && delete el.isActive
         })
       })

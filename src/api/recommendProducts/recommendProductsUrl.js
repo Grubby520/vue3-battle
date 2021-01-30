@@ -1,7 +1,6 @@
 const baseURL = '/srm-goods-service'
 const productUrl = '/product-service'
 const plmUrl = 'plm-product-service'
-
 const RECOMMENDURLS = {
   // odm 列表页
   recommendproducts: baseURL + '/product/page-list',
@@ -31,10 +30,15 @@ const RECOMMENDURLS = {
   // 根据用户获取颜色尺寸id
   allByUser: productUrl + '/attribute/all_by_user/',
 
+  // plm修改后接口
   // 尺码对照表
   pageList: plmUrl + '/size-table/category-id/',
   // 分类获取属性值
-  plmCategoryAttrs: plmUrl + '/plm-category'
+  plmCategoryAttrs: plmUrl + '/plm-category',
+  // 校验供应商是否存在
+  checkedItemNo: baseURL + '/product/check-exists/',
+  // 创建产品保存
+  productSave: baseURL + '/product/save'
 }
 
 export default RECOMMENDURLS
