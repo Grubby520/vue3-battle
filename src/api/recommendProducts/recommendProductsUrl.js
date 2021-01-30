@@ -42,7 +42,7 @@ const RECOMMENDURLS = {
   // 保存提交
   productSaveSubmit: baseURL + '/product/save-and-submit',
   // 补充信息
-  replenish: baseURL + '/product​/replenish',
+  replenish: baseURL + '/product/replenish',
   // 详情
   product: baseURL + '/product'
 }

@@ -38,7 +38,6 @@ import ProductSale from './ProductSale'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-// import axios from 'axios'
 import { mapGetters } from 'vuex'
 export default {
   props: {
@@ -87,7 +86,6 @@ export default {
   methods: {
     load () {
       RecommondApi.product(this.id)
-        // axios.get('http://10.250.0.66:7300/mock/600fb0aafdd97627d2722680/erp-plm2/product/detail')
         .then(res => {
           const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data
           // 基础属性
@@ -107,48 +105,32 @@ export default {
       // 保存数据
       this.getResult()
         .then(res => {
-          switch (this.$refs.control.someBtnParams) {
-            // 确定
-            case 0:
-              RecommondApi.productSave(res)
-                .then(res => {
-                  console.log('res', '创建成功')
-                })
-              break
-            // 提交
-            case 1:
-              RecommondApi.productSaveSubmit(res)
-                .then(res => {
-                  console.log('res', '提交成功')
-                })
-              break
+          const interfacesStatus = {
+            0: 'productSave', // 确定
+            1: 'productSaveSubmit' // 提交
           }
+          const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
+          RecommondApi[interfaces](res)
+            .then(() => {
+              this.cancel()
+            })
         })
     },
     modify () {
       // 编辑数据
       this.getResult()
         .then(res => {
-          switch (this.$refs.control.someBtnParams) {
-            // 确定
-            case 0:
-              RecommondApi.productSave(res)
-                .then(res => {
-                  console.log('res', '创建成功')
-                })
-              break
-            // 提交(确定补充信息)
-            case 1:
-              RecommondApi.productSaveSubmit(res)
-                .then(res => {
-                  console.log('res', '提交成功')
-                })
-              break
+          let interfacesStatus = {
+            0: 'productSave'
           }
+          // productStatus 2:保存 非2：修改补充信息
+          this.productStatus !== 2 ? interfacesStatus[1] = 'productSaveSubmit' : interfacesStatus[1] = 'replenish'
+          const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
+          RecommondApi[interfaces](res)
+            .then(() => {
+              this.cancel()
+            })
         })
-      // const interface = {
-      //   0: RecommondApi.productSave(res)
-      // }
     },
     cancel () {
       // 取消
