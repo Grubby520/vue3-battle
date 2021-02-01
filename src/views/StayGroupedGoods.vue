@@ -349,7 +349,7 @@ export default {
       }
 
       if (this.hasRepeatOrderIdAndSkucode) {
-        errorMessageTip('一个发货单上不能存在两条订单号和SKU都相同的记录')
+        errorMessageTip('同一个SKU拆单后不能组在同一个发货单内')
         return false
       }
       return true
