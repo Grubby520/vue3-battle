@@ -132,7 +132,6 @@ export default {
       return {
         required: true,
         validator: (rule, value, callback) => {
-          callback()
           if (!value) {
             callback(new Error('供方货号不能为空'))
           } else {

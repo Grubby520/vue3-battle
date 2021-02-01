@@ -71,7 +71,6 @@ export default {
       store.customAttributesData = data
     },
     REMOVESTASHATTRS: (store, data) => {
-      console.log('store', store)
       store.productbasic = [store.cateLabels]
       store.productCustomAttributes = data
       store.productSalesAttributeDetailVO = data

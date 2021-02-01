@@ -68,22 +68,32 @@ export default {
     },
     validateSomeForms (someBtnParams) {
       // 校验多个表单
-      const result = []
+      const result = {}
       for (const ref in this.references) {
         const currentRef = this.references[ref]
         if (Object.keys(currentRef.$refs).length > 0) {
           currentRef.$refs[this.form].validate(valid => {
-            result.push(valid)
+            result[ref] = valid
           })
         }
       }
-      if (result.every(item => item === true)) {
+      const validResults = Object.values(result)
+      if (validResults.every(item => item === true)) {
         // 所有表单校验通过
         this.loading = true
         this.ds()
         // 多个保存按钮调用不同接口标识
         this.someBtnParams = someBtnParams
       } else {
+        // 校验失败滚动到错误位置
+        const firstValidIndex = validResults.findIndex(errorValid => errorValid === false)
+        const errValidRef = Object.keys(result)[firstValidIndex]
+        let current = this.references[errValidRef].$refs.form
+        // 滚动到指定节点
+        current.$el.scrollIntoView({
+          block: 'start',
+          behavior: 'smooth'
+        })
         this.loading = false
         return false
       }

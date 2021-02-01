@@ -80,7 +80,7 @@
                   <el-form-item
                     :prop="`productSalesAttributes.${scope.$index}.${item.name}`"
                     :rules="[{required: item.required, message: `${item.message}`, trigger:'blur' }]"
-                    class="ProductSale-from__content"
+                    class="flex-center"
                   >
                     <template v-if="item.extendCode">
                       <!-- 动态销售属性(尺码/规格/颜色) -->
@@ -444,11 +444,6 @@ export default {
       display: inline-block;
       margin-right: 0.5rem;
       color: red;
-    }
-    &__content {
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
     &__batch {
       display: flex;

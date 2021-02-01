@@ -38,18 +38,22 @@
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
-          <el-button @click="odmDetail('modify',row)" type="text" v-if="[0].includes(row.status)">编辑</el-button>
+          <el-button
+            @click="odmDetail('modify',row)"
+            type="text"
+            v-if="[0].includes(row.status.value)"
+          >编辑</el-button>
           <el-button
             @click="productDetail('modify',row)"
             type="text"
-            v-if="[0].includes(row.status)"
+            v-if="[0].includes(row.status.value)"
           >编辑（新）</el-button>
           <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
           <el-button @click="productDetail('view',row)" type="text">查看(新)</el-button>
-          <el-button type="text" @click="recommon(row)" v-if="row.status===0">提交</el-button>
-          <el-button type="text" @click="cancel(row)" v-if="row.status===1">撤回</el-button>
-          <el-button type="text" @click="deleteProduct(row)" v-if="row.status===0">删除</el-button>
-          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.status===2">修改</el-button>
+          <el-button type="text" @click="recommon(row)" v-if="row.status.value===0">提交</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.status.value===1">撤回</el-button>
+          <el-button type="text" @click="deleteProduct(row)" v-if="row.status.value===0">删除</el-button>
+          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.status.value===2">修改</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -93,7 +97,7 @@ export default {
           isLabel: true,
           name: 'status',
           data: {
-            remoteUrl: RecommondUrl.recommendstatus,
+            remoteUrl: RecommondUrl.recommendStatus,
             options: []
           }
         }
@@ -176,7 +180,7 @@ export default {
 
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
-      RecommondApi.getRecommedList({ ...RECOMMONDPAR })
+      RecommondApi.getRecommendList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
           list.forEach(data => {
@@ -189,6 +193,7 @@ export default {
               data.categoryName = cateName.join('/')
             }
             data.src = data.productImageUrlList[0]
+            data.statusName = data.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
@@ -214,7 +219,8 @@ export default {
       const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
       confirmBox(this, '是否提交商品', '')
         .then(() => {
-          RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+          // RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+          RecommondApi.submit(PUSHPRODUCTS)
             .then((res) => {
               if (res.success) {
                 successNotify(this, `供方货号[${ITEMNOALL}]提交成功`, true)

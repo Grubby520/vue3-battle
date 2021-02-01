@@ -35,3 +35,5 @@
 | modify | 编辑方法 （当前 mode 为 modify 可以调用）               |
 | load   | 加载方法 （回显调用） mode 为 view 或者 modify 可以调用 |
 | cancel | 取消按钮可调用                                          |
+
+#### **提示：校验错误滑动到错误表单**

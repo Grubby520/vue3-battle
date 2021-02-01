@@ -77,7 +77,7 @@ export default {
     },
     updateNodes (level, currentId, data) {
       // 当前点击父级节点下的所有值
-      this.$set(this.currentEl, level, { id: currentId, name: data.name, categoryLevel: data.path, leaf: data.leaf })
+      this.$set(this.currentEl, level, { id: currentId, name: data.name, categoryLevel: data.levelPath, leaf: data.leaf })
       this.highlightSign(this.options, level, currentId)
       // 更新点击后的子级节点
       if (data.children.length > 0) this.$set(this.options, level + 1, data.children)
