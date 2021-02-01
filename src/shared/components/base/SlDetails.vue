@@ -85,6 +85,7 @@ export default {
         // 多个保存按钮调用不同接口标识
         this.someBtnParams = someBtnParams
       } else {
+        // 校验失败滚动到错误位置
         const firstValidIndex = validResults.findIndex(errorValid => errorValid === false)
         const errValidRef = Object.keys(result)[firstValidIndex]
         let current = this.references[errValidRef].$refs.form
@@ -94,7 +95,6 @@ export default {
           behavior: 'smooth'
         })
         this.loading = false
-        // 校验失败滚动到错误位置
         return false
       }
     },

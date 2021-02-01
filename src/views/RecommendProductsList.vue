@@ -97,7 +97,7 @@ export default {
           isLabel: true,
           name: 'status',
           data: {
-            remoteUrl: RecommondUrl.recommendstatus,
+            remoteUrl: RecommondUrl.recommendStatus,
             options: []
           }
         }
@@ -180,7 +180,7 @@ export default {
 
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
-      RecommondApi.getRecommedList({ ...RECOMMONDPAR })
+      RecommondApi.getRecommendList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
           list.forEach(data => {

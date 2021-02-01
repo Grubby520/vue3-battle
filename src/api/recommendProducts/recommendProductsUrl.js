@@ -1,9 +1,9 @@
 const baseURL = '/srm-goods-service'
 const productUrl = '/product-service'
 const plmUrl = 'plm-product-service'
-const RECOMMENDURLS = {
+const RECOMMEND_URLS = {
   // odm 列表页
-  recommendproducts: baseURL + '/product/page-list',
+  recommendProducts: baseURL + '/product/page-list',
   // 上传SPU数据 post
   spu_data_template: baseURL + '/template/getTemplateUrl?code=IMPORT_SPU',
   // 上传SPU数据 post
@@ -11,11 +11,11 @@ const RECOMMENDURLS = {
   // odm提交
   recommend: baseURL + '/product/submit',
   // odm 撤回
-  cancelrcommend: baseURL + '/product/revoke',
+  cancelRecommend: baseURL + '/product/revoke',
   // odm详情
-  rcommenduel: baseURL + '/product',
+  recommendUrl: baseURL + '/product',
   // odm 状态
-  recommendstatus: baseURL + '/product/product-status',
+  recommendStatus: baseURL + '/product/product-status',
   // odm 分类
   recommendCategory: baseURL + '/category/list',
   // 校验货号是否存在
@@ -49,4 +49,4 @@ const RECOMMENDURLS = {
   submit: baseURL + '/product/submit'
 }
 
-export default RECOMMENDURLS
+export default RECOMMEND_URLS
