@@ -38,18 +38,22 @@
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
-          <el-button @click="odmDetail('modify',row)" type="text" v-if="[0].includes(row.status)">编辑</el-button>
+          <el-button
+            @click="odmDetail('modify',row)"
+            type="text"
+            v-if="[0].includes(row.status.value)"
+          >编辑</el-button>
           <el-button
             @click="productDetail('modify',row)"
             type="text"
-            v-if="[0].includes(row.status)"
+            v-if="[0].includes(row.status.value)"
           >编辑（新）</el-button>
           <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
           <el-button @click="productDetail('view',row)" type="text">查看(新)</el-button>
-          <el-button type="text" @click="recommon(row)" v-if="row.status===0">提交</el-button>
-          <el-button type="text" @click="cancel(row)" v-if="row.status===1">撤回</el-button>
-          <el-button type="text" @click="deleteProduct(row)" v-if="row.status===0">删除</el-button>
-          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.status===2">修改</el-button>
+          <el-button type="text" @click="recommon(row)" v-if="row.status.value===0">提交</el-button>
+          <el-button type="text" @click="cancel(row)" v-if="row.status.value===1">撤回</el-button>
+          <el-button type="text" @click="deleteProduct(row)" v-if="row.status.value===0">删除</el-button>
+          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.status.value===2">修改</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -189,6 +193,7 @@ export default {
               data.categoryName = cateName.join('/')
             }
             data.src = data.productImageUrlList[0]
+            data.statusName = data.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
