@@ -44,7 +44,9 @@ const RECOMMENDURLS = {
   // 补充信息
   replenish: baseURL + '/product/replenish',
   // 详情
-  product: baseURL + '/product'
+  product: baseURL + '/product',
+  // 列表提交
+  submit: baseURL + '/product/submit'
 }
 
 export default RECOMMENDURLS

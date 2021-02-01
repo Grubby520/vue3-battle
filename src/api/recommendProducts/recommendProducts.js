@@ -93,6 +93,10 @@ const RECOMMEND = {
   // 详情
   product (params) {
     return get(`${RECOMMENDURLS.product}/${params}`)
+  },
+  // 列表提交
+  submit (params) {
+    return put(RECOMMENDURLS.submit, params)
   }
 }
 export default RECOMMEND

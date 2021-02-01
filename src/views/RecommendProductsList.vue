@@ -219,7 +219,8 @@ export default {
       const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
       confirmBox(this, '是否提交商品', '')
         .then(() => {
-          RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+          // RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+          RecommondApi.submit(PUSHPRODUCTS)
             .then((res) => {
               if (res.success) {
                 successNotify(this, `供方货号[${ITEMNOALL}]提交成功`, true)
