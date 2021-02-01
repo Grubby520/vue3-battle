@@ -57,7 +57,7 @@ export function exportFileFromRemote ({
       errorFn()
     }
   }).finally(() => {
-    if (typeof beforeLoad === 'function') {
+    if (typeof afterLoad === 'function') {
       afterLoad()
     }
   })
