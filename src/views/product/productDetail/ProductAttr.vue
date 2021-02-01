@@ -82,10 +82,10 @@ export default {
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
             const attributeValues = attributeData.attributeValues
-            let value = attributeValues
+            let value = attributeValues || []
             // 如果值存在 且是数组 且不是多选
-            if (value && Array.isArray(attributeValues) && !attribute.checkbox) {
-              value = attributeValues.length > 0 ? attributeValues[0] : undefined
+            if (value && Array.isArray(value) && !attribute.checkbox) {
+              value = value.length > 0 ? value[0] : undefined
             }
             return {
               id: attributeData.id || null,
