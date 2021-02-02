@@ -193,7 +193,7 @@ export default {
         'specification': specifications.length
       }
       Object.keys(this.showSaleLabel).forEach(item => {
-        len.push(showAttrs[item])
+        if (['size', 'color', 'specification'].includes(item)) len.push(showAttrs[item])
       })
       return len.every(item => item > 0)
     }
@@ -208,7 +208,7 @@ export default {
             this.form.productSalesAttributes = this.addTableItems(newValue)
             break
           case false:
-            // this.form.productSalesAttributes = []
+            this.form.productSalesAttributes = []
             break
         }
       },
@@ -231,8 +231,8 @@ export default {
             let result = {}
             result['attributeId'] = attributeId
             result['extendCode'] = attribute.extendCode
-            result['id'] = term.attributeTermId
-            result['name'] = term.attributeTermName
+            result['id'] = term.id
+            result['name'] = term.name
             result['deleted'] = attribute.deleted
             return result
           })
@@ -242,10 +242,9 @@ export default {
           saleLabels[label] = attribute.deleted === 0 ? `${attribute.name}(已删除)` : attribute.name
           saleLabels[`${label}deleted`] = attribute.deleted
           this[`${label}Options`].push(...saleTerms)
-          this.form[attrClassified[attribute.extendCode]].push(...saleTerms || [])
+          if (saleTerms && saleTerms.length > 0) this.form[attrClassified[attribute.extendCode]] = saleTerms
         })
         Object.assign(this.showSaleLabel, saleLabels)
-        // console.log('saleLabels', saleLabels)
       }
     }
   },
