@@ -85,7 +85,8 @@ export default {
   },
   methods: {
     load () {
-      RecommondApi.product(this.id)
+      // RecommondApi.product(this.id)
+      RecommondApi.product(41)
         .then(res => {
           const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data
           // 基础属性
