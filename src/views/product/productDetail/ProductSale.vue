@@ -240,6 +240,7 @@ export default {
           const classified = attrClassified[attribute.extendCode]
           const label = classified.substr(0, classified.length - 1)
           saleLabels[label] = attribute.deleted === 0 ? `${attribute.name}(已删除)` : attribute.name
+          // if (attribute.deleted === 0) this.tableHeadData.unshift({ name: label, label: attribute.name, extendCode: attribute.extendCode })
           saleLabels[`${label}deleted`] = attribute.deleted
           this[`${label}Options`].push(...saleTerms)
           if (saleTerms && saleTerms.length > 0) this.form[attrClassified[attribute.extendCode]] = saleTerms
@@ -449,6 +450,11 @@ export default {
       if (!deleteSale) {
         return hasSale
       } else {
+        // 删除属性所有的属性值为空时清除属性值和表头属性信息
+        // if (!(deleteSale && checkedSales && checkedSales.length > 0)) {
+        // const findDeletedIndex = this.tableHeadData.findIndex(index => index.name === status)
+        // this.tableHeadData.splice(0, findDeletedIndex)
+        // }
         return deleteSale && checkedSales && checkedSales.length > 0
       }
     },
