@@ -29,7 +29,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="运行手机号" prop="baseInfo.contactNumber">
+          <el-form-item label="运营手机号" prop="baseInfo.contactNumber">
             <el-input
               v-model.trim="form.baseInfo.contactNumber"
               type="tel"
@@ -114,6 +114,7 @@
 
 <script>
 import { emptyValidator, phoneNoValidator, charLimitValidator, telePhoneValidator } from '@shared/validate'
+import { scrollToElFormElement } from '@shared/util'
 import UserApi from '@api/user'
 import { createNamespacedHelpers } from 'vuex'
 const { mapState: userMapState } = createNamespacedHelpers('user')
@@ -156,7 +157,9 @@ export default {
           ]
         },
         shippingAddress: {
-          address: null,
+          address: [
+            emptyValidator('请填写详细地址', 'blur')
+          ],
           provinces: [
             emptyValidator('请选择公司地址', ['blur', 'change'])
           ],
@@ -236,6 +239,8 @@ export default {
           }).finally(() => {
             this.loading = false
           })
+        } else {
+          scrollToElFormElement(this.$refs.form.$el, -50)
         }
       })
     }
