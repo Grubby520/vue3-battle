@@ -131,10 +131,12 @@ export default {
           }
         })
       // 已经删除了属性值的属性 (属性未删除，但是属性值是删除了的)
-      const hasDeletedTermsdAttributes = attributesData.filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).find((term) => term.deleted))
+      const hasDeletedTermsdAttributes = attributesData
+        .filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).find((term) => term.deleted))
       // 属性列表加上属性详情中已经被删掉的属性
       attributes = attributes.map((attribute) => {
-        const hasDeletedTermsdAttribute = hasDeletedTermsdAttributes.find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
+        const hasDeletedTermsdAttribute = hasDeletedTermsdAttributes
+          .find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
         let terms = attribute.terms
         if (hasDeletedTermsdAttribute) {
           terms.concat(hasDeletedTermsdAttribute.filter(terms => terms.deleted).map((term) => {
