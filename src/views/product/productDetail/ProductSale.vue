@@ -416,10 +416,12 @@ export default {
       * 暂存尺码销售属性之前的记录
       */
     stashLastData () {
-      this.form.productSalesAttributes.forEach(tableItem => {
-        const salesAttributeIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
-        this.stashTableData.set(`${salesAttributeIds}`, tableItem)
-      })
+      if (this.form.productSalesAttributes && this.form.productSalesAttributes.length) {
+        this.form.productSalesAttributes.forEach(tableItem => {
+          const salesAttributeIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
+          this.stashTableData.set(`${salesAttributeIds}`, tableItem)
+        })
+      }
     },
     /**
      * 销售属性变化根据暂存数据/编辑状态进行回显赋值

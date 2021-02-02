@@ -5,7 +5,7 @@ export default {
     productParams: null,
     sizeAttr: {},
     // 回显基本属性
-    productbasic: [],
+    productBase: [],
     // 回显商品属性
     productCustomAttributes: [],
     // 回显销售属性
@@ -26,7 +26,7 @@ export default {
   getters: {
     productParams: state => state.productParams || {},
     sizeOptions: state => state.sizeOptions,
-    productbasic: state => state.productbasic || [],
+    productBase: state => state.productBase || [],
     productCustomAttributes: state => state.productCustomAttributes || [],
     productSalesAttributeDetailVO: state => state.productSalesAttributeDetailVO || [],
     productImagesIInfo: state => state.productImages || [],
@@ -46,8 +46,8 @@ export default {
     SIZEATTR: (store, data) => {
       store.sizeAttr = data
     },
-    PRODUCTBASIC: (store, data) => {
-      store.productbasic = data
+    productBase: (store, data) => {
+      store.productBase = data
     },
     PRODUCTCUSTOMATTRIBUTES: (store, data) => {
       store.productCustomAttributes = data
@@ -71,7 +71,7 @@ export default {
       store.customAttributesData = data
     },
     REMOVESTASHATTRS: (store, data) => {
-      store.productbasic = [store.cateLabels]
+      store.productBase = [store.cateLabels]
       store.productCustomAttributes = data
       store.productSalesAttributeDetailVO = data
       store.productImages = data
