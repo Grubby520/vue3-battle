@@ -75,7 +75,9 @@ export default {
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
-            const attributeValues = attributeData.attributeValues
+            // termValueType [1: 标准化文本] [2: 自定义文本]
+            const attributeValues = (attributeData.attribute || {}).termValueType === 1
+              ? (attributeData.attributeTerms || []).map(term => term.id) : attributeData.attributeValue
             let value = attributeValues || []
             // 如果值存在 且是数组 且不是多选
             if (value && Array.isArray(value) && !attribute.checkbox) {
