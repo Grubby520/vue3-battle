@@ -46,7 +46,7 @@ export default {
     SIZEATTR: (store, data) => {
       store.sizeAttr = data
     },
-    productBase: (store, data) => {
+    PRODUCTBASE: (store, data) => {
       store.productBase = data
     },
     PRODUCTCUSTOMATTRIBUTES: (store, data) => {

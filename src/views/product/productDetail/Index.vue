@@ -87,7 +87,7 @@ export default {
     load () {
       RecommondApi.product(this.id)
         .then(res => {
-          const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, productBase } = res.data
+          const { productBase, productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize } = res.data
           // 基础属性
           this.$store.commit('product/PRODUCTBASE', productBase || [])
           // 商品属性
@@ -98,7 +98,7 @@ export default {
           this.$store.commit('product/PRODUCTIMAGES', productImages || [])
           // 尺码表
           this.$store.commit('product/PRODUCTSIZE', productSize || {})
-          this.productStatus = status
+          this.productStatus = productBase.status
         })
     },
     create () {
