@@ -70,13 +70,7 @@ export default {
   watch: {
     customAttributes: {
       handler (data) {
-        const attributesList = data.customAttributesData
-        const attributesData = data.productCustomAttributes
-        this.dataMap.clear()
-        attributesData.forEach((attributeData) => {
-          this.dataMap.set(`${attributeData.attributeId}`, attributeData)
-        })
-        const attributes = deepClone(attributesList)
+        const attributes = this.parseCustomerAttributes(data)
         this.form.attributesData = attributes.filter((attribute) => attribute.usable) // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
           .map((attribute) => {
@@ -91,7 +85,7 @@ export default {
               id: attributeData.id || null,
               attributeId: attribute.id,
               name: attribute.name,
-              termValueType: attribute.termValueType.value,
+              termValueType: attribute.termValueType,
               checkbox: attribute.checkbox,
               required: attribute.required,
               terms: attribute.terms,
@@ -107,12 +101,74 @@ export default {
     itemType (item) {
       return item.termValueType === 1 ? 'el-select' : 'el-input'
     },
+    /**
+     * 构造界面需要展示的自定义属性集合
+     */
+    parseCustomerAttributes (data) {
+      // 分类下的属性列表
+      const attributesList = data.customAttributesData
+      // 推品下的属性数据列表
+      const attributesData = data.productCustomAttributes
+
+      this.stashAttributesData(attributesData)
+
+      let attributes = deepClone(attributesList)
+      // 已经删除的属性
+      const hasDeletedAttributes = attributesData
+        .filter((attribute) => attribute.attribute.deleted)
+        .map((attribute) => {
+          return {
+            ...attribute.attribute,
+            name: attribute.deleted ? `${attribute.name}（已删除）` : attribute.name,
+            usable: true,
+            priority: 0,
+            terms: (attribute.attributeTerms || []).map((term) => {
+              return {
+                id: term.id,
+                name: term.deleted ? `${term.name}（已删除）` : term.name
+              }
+            })
+          }
+        })
+      // 已经删除了属性值的属性 (属性未删除，但是属性值是删除了的)
+      const hasDeletedTermsdAttributes = attributesData.filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).find((term) => term.deleted))
+      // 属性列表加上属性详情中已经被删掉的属性
+      attributes = attributes.map((attribute) => {
+        const hasDeletedTermsdAttribute = hasDeletedTermsdAttributes.find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
+        let terms = attribute.terms
+        if (hasDeletedTermsdAttribute) {
+          terms.concat(hasDeletedTermsdAttribute.filter(terms => terms.deleted).map((term) => {
+            return {
+              id: term.id,
+              name: term.deleted ? `${term.name}（已删除）` : term.name
+            }
+          }))
+        }
+        return {
+          ...attribute,
+          termValueType: attribute.termValueType.value,
+          terms: terms
+        }
+      }).concat(hasDeletedAttributes)
+      return attributes
+    },
+    /**
+     * 暂存详情的属性数据
+     * @param {Object} attributesData 详情属性数据
+     */
+    stashAttributesData (attributesData) {
+      this.dataMap.clear()
+      attributesData.forEach((attributeData) => {
+        this.dataMap.set(`${attributeData.attributeId}`, attributeData)
+      })
+    },
     result () {
       return new Promise(resolve => {
         const data = this.form.attributesData.map((attribute) => {
           return {
             attributeId: attribute.attributeId,
             attributeValues: attribute.checkbox ? attribute.value : [attribute.value],
+            attributeTermType: attribute.termValueType,
             id: attribute.id
           }
         })
