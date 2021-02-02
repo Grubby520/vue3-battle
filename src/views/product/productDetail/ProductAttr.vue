@@ -171,7 +171,7 @@ export default {
         const data = this.form.attributesData.map((attribute) => {
           return {
             attributeId: attribute.attributeId,
-            attributeValues: attribute.checkbox ? attribute.value : [attribute.value],
+            attributeValues: attribute.checkbox ? attribute.value : (attribute.value ? [attribute.value] : []),
             attributeTermType: attribute.termValueType,
             id: attribute.id
           }
