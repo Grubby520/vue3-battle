@@ -9,6 +9,7 @@
           <el-form-item
             :label="showSaleLabel.size"
             prop="sizes"
+            v-if="showSaleCondition('size')"
             :rules="[{required: true, message: '请添加尺码', trigger:'blur' }]"
           >
             <span class="ProductSale-sizes" @click="openDialog('size')">添加尺码</span>
@@ -25,7 +26,7 @@
           <el-form-item
             :label="showSaleLabel.color"
             prop="colors"
-            v-if="colorOptions && colorOptions.length>0"
+            v-if="showSaleCondition('color')"
             :rules="[{required: true, message: '请选择颜色', trigger:'change' }]"
           >
             <SlSelect
@@ -44,7 +45,7 @@
           <el-form-item
             :label="showSaleLabel['specification']"
             prop="specifications"
-            v-if="specificationOptions && specificationOptions.length>0"
+            v-if="showSaleCondition('specificationOption')"
             :rules="[{required: true, message: '请选择', trigger:'change' }]"
           >
             <SlSelect
@@ -127,7 +128,6 @@ import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
 import BatchAttributes from './batchAttributes'
 import { mapGetters } from 'vuex'
-// import axios from 'axios'
 export default {
   components: { ProductSizeDialog, BatchAttributes },
   data () {
@@ -208,7 +208,7 @@ export default {
             this.form.productSalesAttributes = this.addTableItems(newValue)
             break
           case false:
-            this.form.productSalesAttributes = []
+            // this.form.productSalesAttributes = []
             break
         }
       },
@@ -217,24 +217,35 @@ export default {
     },
     'productSalesAttributeDetailVO': {
       handler (newValue) {
+        const saleLabels = {}
         const { productCategorySalesAttributeSelectedList, productSalesAttributes } = newValue
         this.form.productSalesAttributes = productSalesAttributes
-        // 回显销售id获取分类销售属性name
-        const saleAttrs = {}
-        productCategorySalesAttributeSelectedList.find(cateSale => {
-          const saleAttrItem = []
-          const attributeTermId = cateSale.attributeTermId
-          this.catagoryData.forEach(cata => {
-            if (cata.id === cateSale.attributeId) {
-              const terms = cata.terms
-              const findSaleAttr = terms.filter(ter => attributeTermId.find(attr => ter.id === attr))
-              saleAttrItem.push(findSaleAttr)
-              saleAttrs[cata.extendCode] = saleAttrItem
-            }
+        const attrClassified = {
+          'NZ011': 'sizes',
+          'NZ010': 'colors',
+          'NZ012': 'specifications'
+        }
+        productCategorySalesAttributeSelectedList.forEach(saleAttr => {
+          const { attributeId, attribute, attributeTerms } = saleAttr
+          const saleTerms = attributeTerms.map(term => {
+            let result = {}
+            result['attributeId'] = attributeId
+            result['extendCode'] = attribute.extendCode
+            result['id'] = term.attributeTermId
+            result['name'] = term.attributeTermName
+            result['deleted'] = attribute.deleted
+            return result
           })
+          // 回显的时候重新获取销售属性label,为了解决分类删除了销售属性,回显数据和删除数据不统一问题
+          const classified = attrClassified[attribute.extendCode]
+          const label = classified.substr(0, classified.length - 1)
+          saleLabels[label] = attribute.deleted === 0 ? `${attribute.name}(已删除)` : attribute.name
+          saleLabels[`${label}deleted`] = attribute.deleted
+          this[`${label}Options`].push(...saleTerms)
+          this.form[attrClassified[attribute.extendCode]].push(...saleTerms || [])
         })
-        this.form.sizes.push(...saleAttrs['NZ011'].flat())
-        this.form.colors.push(...saleAttrs['NZ010'].flat())
+        Object.assign(this.showSaleLabel, saleLabels)
+        // console.log('saleLabels', saleLabels)
       }
     }
   },
@@ -243,7 +254,6 @@ export default {
   },
   methods: {
     load () {
-      // axios.get('http://10.250.0.66:7300/mock/5fe990dd2fe14f098b103ef2/srm/plm-category/attribute-and-term')
       RecommendApi.plmCategoryAttrs(this.productParams.categoryId, { system: 2 })
         .then(res => {
           const data = res.data
@@ -284,7 +294,7 @@ export default {
           // 判断是否有销售属性
           const saleAttrNone = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
           this.$store.commit('product/SALEATTRNONE', saleAttrNone.length)
-          this.showSaleLabel = showSaleLabel
+          if (this.productParams.mode === 'create') this.showSaleLabel = showSaleLabel
         })
     },
     addExtendCode (saleAttrItem, extendCode, attributeId) {
@@ -425,6 +435,22 @@ export default {
           Object.assign(tableItem, value)
         })
         return showDatas
+      }
+    },
+    showSaleCondition (status) {
+      // 是否隐藏销售属性(1.没有删除属性判断是否有销售属性2.有删除属性判断回填是否有值)
+      const saleLabels = {
+        size: 'sizes',
+        color: 'colors',
+        specification: 'specifications'
+      }
+      const checkedSales = this.form[saleLabels[status]]
+      const deleteSale = this.showSaleLabel[`${status}deleted`] === 0
+      const hasSale = this.showSaleLabel[status]
+      if (!deleteSale) {
+        return hasSale
+      } else {
+        return deleteSale && checkedSales && checkedSales.length > 0
       }
     },
     result () {
