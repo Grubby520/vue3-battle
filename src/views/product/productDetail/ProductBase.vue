@@ -97,10 +97,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'productbasic'])
+    ...mapGetters('product', ['productParams', 'productBase'])
   },
   watch: {
-    'productbasic': {
+    'productBase': {
       handler (newValue) {
         const keys = Object.keys(newValue)
         if (keys.length > 0) {
@@ -123,9 +123,9 @@ export default {
   },
   methods: {
     result () {
-      return new Promise((resolve, reject) => {
-        Object.assign(this.productbasic, this.form)
-        resolve({ 'productbasic': this.productbasic || [] })
+      return new Promise((resolve) => {
+        Object.assign(this.productBase, this.form)
+        resolve({ 'productBase': this.form || [] })
       })
     },
     productValidata () {

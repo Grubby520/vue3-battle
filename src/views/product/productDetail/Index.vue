@@ -85,11 +85,11 @@ export default {
   },
   methods: {
     load () {
-      RecommondApi.product(41)
+      RecommondApi.product(this.id)
         .then(res => {
-          const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, ...rest } = res.data
+          const { productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize, status, productBase } = res.data
           // 基础属性
-          this.$store.commit('product/PRODUCTBASIC', rest || [])
+          this.$store.commit('product/PRODUCTBASE', productBase || [])
           // 商品属性
           this.$store.commit('product/PRODUCTCUSTOMATTRIBUTES', productCustomAttributes || [])
           // 销售属性
@@ -145,13 +145,13 @@ export default {
       }
       return Promise.all(result)
         .then((res) => {
-          const [{ productbasic }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
-          productbasic.id = this.id
+          const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
           productSize.id = this.id
+          productBase.id = this.id
+          productBase.categoryId = this.categoryId
+          productBase.categoryPath = this.categoryPath
           return {
-            ...productbasic,
-            categoryId: this.categoryId,
-            categoryPath: this.categoryPath,
+            productBase,
             productImages,
             productSalesAttributes,
             productSize,
