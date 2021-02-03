@@ -115,7 +115,7 @@ export const homeRoutes = [
     children: [
       {
         path: 'bank',
-        name: '收款银行',
+        name: '收款信息',
         meta: {
           icon: 'el-icon-paperclip',
           code: 'menu_my_info'
