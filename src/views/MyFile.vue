@@ -25,7 +25,12 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="运营负责人" prop="baseInfo.contactName">
-            <el-input v-model.trim="form.baseInfo.contactName" class="form-item"></el-input>
+            <el-input
+              v-model.trim="form.baseInfo.contactName"
+              class="form-item"
+              maxlength="20"
+              show-word-limit
+            ></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
