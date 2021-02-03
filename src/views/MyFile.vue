@@ -240,7 +240,11 @@ export default {
             this.loading = false
           })
         } else {
-          scrollToElFormElement(this.$refs.form.$el, -50)
+          scrollToElFormElement(this.$refs.form.$el, undefined, function (errorItemDom) {
+            errorItemDom.scrollIntoView({
+              behavior: 'smooth'
+            })
+          })
         }
       })
     }
