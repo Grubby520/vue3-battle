@@ -51,7 +51,7 @@ export default {
         name: this.sizeAttr.name,
         status: 'text'
       }
-      return this.deduplication([sizes, ...this.sizestandard.terms], 'id')
+      return this.deduplication(sizes, this.sizestandard.terms)
     }
   },
   watch: {

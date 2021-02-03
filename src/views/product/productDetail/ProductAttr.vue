@@ -115,19 +115,29 @@ export default {
       this.stashAttributesData(attributesData)
 
       let attributes = deepClone(attributesList)
+      // 遍历属性数据列表，给他们加上是否删除的标识
+      attributesData.forEach((attributeData) => {
+        const categoryAttribute = attributes.find(catetoryAttribute => catetoryAttribute.id === attributeData.attributeId)
+        attributeData.attribute.deleted = !categoryAttribute
+        if (!categoryAttribute) return
+        const categoryAttributeTerms = categoryAttribute.terms || [];
+        (attributeData.attributeTerms || []).forEach(attributeTerm => {
+          attributeTerm.deleted = categoryAttributeTerms.find(term => term.id === attributeTerm.id)
+        })
+      })
       // 已经删除的属性
       const hasDeletedAttributes = attributesData
         .filter((attribute) => attribute.attribute.deleted)
         .map((attribute) => {
           return {
             ...attribute.attribute,
-            name: attribute.deleted ? `${attribute.name}（已删除）` : attribute.name,
+            name: `${attribute.attribute.name}（已删除）`,
             usable: true,
             priority: 0,
             terms: (attribute.attributeTerms || []).map((term) => {
               return {
                 id: term.id,
-                name: term.deleted ? `${term.name}（已删除）` : term.name
+                name: `${term.name}（已删除）`
               }
             })
           }
@@ -141,10 +151,10 @@ export default {
           .find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
         let terms = attribute.terms
         if (hasDeletedTermsdAttribute) {
-          terms.concat(hasDeletedTermsdAttribute.filter(terms => terms.deleted).map((term) => {
+          terms.concat(hasDeletedTermsdAttribute.attributeTerms.filter(terms => terms.deleted).map((term) => {
             return {
               id: term.id,
-              name: term.deleted ? `${term.name}（已删除）` : term.name
+              name: `${term.name}（已删除）`
             }
           }))
         }
