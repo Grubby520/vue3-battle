@@ -31,6 +31,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -43,7 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeOptions', 'sizeAttr', 'sizestandard', 'productsize']),
+    ...mapGetters('product', ['checkedSizes', 'sizeAttr', 'sizestandard', 'productsize']),
     tableHeadData () {
       // 表头信息
       const sizes = {
@@ -51,12 +52,25 @@ export default {
         name: this.sizeAttr.name,
         status: 'text'
       }
-      return this.deduplication(sizes, this.sizestandard.terms)
+      // 回显情况的表头
+      let echoSizestandard = []
+      const sizePositions = !isEmpty(this.productsize.sizeInfoList) ? this.productsize.sizeInfoList[0].sizePositions : []
+      const sizestandardIds = this.sizestandard.terms.reduce((init, standard) => init.concat(standard.id), [])
+      if (sizePositions && sizePositions.length > 0) {
+        echoSizestandard = sizePositions.map(options => {
+          if (!sizestandardIds.includes(options.attributeTermId)) {
+            options.attributeTerm.name = `${options.attributeTerm.name}(已删除)`
+          }
+          return { id: options.attributeTermId, name: options.attributeTerm.name }
+        })
+      }
+      return echoSizestandard && echoSizestandard.length > 0 ? this.deduplication([sizes, ...echoSizestandard], 'id') : this.deduplication([sizes, ...this.sizestandard.terms], 'id')
     }
   },
   watch: {
-    'sizeOptions': {
+    'checkedSizes': {
       handler (newValue) {
+        // 选中尺寸
         this.addListItem(newValue)
       },
       immediate: true,
@@ -64,15 +78,18 @@ export default {
     },
     'productsize.sizeInfoList': {
       handler (newValue) {
-        if (newValue && newValue.length > 0) {
-          const sizeInfoList = newValue.map(size => {
-            const standardIds = size.sizePositions.reduce((init, a) => {
-              init[a.attributeTermId] = a.value
-              return init
-            }, {})
-            return { ...standardIds, attributeId: size.attributeId, attributeTermId: size.attributeTermId }
-          })
-          this.addListItem(sizeInfoList)
+        if (newValue) {
+          // sizes值回显
+          if (newValue && newValue.length > 0) {
+            const sizeInfoList = newValue.map(size => {
+              const standardIds = size.sizePositions.reduce((init, a) => {
+                init[a.attributeTermId] = a.value
+                return init
+              }, {})
+              return { ...standardIds, attributeId: size.attributeId, attributeTermId: size.attributeTermId }
+            })
+            this.addListItem(sizeInfoList)
+          }
         }
       },
       immediate: true,

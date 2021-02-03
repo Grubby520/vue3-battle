@@ -328,11 +328,12 @@ export default {
     removeSizeTag (tag) {
       this.form.sizes = this.form.sizes.filter(item => item.id !== tag.id)
       this.$refs.form.validateField('sizes')
-      this.$store.commit('product/SIZEOPTIONS', this.form.sizes)
+      this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
-      this.$store.commit('product/SIZEOPTIONS', val)
+      console.log('this.form.sizes', this.form.sizes)
+      this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
       this.$refs.form.validateField('sizes')
     },
     openDialog (type, data = '') {

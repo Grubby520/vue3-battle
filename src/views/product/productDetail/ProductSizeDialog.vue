@@ -116,10 +116,7 @@ export default {
       this.getSizeTable()
     },
     getSizeTable () {
-      // let params = {
-      //   categoryId: this.productParams.categoryId
-      // }
-      RecommendApi.pageList(2)
+      RecommendApi.pageList(this.productParams.categoryId)
         .then(res => {
           this.sizeContrastTableList = res.data.sizeContrastTableList || []
         })

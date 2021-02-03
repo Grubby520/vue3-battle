@@ -16,8 +16,8 @@ export default {
     productsize: [],
     // 品类上未绑定销售属性
     saleAttrNone: undefined,
-    // 品类绑定的尺寸
-    sizeOptions: [],
+    // 选中尺寸
+    checkedSizes: [],
     // 品类绑定标准属性
     sizestandard: [],
     // 品类商品属性
@@ -25,7 +25,7 @@ export default {
   },
   getters: {
     productParams: state => state.productParams || {},
-    sizeOptions: state => state.sizeOptions,
+    checkedSizes: state => state.checkedSizes,
     productBase: state => state.productBase || [],
     productCustomAttributes: state => state.productCustomAttributes || [],
     productSalesAttributeDetailVO: state => state.productSalesAttributeDetailVO || [],
@@ -40,8 +40,8 @@ export default {
     PRODUCT_PARAMS: (store, data) => {
       store.productParams = data
     },
-    SIZEOPTIONS: (store, data) => {
-      store.sizeOptions = data
+    CHECKED_SIZES: (store, data) => {
+      store.checkedSizes = data
     },
     SIZEATTR: (store, data) => {
       store.sizeAttr = data
