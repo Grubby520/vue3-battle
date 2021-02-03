@@ -105,6 +105,8 @@
             <el-input
               v-model.trim="form.shippingAddress.contactTelephone"
               clearable
+              maxlength="20"
+              show-word-limit
               class="form-item"
             ></el-input>
           </el-form-item>
