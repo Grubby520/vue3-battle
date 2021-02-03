@@ -32,6 +32,7 @@
                     :key="index"
                     :label="term.name"
                     :value="term.id"
+                    :disabled="term.deleted"
                   ></el-option>
                 </component>
               </el-form-item>
@@ -132,12 +133,14 @@ export default {
           return {
             ...attribute.attribute,
             name: `${attribute.attribute.name}（已删除）`,
+            required: false,
             usable: true,
             priority: 0,
             terms: (attribute.attributeTerms || []).map((term) => {
               return {
                 id: term.id,
-                name: `${term.name}（已删除）`
+                name: `${term.name}（已删除）`,
+                deleted: true
               }
             })
           }
@@ -154,7 +157,8 @@ export default {
           terms.concat(hasDeletedTermsdAttribute.attributeTerms.filter(terms => terms.deleted).map((term) => {
             return {
               id: term.id,
-              name: `${term.name}（已删除）`
+              name: `${term.name}（已删除）`,
+              deleted: true
             }
           }))
         }
