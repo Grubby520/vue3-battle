@@ -46,7 +46,7 @@
         <el-col :span="12">
           <el-form-item label="运营QQ号码" prop="baseInfo.contactQq">
             <el-input
-              v-model="form.baseInfo.contactQq"
+              v-model.trim="form.baseInfo.contactQq"
               maxlength="15"
               clearable
               placeholder="请输入QQ号码"
@@ -79,7 +79,7 @@
         <el-col :span="12">
           <el-form-item label="收件人" prop="shippingAddress.contactName">
             <el-input
-              v-model="form.shippingAddress.contactName"
+              v-model.trim="form.shippingAddress.contactName"
               maxlength="20"
               show-word-limit
               placeholder="请填写收件人"
@@ -231,7 +231,7 @@ export default {
           this.loading = true
           let params = {
             provinces: this.form.shippingAddress.provinces ? JSON.stringify(this.form.shippingAddress.provinces) : null,
-            address: this.form.shippingAddress.address,
+            address: this.form.shippingAddress.address.trim(),
             recipientName: this.form.shippingAddress.contactName,
             recipientCellphone: this.form.shippingAddress.contactCellphone,
             recipientTelephone: this.form.shippingAddress.contactTelephone,
@@ -242,6 +242,7 @@ export default {
           UserApi.supplierUpdate(params).then(res => {
             if (res.success) {
               this.$message.success('保存成功')
+              this.getDetails(this.supplierId)
             }
           }).finally(() => {
             this.loading = false
