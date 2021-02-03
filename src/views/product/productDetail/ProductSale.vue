@@ -141,7 +141,6 @@ export default {
       colorOptions: [],
       sizeOptions: [],
       specificationOptions: [],
-      deletedSaleAttr: [],
       catagoryData: [],
       stashTableData: new Map(),
       showSaleLabel: {},
@@ -228,7 +227,6 @@ export default {
           this.form.productSalesAttributes = productSalesAttributes
           const saleAttrs = this.catagoryData.filter(sale => ['NZ010', 'NZ011', 'NZ012'].includes(sale.extendCode))
           const deletedSaleAttr = productCategorySalesAttributeSelectedList.filter(productSaleAttr => !saleAttrs.find(attr => attr.extendCode === productSaleAttr.attribute.extendCode)) || []
-          this.deletedSaleAttr = deletedSaleAttr
           if (deletedSaleAttr && deletedSaleAttr.length > 0) {
             // 有删除的销售属性
             deletedSaleAttr.forEach(delSale => {
@@ -254,7 +252,10 @@ export default {
           productCategorySalesAttributeSelectedList.forEach(saleAttr => {
             const { attributeId, attribute, attributeTerms } = saleAttr
             const classified = saleTypes[attribute.extendCode][1]
+            const optionIds = this[`${saleTypes[saleAttr.attribute.extendCode][0]}Options`].reduce((init, option) => init.concat(option.id), [])
             this.form[classified] = attributeTerms.map(attr => {
+              // 属性未删除，属性值被删除
+              if (!optionIds.includes(attr.id)) attr.name = `${attr.name}(已删除)`
               return {
                 ...attr,
                 attributeId: attributeId,
@@ -332,7 +333,6 @@ export default {
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
-      console.log('this.form.sizes', this.form.sizes)
       this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
       this.$refs.form.validateField('sizes')
     },
