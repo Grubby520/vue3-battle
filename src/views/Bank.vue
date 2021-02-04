@@ -192,7 +192,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="企业股东证截图:">
+          <el-form-item label="银行卡正面:">
             <SlImage
               v-show="form.certification.companyShareholderImage"
               size="10rem"

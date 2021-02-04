@@ -142,7 +142,7 @@
         ></SlUploadImages>
         <p>若已多证合一,请上传最新的营业执照。复印件需加盖公章,图片小于1M</p>
       </el-form-item>
-      <el-form-item label="企业股东证截图" prop="companyShareholderImage">
+      <el-form-item label="银行卡正面" prop="companyShareholderImage">
         <SlUploadImages
           v-model="form.companyShareholderImage"
           :folder="certificationNo"
@@ -151,7 +151,7 @@
           :tools="['download', 'delete']"
           :limits="[{type: 'size',meta: {size: 1}}]"
         ></SlUploadImages>
-        <p>国家企业信用信息公示系统截图股东信息。图片小于1M</p>
+        <p>请上传银行卡正面，需清晰展示银行卡号。图片小于1M</p>
       </el-form-item>
     </el-form>
   </div>
