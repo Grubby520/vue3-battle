@@ -212,7 +212,7 @@ export default {
         payeeDelegationImage: [emptyValidator('请上传委托书图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
         taxRegisterImage: [emptyValidator('请上传税务登记证件图片', 'change')],
-        companyShareholderImage: [emptyValidator('请上传企业股东证件图片', 'change')]
+        companyShareholderImage: [emptyValidator('请上传银行卡正面图片', 'change')]
       }
     }
   },
