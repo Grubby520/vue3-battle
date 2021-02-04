@@ -222,7 +222,7 @@ export default {
           const saleTypes = {
             'NZ011': ['size', 'sizes'],
             'NZ010': ['color', 'colors'],
-            'NZ012': ['specification', 'specification']
+            'NZ012': ['specification', 'specifications']
           }
           const { productCategorySalesAttributeSelectedList, productSalesAttributes } = newValue
           this.form.productSalesAttributes = productSalesAttributes

@@ -52,6 +52,7 @@
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -68,12 +69,24 @@ export default {
     tableHeadData () {
       // 表头数据信息
       const standardData = this.sizeStandard.terms || []
-      const tableHeader = standardData.filter(size => this.sizeContrastTableList.some(com => size.id === com.sizeStandardId))
       const sizeHeader = {
         id: 'size',
         name: '尺码段'
       }
-      return this.sizeContrastTableList && this.sizeContrastTableList.length > 0 ? [sizeHeader, ...tableHeader] : []
+      const tableHeader = this.sizeContrastTableList.map(tableStandard => {
+        const standardItem = {
+          id: tableStandard.sizeStandardId,
+          name: tableStandard.sizeStandardName
+        }
+        const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
+        if (standardDataIds.includes(tableStandard.sizeStandardId)) {
+          return standardItem
+        } else {
+          standardItem.name = `${standardItem.name}(已删除)`
+          return standardItem
+        }
+      })
+      return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
     },
     sizeTable () {
       const sizeSegments = {}

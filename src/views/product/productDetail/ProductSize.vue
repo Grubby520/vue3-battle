@@ -1,6 +1,6 @@
 <template>
   <div class="productSize">
-    <el-card v-if="sizeStandard.terms&&sizeStandard.terms.length > 0">
+    <el-card v-if="showProductSizePage">
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
@@ -55,7 +55,8 @@ export default {
       // 回显情况的表头
       let echoSizeStandard = []
       const sizePositions = !isEmpty(this.productSize.sizeInfoList) ? this.productSize.sizeInfoList[0].sizePositions : []
-      const sizeStandardIds = this.sizeStandard.terms.reduce((init, standard) => init.concat(standard.id), [])
+      const sizeStandardTerms = this.sizeStandard.terms || []
+      const sizeStandardIds = sizeStandardTerms.reduce((init, standard) => init.concat(standard.id), [])
       if (sizePositions && sizePositions.length > 0) {
         echoSizeStandard = sizePositions.map(options => {
           if (!sizeStandardIds.includes(options.attributeTermId)) {
@@ -64,7 +65,10 @@ export default {
           return { id: options.attributeTermId, name: options.attributeTerm.name }
         })
       }
-      return echoSizeStandard && echoSizeStandard.length > 0 ? this.deduplication([sizes, ...echoSizeStandard], 'id') : this.deduplication([sizes, ...this.sizeStandard.terms], 'id')
+      return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
+    },
+    showProductSizePage () {
+      return !isEmpty(this.checkedSizes) || !isEmpty(this.productSize.sizeInfoList)
     }
   },
   watch: {
@@ -108,7 +112,8 @@ export default {
           attributeTermId: size.id || attributeTermId,
           ...rest
         }
-        size.id ? showLabels[size.id] = size.name : showLabels[size.attributeTermId] = this.sizeAttr.terms.find(attr => attr.id === size.attributeTermId).name
+        const sizeTerms = this.sizeAttr.terms || []
+        size.id ? showLabels[size.id] = size.name : showLabels[size.attributeTermId] = sizeTerms.find(attr => attr.id === size.attributeTermId).name
         sizeInfoList.push(addItem)
       })
       this.showLabels = showLabels
@@ -149,7 +154,8 @@ export default {
         let productSize = {}
         const sizeInfoList = this.form.sizeInfoList.map((size) => {
           const { attributeTermId, attributeId } = size
-          const sizeStandard = this.sizeStandard.terms.map(standard => standard.id)
+          const sizeStandardTerms = this.sizeStandard.terms || []
+          const sizeStandard = sizeStandardTerms.map(standard => standard.id)
           const sizePositions = sizeStandard.map(key => {
             if (size[key]) {
               return { 'attributeTermId': key, value: size[key] }
@@ -160,7 +166,7 @@ export default {
           return { sizePositions, attributeTermId, attributeId }
         })
         productSize['sizeInfoList'] = sizeInfoList
-        resolve({ 'productSize': productSize })
+        resolve({ 'productSize': productSize || [] })
       })
     }
   }

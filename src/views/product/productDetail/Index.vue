@@ -1,8 +1,8 @@
 <template>
   <div class="product">
     <el-alert
-      v-if="noSaleAttributes"
-      :title="`${cateLabels}品类未配置销售属性，无法创建产品`"
+      v-if="showAlert.condition"
+      :title="showAlert.title"
       type="error"
       effect="dark"
       style="margin-bottom: 1rem;"
@@ -39,6 +39,7 @@ import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -70,7 +71,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['noSaleAttributes']),
+    ...mapGetters('product', ['noSaleAttributes', 'sizeStandard']),
     isStatus () {
       return this.mode === 'view'
     },
@@ -81,6 +82,16 @@ export default {
         default:
           return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
       }
+    },
+    showAlert () {
+      let result = {}
+      const hasSizeStandard = !isEmpty(this.sizeStandard.terms)
+      if (this.noSaleAttributes) {
+        result = { condition: this.noSaleAttributes, title: `${this.cateLabels}品类未配置销售属性，无法创建产品` }
+      } else if (!this.noSaleAttributes && !hasSizeStandard && this.mode === 'create') {
+        result = { condition: !hasSizeStandard, title: `品类未配置标准属性，无法展示尺码表` }
+      }
+      return result
     }
   },
   methods: {

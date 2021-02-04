@@ -6,7 +6,7 @@ const RECOMMEND_URLS = {
   // 状态
   recommendStatus: baseURL + '/product/product-status',
   // 尺码对照表
-  pageList: plmUrl + '/size-table/category-id/',
+  pageList: plmUrl + '/size-table/product/category-id/',
   // 分类获取属性值
   plmCategoryAttrs: plmUrl + '/plm-category',
   // 校验供应商是否存在
