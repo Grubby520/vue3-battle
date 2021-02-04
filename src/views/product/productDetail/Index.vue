@@ -1,7 +1,7 @@
 <template>
   <div class="product">
     <el-alert
-      v-if="saleAttrNone"
+      v-if="noSaleAttributes"
       :title="`${cateLabels}品类未配置销售属性，无法创建产品`"
       type="error"
       effect="dark"
@@ -63,14 +63,14 @@ export default {
       handler () {
         this.$store.commit('product/PRODUCT_PARAMS', this.$props)
         // 清除编辑状态的数据
-        this.mode === 'create' && this.$store.commit('product/REMOVESTASHATTRS', [])
+        this.mode === 'create' && this.$store.commit('product/REMOVE_STASH_ATTRS', [])
       },
       immediate: true,
       deep: true
     }
   },
   computed: {
-    ...mapGetters('product', ['saleAttrNone']),
+    ...mapGetters('product', ['noSaleAttributes']),
     isStatus () {
       return this.mode === 'view'
     },
@@ -87,17 +87,17 @@ export default {
     load () {
       RecommondApi.product(this.id)
         .then(res => {
-          const { productBase, productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize } = res.data
+          const { productBase, productCustomAttributes, productImages, productSalesAttributeDetail, productSize } = res.data
           // 基础属性
-          this.$store.commit('product/PRODUCTBASE', productBase || [])
+          this.$store.commit('product/PRODUCT_BASE', productBase || [])
           // 商品属性
-          this.$store.commit('product/PRODUCTCUSTOMATTRIBUTES', productCustomAttributes || [])
+          this.$store.commit('product/PRODUCT_CUSTOM_ATTRIBUTES', productCustomAttributes || [])
           // 销售属性
-          this.$store.commit('product/PRODUCTSALESATTRIBUTEDETAILVO', productSalesAttributeDetailVO || [])
+          this.$store.commit('product/PRODUCT_SALES_ATTRIBUTE_DETAIL', productSalesAttributeDetail || [])
           // 图片属性
-          this.$store.commit('product/PRODUCTIMAGES', productImages || [])
+          this.$store.commit('product/PRODUCT_IMAGES', productImages || [])
           // 尺码表
-          this.$store.commit('product/PRODUCTSIZE', productSize || {})
+          this.$store.commit('product/PRODUCT_SIZE', productSize || {})
           this.productStatus = productBase.status
         })
     },

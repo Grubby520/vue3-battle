@@ -28,22 +28,22 @@ export const homeRoutes = [
     },
     component: ParentMenuRoute,
     children: [
-      {
-        path: 'odmOneDetails',
-        name: '创建产品',
-        meta: {
-          icon: 'el-icon-paperclip',
-          code: 'menu_create_product'
-        },
-        props: route => {
-          return {
-            id: route.query.id,
-            mode: route.query.mode,
-            categoryId: route.query.categoryId
-          }
-        },
-        component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
-      },
+      // {
+      //   path: 'odmOneDetails',
+      //   name: '创建产品',
+      //   meta: {
+      //     icon: 'el-icon-paperclip',
+      //     code: 'menu_create_product'
+      //   },
+      //   props: route => {
+      //     return {
+      //       id: route.query.id,
+      //       mode: route.query.mode,
+      //       categoryId: route.query.categoryId
+      //     }
+      //   },
+      //   component: () => import('@/views/components/recommendProducts/OdmOneDetails.vue')
+      // },
       {
         path: 'list',
         name: '商品列表',
@@ -53,26 +53,26 @@ export const homeRoutes = [
         },
         component: () => import('@/views/RecommendProductsList.vue')
       },
-      {
-        path: 'odmDetail',
-        name: '产品详情',
-        meta: {
-          alias: '创建产品',
-          icon: '',
-          notMenu: true
-        },
-        props: route => {
-          return {
-            id: route.query.id,
-            mode: route.query.mode,
-            categoryId: route.query.categoryId
-          }
-        },
-        component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
-      },
+      // {
+      //   path: 'odmDetail',
+      //   name: '产品详情',
+      //   meta: {
+      //     alias: '创建产品',
+      //     icon: '',
+      //     notMenu: true
+      //   },
+      //   props: route => {
+      //     return {
+      //       id: route.query.id,
+      //       mode: route.query.mode,
+      //       categoryId: route.query.categoryId
+      //     }
+      //   },
+      //   component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
+      // },
       {
         path: 'category',
-        name: '创建产品(新)',
+        name: '创建产品',
         meta: {
           icon: 'el-icon-paperclip',
           code: 'menu_create_product'
@@ -81,11 +81,11 @@ export const homeRoutes = [
       },
       {
         path: 'productDetail',
-        name: '产品详情(新)',
+        name: '产品详情',
         meta: {
           alias: '创建产品',
           icon: '',
-          notMenu: true
+          notMenu: false
         },
         props: route => {
           return {
@@ -98,25 +98,25 @@ export const homeRoutes = [
           }
         },
         component: () => import('@/views/product/productDetail/Index.vue')
-      },
-      {
-        path: 'import-spu',
-        name: '导入SPU',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        component: () => import('@/views/ImportSpu.vue')
-      },
-      {
-        path: 'import-product-imgs',
-        name: '导入商品图片',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        component: () => import('@/views/ImportProductImgs')
       }
+      // {
+      //   path: 'import-spu',
+      //   name: '导入SPU',
+      //   meta: {
+      //     icon: '',
+      //     notMenu: true
+      //   },
+      //   component: () => import('@/views/ImportSpu.vue')
+      // },
+      // {
+      //   path: 'import-product-imgs',
+      //   name: '导入商品图片',
+      //   meta: {
+      //     icon: '',
+      //     notMenu: true
+      //   },
+      //   component: () => import('@/views/ImportProductImgs')
+      // }
     ]
   }
 ]

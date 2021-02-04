@@ -1,12 +1,12 @@
 <template>
-  <div class="ProductSize">
-    <el-card v-if="sizestandard.terms&&sizestandard.terms.length > 0">
+  <div class="productSize">
+    <el-card v-if="sizeStandard.terms&&sizeStandard.terms.length > 0">
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
       <div class="form">
-        <el-form :model="form" ref="form" class="ProductSize-from">
-          <div class="ProductSize-from__table">
+        <el-form :model="form" ref="form" class="productSize-from">
+          <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
               <el-table-column
                 v-for="(item,index) in tableHeadData"
@@ -44,7 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'sizeAttr', 'sizestandard', 'productsize']),
+    ...mapGetters('product', ['checkedSizes', 'sizeAttr', 'sizeStandard', 'productSize']),
     tableHeadData () {
       // 表头信息
       const sizes = {
@@ -53,18 +53,18 @@ export default {
         status: 'text'
       }
       // 回显情况的表头
-      let echoSizestandard = []
-      const sizePositions = !isEmpty(this.productsize.sizeInfoList) ? this.productsize.sizeInfoList[0].sizePositions : []
-      const sizestandardIds = this.sizestandard.terms.reduce((init, standard) => init.concat(standard.id), [])
+      let echoSizeStandard = []
+      const sizePositions = !isEmpty(this.productSize.sizeInfoList) ? this.productSize.sizeInfoList[0].sizePositions : []
+      const sizeStandardIds = this.sizeStandard.terms.reduce((init, standard) => init.concat(standard.id), [])
       if (sizePositions && sizePositions.length > 0) {
-        echoSizestandard = sizePositions.map(options => {
-          if (!sizestandardIds.includes(options.attributeTermId)) {
+        echoSizeStandard = sizePositions.map(options => {
+          if (!sizeStandardIds.includes(options.attributeTermId)) {
             options.attributeTerm.name = `${options.attributeTerm.name}(已删除)`
           }
           return { id: options.attributeTermId, name: options.attributeTerm.name }
         })
       }
-      return echoSizestandard && echoSizestandard.length > 0 ? this.deduplication([sizes, ...echoSizestandard], 'id') : this.deduplication([sizes, ...this.sizestandard.terms], 'id')
+      return echoSizeStandard && echoSizeStandard.length > 0 ? this.deduplication([sizes, ...echoSizeStandard], 'id') : this.deduplication([sizes, ...this.sizeStandard.terms], 'id')
     }
   },
   watch: {
@@ -76,7 +76,7 @@ export default {
       immediate: true,
       deep: true
     },
-    'productsize.sizeInfoList': {
+    'productSize.sizeInfoList': {
       handler (newValue) {
         if (newValue) {
           // sizes值回显
@@ -149,8 +149,8 @@ export default {
         let productSize = {}
         const sizeInfoList = this.form.sizeInfoList.map((size) => {
           const { attributeTermId, attributeId } = size
-          const sizestandard = this.sizestandard.terms.map(standard => standard.id)
-          const sizePositions = sizestandard.map(key => {
+          const sizeStandard = this.sizeStandard.terms.map(standard => standard.id)
+          const sizePositions = sizeStandard.map(key => {
             if (size[key]) {
               return { 'attributeTermId': key, value: size[key] }
             } else {
@@ -168,7 +168,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.ProductSize {
+.productSize {
   margin-bottom: 2rem;
   &-from {
     padding: 0 0 0 120px;

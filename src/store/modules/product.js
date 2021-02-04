@@ -9,17 +9,17 @@ export default {
     // 回显商品属性
     productCustomAttributes: [],
     // 回显销售属性
-    productSalesAttributeDetailVO: [],
+    productSalesAttributeDetail: {},
     // 回显图片
     productImages: [],
     // 回显尺码表
-    productsize: [],
+    productSize: [],
     // 品类上未绑定销售属性
-    saleAttrNone: undefined,
+    noSaleAttributes: undefined,
     // 选中尺寸
     checkedSizes: [],
     // 品类绑定标准属性
-    sizestandard: [],
+    sizeStandard: [],
     // 品类商品属性
     customAttributesData: []
   },
@@ -28,12 +28,12 @@ export default {
     checkedSizes: state => state.checkedSizes,
     productBase: state => state.productBase || [],
     productCustomAttributes: state => state.productCustomAttributes || [],
-    productSalesAttributeDetailVO: state => state.productSalesAttributeDetailVO || [],
+    productSalesAttributeDetail: state => state.productSalesAttributeDetail || [],
     productImagesIInfo: state => state.productImages || [],
-    productsize: state => state.productsize || [],
+    productSize: state => state.productSize || [],
     sizeAttr: state => state.sizeAttr || {},
-    saleAttrNone: state => state.saleAttrNone === 0,
-    sizestandard: state => state.sizestandard || [],
+    noSaleAttributes: state => state.noSaleAttributes === 0,
+    sizeStandard: state => state.sizeStandard || [],
     customAttributesData: state => state.customAttributesData || []
   },
   mutations: {
@@ -43,39 +43,39 @@ export default {
     CHECKED_SIZES: (store, data) => {
       store.checkedSizes = data
     },
-    SIZEATTR: (store, data) => {
+    SIZE_ATTR: (store, data) => {
       store.sizeAttr = data
     },
-    PRODUCTBASE: (store, data) => {
+    PRODUCT_BASE: (store, data) => {
       store.productBase = data
     },
-    PRODUCTCUSTOMATTRIBUTES: (store, data) => {
+    PRODUCT_CUSTOM_ATTRIBUTES: (store, data) => {
       store.productCustomAttributes = data
     },
-    PRODUCTSALESATTRIBUTEDETAILVO: (store, data) => {
-      store.productSalesAttributeDetailVO = data
+    PRODUCT_SALES_ATTRIBUTE_DETAIL: (store, data) => {
+      store.productSalesAttributeDetail = data
     },
-    PRODUCTIMAGES: (store, data) => {
+    PRODUCT_IMAGES: (store, data) => {
       store.productImages = data
     },
-    PRODUCTSIZE: (store, data) => {
-      store.productsize = data
+    PRODUCT_SIZE: (store, data) => {
+      store.productSize = data
     },
-    SALEATTRNONE: (store, data) => {
-      store.saleAttrNone = data
+    NO_SALE_ATTRIBUTES: (store, data) => {
+      store.noSaleAttributes = data
     },
-    SIZESTANDARD: (store, data) => {
-      store.sizestandard = data
+    SIZE_STANDARD: (store, data) => {
+      store.sizeStandard = data
     },
-    CUSTOMATTRIBUTESDATA: (store, data) => {
+    CUSTOM_ATTRIBUTES_DATA: (store, data) => {
       store.customAttributesData = data
     },
-    REMOVESTASHATTRS: (store, data) => {
+    REMOVE_STASH_ATTRS: (store, data) => {
       store.productBase = [store.cateLabels]
       store.productCustomAttributes = data
-      store.productSalesAttributeDetailVO = data
+      store.productSalesAttributeDetail = data
       store.productImages = data
-      store.productsize = data
+      store.productSize = data
     }
   },
   actions: {}

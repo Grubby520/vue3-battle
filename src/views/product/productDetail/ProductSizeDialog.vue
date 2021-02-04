@@ -64,10 +64,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizestandard']),
+    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
-      const standardData = this.sizestandard.terms || []
+      const standardData = this.sizeStandard.terms || []
       const tableHeader = standardData.filter(size => this.sizeContrastTableList.some(com => size.id === com.sizeStandardId))
       const sizeHeader = {
         id: 'size',

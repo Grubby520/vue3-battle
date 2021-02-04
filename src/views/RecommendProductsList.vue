@@ -21,12 +21,8 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
-        <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button>
-        <el-button
-          type="primary"
-          @click="productDetail('create','')"
-          class="recommond-create"
-        >创建产品（新）</el-button>
+        <!-- <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button> -->
+        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -38,18 +34,18 @@
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
-          <el-button
+          <!-- <el-button
             @click="odmDetail('modify',row)"
             type="text"
             v-if="[0].includes(row.status.value)"
-          >编辑</el-button>
+          >编辑</el-button>-->
           <el-button
             @click="productDetail('modify',row)"
             type="text"
             v-if="[0].includes(row.status.value)"
-          >编辑（新）</el-button>
-          <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
-          <el-button @click="productDetail('view',row)" type="text">查看(新)</el-button>
+          >编辑</el-button>
+          <!-- <el-button @click="odmDetail('view',row)" type="text">查看</el-button> -->
+          <el-button @click="productDetail('view',row)" type="text">查看</el-button>
           <el-button type="text" @click="recommon(row)" v-if="row.status.value===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.status.value===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.status.value===0">删除</el-button>
