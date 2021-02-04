@@ -21,7 +21,6 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
-        <!-- <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button> -->
         <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
@@ -34,17 +33,11 @@
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
-          <!-- <el-button
-            @click="odmDetail('modify',row)"
-            type="text"
-            v-if="[0].includes(row.status.value)"
-          >编辑</el-button>-->
           <el-button
             @click="productDetail('modify',row)"
             type="text"
             v-if="[0].includes(row.status.value)"
           >编辑</el-button>
-          <!-- <el-button @click="odmDetail('view',row)" type="text">查看</el-button> -->
           <el-button @click="productDetail('view',row)" type="text">查看</el-button>
           <el-button type="text" @click="recommon(row)" v-if="row.status.value===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.status.value===1">撤回</el-button>
@@ -176,7 +169,7 @@ export default {
 
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
-      RecommondApi.getRecommendList({ ...RECOMMONDPAR })
+      RecommondApi.getList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
           list.forEach(data => {
@@ -230,7 +223,7 @@ export default {
     deleteProduct (row) {
       confirmBox(this, '是否删除商品', '')
         .then(() => {
-          RecommondApi.deleteRecommed(row.id)
+          RecommondApi.deleteProduct(row.id)
             .then(res => {
               if (res.success) {
                 this.gotoPage()
@@ -244,7 +237,7 @@ export default {
     cancel (row) {
       confirmBox(this, '是否取消提交', '')
         .then(() => {
-          RecommondApi.cancelrcommend(row.id)
+          RecommondApi.cancel(row.id)
             .then(res => {
               if (res.success) {
                 this.$refs.listView.refresh()

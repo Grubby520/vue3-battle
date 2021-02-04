@@ -35,7 +35,8 @@ export default {
   methods: {
     save () {
       const current = this.currentNodes[this.currentNodes.length - 1]
-      if (current && current.leaf) {
+      const isFourCategory = this.currentNodes.length === 4
+      if (current && current.leaf && isFourCategory) {
         const categoryId = current.id
         this.$router.push({
           path: '/home/recommend-products/productDetail',
@@ -52,7 +53,7 @@ export default {
       }
     },
     throttleMessage () {
-      this.$message.error('请选择完整的类目！')
+      this.$message.error('请选择第四级类目！')
     }
   }
 }

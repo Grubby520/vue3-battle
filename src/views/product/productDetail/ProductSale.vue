@@ -1,5 +1,5 @@
 <template>
-  <div class="ProductSale" v-if="!saleAttrNone">
+  <div class="ProductSale" v-if="!noSaleAttributes">
     <el-card>
       <div slot="header" class="title">
         <span>销售属性</span>
@@ -45,7 +45,7 @@
           <el-form-item
             :label="showSaleLabel['specification']"
             prop="specifications"
-            v-if="showSaleCondition('specificationOption')"
+            v-if="showSaleCondition('specification')"
             :rules="[{required: true, message: '请选择', trigger:'change' }]"
           >
             <SlSelect
@@ -175,7 +175,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'saleAttrNone', 'productSalesAttributeDetail']),
+    ...mapGetters('product', ['productParams', 'noSaleAttributes', 'productSalesAttributeDetail']),
     changeForm () {
       const { sizes, colors, specifications } = this.form
       return [
@@ -228,8 +228,6 @@ export default {
           this.form.productSalesAttributes = productSalesAttributes
           const saleAttrs = this.catagoryData.filter(sale => ['NZ010', 'NZ011', 'NZ012'].includes(sale.extendCode))
           const deletedSaleAttr = productCategorySalesAttributeSelectedList.filter(productSaleAttr => !saleAttrs.find(attr => attr.extendCode === productSaleAttr.attribute.extendCode)) || []
-          console.log('productCategorySalesAttributeSelectedList', productCategorySalesAttributeSelectedList)
-          console.log('deletedSaleAttr', deletedSaleAttr)
           if (!isEmpty(deletedSaleAttr)) {
             // 有删除的销售属性
             deletedSaleAttr.forEach(delSale => {
@@ -422,7 +420,7 @@ export default {
         // 尺码和重量
         if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
       })
-      this.form.productSalesAttributes.forEach((item, index) => {
+      this.form.productSalesAttributes.forEach(item => {
         let saleAttrIds = []
         item.productCategorySalesAttributes.forEach((attribute) => {
           saleAttrIds.push(attribute.attributeTermId)
