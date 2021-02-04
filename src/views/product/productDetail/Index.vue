@@ -111,8 +111,10 @@ export default {
           }
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
-            .then(() => {
-              this.cancel()
+            .then((res) => {
+              if (res.success) {
+                this.cancel()
+              }
             })
         })
     },
@@ -127,8 +129,10 @@ export default {
           this.productStatus !== 2 ? interfacesStatus[1] = 'productSaveSubmit' : interfacesStatus[1] = 'replenish'
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
-            .then(() => {
-              this.cancel()
+            .then((res) => {
+              if (res.success) {
+                this.cancel()
+              }
             })
         })
     },
