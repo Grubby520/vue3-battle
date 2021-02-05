@@ -65,8 +65,8 @@
           <div class="ProductSale-table">
             <el-table :data="form.productSalesAttributes" row-key="key" border>
               <el-table-column
-                v-for="(item,index) in tableHeadData"
-                :key="index"
+                v-for="item in tableHeadData"
+                :key="item.label"
                 :width="item.width"
                 align="center"
               >
@@ -143,7 +143,7 @@ export default {
       sizeOptions: [],
       specificationOptions: [],
       catagoryData: [],
-      stashTableData: new Map(), // 表格填写过的数据
+      stashTableData: new Map(), // 临时缓存表格数据
       showSaleLabel: {}, // 销售属性动态展示的label
       tableLabel: [], // 表头展示的销售属性name
       tableHeadData: [ // 表头字段
