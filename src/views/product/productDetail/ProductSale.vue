@@ -236,6 +236,7 @@ export default {
               this.showSaleLabel[`${saleTypes[deletedExtendCode][0]}deleted`] = true
               const attributeTerms = delSale.attributeTerms
               const options = attributeTerms.map(attr => {
+                attr.name = `${attr.name}(已删除)`
                 return {
                   ...attr,
                   attributeId: delSale.attributeId,
@@ -249,20 +250,29 @@ export default {
               this.tableHeadData.unshift({ name: saleTypes[deletedExtendCode][0], label: delSale.attribute.name, extendCode: deletedExtendCode })
             })
           }
-          // 没有删除属性进行属性回填
+          // 没有删除属性进行属性值回填
           productCategorySalesAttributeSelectedList.forEach(saleAttr => {
             const { attributeId, attribute, attributeTerms } = saleAttr
             const classified = saleTypes[attribute.extendCode][1]
-            const optionIds = this[`${saleTypes[saleAttr.attribute.extendCode][0]}Options`].reduce((init, option) => init.concat(option.id), [])
+            const typeOption = saleTypes[attribute.extendCode][0]
+            const deletedItems = []
+            const optionIds = this[`${typeOption}Options`].reduce((init, option) => init.concat(option.id), [])
             this.form[classified] = attributeTerms.map(attr => {
-              // 属性未删除，属性值被删除
-              if (!optionIds.includes(attr.id)) attr.name = `${attr.name}(已删除)`
+              // 属性值被删除
+              if (!optionIds.includes(attr.id)) {
+                attr.name = `${attr.name}(已删除)`
+                deletedItems.push({ ...attr, name: attr.name })
+              }
               return {
                 ...attr,
                 attributeId: attributeId,
                 extendCode: attribute.extendCode
               }
             })
+            // 重新修改尺码表数据
+            if (classified === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[classified])
+            // 下拉框添加删除的属性值
+            this[`${typeOption}Options`].push(...deletedItems)
           })
         }
       }
@@ -354,7 +364,7 @@ export default {
             'formSizes': sizes || []
           }
       }
-      dialog.open(type, data)
+      dialog.open(data)
       dialog = null
     },
     /**

@@ -3,13 +3,13 @@ export default {
   state: {
     // 创建产品需要的所有参数
     productParams: null,
-    sizeAttr: {},
+    sizeAttr: null,
     // 回显基本属性
     productBase: [],
     // 回显商品属性
     productCustomAttributes: [],
     // 回显销售属性
-    productSalesAttributeDetail: {},
+    productSalesAttributeDetail: null,
     // 回显图片
     productImages: [],
     // 回显尺码表
@@ -19,7 +19,7 @@ export default {
     // 选中尺寸
     checkedSizes: [],
     // 品类绑定标准属性
-    sizeStandard: [],
+    sizeStandard: null,
     // 品类商品属性
     customAttributesData: []
   },
@@ -33,7 +33,7 @@ export default {
     productSize: state => state.productSize || [],
     sizeAttr: state => state.sizeAttr || {},
     noSaleAttributes: state => state.noSaleAttributes === 0,
-    sizeStandard: state => state.sizeStandard || [],
+    sizeStandard: state => state.sizeStandard || {},
     customAttributesData: state => state.customAttributesData || []
   },
   mutations: {

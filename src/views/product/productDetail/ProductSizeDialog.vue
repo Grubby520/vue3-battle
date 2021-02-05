@@ -33,7 +33,7 @@
                 align="center"
               >
                 <template slot-scope="scope">
-                  <span v-if="item.id === 'size'">{{scope.row.size.name}}</span>
+                  <span v-if="item.id === 'size'">{{scope.row.size}}</span>
                   <span v-else>{{showControlDataItem(scope.row[item.id])}}</span>
                 </template>
               </el-table-column>
@@ -90,24 +90,22 @@ export default {
     },
     sizeTable () {
       const sizeSegments = {}
-      // 表格尺码段列数据
-      const attributes = this.sizeAttr.terms
       // 表格数据处理前需要先排序
-      const sizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
+      const sortSizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
       // sizeSegmentId 属性值id  sizeStandardId尺码标准id（表头）
-      sizeTable.forEach(size => {
+      sortSizeTable.forEach(size => {
         if (!sizeSegments[size.sizeSegmentId]) {
           sizeSegments[size.sizeSegmentId] = [size]
         } else {
           sizeSegments[size.sizeSegmentId].push(size)
         }
       })
-
       const tableRows = []
       for (const key in sizeSegments) {
         const rowData = {}
-        rowData.size = attributes.find(col => `${col.id}` === key)
         sizeSegments[key].forEach(size => {
+          const sizeAttrIds = this.sizeAttr.terms.reduce((init, a) => init.concat(`${a.id}`), [])
+          sizeAttrIds.includes(key) ? rowData['size'] = size.sizeSegmentName : rowData['size'] = `${size.sizeSegmentName}(已删除)`
           rowData[size.sizeStandardId] = [size.minValue, size.maxValue, size.id]
         })
         tableRows.push(rowData)
@@ -121,7 +119,7 @@ export default {
     }
   },
   methods: {
-    open (type, data) {
+    open (data) {
       const { sizeOptions, formSizes } = data
       this.sizeOptions = sizeOptions
       this.formSizes = formSizes

@@ -74,27 +74,25 @@ export default {
   watch: {
     'checkedSizes': {
       handler (newValue) {
-        // 选中尺寸
-        this.addListItem(newValue)
-      },
-      immediate: true,
-      deep: true
-    },
-    'productSize.sizeInfoList': {
-      handler (newValue) {
-        if (newValue) {
-          // sizes值回显
-          if (newValue && newValue.length > 0) {
-            const sizeInfoList = newValue.map(size => {
-              const standardIds = size.sizePositions.reduce((init, a) => {
-                init[a.attributeTermId] = a.value
-                return init
-              }, {})
-              return { ...standardIds, attributeId: size.attributeId, attributeTermId: size.attributeTermId }
+        // 选中尺寸(包含回填)
+        let hasShowSizeInfo = []
+        const sizeInfoList = this.productSize.sizeInfoList || []
+        if (!isEmpty(sizeInfoList)) {
+          hasShowSizeInfo = newValue.map(checkSize => {
+            // 回填数据
+            let positonItems = {}
+            sizeInfoList.forEach(sizeInfo => {
+              if (checkSize.id === sizeInfo.attributeTermId) {
+                sizeInfo.sizePositions.forEach(sizeStandard => {
+                  positonItems[sizeStandard.attributeTermId] = sizeStandard.value
+                })
+              }
             })
-            this.addListItem(sizeInfoList)
-          }
+            return { ...checkSize, ...positonItems }
+          })
         }
+        const addSizeInfo = !isEmpty(hasShowSizeInfo) ? hasShowSizeInfo : newValue
+        this.addListItem(addSizeInfo)
       },
       immediate: true,
       deep: true
