@@ -18,10 +18,6 @@ const COMMONAPI = {
   generatePreUploadUrl (params) {
     return post(URL.generatePreUploadUrl, params)
   },
-  // 分类树
-  category (params) {
-    return get(URL.categoryUrl, params)
-  },
   // plm分类树
   plmCategory () {
     return get(URL.plmCategory)

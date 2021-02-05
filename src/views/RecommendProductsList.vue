@@ -197,7 +197,6 @@ export default {
       this.$refs.listView.refresh()
     },
     commit (row) {
-      // this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
       // 批量推品
       const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
       // 批量图品供方货号
@@ -208,7 +207,6 @@ export default {
       const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
       confirmBox(this, '是否提交商品', '')
         .then(() => {
-          // RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
           RecommondApi.submit(PUSHPRODUCTS)
             .then((res) => {
               if (res.success) {
