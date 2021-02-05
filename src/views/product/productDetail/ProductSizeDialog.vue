@@ -52,6 +52,7 @@
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -64,16 +65,28 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizestandard']),
+    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
-      const standardData = this.sizestandard.terms || []
-      const tableHeader = standardData.filter(size => this.sizeContrastTableList.some(com => size.id === com.sizeStandardId))
+      const standardData = this.sizeStandard.terms || []
       const sizeHeader = {
         id: 'size',
         name: '尺码段'
       }
-      return this.sizeContrastTableList && this.sizeContrastTableList.length > 0 ? [sizeHeader, ...tableHeader] : []
+      const tableHeader = this.sizeContrastTableList.map(tableStandard => {
+        const standardItem = {
+          id: tableStandard.sizeStandardId,
+          name: tableStandard.sizeStandardName
+        }
+        const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
+        if (standardDataIds.includes(tableStandard.sizeStandardId)) {
+          return standardItem
+        } else {
+          standardItem.name = `${standardItem.name}(已删除)`
+          return standardItem
+        }
+      })
+      return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
     },
     sizeTable () {
       const sizeSegments = {}
@@ -116,10 +129,7 @@ export default {
       this.getSizeTable()
     },
     getSizeTable () {
-      // let params = {
-      //   categoryId: this.productParams.categoryId
-      // }
-      RecommendApi.pageList(2)
+      RecommendApi.pageList(this.productParams.categoryId)
         .then(res => {
           this.sizeContrastTableList = res.data.sizeContrastTableList || []
         })

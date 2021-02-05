@@ -1,8 +1,8 @@
 <template>
   <div class="product">
     <el-alert
-      v-if="saleAttrNone"
-      :title="`${cateLabels}品类未配置销售属性，无法创建产品`"
+      v-if="showAlert.condition"
+      :title="showAlert.title"
       type="error"
       effect="dark"
       style="margin-bottom: 1rem;"
@@ -39,6 +39,7 @@ import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -63,14 +64,14 @@ export default {
       handler () {
         this.$store.commit('product/PRODUCT_PARAMS', this.$props)
         // 清除编辑状态的数据
-        this.mode === 'create' && this.$store.commit('product/REMOVESTASHATTRS', [])
+        this.mode === 'create' && this.$store.commit('product/REMOVE_STASH_ATTRS', [])
       },
       immediate: true,
       deep: true
     }
   },
   computed: {
-    ...mapGetters('product', ['saleAttrNone']),
+    ...mapGetters('product', ['noSaleAttributes', 'sizeStandard']),
     isStatus () {
       return this.mode === 'view'
     },
@@ -81,23 +82,33 @@ export default {
         default:
           return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
       }
+    },
+    showAlert () {
+      let result = {}
+      const hasSizeStandard = !isEmpty(this.sizeStandard.terms)
+      if (this.noSaleAttributes) {
+        result = { condition: this.noSaleAttributes, title: `${this.cateLabels}品类未配置销售属性，无法创建产品` }
+      } else if (!this.noSaleAttributes && !hasSizeStandard && this.mode === 'create') {
+        result = { condition: !hasSizeStandard, title: `品类未配置标准属性，无法展示尺码表` }
+      }
+      return result
     }
   },
   methods: {
     load () {
       RecommondApi.product(this.id)
         .then(res => {
-          const { productBase, productCustomAttributes, productImages, productSalesAttributeDetailVO, productSize } = res.data
+          const { productBase, productCustomAttributes, productImages, productSalesAttributeDetail, productSize } = res.data
           // 基础属性
-          this.$store.commit('product/PRODUCTBASE', productBase || [])
+          this.$store.commit('product/PRODUCT_BASE', productBase || [])
           // 商品属性
-          this.$store.commit('product/PRODUCTCUSTOMATTRIBUTES', productCustomAttributes || [])
+          this.$store.commit('product/PRODUCT_CUSTOM_ATTRIBUTES', productCustomAttributes || [])
           // 销售属性
-          this.$store.commit('product/PRODUCTSALESATTRIBUTEDETAILVO', productSalesAttributeDetailVO || [])
+          this.$store.commit('product/PRODUCT_SALES_ATTRIBUTE_DETAIL', productSalesAttributeDetail || [])
           // 图片属性
-          this.$store.commit('product/PRODUCTIMAGES', productImages || [])
+          this.$store.commit('product/PRODUCT_IMAGES', productImages || [])
           // 尺码表
-          this.$store.commit('product/PRODUCTSIZE', productSize || {})
+          this.$store.commit('product/PRODUCT_SIZE', productSize || {})
           this.productStatus = productBase.status
         })
     },
@@ -111,8 +122,10 @@ export default {
           }
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
-            .then(() => {
-              this.cancel()
+            .then((res) => {
+              if (res.success) {
+                this.cancel()
+              }
             })
         })
     },
@@ -127,8 +140,10 @@ export default {
           this.productStatus !== 2 ? interfacesStatus[1] = 'productSaveSubmit' : interfacesStatus[1] = 'replenish'
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
-            .then(() => {
-              this.cancel()
+            .then((res) => {
+              if (res.success) {
+                this.cancel()
+              }
             })
         })
     },

@@ -1,5 +1,5 @@
 <template>
-  <div class="ProductSale" v-if="!saleAttrNone">
+  <div class="ProductSale" v-if="!noSaleAttributes">
     <el-card>
       <div slot="header" class="title">
         <span>销售属性</span>
@@ -45,7 +45,7 @@
           <el-form-item
             :label="showSaleLabel['specification']"
             prop="specifications"
-            v-if="showSaleCondition('specificationOption')"
+            v-if="showSaleCondition('specification')"
             :rules="[{required: true, message: '请选择', trigger:'change' }]"
           >
             <SlSelect
@@ -65,8 +65,8 @@
           <div class="ProductSale-table">
             <el-table :data="form.productSalesAttributes" row-key="key" border>
               <el-table-column
-                v-for="(item,index) in tableHeadData"
-                :key="index"
+                v-for="item in tableHeadData"
+                :key="item.label"
                 :width="item.width"
                 align="center"
               >
@@ -127,6 +127,7 @@
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
 import BatchAttributes from './batchAttributes'
+import { isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
 export default {
   components: { ProductSizeDialog, BatchAttributes },
@@ -134,18 +135,17 @@ export default {
     return {
       form: {
         productSalesAttributes: [],
-        sizes: [],
+        sizes: [], // 尺寸选中数据
         colors: [],
         specifications: []
       },
-      colorOptions: [],
+      colorOptions: [], // 颜色下拉框数据
       sizeOptions: [],
       specificationOptions: [],
-      deletedSaleAttr: [],
       catagoryData: [],
-      stashTableData: new Map(),
-      showSaleLabel: {},
-      tableLabel: [],
+      stashTableData: new Map(), // 临时缓存表格数据
+      showSaleLabel: {}, // 销售属性动态展示的label
+      tableLabel: [], // 表头展示的销售属性name
       tableHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
@@ -175,7 +175,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'saleAttrNone', 'productSalesAttributeDetailVO']),
+    ...mapGetters('product', ['productParams', 'noSaleAttributes', 'productSalesAttributeDetail']),
     changeForm () {
       const { sizes, colors, specifications } = this.form
       return [
@@ -216,20 +216,19 @@ export default {
       immediate: true,
       deep: true
     },
-    'productSalesAttributeDetailVO': {
+    'productSalesAttributeDetail': {
       handler (newValue) {
         if (newValue) {
           const saleTypes = {
             'NZ011': ['size', 'sizes'],
             'NZ010': ['color', 'colors'],
-            'NZ012': ['specification', 'specification']
+            'NZ012': ['specification', 'specifications']
           }
           const { productCategorySalesAttributeSelectedList, productSalesAttributes } = newValue
           this.form.productSalesAttributes = productSalesAttributes
           const saleAttrs = this.catagoryData.filter(sale => ['NZ010', 'NZ011', 'NZ012'].includes(sale.extendCode))
           const deletedSaleAttr = productCategorySalesAttributeSelectedList.filter(productSaleAttr => !saleAttrs.find(attr => attr.extendCode === productSaleAttr.attribute.extendCode)) || []
-          this.deletedSaleAttr = deletedSaleAttr
-          if (deletedSaleAttr && deletedSaleAttr.length > 0) {
+          if (!isEmpty(deletedSaleAttr)) {
             // 有删除的销售属性
             deletedSaleAttr.forEach(delSale => {
               const deletedExtendCode = delSale.attribute.extendCode
@@ -254,7 +253,10 @@ export default {
           productCategorySalesAttributeSelectedList.forEach(saleAttr => {
             const { attributeId, attribute, attributeTerms } = saleAttr
             const classified = saleTypes[attribute.extendCode][1]
+            const optionIds = this[`${saleTypes[saleAttr.attribute.extendCode][0]}Options`].reduce((init, option) => init.concat(option.id), [])
             this.form[classified] = attributeTerms.map(attr => {
+              // 属性未删除，属性值被删除
+              if (!optionIds.includes(attr.id)) attr.name = `${attr.name}(已删除)`
               return {
                 ...attr,
                 attributeId: attributeId,
@@ -295,22 +297,22 @@ export default {
               // 尺码
               case 'NZ011':
                 buildSaleData(showSaleLabel, item, 'size')
-                this.$store.commit('product/SIZEATTR', { name: item.name, attributeId: item.id, terms: item.terms })
+                this.$store.commit('product/SIZE_ATTR', { name: item.name, attributeId: item.id, terms: item.terms })
                 break
               // 尺码标准
               case 'NZ013':
-                this.$store.commit('product/SIZESTANDARD', { terms: item.terms })
+                this.$store.commit('product/SIZE_STANDARD', { terms: item.terms })
                 break
               default:
                 // 商品属性（其他属性）
                 const customAttributesData = data.filter(item => item.type.value === 4)
-                this.$store.commit('product/CUSTOMATTRIBUTESDATA', customAttributesData)
+                this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
             }
           })
 
           // 判断是否有销售属性
-          const saleAttrNone = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
-          this.$store.commit('product/SALEATTRNONE', saleAttrNone.length)
+          const noSaleAttributes = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
+          this.$store.commit('product/NO_SALE_ATTRIBUTES', noSaleAttributes.length)
           this.showSaleLabel = showSaleLabel
         })
     },
@@ -328,11 +330,11 @@ export default {
     removeSizeTag (tag) {
       this.form.sizes = this.form.sizes.filter(item => item.id !== tag.id)
       this.$refs.form.validateField('sizes')
-      this.$store.commit('product/SIZEOPTIONS', this.form.sizes)
+      this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
-      this.$store.commit('product/SIZEOPTIONS', val)
+      this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
       this.$refs.form.validateField('sizes')
     },
     openDialog (type, data = '') {
@@ -418,7 +420,7 @@ export default {
         // 尺码和重量
         if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
       })
-      this.form.productSalesAttributes.forEach((item, index) => {
+      this.form.productSalesAttributes.forEach(item => {
         let saleAttrIds = []
         item.productCategorySalesAttributes.forEach((attribute) => {
           saleAttrIds.push(attribute.attributeTermId)
@@ -433,7 +435,7 @@ export default {
       * 暂存尺码销售属性之前的记录
       */
     stashLastData () {
-      if (this.form.productSalesAttributes && this.form.productSalesAttributes.length) {
+      if (!isEmpty(this.form.productSalesAttributes)) {
         this.form.productSalesAttributes.forEach(tableItem => {
           const salesAttributeIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')
           this.stashTableData.set(`${salesAttributeIds}`, tableItem)
@@ -446,7 +448,7 @@ export default {
      */
     stashTableInfo (saleData) {
       this.stashLastData()
-      if (saleData && saleData.length > 0) {
+      if (!isEmpty(saleData)) {
         const showDatas = JSON.parse(JSON.stringify(saleData))
         showDatas.map(tableItem => {
           const tableItemIds = tableItem.productCategorySalesAttributes.reduce((init, stash) => init.concat(stash.attributeTermId), []).join('')

@@ -1,12 +1,12 @@
 <template>
-  <div class="ProductSize">
-    <el-card v-if="sizestandard.terms&&sizestandard.terms.length > 0">
+  <div class="productSize">
+    <el-card v-if="showProductSizePage">
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
       <div class="form">
-        <el-form :model="form" ref="form" class="ProductSize-from">
-          <div class="ProductSize-from__table">
+        <el-form :model="form" ref="form" class="productSize-from">
+          <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
               <el-table-column
                 v-for="(item,index) in tableHeadData"
@@ -31,6 +31,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -43,7 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeOptions', 'sizeAttr', 'sizestandard', 'productsize']),
+    ...mapGetters('product', ['checkedSizes', 'sizeAttr', 'sizeStandard', 'productSize']),
     tableHeadData () {
       // 表头信息
       const sizes = {
@@ -51,28 +52,48 @@ export default {
         name: this.sizeAttr.name,
         status: 'text'
       }
-      return this.deduplication(sizes, this.sizestandard.terms)
+      // 回显情况的表头
+      let echoSizeStandard = []
+      const sizePositions = !isEmpty(this.productSize.sizeInfoList) ? this.productSize.sizeInfoList[0].sizePositions : []
+      const sizeStandardTerms = this.sizeStandard.terms || []
+      const sizeStandardIds = sizeStandardTerms.reduce((init, standard) => init.concat(standard.id), [])
+      if (sizePositions && sizePositions.length > 0) {
+        echoSizeStandard = sizePositions.map(options => {
+          if (!sizeStandardIds.includes(options.attributeTermId)) {
+            options.attributeTerm.name = `${options.attributeTerm.name}(已删除)`
+          }
+          return { id: options.attributeTermId, name: options.attributeTerm.name }
+        })
+      }
+      return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
+    },
+    showProductSizePage () {
+      return !isEmpty(this.checkedSizes) || !isEmpty(this.productSize.sizeInfoList)
     }
   },
   watch: {
-    'sizeOptions': {
+    'checkedSizes': {
       handler (newValue) {
+        // 选中尺寸
         this.addListItem(newValue)
       },
       immediate: true,
       deep: true
     },
-    'productsize.sizeInfoList': {
+    'productSize.sizeInfoList': {
       handler (newValue) {
-        if (newValue && newValue.length > 0) {
-          const sizeInfoList = newValue.map(size => {
-            const standardIds = size.sizePositions.reduce((init, a) => {
-              init[a.attributeTermId] = a.value
-              return init
-            }, {})
-            return { ...standardIds, attributeId: size.attributeId, attributeTermId: size.attributeTermId }
-          })
-          this.addListItem(sizeInfoList)
+        if (newValue) {
+          // sizes值回显
+          if (newValue && newValue.length > 0) {
+            const sizeInfoList = newValue.map(size => {
+              const standardIds = size.sizePositions.reduce((init, a) => {
+                init[a.attributeTermId] = a.value
+                return init
+              }, {})
+              return { ...standardIds, attributeId: size.attributeId, attributeTermId: size.attributeTermId }
+            })
+            this.addListItem(sizeInfoList)
+          }
         }
       },
       immediate: true,
@@ -91,7 +112,8 @@ export default {
           attributeTermId: size.id || attributeTermId,
           ...rest
         }
-        size.id ? showLabels[size.id] = size.name : showLabels[size.attributeTermId] = this.sizeAttr.terms.find(attr => attr.id === size.attributeTermId).name
+        const sizeTerms = this.sizeAttr.terms || []
+        size.id ? showLabels[size.id] = size.name : showLabels[size.attributeTermId] = sizeTerms.find(attr => attr.id === size.attributeTermId).name
         sizeInfoList.push(addItem)
       })
       this.showLabels = showLabels
@@ -132,8 +154,9 @@ export default {
         let productSize = {}
         const sizeInfoList = this.form.sizeInfoList.map((size) => {
           const { attributeTermId, attributeId } = size
-          const sizestandard = this.sizestandard.terms.map(standard => standard.id)
-          const sizePositions = sizestandard.map(key => {
+          const sizeStandardTerms = this.sizeStandard.terms || []
+          const sizeStandard = sizeStandardTerms.map(standard => standard.id)
+          const sizePositions = sizeStandard.map(key => {
             if (size[key]) {
               return { 'attributeTermId': key, value: size[key] }
             } else {
@@ -143,7 +166,7 @@ export default {
           return { sizePositions, attributeTermId, attributeId }
         })
         productSize['sizeInfoList'] = sizeInfoList
-        resolve({ 'productSize': productSize })
+        resolve({ 'productSize': productSize || [] })
       })
     }
   }
@@ -151,7 +174,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.ProductSize {
+.productSize {
   margin-bottom: 2rem;
   &-from {
     padding: 0 0 0 120px;

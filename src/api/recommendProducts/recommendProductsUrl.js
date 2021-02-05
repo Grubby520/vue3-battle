@@ -1,38 +1,12 @@
 const baseURL = '/srm-goods-service'
-const productUrl = '/product-service'
 const plmUrl = 'plm-product-service'
 const RECOMMEND_URLS = {
-  // odm 列表页
-  recommendProducts: baseURL + '/product/page-list',
-  // 上传SPU数据 post
-  spu_data_template: baseURL + '/template/getTemplateUrl?code=IMPORT_SPU',
-  // 上传SPU数据 post
-  upload_spu_data: baseURL + '/product/importSpu',
-  // odm提交
-  recommend: baseURL + '/product/submit',
-  // odm 撤回
-  cancelRecommend: baseURL + '/product/revoke',
-  // odm详情
-  recommendUrl: baseURL + '/product',
-  // odm 状态
+  // 列表页
+  getList: baseURL + '/product/page-list',
+  // 状态
   recommendStatus: baseURL + '/product/product-status',
-  // odm 分类
-  recommendCategory: baseURL + '/category/list',
-  // 校验货号是否存在
-  checkItem: baseURL + '/product/supplier-item-no-is-exist',
-  saveSubmit: baseURL + '/product/save-and-submit',
-  // 保存补充信息
-  supplementSave: baseURL + '/product/supplement-info',
-  // 保存并提交补充
-  supplement: baseURL + '/product/supplement-info/save-and-submit',
-  // 属性项列表,颜色、尺寸
-  getAttrList: productUrl + '/attribute/list-term/',
-  // 根据用户获取颜色尺寸id
-  allByUser: productUrl + '/attribute/all_by_user/',
-
-  // plm修改后接口
   // 尺码对照表
-  pageList: plmUrl + '/size-table/category-id/',
+  pageList: plmUrl + '/size-table/product/category-id/',
   // 分类获取属性值
   plmCategoryAttrs: plmUrl + '/plm-category',
   // 校验供应商是否存在
@@ -46,7 +20,9 @@ const RECOMMEND_URLS = {
   // 详情
   product: baseURL + '/product',
   // 列表提交
-  submit: baseURL + '/product/submit'
+  submit: baseURL + '/product/submit',
+  // 撤回
+  cancel: baseURL + '/product/revoke'
 }
 
 export default RECOMMEND_URLS

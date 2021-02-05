@@ -20,13 +20,8 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
-        <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button>
-        <el-button
-          type="primary"
-          @click="productDetail('create','')"
-          class="recommond-create"
-        >创建产品（新）</el-button>
+        <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
+        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -39,21 +34,15 @@
       >
         <div slot="operation" slot-scope="{row}" class="operate">
           <el-button
-            @click="odmDetail('modify',row)"
-            type="text"
-            v-if="[0].includes(row.status.value)"
-          >编辑</el-button>
-          <el-button
             @click="productDetail('modify',row)"
             type="text"
             v-if="[0].includes(row.status.value)"
-          >编辑（新）</el-button>
-          <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
-          <el-button @click="productDetail('view',row)" type="text">查看(新)</el-button>
-          <el-button type="text" @click="recommon(row)" v-if="row.status.value===0">提交</el-button>
+          >编辑</el-button>
+          <el-button @click="productDetail('view',row)" type="text">查看</el-button>
+          <el-button type="text" @click="commit(row)" v-if="row.status.value===0">提交</el-button>
           <el-button type="text" @click="cancel(row)" v-if="row.status.value===1">撤回</el-button>
           <el-button type="text" @click="deleteProduct(row)" v-if="row.status.value===0">删除</el-button>
-          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.status.value===2">修改</el-button>
+          <el-button type="text" @click="productDetail('modify',row)" v-if="row.status.value===2">修改</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -180,7 +169,7 @@ export default {
 
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
-      RecommondApi.getRecommendList({ ...RECOMMONDPAR })
+      RecommondApi.getList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
           list.forEach(data => {
@@ -198,7 +187,7 @@ export default {
           this.tableData = list
           this.$refs.listView.loading = false
           // 待推品复选框置灰数据
-          this.selectionsDisabled = list.filter(item => item.status !== 0)
+          this.selectionsDisabled = list.filter(item => item.status.value !== 0)
           this.page.total = total
         })
     },
@@ -207,7 +196,7 @@ export default {
       // 更新列表
       this.$refs.listView.refresh()
     },
-    recommon (row) {
+    commit (row) {
       // this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
       // 批量推品
       const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
@@ -234,7 +223,7 @@ export default {
     deleteProduct (row) {
       confirmBox(this, '是否删除商品', '')
         .then(() => {
-          RecommondApi.deleteRecommed(row.id)
+          RecommondApi.deleteProduct(row.id)
             .then(res => {
               if (res.success) {
                 this.gotoPage()
@@ -248,7 +237,7 @@ export default {
     cancel (row) {
       confirmBox(this, '是否取消提交', '')
         .then(() => {
-          RecommondApi.cancelrcommend(row.id)
+          RecommondApi.cancel(row.id)
             .then(res => {
               if (res.success) {
                 this.$refs.listView.refresh()
@@ -258,14 +247,6 @@ export default {
               }
             })
         })
-    },
-    odmDetail (status, row) {
-      const { id, categoryId, supplierItemNo } = row
-      if (status !== 'create') {
-        this.$router.push({ path: '/home/recommend-products/odmDetail', query: { mode: status, id, categoryId, supplierItemNo } })
-      } else {
-        this.$router.push({ path: '/home/recommend-products/odmOneDetails', query: { categoryId, mode: status, id, supplierItemNo } })
-      }
     },
     productDetail (status, row) {
       const { id, categoryId, supplierItemNo } = row
