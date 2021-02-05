@@ -123,7 +123,7 @@ export default {
         if (!categoryAttribute) return
         const categoryAttributeTerms = categoryAttribute.terms || [];
         (attributeData.attributeTerms || []).forEach(attributeTerm => {
-          attributeTerm.deleted = categoryAttributeTerms.find(term => term.id === attributeTerm.id)
+          attributeTerm.deleted = !categoryAttributeTerms.some(term => term.id === attributeTerm.id)
         })
       })
       // 已经删除的属性
@@ -147,14 +147,14 @@ export default {
         })
       // 已经删除了属性值的属性 (属性未删除，但是属性值是删除了的)
       const hasDeletedTermsdAttributes = attributesData
-        .filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).find((term) => term.deleted))
+        .filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).some((term) => term.deleted))
       // 属性列表加上属性详情中已经被删掉的属性
       attributes = attributes.map((attribute) => {
         const hasDeletedTermsdAttribute = hasDeletedTermsdAttributes
           .find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
         let terms = attribute.terms
         if (hasDeletedTermsdAttribute) {
-          terms.concat(hasDeletedTermsdAttribute.attributeTerms.filter(terms => terms.deleted).map((term) => {
+          terms = terms.concat(hasDeletedTermsdAttribute.attributeTerms.filter(terms => terms.deleted).map((term) => {
             return {
               id: term.id,
               name: `${term.name}（已删除）`,
