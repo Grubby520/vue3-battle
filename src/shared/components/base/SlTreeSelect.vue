@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- {{options}} -->
     <!--
     [options] 备选数据项
     [multiple] 是否允许多选
@@ -14,7 +15,7 @@
       :multiple="false"
       :flat="false"
       :disable-branch-nodes="false"
-      :props="defaultProps"
+      :normalizer="defaultProps"
       :placeholder="label"
       size="small"
     />
@@ -46,12 +47,7 @@ export default {
     }
   },
   data () {
-    return {
-      defaultProps: {
-        children: 'children',
-        label: 'title'
-      }
-    }
+    return {}
   },
   computed: {
     treeVal: {
@@ -64,7 +60,13 @@ export default {
     }
   },
   methods: {
-
+    defaultProps (node) {
+      return {
+        id: node.id,
+        label: node.name,
+        children: node.children
+      }
+    }
   }
 }
 </script>

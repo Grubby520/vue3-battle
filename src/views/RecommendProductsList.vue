@@ -136,7 +136,7 @@ export default {
      * 初始化筛选的基础数据
      */
     initFilter () {
-      CommonApi.category({ type: 1 }).then((response) => {
+      CommonApi.plmCategory().then((response) => {
         if (response.success) {
           let data = response.data
           this.shakingTree(data)
@@ -152,7 +152,7 @@ export default {
     shakingTree (treeData) {
       treeData.forEach((node) => {
         // 将树的id换成path
-        node.id = node.path
+        node.id = node.levelPath
         if (node.children && node.children.length > 0) {
           this.shakingTree(node.children)
         } else {
