@@ -1,5 +1,5 @@
 <template>
-  <div class="sizeDialog">
+  <div class="sizeDialog" v-if="dialogVisible">
     <el-dialog
       title="尺码设置"
       :visible.sync="dialogVisible"
@@ -68,22 +68,28 @@ export default {
     ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
+      let tableHeader = []
       const standardData = this.sizeStandard.terms || []
       const sizeHeader = {
         id: 'size',
         name: '尺码段'
       }
-      const tableHeader = this.sizeContrastTableList.map(tableStandard => {
-        const standardItem = {
-          id: tableStandard.sizeStandardId,
-          name: tableStandard.sizeStandardName
-        }
-        const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
-        if (standardDataIds.includes(tableStandard.sizeStandardId)) {
-          return standardItem
-        } else {
-          standardItem.name = `${standardItem.name}(已删除)`
-          return standardItem
+      const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
+      this.sizeContrastTableList.forEach(tableStandard => {
+        // 去重复数据
+        const noSizeStandardId = !tableHeader.some(header => header.id === tableStandard.sizeStandardId)
+        if (noSizeStandardId) {
+          if (standardDataIds.includes(tableStandard.sizeStandardId)) {
+            tableHeader.push({
+              id: tableStandard.sizeStandardId,
+              name: tableStandard.sizeStandardName
+            })
+          } else {
+            tableHeader.push({
+              id: tableStandard.sizeStandardId,
+              name: `${tableStandard.sizeStandardName}(已删除)`
+            })
+          }
         }
       })
       return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
@@ -104,9 +110,11 @@ export default {
       for (const key in sizeSegments) {
         const rowData = {}
         sizeSegments[key].forEach(size => {
-          const sizeAttrIds = this.sizeAttr.terms.reduce((init, a) => init.concat(`${a.id}`), [])
-          sizeAttrIds.includes(key) ? rowData['size'] = size.sizeSegmentName : rowData['size'] = `${size.sizeSegmentName}(已删除)`
-          rowData[size.sizeStandardId] = [size.minValue, size.maxValue, size.id]
+          if (!tableRows.some(row => row.sizeStandardId === size.sizeStandardId && row.sizeSegmentId === size.sizeSegmentId)) {
+            const sizeAttrIds = this.sizeAttr.terms.reduce((init, a) => init.concat(`${a.id}`), [])
+            sizeAttrIds.includes(key) ? rowData['size'] = size.sizeSegmentName : rowData['size'] = `${size.sizeSegmentName}(已删除)`
+            rowData[size.sizeStandardId] = [size.minValue, size.maxValue, size.id]
+          }
         })
         tableRows.push(rowData)
       }
@@ -138,6 +146,12 @@ export default {
         const y = b[key]
         return x < y ? -1 : x > y ? 1 : 0
       })
+    },
+    deduplication (data, standardKey, sizeSegmentKey) {
+      return data.reduce((pre, cur) => {
+        const locationData = pre.find((item) => item[standardKey] === cur[standardKey] && item[sizeSegmentKey] === cur[sizeSegmentKey])
+        return locationData ? pre : pre.concat(cur)
+      }, [])
     },
     /**
      * 展示尺码对照表的数据项
