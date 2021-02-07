@@ -2,7 +2,6 @@
   <div class="ProductSale" v-if="!noSaleAttributes">
     <el-card>
       <div slot="header" class="title">
-        {{form.sizes}}
         <span>销售属性</span>
       </div>
       <div class="form">
