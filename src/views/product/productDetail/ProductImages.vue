@@ -61,12 +61,6 @@ export default {
       }
     }
   },
-  created () {
-
-  },
-  mounted () {
-
-  },
   computed: {
     ...mapGetters('product', ['productParams', 'productImagesIInfo']),
     mode () {

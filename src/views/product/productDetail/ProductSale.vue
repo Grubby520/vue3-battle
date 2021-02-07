@@ -339,11 +339,13 @@ export default {
     },
     removeSizeTag (tag) {
       this.form.sizes = this.form.sizes.filter(item => item.id !== tag.id)
-      this.$refs.form.validateField('sizes')
-      this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
+      this.updateSizeData()
     },
     sizeSelectConfirm (val) {
       this.form.sizes = val
+      this.updateSizeData()
+    },
+    updateSizeData () {
       this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
       this.$refs.form.validateField('sizes')
     },
@@ -396,8 +398,7 @@ export default {
                   this.$set(tableLabel, value.id, value)
                   emptyArray.push([...item, { attributeTermId: value.id, attributeId: value.attributeId }])
                 } else {
-                  this.$set(tableLabel, item.id, item)
-                  this.$set(tableLabel, value.id, value)
+                  this.$set(tableLabel, item.id, item, value.id, value)
                   emptyArray.push([
                     { attributeTermId: item.id, attributeId: item.attributeId },
                     { attributeTermId: value.id, attributeId: value.attributeId }
@@ -468,16 +469,19 @@ export default {
         return showDatas
       }
     },
+    /**
+    *  是否隐藏当前销售属性
+    * * @param {String} status 销售属性类别
+    */
     showSaleCondition (status) {
-      // 是否隐藏销售属性(1.没有删除属性判断是否有销售属性2.有删除属性判断回显是否有值)
       const checkedSales = this[`${status}Options`] ? this[`${status}Options`].length : 0
       const hasDeleted = this.showSaleLabel[`${status}deleted`]
       const hasAttr = this.form[`${status}s`] ? this.form[`${status}s`].length : 0
       if (!hasDeleted) {
-        // 没有删除属性
+        // 没有删除属性，判断当前属性是否有属性，没有隐藏
         return checkedSales > 0
       } else {
-        // 有删除属性
+        // 有删除属性，如果属性值为空隐藏
         if (hasAttr > 0) {
           return true
         } else {

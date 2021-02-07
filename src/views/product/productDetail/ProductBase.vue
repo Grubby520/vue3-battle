@@ -159,5 +159,8 @@ export default {
 <style scoped lang="scss">
 .ProductBase {
   margin-bottom: 2rem;
+  /deep/.el-textarea__inner {
+    font-family: inherit;
+  }
 }
 </style>

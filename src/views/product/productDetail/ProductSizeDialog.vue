@@ -25,7 +25,7 @@
           </div>
           <div class="table-area">
             <h2>尺码对照表</h2>
-            <el-table :data="sizeTable" border max-height="400">
+            <el-table :data="sizeTableData" border max-height="400">
               <el-table-column
                 v-for="(item,index) in tableHeadData"
                 :label="item.name"
@@ -94,7 +94,7 @@ export default {
       })
       return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
     },
-    sizeTable () {
+    sizeTableData () {
       const sizeSegments = {}
       // 表格数据处理前需要先排序
       const sortSizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
@@ -146,12 +146,6 @@ export default {
         const y = b[key]
         return x < y ? -1 : x > y ? 1 : 0
       })
-    },
-    deduplication (data, standardKey, sizeSegmentKey) {
-      return data.reduce((pre, cur) => {
-        const locationData = pre.find((item) => item[standardKey] === cur[standardKey] && item[sizeSegmentKey] === cur[sizeSegmentKey])
-        return locationData ? pre : pre.concat(cur)
-      }, [])
     },
     /**
      * 展示尺码对照表的数据项
