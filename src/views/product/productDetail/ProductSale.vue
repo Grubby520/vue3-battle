@@ -2,6 +2,7 @@
   <div class="ProductSale" v-if="!noSaleAttributes">
     <el-card>
       <div slot="header" class="title">
+        {{form.sizes}}
         <span>销售属性</span>
       </div>
       <div class="form">
@@ -261,7 +262,7 @@ export default {
               // 属性值被删除
               if (!optionIds.includes(attr.id)) {
                 attr.name = `${attr.name}(已删除)`
-                deletedItems.push({ ...attr, name: attr.name })
+                deletedItems.push({ ...attr, name: attr.name, extendCode: attribute.extendCode })
               }
               return {
                 ...attr,
