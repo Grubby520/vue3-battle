@@ -1,6 +1,6 @@
 <template>
-  <div class="sl-content-title">
-    <span class="content-title-text" :style="{fontSize,color}">{{text}}</span>
+  <div class="sl-content-title" :class="{'column-icon':columnIcon}">
+    <span class="content-title-text" :style="{fontSize,color,...textStyle}">{{text}}</span>
     <hr v-if="line" class="content-title-line" :style="lineStyle" />
   </div>
 </template>
@@ -31,6 +31,14 @@ export default {
         borderColor: '#ddd',
         opacity: '0.2'
       })
+    },
+    textStyle: {
+      type: Object,
+      default: () => ({})
+    },
+    columnIcon: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -54,10 +62,19 @@ export default {
 .sl-content-title {
   position: relative;
   margin-bottom: 1em;
+  &.column-icon::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: -1px;
+    width: 3px;
+    height: 100%;
+    background: #409eff;
+  }
   .content-title-text {
     position: relative;
     display: inline-block;
-    padding: 1em 1em 1em 0;
+    padding-right: 1em;
     color: $color-gray;
     background-color: $color-white;
     z-index: 2;
