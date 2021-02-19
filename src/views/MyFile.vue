@@ -1,131 +1,224 @@
 <template>
-  <div class="container">
-    <el-card class="personal-records">
-      <el-form :model="form" label-width="110px" :rules="rules" ref="form">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="公司名称：" prop="supplierName">
-              <el-input v-model="form.supplierName" disabled></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="账号：" prop="accountName">
-              <el-input v-model="form.accountName" disabled></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="联系人：" prop="contactName">
-              <el-input v-model.trim="form.contactName"></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="联系电话：" prop="contactNumber">
-              <el-input v-model.trim="form.contactNumber" type="tel" maxlength="11"></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="公司地址：" prop="address">
-              <SlAreaCascader v-model="form.address"></SlAreaCascader>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="公司详细地址：" prop="addressDetail">
-              <el-input v-model.trim="form.addressDetail" maxlength="100"></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="供应类型：">
-              <el-select v-model="form.supplyType" disabled>
-                <el-option
-                  v-for="(item, index) in supplierTypeOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="12">
-            <el-form-item label="供应方式：" prop="supplierMethod">
-              <el-select v-model="form.supplyWay">
-                <el-option
-                  v-for="(item, index) in supplierWayOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-      <footer>
-        <el-button type="primary" :loading="loading" @click="save">{{$t('button.saveText')}}</el-button>
-      </footer>
+  <el-form :model="form" label-position="left" label-width="100px" :rules="rules" ref="form">
+    <el-card class="module">
+      <SlContentTitle text="基础信息" :fontSize="titleFontSize" :line="false" columnIcon></SlContentTitle>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="公司名称" prop="baseInfo.supplierName">
+            <el-input v-model="form.baseInfo.supplierName" disabled class="form-item"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="公司地址" prop="baseInfo.address">
+            <SlAreaCascader v-model="form.baseInfo.address" disabled class="form-item"></SlAreaCascader>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="邮箱" prop="baseInfo.userName">
+            <el-input v-model="form.baseInfo.userName" disabled class="form-item"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-card>
-  </div>
+    <el-card class="module">
+      <SlContentTitle text="联系人" :fontSize="titleFontSize" :line="false" columnIcon></SlContentTitle>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="运营负责人" prop="baseInfo.contactName">
+            <el-input
+              v-model.trim="form.baseInfo.contactName"
+              class="form-item"
+              maxlength="20"
+              show-word-limit
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="运营手机号" prop="baseInfo.contactNumber">
+            <el-input
+              v-model.trim="form.baseInfo.contactNumber"
+              type="tel"
+              maxlength="11"
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="运营QQ号码" prop="baseInfo.contactQq">
+            <el-input
+              v-model.trim="form.baseInfo.contactQq"
+              maxlength="15"
+              clearable
+              placeholder="请输入QQ号码"
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-card>
+    <el-card class="module">
+      <SlContentTitle text="退货信息" :fontSize="titleFontSize" :line="false" columnIcon></SlContentTitle>
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <el-form-item label="退货地址" prop="shippingAddress.provinces">
+            <SlAreaCascader v-model="form.shippingAddress.provinces" class="form-item"></SlAreaCascader>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="详细地址" prop="shippingAddress.address">
+            <el-input
+              v-model="form.shippingAddress.address"
+              maxlength="200"
+              show-word-limit
+              placeholder="请填写详细收货地址"
+              clearable
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="收件人" prop="shippingAddress.contactName">
+            <el-input
+              v-model.trim="form.shippingAddress.contactName"
+              maxlength="20"
+              show-word-limit
+              placeholder="请填写收件人"
+              clearable
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="手机号码" prop="shippingAddress.contactCellphone">
+            <el-input
+              v-model.trim="form.shippingAddress.contactCellphone"
+              type="tel"
+              maxlength="11"
+              placeholder="请填写收件人电话号码"
+              clearable
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="固定电话" prop="shippingAddress.contactTelephone">
+            <el-input
+              v-model.trim="form.shippingAddress.contactTelephone"
+              clearable
+              maxlength="20"
+              show-word-limit
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-card>
+    <footer>
+      <el-button type="primary" :loading="loading" @click="save">{{$t('button.saveText')}}</el-button>
+    </footer>
+  </el-form>
 </template>
 
 <script>
-import { emptyValidator, phoneNoValidator, charLimitValidator } from '@shared/validate'
+import { emptyValidator, phoneNoValidator, charLimitValidator, telePhoneValidator } from '@shared/validate'
+import { scrollToElFormElement } from '@shared/util'
 import UserApi from '@api/user'
-import CommonApi from '@api/api.js'
+import { createNamespacedHelpers } from 'vuex'
+const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
+  name: 'MyFile',
   data () {
     return {
+      loading: false,
+      titleFontSize: '1.6rem',
       form: {
-        supplierName: '', // 公司名称
-        accountName: '', // 账号
-        contactName: '', // 联系人
-        contactNumber: '', // 联系电话
-        address: [], // 公司地址
-        addressDetail: '', // 详细地址
-        supplyType: '', // 供应类型
-        supplyWay: '' // 供应方式
+        baseInfo: {
+          supplierName: null, // 公司名称
+          userName: null, // 邮箱
+          address: [], // 地址
+          contactName: null,
+          contactNumber: null,
+          contactQq: null
+        },
+        shippingAddress: {
+          address: null, // 详细地址
+          provinces: [], // 省市区
+          contactCellphone: null, // 手机号
+          contactTelephone: '', // 固定号
+          contactName: null
+        }
       },
-      supplierTypeOptions: [],
-      supplierWayOptions: [],
       rules: {
-        contactName: [
-          emptyValidator('请输入联系人信息', ['blur', 'change']),
-          charLimitValidator('长度在 2 到 50 个字符', 2, 50, ['blur', 'change'])
-        ],
-        contactNumber: [
-          emptyValidator('请输入联系电话', ['blur', 'change']),
-          phoneNoValidator()
-        ],
-        address: [
-          emptyValidator('请选择公司地址', ['blur', 'change'])
-        ],
-        supplyWay: [
-          emptyValidator('请选择供应方式', ['blur', 'change'])
-        ]
+        baseInfo: {
+          contactName: [
+            emptyValidator('请输入运营负责人'),
+            charLimitValidator('长度在 2 到 20 个字符', 2, 20)
+          ],
+          contactNumber: [
+            emptyValidator('请输入运营手机号'),
+            phoneNoValidator()
+          ],
+          address: [
+            emptyValidator('请选择公司地址', ['blur', 'change'])
+          ]
+        },
+        shippingAddress: {
+          address: [
+            emptyValidator('请填写详细地址', 'blur')
+          ],
+          provinces: [
+            emptyValidator('请选择公司地址', ['blur', 'change'])
+          ],
+          contactCellphone: [
+            emptyValidator('请输入手机号'),
+            phoneNoValidator()
+          ],
+          contactName: [emptyValidator('请输入收件人')],
+          contactTelephone: [telePhoneValidator()]
+        }
+      }
+    }
+  },
+  computed: {
+    ...userMapState(['supplierId'])
+  },
+  watch: {
+    supplierId: {
+      handler (val, oldVal) {
+        if (val) {
+          this.getDetails(val)
+        }
       },
-      loading: true
+      immediate: true
     }
   },
   mounted () {
-    this.getDetails()
-    this.getSelection()
+
   },
   methods: {
-    getDetails () {
+    getDetails (supplierId) {
       this.loading = true
-      UserApi.docDetails().then(res => {
-        let { data } = res
-        if (data) {
-          this.form = {
-            ...res.data,
-            address: !data.address ? [] : JSON.parse(data.address)
+      UserApi.getSupplierBasicInfo({ supplierId }).then(res => {
+        if (res.success) {
+          let { baseInfo = {}, shippingAddress = {} } = res.data || {}
+          baseInfo = baseInfo || {}
+          shippingAddress = shippingAddress || {}
+          this.form.baseInfo = {
+            supplierName: baseInfo.supplierName,
+            userName: baseInfo.userName,
+            address: baseInfo.address ? JSON.parse(baseInfo.address) : [],
+            contactName: baseInfo.contactName,
+            contactNumber: baseInfo.contactNumber,
+            contactQq: baseInfo.contactQq
+          }
+
+          this.form.shippingAddress = {
+            address: shippingAddress.address,
+            provinces: shippingAddress.provinces ? JSON.parse(shippingAddress.provinces) : [],
+            contactCellphone: shippingAddress.contactCellphone,
+            contactTelephone: shippingAddress.contactTelephone || '',
+            contactName: shippingAddress.contactName
           }
         }
       }).finally(() => {
@@ -137,25 +230,30 @@ export default {
         if (valid) {
           this.loading = true
           let params = {
-            ...this.form,
-            address: JSON.stringify(this.form.address)
+            provinces: this.form.shippingAddress.provinces ? JSON.stringify(this.form.shippingAddress.provinces) : null,
+            address: this.form.shippingAddress.address.trim(),
+            recipientName: this.form.shippingAddress.contactName,
+            recipientCellphone: this.form.shippingAddress.contactCellphone,
+            recipientTelephone: this.form.shippingAddress.contactTelephone,
+            contactName: this.form.baseInfo.contactName,
+            contactNumber: this.form.baseInfo.contactNumber,
+            contactQq: this.form.baseInfo.contactQq
           }
-          UserApi.docModify(params).then(res => {
+          UserApi.supplierUpdate(params).then(res => {
             if (res.success) {
               this.$message.success('保存成功')
+              this.getDetails(this.supplierId)
             }
           }).finally(() => {
             this.loading = false
           })
+        } else {
+          scrollToElFormElement(this.$refs.form.$el, undefined, function (errorItemDom) {
+            errorItemDom.scrollIntoView({
+              behavior: 'smooth'
+            })
+          })
         }
-      })
-    },
-    getSelection () {
-      CommonApi.getDict({ dataCode: 'SUPPLY_TYPE' }).then(res => {
-        this.supplierTypeOptions = res.data || []
-      })
-      CommonApi.getDict({ dataCode: 'SUPPLY_WAY' }).then(res => {
-        this.supplierWayOptions = res.data || []
       })
     }
   }
@@ -163,12 +261,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  padding: 20px;
-
-  footer {
-    margin-top: 5rem;
-    text-align: center;
+.module {
+  margin-bottom: 1.5em;
+  .form-item {
+    width: 60%;
   }
+}
+
+footer {
+  margin-top: 5rem;
+  text-align: center;
 }
 </style>

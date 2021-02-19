@@ -9,7 +9,8 @@ import {
   idCardReg,
   bankCardNumberReg,
   emptyReg,
-  qqReg
+  qqReg,
+  telePhoneReg
 } from './regular.js'
 
 /**
@@ -171,7 +172,7 @@ export const businessLicenseNoValidator = function (errorMsg = '', trigger = 'bl
 
 // 交易额
 export const transactionAamountValidator = function (errorMsg = '', trigger = 'blur') {
-  let transactionAamountReg = /^(([1-9][0-9]{0,7}|0)|([1-9][0-9]{0,7}|0).([0-9]{1,2}))$/
+  let transactionAamountReg = /^(([1-9][0-9]{0,7})|0)(\.[0-9][1-9]?)?$/
   return {
     validator: generateFormItemValidator(transactionAamountReg, errorMsg),
     message: errorMsg,
@@ -195,6 +196,18 @@ export const qqValidator = function (errorMsg = '请输入正确的qq号', trigg
   }
   return {
     validator: generateFormItemValidator(qqReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+// 国内固定电话
+export const telePhoneValidator = function (errorMsg = '请输入正确的电话号码', trigger = 'blur', required = false) {
+  if (!required) {
+    return generateNotRequiredValidator(errorMsg, telePhoneReg, trigger)
+  }
+  return {
+    validator: generateFormItemValidator(telePhoneReg, errorMsg),
     message: errorMsg,
     trigger: trigger
   }
