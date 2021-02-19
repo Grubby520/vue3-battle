@@ -150,11 +150,18 @@ export default {
     result () {
       return new Promise(resolve => {
         let productSize = {}
+        let echoSizes = []
+        // 编辑使用回显标准尺码
+        if (!isEmpty(this.productSize.sizeInfoList)) {
+          echoSizes = this.productSize.sizeInfoList[0].sizePositions.reduce((init, size) => init.concat(size.attributeTermId), [])
+        }
         const sizeInfoList = this.form.sizeInfoList.map((size) => {
           const { attributeTermId, attributeId } = size
           const sizeStandardTerms = this.sizeStandard.terms || []
+          // 新增使用分类标准尺码
           const sizeStandard = sizeStandardTerms.map(standard => standard.id)
-          const sizePositions = sizeStandard.map(key => {
+          const standardIds = echoSizes.length > 0 ? echoSizes : sizeStandard
+          const sizePositions = standardIds.map(key => {
             if (size[key]) {
               return { 'attributeTermId': key, value: size[key] }
             } else {
