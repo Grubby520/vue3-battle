@@ -93,10 +93,8 @@ export default {
     * @param {String} dialogType 弹窗类型
     * @param {Object} data 入口传入的数据
     */
-    open (dialogType, data) {
-      this.dialogType = dialogType
+    open (data) {
       this.show = true
-      data = data || []
       const { sizes, colors } = data
       this.skuList = this.deduplication(colors, 'id')
         .map((sku) => {

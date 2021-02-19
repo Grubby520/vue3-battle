@@ -349,7 +349,7 @@ export default {
       this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
       this.$refs.form.validateField('sizes')
     },
-    openDialog (type, data = '') {
+    openDialog (type, data = []) {
       let dialog = null
       switch (type) {
         // 批量录入弹框
@@ -438,8 +438,8 @@ export default {
         })
         const includeBatchColor = saleAttrIds.find(i => skuList.includes(i))
         const includeBatchSize = saleAttrIds.find(i => sizeMap.get(i))
-        if (hasNeedSku && includeBatchColor) item.supplyPrice = supplyPrice
-        if (includeBatchSize) item.weight = sizeMap.get(includeBatchSize)
+        if (hasNeedSku && includeBatchColor) this.$set(item, 'supplyPrice', supplyPrice)
+        if (includeBatchSize) this.$set(item, 'weight', sizeMap.get(includeBatchSize))
       })
     },
     /**
