@@ -161,7 +161,6 @@ export default {
       return Promise.all(result)
         .then((res) => {
           const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
-          productSize.id = this.id
           productBase.id = this.id
           productBase.categoryId = this.categoryId
           productBase.categoryPath = this.categoryPath

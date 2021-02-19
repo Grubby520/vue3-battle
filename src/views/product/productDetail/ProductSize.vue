@@ -164,6 +164,7 @@ export default {
           return { sizePositions, attributeTermId, attributeId }
         })
         productSize['sizeInfoList'] = sizeInfoList
+        productSize.id = this.productSize.id
         resolve({ 'productSize': productSize || [] })
       })
     }
