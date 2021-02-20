@@ -9,11 +9,11 @@
     custom-class="batch-attributes"
     @close="hide"
   >
-    <el-form :model="form" ref="form" label-width="120px" class="odmDetailBase-form-con">
+    <el-form :model="form" ref="form" label-width="12rem" class="odmDetailBase-form-con">
       <!-- sku -->
       <el-form-item label="SKU" prop="skuList">
         <el-checkbox :indeterminate="false" v-model="checkAll" @change="handleCheckAllSku">全选</el-checkbox>
-        <div style="margin: 15px 0;"></div>
+        <div style="margin: 1.5rem 0;"></div>
         <el-checkbox-group v-model="form.skuList" @change="handleCheckSku">
           <el-checkbox
             v-for="(sku, index) in skuList"

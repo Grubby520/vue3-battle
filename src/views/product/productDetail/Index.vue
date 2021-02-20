@@ -183,9 +183,6 @@ export default {
   margin: 0 auto;
   &-btn {
     display: flex-start;
-    .addbtn {
-      margin-right: 1rem;
-    }
   }
   /deep/.title {
     font-size: 1.6rem;

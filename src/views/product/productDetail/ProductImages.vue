@@ -8,7 +8,7 @@
         :model="form"
         :rules="rules"
         ref="form"
-        label-width="120px"
+        label-width="12rem"
         class="ProductImages-images form"
       >
         <div class="error-tip">若产品主体超出预览图规范框，则代表该商品不符合规范-仅限产品平铺图，模特图可考虑整体效果。</div>
@@ -16,7 +16,6 @@
           <div class="ProductImages-images--content">
             <span>*</span>
             <SlUploadImages
-              class="width:112px;"
               v-model="productImages"
               :imageType="0"
               :limit="8"
@@ -24,7 +23,11 @@
               :disabled="mode"
             />
             <template v-for="(item, index) in [1,2,3,4,5,6,7]">
-              <div v-if="index >= productImages.length" :key="index" class="dashed-box">
+              <div
+                v-if="index >= productImages.length"
+                :key="index"
+                class="dashed-box align-center"
+              >
                 <i class="el-icon-plus"></i>
               </div>
             </template>
@@ -108,12 +111,11 @@ export default {
     }
     .dashed-box {
       display: inline-block;
-      text-align: center;
       line-height: 11rem;
       width: 11rem;
       height: 11rem;
       border: 1px dashed #c0ccda;
-      border-radius: 5px;
+      border-radius: 0.5rem;
       margin: 0 0 2rem 1rem;
       vertical-align: top;
       i {

@@ -5,7 +5,7 @@
         <span>基本信息</span>
       </div>
       <div class="form">
-        <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+        <el-form :model="form" :rules="rules" ref="form" label-width="12rem">
           <el-form-item
             label="商品类目"
             prop="categoryId"

@@ -5,7 +5,7 @@
         <span>商品属性</span>
       </div>
       <div class="form">
-        <el-form :model="form" ref="form" label-width="200px">
+        <el-form :model="form" ref="form" label-width="12rem">
           <el-row :gutter="8">
             <el-col
               :span="12"

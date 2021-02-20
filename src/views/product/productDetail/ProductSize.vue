@@ -183,7 +183,7 @@ export default {
 .productSize {
   margin-bottom: 2rem;
   &-from {
-    padding: 0 0 0 120px;
+    padding: 0 0 0 12rem;
     &__table {
       /deep/ .el-form-item {
         margin-bottom: 0 !important;

@@ -2,8 +2,8 @@
   <div class="odmOneDetails">
     <p class="odmOneDetails-title">选择类目</p>
     <CategoryCascader v-model="currentNodes"></CategoryCascader>
-    <p class="odmOneDetails-des">当前选择分类：{{cateLabels}}</p>
-    <div class="odmOneDetails-btn">
+    <p class="odmOneDetails-des align-left">当前选择分类：{{cateLabels}}</p>
+    <div class="align-center">
       <el-button @click="save" type="primary">确认</el-button>
     </div>
   </div>
@@ -64,17 +64,13 @@ export default {
   width: 80%;
   margin: 0 auto;
   &-title {
-    font-size: 18px;
+    font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
   }
   &-des {
-    margin: 20px 0;
-    font-size: 15px;
-    text-align: left;
-  }
-  &-btn {
-    text-align: center;
+    margin: 2rem 0;
+    font-size: 1.5rem;
   }
 }
 </style>

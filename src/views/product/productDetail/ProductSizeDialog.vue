@@ -11,7 +11,7 @@
         <p v-for="(hint,index) in hints" :key="index">{{hint}}</p>
       </div>
 
-      <div class="sizeDialog-title">
+      <div class="sizeDialog-title align-center">
         <span>尺码</span>
       </div>
       <div class="sizeDialog-area">
@@ -23,7 +23,7 @@
               </template>
             </el-checkbox-group>
           </div>
-          <div class="table-area">
+          <div class="table-area align-center">
             <h2>尺码对照表</h2>
             <el-table :data="sizeTableData" border max-height="400">
               <el-table-column
@@ -41,7 +41,7 @@
           </div>
         </div>
       </div>
-      <p class="sizeDialog-warm">已存在的属性值不可取消，若要修改SKU的颜色、尺码属性值，请联系商品负责人进行修改</p>
+      <p class="sizeDialog-warm align-center">已存在的属性值不可取消，若要修改SKU的颜色、尺码属性值，请联系商品负责人进行修改</p>
       <span slot="footer" class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary" @click="handleConfirm">确 定</el-button>
@@ -188,10 +188,8 @@ export default {
       margin-left: 2rem;
     }
   }
-  $textAlign: center;
   &-warm {
     @extend .hintTiles;
-    text-align: $textAlign;
     padding-top: 3rem;
   }
   &-title {
@@ -199,9 +197,8 @@ export default {
     width: 10rem;
     line-height: 4rem;
     background: #fff6f6;
-    text-align: $textAlign;
     border: 1 solid #ebeef5;
-    border-radius: 5px;
+    border-radius: 0.5rem;
   }
   &-area {
     padding: 4rem;
@@ -218,14 +215,13 @@ export default {
       }
       .table-area {
         h2 {
-          text-align: $textAlign;
           margin-bottom: 2rem;
         }
       }
     }
   }
   /deep/ .el-dialog__footer {
-    text-align: $textAlign;
+    text-align: center;
     .el-button {
       margin-right: 4rem;
     }

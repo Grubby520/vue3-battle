@@ -5,16 +5,20 @@
         <span>销售属性</span>
       </div>
       <div class="form">
-        <el-form :model="form" ref="form" label-width="120px" class="ProductSale-form">
+        <el-form :model="form" ref="form" label-width="12rem" class="ProductSale-form">
           <el-form-item
             :label="showSaleLabel.size"
             v-if="showSaleCondition('size')"
             prop="sizes"
             :rules="[{required: true, message: '请添加尺码', trigger:'blur' }]"
           >
-            <span class="ProductSale-sizes" @click="openDialog('size')">添加尺码</span>
+            <span
+              class="ProductSale-sizes"
+              v-if="productParams.mode!=='view'"
+              @click="openDialog('size')"
+            >添加尺码</span>
             <el-tag
-              style="margin: 0 0 5px 10px"
+              style="margin: 0 0 .5rem 1rem"
               v-for="(tag, index) in form.sizes"
               :key="tag.id"
               closable

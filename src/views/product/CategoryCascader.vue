@@ -115,9 +115,9 @@ export default {
     border: 1px solid #ccc;
     justify-content: flex-start;
     // 总高度为每行高度的倍数
-    height: 476px;
+    height: 47.6rem;
     width: 100%;
-    line-height: 34px;
+    line-height: 3.4rem;
     color: #606266;
     z-index: 100;
     &__body {
@@ -145,25 +145,25 @@ export default {
         }
         span {
           display: inline-block;
-          padding-left: 20px;
+          padding-left: 2rem;
         }
       }
     }
     .active {
-      font-weight: 70px;
+      font-weight: 7rem;
       color: #fff;
       font-weight: bold;
       background-color: #65adf5;
     }
     .activeLast {
-      font-weight: 70px;
+      font-weight: 7rem;
       color: #fff;
       font-weight: bold;
       background-color: #268cf1;
     }
     .icon {
-      line-height: 34px;
-      padding-right: 10px;
+      line-height: 3.4rem;
+      padding-right: 1rem;
     }
   }
 }
