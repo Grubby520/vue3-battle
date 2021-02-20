@@ -84,7 +84,7 @@
                 <template slot-scope="scope">
                   <el-form-item
                     :prop="`productSalesAttributes.${scope.$index}.${item.name}`"
-                    :rules="[{required: item.required, message: `${item.message}`, trigger:'blur' }]"
+                    :rules="[{required: item.required, message: `${item.message}`, trigger:['blur','change' ]}]"
                     class="flex-center"
                   >
                     <template v-if="item.extendCode">
