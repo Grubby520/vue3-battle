@@ -166,7 +166,6 @@ export default {
       const path = requestParams.categoryId || ''
       requestParams.categoryIdLevel = path
       requestParams.categoryId = path.split(',').reverse()[0]
-
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
       RecommondApi.getList({ ...RECOMMONDPAR })
@@ -198,22 +197,22 @@ export default {
     },
     commit (row) {
       // 批量推品
-      const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
+      const selectionarr = this.selections.reduce((init, a) => init.concat(a.id), [])
       // 批量图品供方货号
-      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
+      const supplierItemNo = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
       // 判断批量推品还是单独推品
-      const PUSHPRODUCTS = SELECTIONARR && SELECTIONARR.length > 0 ? SELECTIONARR : [row.id]
+      const commitParams = selectionarr && selectionarr.length > 0 ? selectionarr : [row.id]
       // 批量推品供方货号和单独供方货号
-      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
+      const itemNoAll = selectionarr && selectionarr.length > 0 ? supplierItemNo : row.supplierItemNo
       confirmBox(this, '是否提交商品', '')
         .then(() => {
-          RecommondApi.submit(PUSHPRODUCTS)
+          RecommondApi.submit(commitParams)
             .then((res) => {
               if (res.success) {
-                successNotify(this, `供方货号[${ITEMNOALL}]提交成功`, true)
+                successNotify(this, `供方货号[${itemNoAll}]提交成功`, true)
                 this.$refs.listView.refresh()
               } else {
-                errorNotify(this, `供方货号[${ITEMNOALL}]${res.error.message}`, true, 4500, '')
+                errorNotify(this, `供方货号[${itemNoAll}]${res.error.message}`, true, 4500, '')
               }
             })
         })
@@ -249,13 +248,12 @@ export default {
     productDetail (status, row) {
       const { id, categoryId, supplierItemNo } = row
       const params = { mode: status, id, categoryId, supplierItemNo }
-      switch (status) {
-        case 'create':
-          this.$router.push({ path: '/home/recommend-products/category', query: params })
-          break
-        default:
-          this.$router.push({ path: '/home/recommend-products/productDetail', query: params })
+      const routerPath = {
+        'create': '/home/recommend-products/category',
+        'view': '/home/recommend-products/productDetail',
+        'modify': '/home/recommend-products/productDetail'
       }
+      this.$router.push({ path: routerPath[[status]], query: params })
     }
   }
 }
