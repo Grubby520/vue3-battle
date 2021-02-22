@@ -114,16 +114,16 @@ export default {
 <style scoped lang="scss">
 .detailControl {
   overflow: hidden;
-  margin-top: 20px;
+  margin-top: 2rem;
   .detailCenter {
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
     display: flex;
     justify-content: center;
   }
   .detailCenteRight {
     float: right;
-    margin: 10px;
+    margin: 1rem;
   }
   .noneShow {
     display: none;

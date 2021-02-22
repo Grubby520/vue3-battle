@@ -4,6 +4,13 @@
       <div slot="header" class="title">
         <span>销售属性</span>
       </div>
+      <el-alert
+        v-if="showAlert.condition"
+        :title="showAlert.title"
+        type="error"
+        effect="dark"
+        style="margin-bottom: 1rem;"
+      />
       <div class="form">
         <el-form :model="form" ref="form" label-width="12rem" class="ProductSale-form">
           <el-form-item
@@ -150,6 +157,7 @@ export default {
       stashTableData: new Map(), // 临时缓存表格数据
       showSaleLabel: {}, // 销售属性动态展示的label
       tableLabel: [], // 表头展示的销售属性name
+      showAlert: {}, // 销售属性属性值为空提示alert
       tableHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
@@ -293,8 +301,15 @@ export default {
           this.catagoryData = data
           // form 颜色/尺寸/规格动态展示的lable
           const showSaleLabel = {}
+          const alertCondition = []
           const buildSaleData = (showSaleLabel, item, type) => {
             this[`${type}Options`] = this.addExtendCode(item.terms, item.extendCode, item.id)
+            // 属性属性值为空提示alert
+            if (this[`${type}Options`].length === 0) {
+              this.showAlert.condition = true
+              alertCondition.push(item.name)
+            }
+            this.showAlert.title = `请设置销售属性【${alertCondition.join(',')}】的属性值`
             this.tableHeadData.unshift({ name: type, label: item.name, extendCode: item.extendCode })
             showSaleLabel[type] = item.name
           }
@@ -479,10 +494,12 @@ export default {
     */
     showSaleCondition (status) {
       const checkedSales = this[`${status}Options`] ? this[`${status}Options`].length : 0
+      // 属性是否被删除
       const hasDeleted = this.showSaleLabel[`${status}deleted`]
+      // 是否有属性值判断
       const hasAttr = this.form[`${status}s`] ? this.form[`${status}s`].length : 0
       if (!hasDeleted) {
-        // 没有删除属性，判断当前属性是否有属性，没有隐藏
+        // 没有删除属性，判断当前属性是否有属性值，没有隐藏
         return checkedSales > 0
       } else {
         // 有删除属性，如果属性值为空隐藏
