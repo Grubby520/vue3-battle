@@ -168,6 +168,42 @@ export const homeRoutes = [
           code: 'menu_my_info'
         },
         component: () => import('@/views/Bank.vue')
+      },
+      {
+        path: 'settlement-order-list',
+        name: '结算单列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_my_info'
+        },
+        component: () => import('@/views/SettlementOrderList.vue')
+      },
+      {
+        path: 'settlement-order-detail',
+        name: '结算单详情',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        component: () => import('@/views/settlementOrderList/SettlementOrderDetail.vue')
+      },
+      {
+        path: 'bill-list',
+        name: '报账单列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_my_info'
+        },
+        component: () => import('@/views/BillList.vue')
+      },
+      {
+        path: 'supply-deduct-money-list',
+        name: '补扣款单列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_my_info'
+        },
+        component: () => import('@/views/SupplyDeductMoneyList.vue')
       }
     ]
   }
