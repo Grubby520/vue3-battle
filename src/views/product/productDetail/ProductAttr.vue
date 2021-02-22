@@ -1,10 +1,11 @@
 <template>
-  <div class="ProductAttr" v-if="form.attributesData.length>0">
+  <div class="ProductAttr">
     <el-card>
       <div slot="header" class="title">
         <span>商品属性</span>
       </div>
-      <div class="form">
+      <p v-if="customAttributes.customAttributesData.length===0" class="align-center no-data">~暂无数据~</p>
+      <div class="form" v-else>
         <el-form :model="form" ref="form" label-width="12rem">
           <el-row :gutter="8">
             <el-col

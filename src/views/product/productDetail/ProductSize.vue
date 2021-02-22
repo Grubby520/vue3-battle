@@ -1,10 +1,11 @@
 <template>
   <div class="productSize">
-    <el-card v-if="showProductSizePage">
+    <el-card>
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
-      <div class="form">
+      <p v-if="checkedSizes && checkedSizes.length===0" class="align-center no-data">~暂无数据~</p>
+      <div class="form" v-else>
         <el-form :model="form" ref="form" class="productSize-from">
           <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
@@ -44,7 +45,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'sizeAttr', 'sizeStandard', 'productSize']),
+    ...mapGetters('product', ['checkedSizes', 'productParams', 'sizeAttr', 'sizeStandard', 'productSize']),
     tableHeadData () {
       // 表头信息
       const sizes = {
@@ -66,10 +67,10 @@ export default {
         })
       }
       return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
-    },
-    showProductSizePage () {
-      return !isEmpty(this.checkedSizes) || !isEmpty(this.productSize.sizeInfoList)
     }
+    // showProductSizePage () {
+    //   return !isEmpty(this.checkedSizes) || !isEmpty(this.productSize.sizeInfoList)
+    // }
   },
   watch: {
     'checkedSizes': {
