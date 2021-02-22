@@ -6,7 +6,7 @@
       </div>
       <p v-if="customAttributes.customAttributesData.length===0" class="align-center no-data">~暂无数据~</p>
       <div class="form" v-else>
-        <el-form :model="form" ref="form" label-width="12rem">
+        <el-form :model="form" ref="form" label-width="20rem">
           <el-row :gutter="8">
             <el-col
               :span="12"
@@ -19,7 +19,9 @@
                 :rules="[{required: attribute.required, message: `${attribute.name}是必填项`, trigger: attribute.termValueType === 1 ? 'change' : 'blur'}]"
               >
                 <template slot="label">
-                  <span :title="attribute.name">{{attribute.name}}</span>
+                  <el-tooltip effect="dark" :content="attribute.name" placement="top">
+                    <span class="form-label pointer-enable">{{attribute.name}}</span>
+                  </el-tooltip>
                 </template>
                 <component
                   v-model="attribute.value"
@@ -201,8 +203,24 @@ export default {
 <style scoped lang="scss">
 .ProductAttr {
   margin-bottom: 2rem;
-  /deep/.el-select {
-    width: 100%;
+  /deep/.el-col {
+    height: 46px;
+    .el-select {
+      width: 100%;
+    }
+    .el-form-item__label {
+      position: relative;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 25px;
+      height: 45px;
+      &::after {
+        position: absolute;
+        right: 10px;
+        top: 0;
+      }
+    }
   }
 }
 </style>
