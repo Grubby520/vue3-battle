@@ -125,27 +125,19 @@ export default {
         return []
       }
     },
-    rowKey: { type: String, required: false, default: undefined },
+    rowKey: { type: String, required: false, default: 'id' },
     border: { type: Boolean, required: false, default: true },
     selection: { type: Boolean, required: false, default: true },
     operate: { type: Boolean, required: false, default: true },
     tooltip: { type: Boolean, required: false, default: true },
-    selectionsDisabled: { type: Array, required: false, default: () => { return [] } }
+    disabledKeys: { type: Array, required: false, default: () => { return [] } } // 禁址选中的行标识数据
   },
   methods: {
     handleSelectionChange (val) {
       this.$emit('changeSelection', val)
     },
     checkSelectable (row) {
-      // 复选框置灰selectionsDisabled为需要置灰的数组
-      let mark = 0
-      this.selectionsDisabled.forEach((item) => {
-        if (item.id === row.id) {
-          mark = mark + 1
-          return false
-        }
-      })
-      return mark <= 0
+      return this.disabledKeys.indexOf(row[this.rowKey]) === -1
     }
   }
 }
