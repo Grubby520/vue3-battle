@@ -205,8 +205,7 @@ export default {
       tableData: [],
       activeIndex: '0',
       selectdChange: [],
-      count: 0,
-      selectionsDisabled: []
+      count: 0
     }
   },
 
