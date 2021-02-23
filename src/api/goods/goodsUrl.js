@@ -1,5 +1,4 @@
 const baseURL = '/srm-goods-service/'// 与后端微服务名对应
-const coomURL = '/srm-common-service/'
 
 export default {
   purchaseStatistics: baseURL + 'purchase/agg',
@@ -12,7 +11,6 @@ export default {
   groupGenerateShippedBill: baseURL + 'group-list/general-shipped-bill', // 生成发货单
   groupExport: baseURL + 'group-list/export', // 导出待发货商品详情
   invoiceList: baseURL + 'invoice/invoice-list', // 发货单列表
-  statusList: coomURL + 'data/name-value/list', //  获取发货单状态
   invoiceDetail: baseURL + 'invoice/invoice-detail', // 发货单详情
   logisticsCompany: baseURL + 'invoice/logistics-company', // 获取物流商信息
   logisticsInfo: baseURL + 'invoice/logisticsInformation', // 获取物流信息

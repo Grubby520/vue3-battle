@@ -78,7 +78,7 @@
             <p v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</p>
           </template>
         </el-table-column>
-        <el-table-column prop="settleOrderNumber" label="结算单ID" width="100px" align="center"></el-table-column>
+        <el-table-column prop="settlementOrderId" label="结算单id" width="100px" align="center"></el-table-column>
         <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.logisticsNumber">
@@ -139,6 +139,7 @@ import PrintBatchNo from './deliveryManage/PrintBatchNo'
 import PrintInvoice from './deliveryManage/PrintInvoice'
 import ModifyLogisticsNo from './deliveryManage/ModifyLogisticsNoDialog'
 import ShippingDetails from './deliveryManage/ShippingDetailsDiaolog'
+import CommonUrl from '@api/url.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GOODS_API from '@api/goods'
 import { exportFileFromRemote, date } from '@shared/util'
@@ -191,11 +192,11 @@ export default {
         },
         {
           type: 'single-select',
-          label: '订单状态',
+          label: '发货单状态',
           name: 'status',
           data: {
-            remoteUrl: GoodsUrl.statusList,
-            params: { dataCode: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'INVOICE_STATUS_ENUM' }
           }
         }
       ],
@@ -260,11 +261,11 @@ export default {
         if (!arr) {
           let obj = {
             type: 'single-select',
-            label: '订单状态',
+            label: '发货单状态',
             name: 'status',
             data: {
-              remoteUrl: GoodsUrl.statusList,
-              params: { dataCode: 'INVOICE_STATUS_ENUM' } // PURCHASE_ORDER_STATE
+              remoteUrl: CommonUrl.dictUrl,
+              params: { dataCode: 'INVOICE_STATUS_ENUM' }
             }
           }
           this.searchItems.push(obj)
