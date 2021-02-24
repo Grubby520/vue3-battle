@@ -14,8 +14,8 @@
             <el-input
               clearable
               v-model.trim="form.name"
-              placeholder="商品名称字数仅限20个字以内"
-              maxlength="20"
+              placeholder="商品名称字数仅限50个字以内"
+              maxlength="50"
             />
           </el-form-item>
           <el-form-item label="供方货号" prop="supplierItemNo">
@@ -35,7 +35,7 @@
               type="textarea"
               rows="5"
               clearable
-              maxlength="500"
+              maxlength="300"
               show-word-limit
               v-model.trim="form.description"
               placeholder="描述提示：1.务必填写完整的100%面料成分比：例如90%棉、5%氨纶、5%涤纶；2.制作工艺及功能特点、设计创意等。"
@@ -47,7 +47,7 @@
               v-if="productParams.mode!== 'view'"
               type="textarea"
               rows="5"
-              maxlength="500"
+              maxlength="300"
               show-word-limit
               clearable
               v-model.trim="form.remark"
