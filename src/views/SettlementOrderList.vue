@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import SettlementOrderUrl from '@api/settlementOrder/settlementOrderUrl.js'
 import GoodsApi from '@api/goods'
@@ -102,27 +102,48 @@ export default {
         {
           prop: 'settlementAmount',
           label: '结算金额(￥)',
-          width: '100'
+          width: '100',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.settlementAmount)
+          }
+
         },
         {
           prop: 'supplierAmount',
           label: '供货金额(￥)',
-          width: '100'
+          width: '100',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.supplierAmount)
+          }
         },
         {
           prop: 'freight',
           label: '运费(￥)',
-          width: '80'
+          width: '80',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.freight)
+          }
         },
         {
           prop: 'supplyMoneyAmount',
           label: '补款总金额(￥)',
-          width: '120'
+          width: '120',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.supplyMoneyAmount)
+          }
         },
         {
           prop: 'deductMoneyAmount',
           label: '扣款总金额(￥)',
-          width: '120'
+          width: '120',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.deductMoneyAmount)
+          }
         },
         {
           prop: 'status',
@@ -196,7 +217,12 @@ export default {
       this.loading = false
     },
     toDetail (row) {
-
+      this.$router.push({
+        path: '/home/finance/settlement-order-detail',
+        query: {
+          settlementOrderId: '123456789'
+        }
+      })
     },
     exportDetail (row) {
       exportFileFromRemote({

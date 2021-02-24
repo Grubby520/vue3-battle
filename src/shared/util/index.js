@@ -7,6 +7,7 @@ export * from './optimize'
 export * from './browserStorage'
 export * from './crypto'
 export * from './dateFormat'
+export * from './numberFormat'
 
 /**
  * 在文件使用的地方使用，import {merge} from "lodash"
