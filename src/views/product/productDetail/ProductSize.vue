@@ -4,7 +4,7 @@
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
-      <p v-if="checkedSizes && checkedSizes.length===0" class="align-center no-data">~暂无数据~</p>
+      <p v-if="showProductSizeTable" class="align-center no-data">~暂无数据~</p>
       <div class="form" v-else>
         <el-form :model="form" ref="form" class="productSize-from">
           <div class="productSize-from__table">
@@ -67,10 +67,10 @@ export default {
         })
       }
       return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
+    },
+    showProductSizeTable () {
+      return Object.keys(this.sizeStandard).length === 0 || this.checkedSizes.length === 0
     }
-    // showProductSizePage () {
-    //   return !isEmpty(this.checkedSizes) || !isEmpty(this.productSize.sizeInfoList)
-    // }
   },
   watch: {
     'checkedSizes': {

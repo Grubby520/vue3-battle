@@ -39,7 +39,6 @@ import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
-import { isEmpty } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -85,11 +84,8 @@ export default {
     },
     showAlert () {
       let result = {}
-      const hasSizeStandard = !isEmpty(this.sizeStandard.terms)
       if (this.noSaleAttributes && this.mode === 'create') {
         result = { condition: this.noSaleAttributes, title: `${this.cateLabels}品类未配置销售属性，无法创建产品` }
-      } else if (!this.noSaleAttributes && !hasSizeStandard && this.mode === 'create') {
-        result = { condition: !hasSizeStandard, title: `品类未配置标准属性，无法展示尺码表` }
       }
       return result
     }
