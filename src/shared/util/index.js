@@ -58,9 +58,13 @@ export function scrollToTop (top = 0, offset = 0) {
   })
 }
 
-export function scrollToElFormElement (elForm, offset = 0) {
+export function scrollToElFormElement (elForm, offset = 0, fn) {
   let firstErrorItem = elForm.querySelectorAll('.el-form-item.is-error')[0]
   if (firstErrorItem) {
+    if (typeof fn === 'function') {
+      fn(firstErrorItem)
+      return
+    }
     let boxModel = firstErrorItem.getBoundingClientRect()
     let scrollTop =
       document.documentElement.scrollTop ||

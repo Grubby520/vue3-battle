@@ -10,10 +10,11 @@ export default {
   logout: baseURL + 'user/logout',
   resetPassword: baseURL + 'user/newPassword',
   userNameExist: baseURL + 'user/user-name/exist',
-  docDetails: baseURL + 'supplier/userId',
-  docModify: baseURL + 'supplier',
   certificationNoExist: baseURL + 'supplier/certification/exist',
   supplierNameExist: baseURL + 'supplier/supplier-name/exist',
   protocolConfirm: baseURL + 'supplier/agreement/confirm',
-  supplierDetail: baseURL + 'supplier/detail'
+  supplierDetail: baseURL + 'supplier/detail',
+  supplierBasic: baseURL + 'supplier/detail/basic',
+  supplierBank: baseURL + 'supplier/detail/bank',
+  supplierUpdate: baseURL + 'supplier/detail/basic/update'
 }
