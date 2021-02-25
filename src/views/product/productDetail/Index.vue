@@ -75,19 +75,10 @@ export default {
       return this.mode === 'view'
     },
     saveText () {
-      switch (this.isStatus) {
-        case true:
-          return []
-        default:
-          return this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
-      }
+      return this.isStatus ? [] : this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     },
     showAlert () {
-      let result = {}
-      if (this.noSaleAttributes && this.mode === 'create') {
-        result = { condition: this.noSaleAttributes, title: `${this.cateLabels}品类未配置销售属性，无法创建产品` }
-      }
-      return result
+      return this.noSaleAttributes && this.mode === 'create' ? { condition: this.noSaleAttributes, title: `${this.cateLabels}品类未配置销售属性，无法创建产品` } : {}
     }
   },
   methods: {
@@ -95,16 +86,16 @@ export default {
       RecommondApi.product(this.id)
         .then(res => {
           const { productBase, productCustomAttributes, productImages, productSalesAttributeDetail, productSize } = res.data
-          // 基础属性
-          this.$store.commit('product/PRODUCT_BASE', productBase || [])
-          // 商品属性
-          this.$store.commit('product/PRODUCT_CUSTOM_ATTRIBUTES', productCustomAttributes || [])
-          // 销售属性
-          this.$store.commit('product/PRODUCT_SALES_ATTRIBUTE_DETAIL', productSalesAttributeDetail || [])
-          // 图片属性
-          this.$store.commit('product/PRODUCT_IMAGES', productImages || [])
-          // 尺码表
-          this.$store.commit('product/PRODUCT_SIZE', productSize || {})
+          const productData = {
+            'PRODUCT_BASE': productBase, // 基础属性
+            'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
+            'PRODUCT_IMAGES': productImages, // 图片属性
+            'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
+            'PRODUCT_SIZE': productSize // 尺码表
+          }
+          for (let product in productData) {
+            this.$store.commit(`product/${product}`, productData[product] || [])
+          }
           this.productStatus = productBase.status
         })
     },

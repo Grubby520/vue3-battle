@@ -248,12 +248,8 @@ export default {
     productDetail (status, row) {
       const { id, categoryId, supplierItemNo } = row
       const params = { mode: status, id, categoryId, supplierItemNo }
-      const routerPath = {
-        'create': '/home/recommend-products/category',
-        'view': '/home/recommend-products/productDetail',
-        'modify': '/home/recommend-products/productDetail'
-      }
-      this.$router.push({ path: routerPath[[status]], query: params })
+      const routerPath = status === 'create' ? '/home/recommend-products/category' : '/home/recommend-products/productDetail'
+      this.$router.push({ path: routerPath, query: params })
     }
   }
 }

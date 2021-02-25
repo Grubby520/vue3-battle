@@ -76,7 +76,8 @@ export default {
       store.productSalesAttributeDetail = data
       store.productImages = data
       store.productSize = data
-      store.sizeStandard = {}
+      store.sizeStandard = null
+      store.checkedSizes = data
     }
   },
   actions: {}
