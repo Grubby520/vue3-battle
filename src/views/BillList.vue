@@ -196,7 +196,7 @@ export default {
     },
     toDetail (row) {
       this.$router.push({
-        path: '/home/finance/settlement-bill-detail',
+        path: '/home/finance/bill-detail',
         query: {
           reimbursementNo: '123456789'
         }
