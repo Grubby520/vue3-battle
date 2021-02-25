@@ -204,6 +204,15 @@ export const homeRoutes = [
           code: 'menu_my_info'
         },
         component: () => import('@/views/SupplyDeductMoneyList.vue')
+      },
+      {
+        path: 'settlement-bill-detail',
+        name: '报账单详情',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        component: () => import('@/views/settlementBillList/SettlementBillDetail.vue')
       }
     ]
   }
