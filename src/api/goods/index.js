@@ -126,6 +126,10 @@ const GOODS_API = {
 
   ecxportExcle (data) {
     return get(URL.ecxportExcle, data)
+  },
+
+  getSettlementOrderList (params) {
+    return get(URL.settlementOrderList, params)
   }
 
 }

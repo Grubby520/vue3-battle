@@ -18,5 +18,6 @@ export default {
   printInvoice: baseURL + 'invoice/print', // 打印发货单
   printNo: baseURL + 'invoice/gen-pre-invoice-batch-no', // 打印批次号
   modifyInvoice: baseURL + 'invoice/update-invoice', // 发货单修改
-  modifyLogisticsNo: baseURL + 'invoice/add-logistics-number' // 发货单修改
+  modifyLogisticsNo: baseURL + 'invoice/add-logistics-number', // 发货单修改
+  settlementOrderList: baseURL + 'settlement-order/list' // 结算单列表
 }

@@ -64,12 +64,12 @@ export default {
         {
           type: 'input',
           label: '结算单号',
-          name: 'settlementNo'
+          name: 'settlementOrderNo'
         },
         {
           type: 'input',
           label: '发货单号',
-          name: 'deliveryOrderNo'
+          name: 'deliveryNo'
         },
         {
           type: 'date',
@@ -86,7 +86,7 @@ export default {
           name: 'status',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'PURCHASE_ORDER_STATE' }
+            params: { dataCode: 'SETTLEMENT_ORDER_STATUS_ENUM' }
           }
         }
       ],
@@ -96,7 +96,7 @@ export default {
           label: '结算单号',
           render: (h, data) => {
             let { row = {} } = data
-            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}00000</el-link>
+            return row.settlementOrderNo ? <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}</el-link> : ''
           }
         },
         {
@@ -128,29 +128,29 @@ export default {
           }
         },
         {
-          prop: 'supplyMoneyAmount',
+          prop: 'supplementaryAmount',
           label: '补款总金额(￥)',
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplyMoneyAmount)
+            return thousandsSeparate(row.supplementaryAmount)
           }
         },
         {
-          prop: 'deductMoneyAmount',
+          prop: 'deductionAmount',
           label: '扣款总金额(￥)',
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.deductMoneyAmount)
+            return thousandsSeparate(row.deductionAmount)
           }
         },
         {
-          prop: 'status',
+          prop: 'statusName',
           label: '状态'
         },
         {
-          prop: 'reimbursementNo',
+          prop: 'paymentRequestNo',
           label: '关联报账单号'
         },
         {
@@ -177,15 +177,15 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      GoodsApi.getPurchaseTableList(params).then(res => {
+      GoodsApi.getSettlementOrderList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.disabledKeys = data.list.map(item => item.status).filter(status => status !== '1')
         }
-        this.disabledKeys = [226, 227]
       }).finally(() => {
         this.$refs.listView.loading = false
       })
@@ -198,16 +198,13 @@ export default {
       this.$refs.searchForm.reset()
     },
     generateParams (pageSize, pageIndex) {
-      // let { paymentAts = [], ...orther } = this.query
-      let { cTimes = [], uTimes = [], ...orther } = this.query
+      let { paymentAts = [], ...orther } = this.query
       return {
         ...orther,
         pageIndex,
         pageSize,
-        cStartTime: cTimes && cTimes[0] ? cTimes[0] : '',
-        cEndTime: cTimes && cTimes[1] ? cTimes[1] : '',
-        uStartTime: uTimes && uTimes[0] ? uTimes[0] : '',
-        uEndTime: uTimes && uTimes[1] ? uTimes[1] : ''
+        paymentAtStart: paymentAts && paymentAts[0] ? paymentAts[0] : '',
+        paymentAtEnd: paymentAts && paymentAts[1] ? paymentAts[1] : ''
       }
     },
     // 确认报账
