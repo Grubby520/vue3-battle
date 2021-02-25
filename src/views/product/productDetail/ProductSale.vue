@@ -212,14 +212,7 @@ export default {
       // 监听尺码/颜色/规格变化
       handler (newValue) {
         // 多个属性都选择了数据数据添加到table中，否则就重置table
-        switch (this.showTable) {
-          case true:
-            this.form.productSalesAttributes = this.addTableItems(newValue)
-            break
-          case false:
-            this.form.productSalesAttributes = []
-            break
-        }
+        this.form.productSalesAttributes = this.showTable ? this.addTableItems(newValue) : []
       },
       immediate: true,
       deep: true

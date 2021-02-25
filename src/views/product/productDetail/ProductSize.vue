@@ -163,11 +163,7 @@ export default {
           const sizeStandard = sizeStandardTerms.map(standard => standard.id)
           const standardIds = echoSizes.length > 0 ? echoSizes : sizeStandard
           const sizePositions = standardIds.map(key => {
-            if (size[key]) {
-              return { 'attributeTermId': key, value: size[key] }
-            } else {
-              return { 'attributeTermId': key, value: '' }
-            }
+            return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
           })
           return { sizePositions, attributeTermId, attributeId }
         })
