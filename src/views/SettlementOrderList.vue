@@ -228,6 +228,7 @@ export default {
       exportFileFromRemote({
         url: SettlementOrderUrl.exportDetailUrl,
         name: `结算单${row.settlementOrderNo}详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
+        params: {},
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
