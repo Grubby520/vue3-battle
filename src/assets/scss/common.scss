@@ -163,7 +163,13 @@
   /deep/ .el-tag__close{
     display: none  !important;
    }
- /deep/ .multiple i{
-  display: none  !important;
- }
+  /deep/ .multiple i{
+    display: none  !important;
+  }
+  .pointer-enable {
+    pointer-events: auto;
+  }
+  .pointer-disable {
+    pointer-events: none;
+  }
 }
