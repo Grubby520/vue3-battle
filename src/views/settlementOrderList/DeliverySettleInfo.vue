@@ -1,5 +1,6 @@
 <template>
   <el-table
+    v-loading="loading"
     :data="tableData"
     border
     height="200"
@@ -25,42 +26,28 @@
 
 <script>
 import { thousandsSeparate } from '@shared/util'
+import GoodsApi from '@api/goods'
 
 export default {
   name: 'DeliverySettleInfo',
   props: {
+    deliveryNo: {
+      type: String,
+      default: ''
+    },
+    settlementOrderNo: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
-      tableData: [{
-        deliveryNo: '12987122',
-        settlementOrderNo: '王小虎',
-        settlementAmount: '1000.99989',
-        supplierAmount: '3123213123.215',
-        supplierTotal: 10,
-        freightSubsidy: 103,
-        paymentAt: '2010-02-03 11:25:23'
-      }, {
-        deliveryNo: '1298712200',
-        settlementOrderNo: '王小虎',
-        settlementAmount: '234',
-        supplierAmount: '3.2',
-        supplierTotal: 10,
-        freightSubsidy: 103,
-        paymentAt: '2010-02-03 11:25:23'
-      }, {
-        deliveryNo: '129871220011',
-        settlementOrderNo: '王小虎',
-        settlementAmount: '234',
-        supplierAmount: '3.2',
-        supplierTotal: 10,
-        freightSubsidy: 103,
-        paymentAt: '2010-02-03 11:25:23'
-      }]
+      loading: false,
+      tableData: []
     }
   },
-  components: {
-
+  created () {
+    this.getData()
   },
   methods: {
     getSummaries (param) {
@@ -88,6 +75,22 @@ export default {
       })
 
       return sums
+    },
+    getData () {
+      if (!this.deliveryNo && !this.settlementOrderNo) {
+        return
+      }
+      this.loading = true
+      GoodsApi.getDeliveryInfo({
+        deliveryNo: this.deliveryNo,
+        settlementOrderNo: this.settlementOrderNo
+      }).then(res => {
+        if (res.success) {
+          this.tableData = res.data || []
+        }
+      }).finally(() => {
+        this.loading = false
+      })
     }
   }
 }

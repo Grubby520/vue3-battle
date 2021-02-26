@@ -135,6 +135,20 @@ const GOODS_API = {
   // 商家确认
   supplierConfirm (params) {
     return post(URL.supplierConfirm, params)
+  },
+
+  getDeliveryInfo (params) {
+    return get(URL.deliveryInfo, params)
+  },
+
+  // 供货明细
+  getSupplyDetails (params) {
+    return get(URL.supplyDetails, params)
+  },
+
+  // 补扣款单信息
+  getSupplementaryDeductionInfo (params) {
+    return get(URL.supplementaryDeductionInfo, params)
   }
 
 }

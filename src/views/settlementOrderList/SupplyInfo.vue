@@ -18,10 +18,20 @@
 </template>
 
 <script>
+import { thousandsSeparate } from '@shared/util'
 import GoodsApi from '@api/goods'
+
 export default {
   name: 'SupplyInfo',
   props: {
+    deliveryNo: {
+      type: String,
+      default: ''
+    },
+    settlementOrderNo: {
+      type: String,
+      default: ''
+    }
   },
   data () {
     return {
@@ -31,10 +41,13 @@ export default {
         pageSize: 10,
         total: 0
       },
-      query: {},
+      query: {
+        deliveryNo: this.deliveryNo,
+        settlementOrderNo: this.settlementOrderNo
+      },
       columns: [
         {
-          prop: 'purchaseOrderNo',
+          prop: 'purchaseOrderNumber',
           label: '采购订单号',
           width: '150'
         },
@@ -44,7 +57,7 @@ export default {
           width: '150'
         },
         {
-          prop: 'sku',
+          prop: 'skuCode',
           label: 'SKU',
           width: '100'
         },
@@ -54,12 +67,12 @@ export default {
           width: '80'
         },
         {
-          prop: 'supplierItemNo',
+          prop: 'supplierItemNumber',
           label: '供方货号',
           width: '120'
         },
         {
-          prop: 'salesAttributes',
+          prop: 'attributesNam',
           label: '销售属性',
           width: '120'
         },
@@ -77,23 +90,31 @@ export default {
         },
         {
           prop: 'supplierPrice',
-          label: '供货单价'
+          label: '供货单价',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.supplierPrice)
+          }
         },
         {
-          prop: 'supplierAmount',
+          prop: 'supplierTotalAmount',
           label: '供货总金额',
-          width: '100'
+          width: '100',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.supplierTotalAmount)
+          }
         }
       ]
     }
   },
-  components: {
-
-  },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      GoodsApi.getPurchaseTableList(params).then(res => {
+      if (!params.deliveryNo && !params.settlementOrderNo) {
+        return
+      }
+      GoodsApi.getSupplyDetails(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
@@ -106,16 +127,10 @@ export default {
       })
     },
     generateParams (pageSize, pageIndex) {
-      // let { paymentAts = [], ...orther } = this.query
-      let { cTimes = [], uTimes = [], ...orther } = this.query
       return {
-        ...orther,
+        ...this.query,
         pageIndex,
-        pageSize,
-        cStartTime: cTimes && cTimes[0] ? cTimes[0] : '',
-        cEndTime: cTimes && cTimes[1] ? cTimes[1] : '',
-        uStartTime: uTimes && uTimes[0] ? uTimes[0] : '',
-        uEndTime: uTimes && uTimes[1] ? uTimes[1] : ''
+        pageSize
       }
     }
   }

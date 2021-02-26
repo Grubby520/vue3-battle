@@ -21,5 +21,8 @@ export default {
   modifyLogisticsNo: baseURL + 'invoice/add-logistics-number', // 发货单修改
   settlementOrderList: baseURL + 'settlement-order/list', // 结算单列表
   exportSettlement: baseURL + 'settlement-order/export-settlement', // 结算单导出
-  supplierConfirm: baseURL + 'settlement-order/supplier-confirm' // 商家确认
+  supplierConfirm: baseURL + 'settlement-order/supplier-confirm', // 商家确认
+  deliveryInfo: baseURL + 'settlement-order/settlement-order-delivery-info', // 发货单结算信息
+  supplyDetails: baseURL + 'settlement-order/settlement-order-supply-details', // 供货明细
+  supplementaryDeductionInfo: baseURL + 'settlement-order/settlement-order-supplementary-deduction' // 补扣款单信息
 }

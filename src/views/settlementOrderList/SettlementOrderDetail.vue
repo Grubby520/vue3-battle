@@ -3,24 +3,24 @@
     <p class="border-bottom mb-2rem">
       <el-button type="text" size="medium" @click="goBack">返回</el-button>
       <el-divider direction="vertical"></el-divider>
-      <span v-if="settlementOrderId">
+      <span v-if="settlementOrderNo">
         结算单号：
-        <b class="color-text--gray-mid">{{settlementOrderId}}</b>
+        <b class="color-text--gray-mid">{{settlementOrderNo}}</b>
       </span>
-      <span v-if="deliveryId">
+      <span v-if="deliveryNo">
         发货单号：
-        <b class="color-text--gray-mid">{{deliveryId}}</b>
+        <b class="color-text--gray-mid">{{deliveryNo}}</b>
       </span>
     </p>
 
     <SlPanel title="发货单结算信息">
-      <DeliverySettleInfo></DeliverySettleInfo>
+      <DeliverySettleInfo :deliveryNo="deliveryNo" :settlementOrderNo="settlementOrderNo"></DeliverySettleInfo>
     </SlPanel>
     <SlPanel title="供货明细">
-      <SupplyInfo></SupplyInfo>
+      <SupplyInfo :deliveryNo="deliveryNo" :settlementOrderNo="settlementOrderNo"></SupplyInfo>
     </SlPanel>
     <SlPanel title="补扣款单信息">
-      <SupplyDeductMoneyInfo></SupplyDeductMoneyInfo>
+      <SupplyDeductMoneyInfo :deliveryNo="deliveryNo" :settlementOrderNo="settlementOrderNo"></SupplyDeductMoneyInfo>
     </SlPanel>
   </div>
 </template>
@@ -39,8 +39,8 @@ export default {
   },
   data () {
     return {
-      deliveryId: this.$route.query.deliveryId,
-      settlementOrderId: this.$route.query.settlementOrderId
+      deliveryNo: this.$route.query.deliveryNo,
+      settlementOrderNo: this.$route.query.settlementOrderNo
     }
   },
   mounted () {
