@@ -20,12 +20,16 @@
         <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
       </div>
       <el-divider />
+      <SlTableToolbar>
+        <el-button type="primary" :loading="loading" :disabled="!canExport" @click="exportDetail">导出</el-button>
+      </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
         ref="table"
+        v-model="selections"
         :tableData="tableData"
         :columns="columns"
-        :selection="false"
+        :selection="true"
         :operate="true"
         :tooltip="false"
       >
@@ -52,6 +56,7 @@ export default {
     return {
       loading: false,
       tableData: [],
+      selections: [],
       page: {
         pageIndex: 1,
         pageSize: 10,
@@ -150,7 +155,9 @@ export default {
     }
   },
   computed: {
-
+    canExport () {
+      return this.selections.length > 0
+    }
   },
   mounted () {
 
@@ -169,7 +176,6 @@ export default {
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
         }
-        this.disabledKeys = [226, 227]
       }).finally(() => {
         this.$refs.listView.loading = false
       })
@@ -200,6 +206,23 @@ export default {
         query: {
           reimbursementNo: '123456789'
         }
+      })
+    },
+    exportDetail () {
+      exportFileFromRemote({
+        url: 'url',
+        name: 'fileName',
+        params: {},
+        beforeLoad: () => {
+          this.loading = true
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
+        },
+        afterLoad: () => {
+          this.loading = false
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
       })
     },
     download (row, type) {
