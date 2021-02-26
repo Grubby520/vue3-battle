@@ -19,7 +19,16 @@
           @click="confirmReimbursement"
           :loading="loading"
           :disabled="!canConfirm"
-        >确认并报账</el-button>
+        >确认结算</el-button>&nbsp;&nbsp;
+        <el-popover
+          placement="top"
+          title
+          width="200"
+          trigger="click"
+          content="说明：选择多个结算单可合并结算，确认结算将在报账单列表生成报账单"
+        >
+          <span slot="reference" class="el-icon-info"></span>
+        </el-popover>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -43,7 +52,7 @@
 <script>
 import { exportFileFromRemote, date, thousandsSeparate } from '@shared/util'
 import CommonUrl from '@api/url.js'
-import SettlementOrderUrl from '@api/settlementOrder/settlementOrderUrl.js'
+import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
 
 export default {
@@ -171,9 +180,7 @@ export default {
       return this.selections.length > 0
     }
   },
-  mounted () {
-
-  },
+  mounted () { },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
@@ -210,22 +217,36 @@ export default {
     // 确认报账
     confirmReimbursement () {
       this.loading = true
-      this.$message.success(`已生成报账单XXXXXX,请前往报账单列表上传对应报账单资料`)
-      this.loading = false
+      GoodsApi.supplierConfirm({
+        settlementConfirmRequests: this.selections.map(item => {
+          return {
+            settlementOrderId: item.id
+          }
+        })
+      }).then(res => {
+        if (res.success) {
+          this.$message.success(`已生成报账单${res.data ? res.data : ''},请前往报账单列表上传对应报账单资料`)
+          this.selections = []
+          this.gotoPage()
+        }
+      }).finally(() => {
+        this.loading = false
+      })
     },
     toDetail (row) {
       this.$router.push({
         path: '/home/finance/settlement-order-detail',
         query: {
-          settlementOrderId: '123456789'
+          settlementOrderNo: row.settlementOrderNo,
+          deliveryNo: row.deliveryNo
         }
       })
     },
     exportDetail (row) {
       exportFileFromRemote({
-        url: SettlementOrderUrl.exportDetailUrl,
+        url: GoodsUrl.exportSettlement,
         name: `结算单${row.settlementOrderNo}详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
-        params: {},
+        params: { settlementOrderNo: row.settlementOrderNo },
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })

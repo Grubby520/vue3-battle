@@ -130,6 +130,11 @@ const GOODS_API = {
 
   getSettlementOrderList (params) {
     return get(URL.settlementOrderList, params)
+  },
+
+  // 商家确认
+  supplierConfirm (params) {
+    return post(URL.supplierConfirm, params)
   }
 
 }
