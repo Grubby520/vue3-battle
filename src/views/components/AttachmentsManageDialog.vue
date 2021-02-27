@@ -1,0 +1,303 @@
+<template>
+  <el-dialog
+    :title="title"
+    custom-class="attachments-manage-dialog"
+    :visible.sync="dialogVisible"
+    :width="width"
+    :show-close="showClose"
+    :before-close="handleClose"
+    :close-on-press-escape="false"
+    :destroy-on-close="destroyOnClose"
+    :close-on-click-modal="false"
+    :lock-scroll="false"
+    :append-to-body="true"
+  >
+    <el-upload
+      action="#"
+      :multiple="multiple"
+      :limit="limitNumber"
+      :http-request="uploadFile"
+      :before-upload="beforeUpload"
+      :on-exceed="handleExceed"
+      :file-list="data"
+    >
+      <el-button v-if="canEdit" size="small" type="primary">点击上传</el-button>
+      <div
+        v-if="canEdit"
+        slot="tip"
+        class="el-upload__tip"
+      >上传附件支持的文件的格式: jpg、png、rar、pdf、zip。最多上传20个。每个文件最大50M。</div>
+      <div slot="file" slot-scope="{file}" class="file-container clearfix">
+        <span :title="file.name">{{file.name}}</span>
+        <div class="float-right">
+          <el-link type="primary" @click="download(file)">下载</el-link>&nbsp;
+          <el-link v-if="canEdit" type="primary" @click="handleRemove(file)">删除</el-link>
+        </div>
+      </div>
+    </el-upload>
+    <span v-if="canEdit" slot="footer" class="dialog-footer">
+      <slot name="footer">
+        <el-button type="primary" @click="submit">{{$t('button.saveText')}}</el-button>
+      </slot>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+import { mapActions } from 'vuex'
+import { asyncSome, exportFileFromRemote } from '@/shared/util'
+
+export default {
+  name: 'AttachmentsManageDialog',
+  components: {},
+  props: {
+    title: {
+      type: String,
+      default: '上传附件'
+    },
+    width: {
+      type: String,
+      default: '40%'
+    },
+    showClose: {
+      type: Boolean,
+      default: true
+    },
+    destroyOnClose: {
+      type: Boolean,
+      default: false
+    },
+    show: {
+      type: Boolean,
+      default: false
+    },
+    status: {
+      type: String,
+      default: 'edit'// edit:编辑,view:查看
+    },
+    data: {
+      type: Array,
+      default: () => []
+    },
+    // 当图片类型为产品图片、尺码图片时需传入产品spu编码，当图片类型为资质图片需传入供应商营业执照编号
+    folder: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    limitNumber: {
+      type: Number,
+      required: false,
+      default: 20
+    },
+    // 0为商品图片 1为尺寸图片 2供应商资质图片 3报账单 4付款申请 5扣款单 6付款单
+    fileType: {
+      type: Number,
+      required: false,
+      default: undefined
+    },
+    // 同时上传多张图
+    multiple: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    // 上传文件限制
+    limits: {
+      type: Array,
+      default: () => [
+        {
+          type: 'size',
+          message: '',
+          meta: {
+            size: 50
+          }
+        },
+        {
+          type: 'fileType',
+          message: `文件格式不正确,仅支持jpg、png、rar、pdf、zip`,
+          meta: {
+            fileSuffixs: ['.jpg', '.jpeg', '.png', '.rar', '.pdf', '.zip'],
+            accept: [
+              'application/pdf',
+              'image/png',
+              'image/jpeg',
+              'application/zip',
+              'application/x-zip-compressed',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ]
+          }
+        },
+        {
+          type: 'repeat',
+          message: `文件重复,请重新上传`
+        }
+      ]
+    }
+  },
+  data () {
+    return {
+      dialogVisible: false
+    }
+  },
+  watch: {
+    show: {
+      handler: function (val, oldVal) {
+        if (oldVal !== val) {
+          this.dialogVisible = val
+        }
+      },
+      immediate: true
+    },
+    dialogVisible (val) {
+      this.$emit('update:show', val)
+    }
+  },
+  computed: {
+    canEdit () {
+      return this.status === 'edit'
+    }
+  },
+  methods: {
+    ...mapActions('oss', [
+      'GET_UPLOAD_API', // 预上传oss地址
+      'UPLOAD_FILE' // 上传oss
+    ]),
+    handleClose (done) {
+      this.dialogVisible = false
+      this.$emit('before-close', done)
+    },
+    submit () {
+      this.$emit('submit')
+    },
+    handleExceed () {
+      this.$message.error(`上传文件不能超过${this.limitNumber}个!`)
+    },
+    handleRemove (file) {
+      const _this = this
+      this.$confirm('确实要删除该附件吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        lockScroll: false,
+        type: 'warning'
+      }).then(() => {
+        const files = _this.data.filter(item => item.name !== file.name)
+        this.emitChange(files)
+        this.$emit('delete', file)
+      })
+    },
+    download (file) {
+      exportFileFromRemote({
+        url: file.src,
+        name: file.name,
+        params: {},
+        beforeLoad: () => {
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '下载中' })
+        },
+        afterLoad: () => {
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
+      })
+    },
+
+    emitChange (arr) {
+      this.$emit('update:data', arr)
+      this.$emit('change', arr)
+    },
+    uploadFile (file) {
+      this.preOssUrl(file).then(res => {
+        this.uploadToOss(res, file.file)
+      })
+    },
+    preOssUrl (file) {
+      // 获取预上传oss地址
+      const contentType = file.file.type ? file.file.type : 'application/octet-stream'
+      const params = { 'folder': this.folder, 'fileName': file.file.name, 'contentType': contentType, 'fileType': this.fileType }
+      return this.GET_UPLOAD_API(params)
+        .then(res => {
+          return res.data
+        })
+    },
+    uploadToOss (data, file) {
+      // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
+      this.UPLOAD_FILE({
+        preUploadUrl: data.preUploadUrl,
+        file
+      })
+        .then(res => {
+          const newFile = {
+            src: data.showUrl,
+            name: file.name,
+            uid: file.uid
+          }
+          this.emitChange([...this.data, newFile])
+        })
+    },
+
+    beforeUpload (file) {
+      return this.limitsHandler(file)
+    },
+    limitsHandler (file) {
+      let someFilter = async (item) => {
+        let isError = false
+        let message = item.message
+        switch (item.type) {
+          case 'fileType':
+            let fileSuffix = file.name.substr(file.name.lastIndexOf('.'))
+            if (file.type) {
+              isError = !item.meta.accept.includes(file.type)
+            } else {
+              isError = !item.meta.fileSuffixs.includes(fileSuffix)
+            }
+            break
+          case 'repeat':
+            isError = await this.limitRepeat(file)
+            break
+          case 'size':
+            message = `文件大小不能超过${item.meta.size}M`
+            isError = !this.limitSize(item, file)
+            break
+        }
+        if (isError) {
+          this.$message.error(message)
+          // 不符合条件中断上传
+          return new Promise((resolve, reject) => { reject(new Error()) })
+        }
+        return isError
+      }
+      return asyncSome(this.limits, someFilter)
+    },
+    async limitRepeat (file) {
+      try {
+        return this.data.some(item => item.name === file.name)
+      } catch (error) {
+        return error
+      }
+    },
+    limitSize (limitItem, file) {
+      return file.size / 1024 / 1024 <= limitItem.meta.size
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.attachments-manage-dialog .el-dialog__body {
+  padding: 1rem 2rem 2rem 2rem;
+}
+
+div:focus,
+ul:focus,
+li:focus {
+  outline: none !important;
+}
+</style>
+
+<style lang="scss" scoped>
+.file-container {
+  padding: 0 1em;
+  background-color: #ecf0f5;
+}
+</style>

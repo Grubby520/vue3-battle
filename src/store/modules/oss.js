@@ -3,15 +3,9 @@ import { put } from '@shared/http'
 
 export default {
   namespaced: true,
-  state: {
-
-  },
-  getters: {
-
-  },
-  mutations: {
-
-  },
+  state: {},
+  getters: {},
+  mutations: {},
   actions: {
     GET_UPLOAD_API ({ commit, dispatch }, params) {
       return CommonApi.generatePreUploadUrl(params).then((res) => {

@@ -37,10 +37,15 @@
           <el-button type="text" @click="download(row,1)">下载Invoice</el-button>
           <el-button type="text" @click="download(row,2)">下载请款单</el-button>
           <el-button type="text" @click="download(row,3)">下载供货清单</el-button>
-          <el-button type="text">上传附件</el-button>
+          <el-button type="text" @click="openAttachmentsManageDialog">上传附件</el-button>
         </div>
       </SlTable>
     </SlListView>
+    <AttachmentsManageDialog
+      :show.sync="attachmentsManageDialogShow"
+      :data.sync="attachments"
+      :fileType="3"
+    ></AttachmentsManageDialog>
   </div>
 </template>
 
@@ -49,12 +54,18 @@ import { exportFileFromRemote, date, thousandsSeparate, downloadFile } from '@sh
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
 import GoodsApi from '@api/goods'
+import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
 export default {
   name: 'BillList',
+  components: {
+    AttachmentsManageDialog
+  },
   data () {
     return {
       loading: false,
+      attachmentsManageDialogShow: false,
+      attachments: [],
       tableData: [],
       selections: [],
       page: {
@@ -175,6 +186,7 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.tableData = [{ id: 1 }]
         }
       }).finally(() => {
         this.$refs.listView.loading = false
@@ -254,6 +266,9 @@ export default {
         successFn: () => { },
         errorFn: () => { }
       })
+    },
+    openAttachmentsManageDialog () {
+      this.attachmentsManageDialogShow = true
     }
   }
 }
