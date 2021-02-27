@@ -55,7 +55,7 @@ export default {
       }
     },
     validateForm () {
-      // 单独校验表单
+      // 组件内校验表单
       this.references[this.form].validate(valid => {
         if (valid) {
           this.loading = true
@@ -71,8 +71,11 @@ export default {
       const result = {}
       for (const ref in this.references) {
         const currentRef = this.references[ref]
-        if (Object.keys(currentRef.$refs).length > 0) {
-          currentRef.$refs[this.form].validate(valid => {
+        // 判断渲染时使用的是component渲染各组件分别渲染
+        const isComponent = currentRef[0] ? Object.keys(currentRef[0].$refs).length > 0 : Object.keys(currentRef.$refs).length > 0
+        if (isComponent) {
+          const validComponent = currentRef[0] ? currentRef[0] : currentRef
+          validComponent.$refs[this.form].validate(valid => {
             result[ref] = valid
           })
         }
@@ -88,7 +91,7 @@ export default {
         // 校验失败滚动到错误位置
         const firstValidIndex = validResults.findIndex(errorValid => errorValid === false)
         const errValidRef = Object.keys(result)[firstValidIndex]
-        let current = this.references[errValidRef].$refs.form
+        let current = this.references[errValidRef][0] ? this.references[errValidRef][0].$refs.form : this.references[errValidRef].$refs.form
         // 滚动到指定节点
         current.$el.scrollIntoView({
           block: 'start',

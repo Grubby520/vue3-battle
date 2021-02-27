@@ -22,18 +22,14 @@
               :multiple="true"
               :disabled="mode"
             />
-            <template v-for="(item, index) in [1,2,3,4,5,6,7]">
-              <div
-                v-if="index >= productImages.length"
-                :key="index"
-                class="dashed-box align-center"
-              >
+            <template v-for="(item,index) in [1,2,3,4,5,6,7]">
+              <div v-if="index >= productImages.length" :key="item" class="dashed-box align-center">
                 <i class="el-icon-plus"></i>
               </div>
             </template>
           </div>
         </el-form-item>
-        <p class="error-tip" v-for="(item, index) in texts" :key="index">{{item}}</p>
+        <p class="error-tip" v-for="(item, index) in hints" :key="index">{{item}}</p>
       </el-form>
     </el-card>
   </div>
@@ -53,7 +49,7 @@ export default {
     }
     return {
       productImages: [],
-      texts: [
+      hints: [
         '商品图片注意事项：',
         '1.商品图片必须为商品整体图，图片比例：1：1(正方形）或者4：3,宽高值最大尺寸4096px-4096px，最小尺寸100px-100px,大小不超过4M；',
         '2.商品图片建议从正面、侧面、背面，细节各个维度展示商品。至少上传4张图片；'

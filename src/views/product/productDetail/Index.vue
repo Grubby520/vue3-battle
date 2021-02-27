@@ -7,12 +7,12 @@
       effect="dark"
       style="margin-bottom: 1rem;"
     />
-    <div :class="{'view-container': isStatus}">
-      <ProductBase ref="productBase" />
-      <ProductImages ref="productImages" />
-      <ProductSale ref="productSale" />
-      <ProductSize ref="productSize" />
-      <ProductAttr ref="productAttr" />
+    <div
+      v-for="component in productComponents"
+      :key="component"
+      :class="{'view-container': isStatus}"
+    >
+      <component :is="component" :ref="component" />
     </div>
     <div class="product-btn">
       <SlDetails
@@ -55,7 +55,8 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
-      productStatus: undefined
+      productStatus: undefined,
+      productComponents: ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr']
     }
   },
   watch: {
@@ -142,8 +143,8 @@ export default {
       // 获取需要保存/提交的数据
       const result = []
       for (const ref in this.$refs) {
-        const condition = Object.keys(this.$refs[ref].$refs).length > 0
-        condition && result.push(this.$refs[ref].result())
+        const currentRef = this.$refs[ref][0]
+        currentRef && result.push(currentRef.result())
       }
       return Promise.all(result)
         .then((res) => {
