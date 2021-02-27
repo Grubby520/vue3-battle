@@ -24,5 +24,8 @@ export default {
   supplierConfirm: baseURL + 'settlement-order/supplier-confirm', // 商家确认
   deliveryInfo: baseURL + 'settlement-order/settlement-order-delivery-info', // 发货单结算信息
   supplyDetails: baseURL + 'settlement-order/settlement-order-supply-details', // 供货明细
-  supplementaryDeductionInfo: baseURL + 'settlement-order/settlement-order-supplementary-deduction' // 补扣款单信息
+  supplementaryDeductionInfo: baseURL + 'settlement-order/settlement-order-supplementary-deduction', // 补扣款单信息
+  paymentInfo: baseURL + 'reimbursement/payment-info', // 付款单信息查询
+  settlementOrder: baseURL + 'reimbursement/supplementary-deduction-info', // 结算单信息查询
+  supplementaryDeduction: baseURL + 'reimbursement/supplementary-deduction-info' // 补扣款单信息查询
 }

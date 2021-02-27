@@ -149,7 +149,18 @@ const GOODS_API = {
   // 补扣款单信息
   getSupplementaryDeductionInfo (params) {
     return get(URL.supplementaryDeductionInfo, params)
-  }
+  },
 
+  getPaymentInfo (id) {
+    return get(`${URL.paymentInfo}/${id}`)
+  },
+
+  getSettlementOrder (id) {
+    return get(`${URL.settlementOrder}/${id}`)
+  },
+
+  getSupplementaryDeduction (id) {
+    return get(`${URL.supplementaryDeduction}/${id}`)
+  }
 }
 export default GOODS_API
