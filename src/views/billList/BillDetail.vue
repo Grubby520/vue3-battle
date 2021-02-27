@@ -218,16 +218,23 @@ export default {
           label: '源单类型'
         },
         {
-          prop: '',
+          prop: 'sourceOrderNo',
           label: '源单编号'
         },
         {
-          label: '总金额(¥)'
+          prop: 'supplementaryDeductionAmount',
+          label: '总金额(¥)',
+          render: (h, data) => {
+            const { row = {} } = data
+            return thousandsSeparate(row.sesupplementaryDeductionAmount)
+          }
         },
         {
+          prop: 'remarks',
           label: '备注'
         },
         {
+          prop: 'confirmAt',
           label: '确认时间'
         }
       ]
