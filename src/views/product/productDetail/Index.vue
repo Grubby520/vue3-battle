@@ -1,12 +1,5 @@
 <template>
   <div class="product">
-    <el-alert
-      v-if="showAlert.condition"
-      :title="showAlert.title"
-      type="error"
-      effect="dark"
-      style="margin-bottom: 1rem;"
-    />
     <div
       v-for="component in productComponents"
       :key="component"
@@ -77,9 +70,6 @@ export default {
     },
     saveText () {
       return this.isStatus ? [] : this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
-    },
-    showAlert () {
-      return this.noSaleAttributes && this.mode === 'create' ? { condition: this.noSaleAttributes, title: `${this.cateLabels}品类未配置销售属性，无法创建产品` } : {}
     }
   },
   methods: {
@@ -104,11 +94,8 @@ export default {
       // 保存数据
       this.getResult()
         .then(res => {
-          const interfacesStatus = {
-            0: 'productSave', // 确定
-            1: 'productSaveSubmit' // 提交
-          }
-          const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
+          // 0：productSave 确定 1：productSaveSubmit 提交
+          const interfaces = this.$refs.control.someBtnParams === 0 ? 'productSave' : 'productSaveSubmit'
           RecommondApi[interfaces](res)
             .then((res) => {
               if (res.success) {
@@ -149,9 +136,9 @@ export default {
       return Promise.all(result)
         .then((res) => {
           const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
-          productBase.id = this.id
-          productBase.categoryId = this.categoryId
-          productBase.categoryPath = this.categoryPath
+          Object.assign(productBase, {
+            'id': this.id, 'categoryId': this.categoryId, 'categoryPath': this.categoryPath
+          })
           return {
             productBase,
             productImages,
