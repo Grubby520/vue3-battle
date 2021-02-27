@@ -1,6 +1,6 @@
 <template>
-  <div class="ProductImages">
-    <el-card class="ProductImages-card">
+  <div class="productImages">
+    <el-card class="productImages-card">
       <div slot="header" class="title">
         <span>商品图片</span>
       </div>
@@ -9,11 +9,11 @@
         :rules="rules"
         ref="form"
         label-width="12rem"
-        class="ProductImages-images form"
+        class="productImages-images form"
       >
         <div class="error-tip">若产品主体超出预览图规范框，则代表该商品不符合规范-仅限产品平铺图，模特图可考虑整体效果。</div>
         <el-form-item prop="images">
-          <div class="ProductImages-images--content">
+          <div class="productImages-images--content">
             <span>*</span>
             <SlUploadImages
               v-model="productImages"
@@ -89,7 +89,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.ProductImages {
+.productImages {
   $marBottom: 2rem;
   margin-bottom: $marBottom;
   &-card {
@@ -129,6 +129,8 @@ export default {
   }
   /deep/.el-form-item__error {
     top: 93%;
+    font-size: 16px;
+    font-weight: 600;
   }
 }
 </style>
