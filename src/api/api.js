@@ -27,7 +27,7 @@ const COMMONAPI = {
 
   // 删除附件
   deleteAttachment (params) {
-    return del(URL.deleteAttachmentUrl, params)
+    return del(`${URL.deleteAttachmentUrl}/${params.id}`, params)
   },
 
   // 获取附件列表
