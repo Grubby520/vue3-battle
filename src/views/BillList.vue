@@ -37,7 +37,7 @@
           <el-button type="text" @click="download(row,1)">下载Invoice</el-button>
           <el-button type="text" @click="download(row,2)">下载请款单</el-button>
           <el-button type="text" @click="download(row,3)">下载供货清单</el-button>
-          <el-button type="text" @click="openAttachmentsManageDialog">上传附件</el-button>
+          <el-button type="text" @click="openAttachmentsManageDialog(row)">上传附件</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -45,7 +45,16 @@
       :show.sync="attachmentsManageDialogShow"
       :data.sync="attachments"
       :fileType="3"
-    ></AttachmentsManageDialog>
+      :status="attachmentsManageStatus"
+      @submitHandler="saveAttachments"
+      @deleteHandler="deleteAttachments"
+    >
+      <el-button
+        :loading="loading"
+        type="primary"
+        @click="saveAttachments"
+      >{{$t('button.saveText')}}</el-button>
+    </AttachmentsManageDialog>
   </div>
 </template>
 
@@ -53,9 +62,9 @@
 import { exportFileFromRemote, date, thousandsSeparate, downloadFile } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
+import CommonApi from '@api/api'
 import GoodsApi from '@api/goods'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
-
 export default {
   name: 'BillList',
   components: {
@@ -65,6 +74,7 @@ export default {
     return {
       loading: false,
       attachmentsManageDialogShow: false,
+      attachmentsManageStatus: 'edit',
       attachments: [],
       tableData: [],
       selections: [],
@@ -267,8 +277,39 @@ export default {
         errorFn: () => { }
       })
     },
-    openAttachmentsManageDialog () {
+    openAttachmentsManageDialog (row) {
+      this.getAttachmentList(row.id)
       this.attachmentsManageDialogShow = true
+    },
+    getAttachmentList (associationId) {
+      CommonApi.getAttachmentList({ associationId }).then(res => {
+        this.attachments = res.data || []
+      })
+    },
+    saveAttachments () {
+      this.loading = true
+      CommonApi.saveAttachmentRelation(this.attachments.map(item => {
+        return {
+          associationId: item.associationId,
+          associationType: item.associationType,
+          attachmentName: item.attachmentName,
+          attachmentUrl: item.src
+        }
+      })).then(res => {
+        if (res.success) {
+          this.$message.success('保存成功')
+        }
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    deleteAttachments (file) {
+      CommonApi.deleteAttachment({ id: file.id }).then(res => {
+        if (res.success) {
+          this.attachments = this.attachments.filter(item => item.name !== file.name)
+          this.$message.success('删除成功')
+        }
+      })
     }
   }
 }

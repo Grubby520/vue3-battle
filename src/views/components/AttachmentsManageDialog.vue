@@ -79,6 +79,10 @@ export default {
       type: Array,
       default: () => []
     },
+    dataKey: {
+      type: String,
+      default: 'id'
+    },
     // 当图片类型为产品图片、尺码图片时需传入产品spu编码，当图片类型为资质图片需传入供应商营业执照编号
     folder: {
       type: String,
@@ -161,29 +165,39 @@ export default {
   methods: {
     ...mapActions('oss', [
       'GET_UPLOAD_API', // 预上传oss地址
-      'UPLOAD_FILE' // 上传oss
+      'UPLOAD_FILE', // 上传oss
+      'DELETE_FILES' // 删除oss文件
     ]),
     handleClose (done) {
       this.dialogVisible = false
       this.$emit('before-close', done)
     },
     submit () {
-      this.$emit('submit')
+      this.$emit('submitHandler')
     },
     handleExceed () {
       this.$message.error(`上传文件不能超过${this.limitNumber}个!`)
     },
     handleRemove (file) {
-      const _this = this
       this.$confirm('确实要删除该附件吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         lockScroll: false,
         type: 'warning'
       }).then(() => {
-        const files = _this.data.filter(item => item.name !== file.name)
-        this.emitChange(files)
-        this.$emit('delete', file)
+        // 如果存在与业务关联的主键则交给组件外部处理
+        if (typeof file[this.dataKey] !== 'undefined') {
+          this.$emit('deleteHandler', file)
+          return
+        }
+
+        // 如果不存在与业务关联的主键则直接删除oss上的文件
+        this.DELETE_FILES([file.src])
+          .then(res => {
+            const files = this.data.filter(item => item.name !== file.name)
+            this.emitChange(files)
+            this.$message.success('删除成功')
+          })
       })
     },
     download (file) {

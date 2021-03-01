@@ -21,6 +21,12 @@ export default {
         .then(res => {
           return res
         })
+    },
+    DELETE_FILES ({ commit, dispatch }, params) {
+      return CommonApi.deleteFiles(params)
+        .then(res => {
+          return res
+        })
     }
   }
 }
