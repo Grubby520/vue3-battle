@@ -88,7 +88,7 @@
                 <template slot-scope="scope">
                   <el-form-item
                     :prop="`productSalesAttributes.${scope.$index}.${item.name}`"
-                    :rules="[{required: item.required, message: `${item.message}`, trigger:['blur','change' ]}]"
+                    :rules="[{required: item.required, message: `${item.message}`, validator:item.validateRule, trigger:['blur','change' ]}]"
                     class="flex-center"
                   >
                     <template v-if="item.extendCode">
@@ -159,7 +159,18 @@ export default {
           name: 'supplyPrice',
           label: '供货价格（RMB）',
           required: true,
-          message: '请输入供货价格'
+          message: '',
+          validateRule: function (rule, value, callback) {
+            if (value) {
+              if (Number(value) <= 0) {
+                callback(new Error('供货价格不能为0'))
+              } else {
+                callback()
+              }
+            } else {
+              callback(new Error('请输入供货价格'))
+            }
+          }
         },
         {
           name: 'skuCode',
