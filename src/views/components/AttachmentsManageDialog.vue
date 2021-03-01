@@ -11,6 +11,7 @@
     :close-on-click-modal="false"
     :lock-scroll="false"
     :append-to-body="true"
+    @closed="dialogClosedHandler"
   >
     <el-upload
       action="#"
@@ -171,6 +172,9 @@ export default {
     handleClose (done) {
       this.dialogVisible = false
       this.$emit('before-close', done)
+    },
+    dialogClosedHandler () {
+      this.emitChange([])
     },
     submit () {
       this.$emit('submitHandler')

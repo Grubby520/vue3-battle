@@ -41,6 +41,7 @@
         </div>
       </SlTable>
     </SlListView>
+    <!-- 附件 -->
     <AttachmentsManageDialog
       :show.sync="attachmentsManageDialogShow"
       :data.sync="attachments"
@@ -65,6 +66,7 @@ import BillUrl from '@api/bill/billUrl.js'
 import CommonApi from '@api/api'
 import GoodsApi from '@api/goods'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
+
 export default {
   name: 'BillList',
   components: {
@@ -278,11 +280,11 @@ export default {
       })
     },
     openAttachmentsManageDialog (row) {
-      this.getAttachmentList(row.id)
+      this.getAttachmentList(row)
       this.attachmentsManageDialogShow = true
     },
-    getAttachmentList (associationId) {
-      CommonApi.getAttachmentList({ associationId }).then(res => {
+    getAttachmentList (row) {
+      CommonApi.getAttachmentList({ associationId: row.associationId, associationType: row.associationType }).then(res => {
         this.attachments = res.data || []
       })
     },

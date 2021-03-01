@@ -161,6 +161,10 @@ const GOODS_API = {
 
   getSupplementaryDeduction (id) {
     return get(`${URL.supplementaryDeduction}/${id}`)
+  },
+
+  getSupplyDeductionList (params) {
+    return get(URL.supplementaryDeductionInfo, params)
   }
 }
 export default GOODS_API

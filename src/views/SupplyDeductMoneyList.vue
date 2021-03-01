@@ -22,11 +22,17 @@
         :operate="true"
         :tooltip="false"
       >
-        <div slot="operation">
-          <el-button type="text">查看附件</el-button>
+        <div slot="operation" slot-scope="{row}">
+          <el-button type="text" @click="openAttachmentsManageDialog(row)">查看附件</el-button>
         </div>
       </SlTable>
     </SlListView>
+    <!-- 附件 -->
+    <AttachmentsManageDialog
+      :show.sync="attachmentsManageDialogShow"
+      :data.sync="attachments"
+      :status="attachmentsManageStatus"
+    ></AttachmentsManageDialog>
   </div>
 </template>
 
@@ -34,12 +40,20 @@
 import { thousandsSeparate } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsApi from '@api/goods'
+import CommonApi from '@api/api'
+import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
 export default {
   name: 'SupplyDeductMoneyList',
+  components: {
+    AttachmentsManageDialog
+  },
   data () {
     return {
       loading: false,
+      attachmentsManageDialogShow: false,
+      attachmentsManageStatus: 'view',
+      attachments: [],
       tableData: [],
       page: {
         pageIndex: 1,
@@ -59,7 +73,7 @@ export default {
           name: 'paymentType',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'PURCHASE_ORDER_STATE' }
+            params: { dataCode: 'REPLENISHMENT_DEDUCTED_PAYMENT_TYPE_ENUM' }
           }
         },
         {
@@ -73,7 +87,7 @@ export default {
           name: 'status',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'PURCHASE_ORDER_STATE' }
+            params: { dataCode: 'REPLENISHMENT_DEDUCTED_STATUS_ENUM' }
           }
         }
       ],
@@ -87,7 +101,7 @@ export default {
           label: '款项类型'
         },
         {
-          prop: 'sourceOrderType',
+          prop: 'sourceOrderTypeName',
           label: '源单类型'
         },
         {
@@ -95,7 +109,7 @@ export default {
           label: '源单编号'
         },
         {
-          prop: 'supplementaryDeductionAmount',
+          prop: 'amount',
           label: '总金额(￥)',
           width: '120',
           render: (h, data) => {
@@ -104,25 +118,25 @@ export default {
           }
         },
         {
-          prop: 'status',
+          prop: 'statusName',
           label: '单据状态'
         },
         {
-          prop: 'reimbursementId',
+          prop: 'settlementOrderNo',
           label: '关联结算单'
         },
         {
-          prop: 'createAt',
+          prop: 'createdAt',
           label: '创建时间',
           width: '200'
         },
         {
-          prop: 'reason',
+          prop: 'rejectReason',
           label: '驳回原因',
           width: '200'
         },
         {
-          prop: 'operatorAt',
+          prop: 'auditAt',
           label: '审核通过时间/驳回时间',
           width: '200'
         },
@@ -132,22 +146,16 @@ export default {
           width: '200'
         },
         {
-          prop: 'attachmentNum',
+          prop: 'attachmentAmount',
           label: '附件数'
         }
       ]
     }
   },
-  computed: {
-
-  },
-  mounted () {
-
-  },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      GoodsApi.getPurchaseTableList(params).then(res => {
+      GoodsApi.getSupplyDeductionList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
@@ -167,17 +175,20 @@ export default {
       this.$refs.searchForm.reset()
     },
     generateParams (pageSize, pageIndex) {
-      // let { paymentAts = [], ...orther } = this.query
-      let { cTimes = [], uTimes = [], ...orther } = this.query
       return {
-        ...orther,
+        ...this.query,
         pageIndex,
-        pageSize,
-        cStartTime: cTimes && cTimes[0] ? cTimes[0] : '',
-        cEndTime: cTimes && cTimes[1] ? cTimes[1] : '',
-        uStartTime: uTimes && uTimes[0] ? uTimes[0] : '',
-        uEndTime: uTimes && uTimes[1] ? uTimes[1] : ''
+        pageSize
       }
+    },
+    openAttachmentsManageDialog (row) {
+      this.getAttachmentList(row)
+      this.attachmentsManageDialogShow = true
+    },
+    getAttachmentList (row) {
+      CommonApi.getAttachmentList({ associationId: row.associationId, associationType: row.associationType }).then(res => {
+        this.attachments = res.data || []
+      })
     }
   }
 }
