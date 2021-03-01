@@ -4,7 +4,7 @@
       <div slot="header" class="title">
         <span>商品属性</span>
       </div>
-      <p v-if="customAttributes.customAttributesData.length===0" class="align-center no-data">~暂无数据~</p>
+      <p v-if="form.attributesData.length===0" class="align-center no-data">~暂无数据~</p>
       <div class="form" v-else>
         <el-form :model="form" ref="form" label-width="20rem">
           <el-row :gutter="8">
