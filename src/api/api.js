@@ -20,7 +20,7 @@ const COMMONAPI = {
     return post(URL.generatePreUploadUrl, params)
   },
 
-  // 预上传
+  // 删除oss文件
   deleteFiles (params) {
     return del(URL.deleteFilesUrl, params)
   },

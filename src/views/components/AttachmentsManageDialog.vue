@@ -196,7 +196,7 @@ export default {
         }
 
         // 如果不存在与业务关联的主键则直接删除oss上的文件
-        this.DELETE_FILES([file.src])
+        this.DELETE_FILES({ url: file.src })
           .then(res => {
             const files = this.data.filter(item => item.name !== file.name)
             this.emitChange(files)

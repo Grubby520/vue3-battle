@@ -6,7 +6,7 @@ const URL = {
   // 生成预上传链接接口
   generatePreUploadUrl: baseURL + 'aliyun-oss/upload-presigned',
   // 删除文件
-  deleteFilesUrl: baseURL + 'aliyun-oss/delete',
+  deleteFilesUrl: baseURL + 'aliyun-oss',
   deleteAttachmentUrl: baseURL + 'attachment',
   attachmentListUrl: baseURL + 'attachment/list',
   attachmentRelation: baseURL + 'attachment/relation',
