@@ -151,16 +151,20 @@ const GOODS_API = {
     return get(URL.supplementaryDeductionInfo, params)
   },
 
-  getPaymentInfo (id) {
-    return get(`${URL.paymentInfo}/${id}`)
+  getPaymentInfo (params) {
+    return get(URL.paymentInfo, params)
   },
 
-  getSettlementOrder (id) {
-    return get(`${URL.settlementOrder}/${id}`)
+  getFinanceInfo (params) {
+    return get(URL.financeInfo, params)
   },
 
-  getSupplementaryDeduction (id) {
-    return get(`${URL.supplementaryDeduction}/${id}`)
+  getSettlementOrder (params) {
+    return get(URL.settlementOrder, params)
+  },
+
+  getSupplementaryDeduction (params) {
+    return get(URL.supplementaryDeduction, params)
   },
 
   getSupplyDeductionList (params) {
