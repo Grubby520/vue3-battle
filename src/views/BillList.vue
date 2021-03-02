@@ -21,7 +21,7 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" :loading="loading" :disabled="!canExport" @click="exportDetail">导出</el-button>
+        <el-button type="primary" :loading="loading" :disabled="!canExport" @click="exportList">导出</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -37,18 +37,19 @@
           <el-button type="text" @click="download(row,1)">下载Invoice</el-button>
           <el-button type="text" @click="download(row,2)">下载请款单</el-button>
           <el-button type="text" @click="download(row,3)">下载供货清单</el-button>
-          <el-button type="text" @click="openAttachmentsManageDialog(row)">上传附件</el-button>
+          <el-button type="text" @click="openAttachmentsManageDialog(row)">{{attachmentsText(row)}}</el-button>
         </div>
       </SlTable>
     </SlListView>
     <!-- 附件 -->
     <AttachmentsManageDialog
+      :title="attachmentsManageDialogTitle"
       :show.sync="attachmentsManageDialogShow"
       :data.sync="attachments"
       :fileType="3"
       :status="attachmentsManageStatus"
+      data-key="associationId"
       @submitHandler="saveAttachments"
-      @deleteHandler="deleteAttachments"
     >
       <el-button
         :loading="loading"
@@ -63,6 +64,7 @@
 import { exportFileFromRemote, date, thousandsSeparate, downloadFile } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
+import GoodsUrl from '@api/goods/goodsUrl.js'
 import CommonApi from '@api/api'
 import GoodsApi from '@api/goods'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
@@ -75,6 +77,8 @@ export default {
   data () {
     return {
       loading: false,
+      reimbursementId: null,
+      attachmentsManageDialogTitle: '上传附件',
       attachmentsManageDialogShow: false,
       attachmentsManageStatus: 'edit',
       attachments: [],
@@ -98,7 +102,7 @@ export default {
           name: 'status',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'PURCHASE_ORDER_STATE' }
+            params: { dataCode: 'PAYMENT_REQUEST_STATUS_ENUM' }
           }
         },
         {
@@ -121,12 +125,12 @@ export default {
           }
         },
         {
-          prop: 'reimbursementAmount',
+          prop: 'applyReimbursementAmount',
           label: '报账总金额(￥)',
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.reimbursementAmount)
+            return thousandsSeparate(row.applyReimbursementAmount)
           }
         },
         {
@@ -135,7 +139,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplierAmount)
+            return thousandsSeparate(row.settlementAmount)
           }
         },
         {
@@ -157,7 +161,7 @@ export default {
           }
         },
         {
-          prop: 'status',
+          prop: 'statusName',
           label: '状态'
         },
         {
@@ -168,7 +172,23 @@ export default {
         {
           prop: '',
           label: '时间',
-          width: '250'
+          width: '250',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <div>
+                {
+                  row.requestPayoutAt && (<p>创建时间：{row.requestPayoutAt}</p>)
+                }
+                {
+                  row.payAt && (<p>打款时间：{row.payAt}</p>)
+                }
+                {
+                  row.rejectAt && (<p>驳回时间：{row.rejectAt}</p>)
+                }
+              </div>
+            )
+          }
         },
         {
           prop: 'attachmentNum',
@@ -180,25 +200,33 @@ export default {
   computed: {
     canExport () {
       return this.selections.length > 0
+    },
+    attachmentsText () {
+      return (row) => this.getAttachmentsText(row)
     }
   },
-  mounted () {
-
-  },
   methods: {
+    getAttachmentsText (row) {
+      let auditRecords = row.auditRecords || []
+      if (row.status === '-1' || (row.status === '0' && auditRecords.length === 0)) {
+        this.attachmentsManageStatus = 'edit'
+        return '上传附件'
+      }
+      this.attachmentsManageStatus = 'view'
+      return '查看附件'
+    },
     downloadTemplate () {
       downloadFile(BillUrl.templateTar)
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      GoodsApi.getPurchaseTableList(params).then(res => {
+      GoodsApi.getReimbursementList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
-          this.tableData = [{ id: 1 }]
         }
       }).finally(() => {
         this.$refs.listView.loading = false
@@ -212,31 +240,30 @@ export default {
       this.$refs.searchForm.reset()
     },
     generateParams (pageSize, pageIndex) {
-      // let { paymentAts = [], ...orther } = this.query
-      let { cTimes = [], uTimes = [], ...orther } = this.query
+      let { createAts = [], ...orther } = this.query
       return {
         ...orther,
         pageIndex,
         pageSize,
-        cStartTime: cTimes && cTimes[0] ? cTimes[0] : '',
-        cEndTime: cTimes && cTimes[1] ? cTimes[1] : '',
-        uStartTime: uTimes && uTimes[0] ? uTimes[0] : '',
-        uEndTime: uTimes && uTimes[1] ? uTimes[1] : ''
+        requestPayoutStartAt: createAts && createAts[0] ? createAts[0] : '',
+        requestPayoutEndAt: createAts && createAts[1] ? createAts[1] : ''
       }
     },
     toDetail (row) {
       this.$router.push({
         path: '/home/finance/bill-detail',
         query: {
-          reimbursementNo: '123456789'
+          reimbursementId: row.reimbursementId
         }
       })
     },
-    exportDetail () {
+    exportList () {
       exportFileFromRemote({
-        url: 'url',
-        name: 'fileName',
-        params: {},
+        url: GoodsUrl.exportReimbursementList,
+        name: `报账单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
+        params: {
+          reimbursementIds: this.selections.map(item => item.reimbursementId)
+        },
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
@@ -254,12 +281,15 @@ export default {
       let url = ''
       switch (type) {
         case 1:
-          fileName = `invoice_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
+          url = GoodsUrl.exportInvoice
+          fileName = `发票_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
         case 2:
+          url = GoodsUrl.exportRequestForm
           fileName = `请款单_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
         case 3:
+          url = GoodsUrl.exportSupplyList
           fileName = `供货清单_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
       }
@@ -281,36 +311,40 @@ export default {
     },
     openAttachmentsManageDialog (row) {
       this.getAttachmentList(row)
+      this.reimbursementId = row.reimbursementId
+      this.attachmentsManageDialogTitle = this.getAttachmentsText(row)
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      CommonApi.getAttachmentList({ associationId: row.associationId, associationType: row.associationType }).then(res => {
-        this.attachments = res.data || []
+      CommonApi.getAttachmentList({ associationId: row.reimbursementId, associationType: '3' }).then(res => {
+        let data = res.data || []
+        this.attachments = data.map(item => {
+          return {
+            associationId: item.associationId,
+            name: item.attachmentName,
+            src: item.attachmentUrl
+          }
+        })
       })
     },
     saveAttachments () {
+      const params = {
+        paymentRequestId: this.reimbursementId,
+        attachmentInfoDtoList: this.attachments.map(item => {
+          return {
+            attachmentName: item.name,
+            attachmentUrl: item.src
+          }
+        })
+      }
       this.loading = true
-      CommonApi.saveAttachmentRelation(this.attachments.map(item => {
-        return {
-          associationId: item.associationId,
-          associationType: item.associationType,
-          attachmentName: item.attachmentName,
-          attachmentUrl: item.src
-        }
-      })).then(res => {
+      GoodsApi.updateReimbursementAttachments(params).then(res => {
         if (res.success) {
+          this.attachmentsManageDialogShow = false
           this.$message.success('保存成功')
         }
       }).finally(() => {
         this.loading = false
-      })
-    },
-    deleteAttachments (file) {
-      CommonApi.deleteAttachment({ id: file.id }).then(res => {
-        if (res.success) {
-          this.attachments = this.attachments.filter(item => item.name !== file.name)
-          this.$message.success('删除成功')
-        }
       })
     }
   }

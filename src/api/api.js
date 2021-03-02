@@ -25,19 +25,9 @@ const COMMONAPI = {
     return del(URL.deleteFilesUrl, params)
   },
 
-  // 删除附件
-  deleteAttachment (params) {
-    return del(`${URL.deleteAttachmentUrl}/${params.id}`, params)
-  },
-
   // 获取附件列表
   getAttachmentList (params) {
     return get(URL.attachmentListUrl, params)
-  },
-
-  // 保存附件关联关系
-  saveAttachmentRelation (params) {
-    return post(URL.attachmentRelation, params)
   },
 
   // 分类树

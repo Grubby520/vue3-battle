@@ -28,5 +28,11 @@ export default {
   paymentInfo: baseURL + 'reimbursement/payment-info', // 付款单信息查询
   settlementOrder: baseURL + 'reimbursement/supplementary-deduction-info', // 结算单信息查询
   supplementaryDeduction: baseURL + 'reimbursement/supplementary-deduction-info', // 补扣款单信息查询
-  supplyDeductionList: baseURL + 'supplementary-deduction/list' // 补扣款单列表
+  supplyDeductionList: baseURL + 'supplementary-deduction/list', // 补扣款单列表
+  reimbursementList: baseURL + 'reimbursement/page-list', // 报账单列表
+  exportReimbursementList: baseURL + 'reimbursement/export/settlement-order-info', // 报账单详情导出
+  exportInvoice: baseURL + 'reimbursement/export/invoice', // 下载发票
+  exportRequestForm: baseURL + 'reimbursement/export/request-form', // 下载请款单
+  exportSupplyList: baseURL + 'reimbursement/export/supply-list', // 下载供货清单
+  updateReimbursementAttachments: baseURL + 'reimbursement/update-attachment' // 保存报账单附件
 }

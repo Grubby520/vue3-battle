@@ -80,11 +80,12 @@ export default {
       type: Array,
       default: () => []
     },
+    // 附件与业务关联的标识字段
     dataKey: {
       type: String,
       default: 'id'
     },
-    // 当图片类型为产品图片、尺码图片时需传入产品spu编码，当图片类型为资质图片需传入供应商营业执照编号
+    // oss相关接口需要
     folder: {
       type: String,
       required: false,
@@ -95,7 +96,7 @@ export default {
       required: false,
       default: 20
     },
-    // 0为商品图片 1为尺寸图片 2供应商资质图片 3报账单 4付款申请 5扣款单 6付款单
+    // oss相关接口需要,0为商品图片 1为尺寸图片 2供应商资质图片 3报账单 4付款申请 5扣款单 6付款单
     fileType: {
       type: Number,
       required: false,
@@ -189,9 +190,10 @@ export default {
         lockScroll: false,
         type: 'warning'
       }).then(() => {
-        // 如果存在与业务关联的主键则交给组件外部处理
+        // 如果存在与业务关联的主键
         if (typeof file[this.dataKey] !== 'undefined') {
-          this.$emit('deleteHandler', file)
+          const files = this.data.filter(item => item.name !== file.name)
+          this.emitChange(files)
           return
         }
 

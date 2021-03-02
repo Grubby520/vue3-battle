@@ -7,9 +7,7 @@ const URL = {
   generatePreUploadUrl: baseURL + 'aliyun-oss/upload-presigned',
   // 删除文件
   deleteFilesUrl: baseURL + 'aliyun-oss',
-  deleteAttachmentUrl: baseURL + 'attachment',
   attachmentListUrl: baseURL + 'attachment/list',
-  attachmentRelation: baseURL + 'attachment/relation',
   // 分类树
   categoryUrl: '/product-service/category/tree'
 }

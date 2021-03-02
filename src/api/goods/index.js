@@ -165,6 +165,15 @@ const GOODS_API = {
 
   getSupplyDeductionList (params) {
     return get(URL.supplementaryDeductionInfo, params)
+  },
+
+  getReimbursementList (params) {
+    return get(URL.reimbursementList, params)
+  },
+
+  updateReimbursementAttachments (params) {
+    return post(URL.updateReimbursementAttachments, params)
   }
+
 }
 export default GOODS_API
