@@ -124,8 +124,8 @@ const GOODS_API = {
     get(URL.printNo, data)
   },
 
-  ecxportExcle (data) {
-    return get(URL.ecxportExcle, data)
+  exportExcel (data) {
+    return get(URL.exportExcel, data)
   },
 
   getSettlementOrderList (params) {

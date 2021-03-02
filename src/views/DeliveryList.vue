@@ -395,7 +395,7 @@ export default {
 
     exportExcle (row) {
       exportFileFromRemote({
-        url: GoodsUrl.ecxportExcle + '?deliveryOrderId=' + row.id,
+        url: GoodsUrl.exportExcel + '?deliveryOrderId=' + row.id,
         name: `发货单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
