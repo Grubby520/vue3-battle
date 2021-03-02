@@ -26,6 +26,7 @@ export default {
   supplyDetails: baseURL + 'settlement-order/settlement-order-supply-details', // 供货明细
   supplementaryDeductionInfo: baseURL + 'settlement-order/settlement-order-supplementary-deduction', // 补扣款单信息
   paymentInfo: baseURL + 'reimbursement/payment-info', // 付款单信息查询
+  financeInfo: baseURL + 'reimbursement/finance-info', // 财务信息查询
   settlementOrder: baseURL + 'reimbursement/supplementary-deduction-info', // 结算单信息查询
   supplementaryDeduction: baseURL + 'reimbursement/supplementary-deduction-info', // 补扣款单信息查询
   supplyDeductionList: baseURL + 'supplementary-deduction/list' // 补扣款单列表
