@@ -165,7 +165,8 @@ export default {
         if (!isEmpty(this.productSize.sizeInfoList)) {
           echoSizes = this.productSize.sizeInfoList[0].sizePositions.reduce((init, size) => init.concat(size.attributeTermId), [])
         }
-        const sizeInfoList = this.form.sizeInfoList.map((size) => {
+        const sizelist = this.form.sizeInfoList || []
+        const sizeInfoList = sizelist.map((size) => {
           const { attributeTermId, attributeId } = size
           const sizeStandardTerms = this.sizeStandard.terms || []
           // 新增使用分类标准尺码

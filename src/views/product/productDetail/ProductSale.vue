@@ -4,6 +4,13 @@
       <div slot="header" class="title">
         <span>销售属性</span>
       </div>
+      <el-alert
+        v-if="noSaleAttributes"
+        title="销售属性不能为空"
+        type="error"
+        effect="dark"
+        style="margin-bottom: 1rem;"
+      />
       <p
         v-if="noSaleAttributes && productParams.mode === 'create'"
         class="align-center no-data"
