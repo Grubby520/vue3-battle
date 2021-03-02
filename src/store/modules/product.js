@@ -14,8 +14,6 @@ export default {
     productImages: [],
     // 回显尺码表
     productSize: [],
-    // 品类上未绑定销售属性
-    noSaleAttributes: undefined,
     // 选中尺寸
     checkedSizes: [],
     // 品类绑定标准属性
@@ -32,7 +30,6 @@ export default {
     productImagesIInfo: state => state.productImages || [],
     productSize: state => state.productSize || [],
     sizeAttr: state => state.sizeAttr || {},
-    noSaleAttributes: state => state.noSaleAttributes === 0,
     sizeStandard: state => state.sizeStandard || {},
     customAttributesData: state => state.customAttributesData || []
   },
@@ -61,9 +58,6 @@ export default {
     PRODUCT_SIZE: (store, data) => {
       store.productSize = data
     },
-    NO_SALE_ATTRIBUTES: (store, data) => {
-      store.noSaleAttributes = data
-    },
     SIZE_STANDARD: (store, data) => {
       store.sizeStandard = data
     },
@@ -71,13 +65,11 @@ export default {
       store.customAttributesData = data
     },
     REMOVE_STASH_ATTRS: (store, data) => {
-      store.productBase = [store.cateLabels]
-      store.productCustomAttributes = data
-      store.productSalesAttributeDetail = data
-      store.productImages = data
-      store.productSize = data
-      store.sizeStandard = null
-      store.checkedSizes = data
+      const clearAttrs = ['productBase', 'productCustomAttributes', 'productSalesAttributeDetail', 'productImages', 'productSize', 'checkedSizes']
+      clearAttrs.forEach(attr => {
+        store[attr] = data
+      })
+      console.log(22222222222)
     }
   },
   actions: {}

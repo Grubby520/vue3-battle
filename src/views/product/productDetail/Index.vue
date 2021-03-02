@@ -57,14 +57,13 @@ export default {
       handler () {
         this.$store.commit('product/PRODUCT_PARAMS', this.$props)
         // 清除编辑状态的数据
-        this.mode === 'create' && this.$store.commit('product/REMOVE_STASH_ATTRS', [])
       },
       immediate: true,
       deep: true
     }
   },
   computed: {
-    ...mapGetters('product', ['noSaleAttributes', 'sizeStandard']),
+    ...mapGetters('product', ['sizeStandard']),
     isStatus () {
       return this.mode === 'view'
     },

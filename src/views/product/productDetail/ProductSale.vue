@@ -154,6 +154,7 @@ export default {
       stashTableData: new Map(), // 临时缓存表格数据
       showSaleLabel: {}, // 销售属性动态展示的label
       tableLabel: [], // 表头展示的销售属性name
+      noSaleAttributes: undefined,
       tableHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
@@ -194,7 +195,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'noSaleAttributes', 'productSalesAttributeDetail']),
+    ...mapGetters('product', ['productParams', 'productSalesAttributeDetail']),
     changeForm () {
       const { sizes, colors, specifications } = this.form
       return [
@@ -333,8 +334,7 @@ export default {
           })
 
           // 判断是否有销售属性
-          const noSaleAttributes = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode))
-          this.$store.commit('product/NO_SALE_ATTRIBUTES', noSaleAttributes.length)
+          this.noSaleAttributes = data.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode)).length === 0
           this.showSaleLabel = showSaleLabel
         })
     },

@@ -18,7 +18,12 @@
                 <template slot-scope="scope">
                   <el-form-item>
                     <div v-if="item.status==='text'">{{showLabels[scope.row.attributeTermId+'']}}</div>
-                    <el-input v-else v-model="scope.row[item.id]" />
+                    <el-input
+                      v-else
+                      v-model="scope.row[item.id]"
+                      v-input-filter:specialIntDecimalsFilter
+                      maxlength="15"
+                    />
                   </el-form-item>
                 </template>
               </el-table-column>
@@ -33,7 +38,11 @@
 <script>
 import { mapGetters } from 'vuex'
 import { isEmpty } from '@shared/util'
+import inputFilter from '@shared/directives/inputFilter/index.js'
 export default {
+  directives: {
+    inputFilter
+  },
   data () {
     return {
       form: {

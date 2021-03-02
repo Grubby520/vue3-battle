@@ -242,6 +242,7 @@ export default {
         })
     },
     productDetail (status, row) {
+      this.$store.commit('product/REMOVE_STASH_ATTRS', []) // 清除store里的缓存数据
       const { id, categoryId, supplierItemNo } = row
       const params = { mode: status, id, categoryId, supplierItemNo }
       const routerPath = status === 'create' ? '/home/recommend-products/category' : '/home/recommend-products/productDetail'
