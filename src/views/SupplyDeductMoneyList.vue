@@ -29,9 +29,12 @@
     </SlListView>
     <!-- 附件 -->
     <AttachmentsManageDialog
+      title="查看附件"
       :show.sync="attachmentsManageDialogShow"
       :data.sync="attachments"
       :status="attachmentsManageStatus"
+      :fileType="5"
+      data-key="associationId"
     ></AttachmentsManageDialog>
   </div>
 </template>
@@ -186,8 +189,15 @@ export default {
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      CommonApi.getAttachmentList({ associationId: row.associationId, associationType: row.associationType }).then(res => {
-        this.attachments = res.data || []
+      CommonApi.getAttachmentList({ associationId: row.id, associationType: '5' }).then(res => {
+        let data = res.data || []
+        this.attachments = data.map(item => {
+          return {
+            associationId: item.associationId,
+            name: item.attachmentName,
+            src: item.attachmentUrl
+          }
+        })
       })
     }
   }
