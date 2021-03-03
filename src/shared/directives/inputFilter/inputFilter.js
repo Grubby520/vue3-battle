@@ -9,7 +9,7 @@ const specialIntDecimalsFilter = function (el) {
   const matchReg = new RegExp(
     '^\\d+(\\d+|(\\.\\d+))?(-\\d+(\\d+|(\\.\\d+))?)?$'
   )
-  addListener(el, 'input', (event) => {
+  addListener(el, 'input', () => {
     let val = el.value
       .replace(/^[.-]/, '')
       .replace(/[^.-\d]/g, '')
@@ -40,6 +40,14 @@ const specialIntDecimalsFilter = function (el) {
       lastVal = val
     }
     el.value = lastVal
+  })
+  addListener(el, 'blur', (event) => {
+    while (/(.+)[.-]$/.test(lastVal)) {
+      lastVal = lastVal.replace(/(.+)[.-]$/, '$1')
+      event.target.value = lastVal
+    }
+    count = 0
+    el.value = lastVal.replace(/(.+)[.-]$/, '$1')
   })
 }
 export default {
