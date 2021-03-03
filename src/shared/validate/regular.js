@@ -15,6 +15,9 @@ export const smallReg = /^((([^0][0-9]+|0)\.([0-9]{1,6}))$)|^(([1-9]+)\.([0-9]{1
 export const businessLicenseNoReg = /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/
 // 根据ISO标准,银行卡长度一般在13-19位,首位不为0
 export const bankCardNumberReg = /^[1-9]\d{12,18}$/
+// QQ号
 export const qqReg = /^[1-9][0-9]{4,14}$/
+// 微信号
+export const weChatReg = /^[a-zA-Z][a-zA-Z\d_-]{5,19}$/
 // 国内固定电话,最多20位字符
 export const telePhoneReg = /^((0\d{2,3})-?)?\d{7,8}(-?(\d{3,6}))?$/

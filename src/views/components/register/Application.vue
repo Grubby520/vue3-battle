@@ -6,7 +6,7 @@
       :model="form"
       :rules="rules"
       :validate-on-rule-change="false"
-      label-width="12rem"
+      label-width="13rem"
       label-position="left"
     >
       <SlContentTitle text="基础信息" :textStyle="titleTextStyle" line></SlContentTitle>
@@ -71,6 +71,25 @@
           placeholder="人数、月产能多少件"
           v-model="form.factoryDescription"
           maxlength="100"
+          show-word-limit
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="是否有1688店铺" prop="selfShop">
+        <el-radio-group v-model="form.selfShop" @change="selfShopChange">
+          <el-radio
+            v-for="(item,index) in selfShopOptions"
+            :key="'radio_'+index"
+            :label="item.value"
+          >{{item.label}}</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item v-if="form.selfShop" label="1688店铺链接" prop="shopLink">
+        <el-input
+          type="textarea"
+          :rows="6"
+          placeholder="请提供已有的网店链接"
+          v-model="form.shopLink"
+          maxlength="500"
           show-word-limit
         ></el-input>
       </el-form-item>
@@ -139,6 +158,9 @@
       </el-form-item>
       <el-form-item label="运营QQ号码" prop="contactQq">
         <el-input v-model="form.contactQq" maxlength="15" clearable placeholder="请输入QQ号码"></el-input>
+      </el-form-item>
+      <el-form-item label="联系人微信" prop="contactWebChat">
+        <el-input v-model="form.contactWebChat" maxlength="15" clearable placeholder="请输入联系人微信"></el-input>
       </el-form-item>
     </el-form>
   </div>
@@ -217,6 +239,7 @@ export default {
       tradeTypeOptions: [],
       cooperationCompanyOptions: [],
       selfFactoryOptions: [],
+      selfShopOptions: [],
       form: {
         supplierName: '',
         certificationNo: '', // 营业执照号
@@ -225,7 +248,9 @@ export default {
         tradeType: [],
         annualTurnoverAmount: null, // 年营业额
         selfFactory: null, // 是否自有工厂
+        selfShop: null, // 是否有1688店铺
         factoryDescription: '', // 工厂实力
+        shopLink: '', // 1688店铺链接
         advantage: '',
         cooperationCompanies: [],
         userName: '',
@@ -233,7 +258,7 @@ export default {
         confirmPassword: '',
         contactName: '',
         contactNumber: '',
-        contactQq: ''
+        contactWebChat: '' // 联系人微信
       },
       rules: {
         supplierName: [
@@ -261,6 +286,9 @@ export default {
         ],
         selfFactory: [
           emptyValidator('请选择是否自有工厂', ['blur', 'change'])
+        ],
+        selfShop: [
+          emptyValidator('请选择是否有1688店铺', ['blur', 'change'])
         ],
         userName: [
           emptyValidator('请填写邮箱'),
@@ -307,6 +335,9 @@ export default {
         if (val.selfFactory) {
           this.addFactoryDescriptionValidators()
         }
+        if (val.selfShop) {
+          this.addShopLinkValidators()
+        }
       },
       immediate: true,
       deep: true
@@ -324,6 +355,7 @@ export default {
     })
     CommonApi.getDict({ dataCode: 'YES_NO' }).then(data => {
       this.selfFactoryOptions = data
+      this.selfShopOptions = data
     })
   },
   methods: {
@@ -337,6 +369,14 @@ export default {
       } else {
         this.form.factoryDescription = ''
         delete this.rules['factoryDescription']
+      }
+    },
+    selfShopChange (val) {
+      if (val) {
+        this.addShopLinkValidators()
+      } else {
+        this.form.shopLink = ''
+        delete this.rules['shopLink']
       }
     },
     validate () {
@@ -357,6 +397,12 @@ export default {
         emptyValidator('请描述工厂实力')
       ]
       this.$set(this.rules, 'factoryDescription', factoryDescriptionValidators)
+    },
+    addShopLinkValidators () {
+      const shopLinkValidators = [
+        emptyValidator('请输入已有的网店链接')
+      ]
+      this.$set(this.rules, 'shopLink', shopLinkValidators)
     }
   }
 }
