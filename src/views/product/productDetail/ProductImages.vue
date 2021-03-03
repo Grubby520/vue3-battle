@@ -99,6 +99,7 @@ export default {
     &--content {
       display: flex;
       justify-content: flex-start;
+      flex-wrap: wrap;
       margin: 2rem 0 0 0;
       span {
         color: #f56c6c;
