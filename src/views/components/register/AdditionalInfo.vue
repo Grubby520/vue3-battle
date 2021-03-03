@@ -69,6 +69,15 @@
           show-word-limit
         ></el-input>
       </el-form-item>
+      <el-form-item label="银行卡号" prop="bankAccount">
+        <el-input
+          v-model="form.bankAccount"
+          clearable
+          placeholder="请输入银行卡号"
+          show-word-limit
+          maxlength="19"
+        ></el-input>
+      </el-form-item>
       <el-form-item label="银行开户行" prop="bank">
         <el-input
           v-model="form.bank"
@@ -78,6 +87,9 @@
           show-word-limit
         ></el-input>
       </el-form-item>
+      <el-form-item label="银行卡归属地" prop="bankCity">
+        <SlAreaCascader :showProvinceAndCityData="true" v-model="form.bankCity" class="form-item"></SlAreaCascader>
+      </el-form-item>
       <el-form-item label="开户支行" prop="bankBranch">
         <el-input
           v-model="form.bankBranch"
@@ -85,18 +97,6 @@
           clearable
           placeholder="请输入开户支行"
           show-word-limit
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="银行卡归属地" prop="bankCity">
-        <SlAreaCascader v-model="form.bankCity" class="form-item"></SlAreaCascader>
-      </el-form-item>
-      <el-form-item label="银行卡号" prop="bankAccount">
-        <el-input
-          v-model="form.bankAccount"
-          clearable
-          placeholder="请输入银行卡号"
-          show-word-limit
-          maxlength="19"
         ></el-input>
       </el-form-item>
       <el-form-item label="法人身份证" prop="idCardImages">

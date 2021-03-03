@@ -83,6 +83,21 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
+          <el-form-item label="银行卡号:" prop="bankInfo.bankAccount">
+            <template v-if="isView">{{form.bankInfo.bankAccount}}</template>
+            <el-input
+              v-else
+              v-model="form.bankInfo.bankAccount"
+              clearable
+              disabled
+              placeholder="请输入银行卡号"
+              show-word-limit
+              maxlength="19"
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="银行开户行:" prop="bankInfo.bank">
             <template v-if="isView">{{form.bankInfo.bank}}</template>
             <el-input
@@ -98,18 +113,13 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="银行卡号:" prop="bankInfo.bankAccount">
-            <template v-if="isView">{{form.bankInfo.bankAccount}}</template>
-            <el-input
-              v-else
-              v-model="form.bankInfo.bankAccount"
-              clearable
-              disabled
-              placeholder="请输入银行卡号"
-              show-word-limit
-              maxlength="19"
+          <el-form-item label="银行卡归属地:" prop="bankInfo.bankCity">
+            <SlAreaCascader
+              v-model="form.bankInfo.bankCity"
               class="form-item"
-            ></el-input>
+              :disabled="isView"
+              :showProvinceAndCityData="true"
+            ></SlAreaCascader>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -209,6 +219,26 @@
             />
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="收款人身份证:">
+            <el-row>
+              <el-col :span="1" style="min-width:120px">
+                <SlImage
+                  v-show="form.certification.payeeIdCardFront"
+                  size="10rem"
+                  :src="form.certification.payeeIdCardFront"
+                />
+              </el-col>
+              <el-col :span="1" style="min-width:120px">
+                <SlImage
+                  v-show="form.certification.payeeIdCardBack"
+                  size="10rem"
+                  :src="form.certification.payeeIdCardBack"
+                />
+              </el-col>
+            </el-row>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-card>
   </el-form>
@@ -235,6 +265,7 @@ export default {
           payee: null,
           payeeIdCard: null,
           bank: null,
+          bankCity: [],
           bankAccount: null,
           bankBranch: null,
           payeePhone: null
@@ -245,6 +276,8 @@ export default {
           companyShareholderImage: null,
           idCardBack: null,
           idCardFront: null,
+          payeeIdCardBack: null,
+          payeeIdCardFront: null,
           organizationImage: null,
           payeeDelegationImage: null,
           taxRegisterImage: null
@@ -282,6 +315,8 @@ export default {
         if (res.success) {
           let { bankInfo = {}, certification = {} } = res.data || {}
           this.form.bankInfo = bankInfo
+          let bankCity = bankInfo.bankCity ? JSON.parse(bankInfo.bankCity) : []
+          this.form.bankInfo['bankCity'] = bankCity
           this.form.certification = certification
         }
       }).finally(() => {

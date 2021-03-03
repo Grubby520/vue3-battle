@@ -169,7 +169,8 @@ export default {
       Object.keys(bankInfo).forEach(key => {
         additionalInfo[key] = bankInfo[key]
       })
-
+      let bankCity = bankInfo.bankCity ? JSON.parse(bankInfo.bankCity) : []
+      additionalInfo['bankCity'] = bankCity
       this.SET_APPLICATION(application)
       this.SET_ADDITIONAL_INFO(additionalInfo)
     },
