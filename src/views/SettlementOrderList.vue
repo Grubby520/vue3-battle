@@ -109,31 +109,21 @@ export default {
           }
         },
         {
+          prop: 'totalAmount',
+          label: '总金额(￥)',
+          width: '100',
+          render: (h, data) => {
+            let { row = {} } = data
+            return thousandsSeparate(row.totalAmount)
+          }
+        },
+        {
           prop: 'settlementAmount',
           label: '结算金额(￥)',
           width: '100',
           render: (h, data) => {
             let { row = {} } = data
             return thousandsSeparate(row.settlementAmount)
-          }
-
-        },
-        {
-          prop: 'supplierAmount',
-          label: '供货金额(￥)',
-          width: '100',
-          render: (h, data) => {
-            let { row = {} } = data
-            return thousandsSeparate(row.supplierAmount)
-          }
-        },
-        {
-          prop: 'freight',
-          label: '运费(￥)',
-          width: '80',
-          render: (h, data) => {
-            let { row = {} } = data
-            return thousandsSeparate(row.freight)
           }
         },
         {
@@ -217,13 +207,12 @@ export default {
     // 确认报账
     confirmReimbursement () {
       this.loading = true
-      GoodsApi.supplierConfirm({
-        settlementConfirmRequests: this.selections.map(item => {
-          return {
-            settlementOrderId: item.id
-          }
-        })
-      }).then(res => {
+      GoodsApi.supplierConfirm(this.selections.map(item => {
+        return {
+          settlementOrderId: item.id
+        }
+      })
+      ).then(res => {
         if (res.success) {
           this.$message.success(`已生成报账单${res.data ? res.data : ''},请前往报账单列表上传对应报账单资料`)
           this.selections = []
@@ -246,7 +235,7 @@ export default {
       exportFileFromRemote({
         url: GoodsUrl.exportSettlement,
         name: `结算单${row.settlementOrderNo}详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
-        params: { settlementOrderNo: row.settlementOrderNo },
+        params: { settlementOrderId: row.id, type: 1 },
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })

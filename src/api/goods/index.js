@@ -168,7 +168,7 @@ const GOODS_API = {
   },
 
   getSupplyDeductionList (params) {
-    return get(URL.supplementaryDeductionInfo, params)
+    return get(URL.supplyDeductionList, params)
   },
 
   getReimbursementList (params) {
