@@ -1,6 +1,7 @@
 const baseURL = '/srm-goods-service/'// 与后端微服务名对应
 
 export default {
+  attachmentListUrl: baseURL + 'attachment/list', // 查询附件列表
   purchaseStatistics: baseURL + 'purchase/agg',
   purchaseTabs: baseURL + 'purchase/agg/tabs',
   purchaseList: baseURL + 'purchase',

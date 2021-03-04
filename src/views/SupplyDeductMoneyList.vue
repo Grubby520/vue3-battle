@@ -43,7 +43,6 @@
 import { thousandsSeparate } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsApi from '@api/goods'
-import CommonApi from '@api/api'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
 export default {
@@ -117,7 +116,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return <span>{thousandsSeparate(row.supplementaryDeductionAmount)}</span>
+            return <span>{thousandsSeparate(row.amount)}</span>
           }
         },
         {
@@ -189,7 +188,7 @@ export default {
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      CommonApi.getAttachmentList({ associationId: row.id, associationType: '5' }).then(res => {
+      GoodsApi.getAttachmentList({ associationId: row.id, associationType: '5' }).then(res => {
         let data = res.data || []
         this.attachments = data.map(item => {
           return {

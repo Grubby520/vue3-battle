@@ -3,6 +3,10 @@ import { get, post, put } from '@shared/http'
 import URL from './goodsUrl'
 
 const GOODS_API = {
+  // 获取附件列表
+  getAttachmentList (params) {
+    return get(URL.attachmentListUrl, params)
+  },
   getPurchaseStatistics (params) {
     return post(URL.purchaseStatistics, params).then(res => {
       let data = []

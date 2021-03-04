@@ -25,11 +25,6 @@ const COMMONAPI = {
     return del(URL.deleteFilesUrl, params)
   },
 
-  // 获取附件列表
-  getAttachmentList (params) {
-    return get(URL.attachmentListUrl, params)
-  },
-
   // 分类树
   category (params) {
     return get(URL.categoryUrl, params)

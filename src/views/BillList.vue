@@ -67,7 +67,6 @@ import { exportFileFromRemote, date, thousandsSeparate, downloadFile } from '@sh
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
-import CommonApi from '@api/api'
 import GoodsApi from '@api/goods'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
@@ -318,7 +317,7 @@ export default {
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      CommonApi.getAttachmentList({ associationId: row.reimbursementId, associationType: '3' }).then(res => {
+      GoodsApi.getAttachmentList({ associationId: row.reimbursementId, associationType: '3' }).then(res => {
         let data = res.data || []
         this.attachments = data.map(item => {
           return {
