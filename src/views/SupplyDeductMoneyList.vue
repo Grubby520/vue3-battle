@@ -117,7 +117,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplementaryDeductionAmount)
+            return <span>{thousandsSeparate(row.supplementaryDeductionAmount)}</span>
           }
         },
         {

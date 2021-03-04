@@ -114,7 +114,7 @@ export default {
           width: '100',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.totalAmount)
+            return <span>{thousandsSeparate(row.totalAmount)}</span>
           }
         },
         {
@@ -123,7 +123,7 @@ export default {
           width: '100',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.settlementAmount)
+            return <span>{thousandsSeparate(row.settlementAmount)}</span>
           }
         },
         {
@@ -132,7 +132,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplementaryAmount)
+            return <span>{thousandsSeparate(row.supplementaryAmount)}</span>
           }
         },
         {
@@ -141,7 +141,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.deductionAmount)
+            return <span>{thousandsSeparate(row.deductionAmount)}</span>
           }
         },
         {
@@ -158,7 +158,7 @@ export default {
           width: '150'
         },
         {
-          prop: 'confirmAt',
+          prop: 'supplierConfirmAt',
           label: '确认时间',
           width: '150'
         }
@@ -181,7 +181,7 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
-          this.disabledKeys = data.list.map(item => item.status).filter(status => status !== '1')
+          this.disabledKeys = data.list.map(item => item.status).filter(status => status !== 1)
         }
       }).finally(() => {
         this.$refs.listView.loading = false

@@ -93,7 +93,7 @@ export default {
           label: '供货单价',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplierPrice)
+            return <span>{thousandsSeparate(row.supplierPrice)}</span>
           }
         },
         {
@@ -102,7 +102,7 @@ export default {
           width: '100',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplierTotalAmount)
+            return <span>{thousandsSeparate(row.supplierTotalAmount)}</span>
           }
         }
       ]

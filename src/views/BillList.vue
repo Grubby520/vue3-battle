@@ -51,11 +51,13 @@
       data-key="associationId"
       @submitHandler="saveAttachments"
     >
-      <el-button
-        :loading="loading"
-        type="primary"
-        @click="saveAttachments"
-      >{{$t('button.saveText')}}</el-button>
+      <template slot="footer">
+        <el-button
+          :loading="loading"
+          type="primary"
+          @click="saveAttachments"
+        >{{$t('button.saveText')}}</el-button>
+      </template>
     </AttachmentsManageDialog>
   </div>
 </template>
@@ -130,7 +132,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.applyReimbursementAmount)
+            return <span>{thousandsSeparate(row.applyReimbursementAmount)}</span>
           }
         },
         {
@@ -139,7 +141,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.settlementAmount)
+            return <span>{thousandsSeparate(row.settlementAmount)}</span>
           }
         },
         {
@@ -148,7 +150,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.supplyMoneyAmount)
+            return <span>{thousandsSeparate(row.supplyMoneyAmount)}</span>
           }
         },
         {
@@ -157,7 +159,7 @@ export default {
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return thousandsSeparate(row.deductMoneyAmount)
+            return <span>{thousandsSeparate(row.deductMoneyAmount)}</span>
           }
         },
         {
