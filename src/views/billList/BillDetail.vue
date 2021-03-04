@@ -41,7 +41,7 @@
         <div>
           <span>附件数量:</span>
           <!-- TODO: 链接 -->
-          <el-link>{{paymentInfo.attachmentNum}}</el-link>
+          <a @click="openAttachmentsManageDialog">{{paymentInfo.attachmentNum}}</a>
         </div>
         <div>
           <span>申请报账总金额:</span>
@@ -121,12 +121,22 @@
         ></SlTable>
       </SlListView>
     </SlPanel>
+    <AttachmentsManageDialog
+      title="查看附件"
+      :show.sync="attachmentsManageDialogShow"
+      :data.sync="attachments"
+      :status="attachmentsManageStatus"
+      :fileType="3"
+      data-key="reimbursementNo"
+    ></AttachmentsManageDialog>
   </div>
 </template>
 
 <script>
 import GOODS_API from '@api/goods'
 import { thousandsSeparate } from '@shared/util'
+import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
+import CommonApi from '@api/api'
 const pageCfg = Object.freeze({ index: 1, size: 10 })
 const settlementOrderColumns = [
   {
@@ -150,7 +160,7 @@ const settlementOrderColumns = [
     label: '结算金额(¥)',
     render: (h, data) => {
       const { row = {} } = data
-      return thousandsSeparate(row.settlementAmount)
+      return <span>{thousandsSeparate(row.settlementAmount)}</span>
     }
   },
   {
@@ -158,7 +168,7 @@ const settlementOrderColumns = [
     label: '供货金额(¥)',
     render: (h, data) => {
       const { row = {} } = data
-      return thousandsSeparate(row.supplierAmount)
+      return <span>{thousandsSeparate(row.supplierAmount)}</span>
     }
   },
   {
@@ -166,7 +176,7 @@ const settlementOrderColumns = [
     label: '运费补贴(¥)',
     render: (h, data) => {
       const { row = {} } = data
-      return thousandsSeparate(row.reimbursementNo)
+      return <span>{thousandsSeparate(row.reimbursementNo)}</span>
     }
   },
   {
@@ -214,7 +224,7 @@ const supplementaryDeductionColumns = [
     label: '总金额(¥)',
     render: (h, data) => {
       const { row = {} } = data
-      return thousandsSeparate(row.sesupplementaryDeductionAmount)
+      return <span>{thousandsSeparate(row.sesupplementaryDeductionAmount)}</span>
     }
   },
   {
@@ -228,6 +238,9 @@ const supplementaryDeductionColumns = [
 ]
 
 export default {
+  components: {
+    AttachmentsManageDialog
+  },
   filters: {
     parseClearingForm: function (value) {
       const enums = ['网商100%预付', '货到付款', '周结', '半月结', '月结', '预付转账', '阿里账期', '档口现付']
@@ -260,7 +273,10 @@ export default {
         loading: false
       },
       settlementOrderColumns,
-      supplementaryDeductionColumns
+      supplementaryDeductionColumns,
+      attachmentsManageDialogShow: false,
+      attachmentsManageStatus: 'view',
+      attachments: []
     }
   },
   async mounted () {
@@ -317,6 +333,23 @@ export default {
     goBack () {
       this.$router.push({
         path: localStorage.getItem('activePath')
+      })
+    },
+    openAttachmentsManageDialog () {
+      this.getAttachmentList()
+      this.attachmentsManageDialogShow = true
+    },
+    getAttachmentList () {
+      CommonApi.getAttachmentList({ associationId: this.reimbursementNo, associationType: '3' }).then((success, data) => {
+        if (success) {
+          this.attachments = data.map(({ associationId, ...item }) => {
+            return {
+              associationId,
+              name: item.attachmentName,
+              src: item.attachmentUrl
+            }
+          })
+        }
       })
     }
   }
