@@ -113,6 +113,7 @@
                     <el-input
                       v-else
                       v-model="scope.row[item.name]"
+                      :maxlength="item.maxlength"
                       v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
                     />
                   </el-form-item>
@@ -182,11 +183,13 @@ export default {
         },
         {
           name: 'skuCode',
-          label: '商家SKU编码'
+          label: '商家SKU编码',
+          maxlength: 30
         },
         {
           name: 'tagSize',
-          label: '商家吊牌尺码'
+          label: '商家吊牌尺码',
+          maxlength: 30
         },
         {
           name: 'weight',
@@ -196,8 +199,8 @@ export default {
         }
       ],
       numberRule: {
-        'supplyPrice': { type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2 },
-        'weight': { type: 'integer', max: 999999, compareLength: true, includeZero: true }
+        'supplyPrice': { type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 },
+        'weight': { type: 'integer', max: 9999999999, compareLength: true, includeZero: true }
       }
     }
   },
