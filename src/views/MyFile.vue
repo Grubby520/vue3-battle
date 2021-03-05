@@ -54,6 +54,17 @@
             ></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="联系人微信" prop="baseInfo.contactWebChat">
+            <el-input
+              v-model.trim="form.baseInfo.contactWebChat"
+              maxlength="15"
+              clearable
+              placeholder="请输入联系人微信"
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-card>
     <el-card class="module">
@@ -139,7 +150,8 @@ export default {
           address: [], // 地址
           contactName: null,
           contactNumber: null,
-          contactQq: null
+          contactQq: null,
+          contactWebChat: null // 微信号
         },
         shippingAddress: {
           address: null, // 详细地址
@@ -210,7 +222,8 @@ export default {
             address: baseInfo.address ? JSON.parse(baseInfo.address) : [],
             contactName: baseInfo.contactName,
             contactNumber: baseInfo.contactNumber,
-            contactQq: baseInfo.contactQq
+            contactQq: baseInfo.contactQq,
+            contactWebChat: baseInfo.contactWebChat
           }
 
           this.form.shippingAddress = {
@@ -237,7 +250,8 @@ export default {
             recipientTelephone: this.form.shippingAddress.contactTelephone,
             contactName: this.form.baseInfo.contactName,
             contactNumber: this.form.baseInfo.contactNumber,
-            contactQq: this.form.baseInfo.contactQq
+            contactQq: this.form.baseInfo.contactQq,
+            contactWebChat: this.form.baseInfo.contactWebChat
           }
           UserApi.supplierUpdate(params).then(res => {
             if (res.success) {

@@ -10,6 +10,7 @@ import {
   bankCardNumberReg,
   emptyReg,
   qqReg,
+  weChatReg,
   telePhoneReg
 } from './regular.js'
 
@@ -196,6 +197,18 @@ export const qqValidator = function (errorMsg = '请输入正确的qq号', trigg
   }
   return {
     validator: generateFormItemValidator(qqReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
+  }
+}
+
+// 微信号
+export const weChatValidator = function (errorMsg = '请输入正确的微信号', trigger = 'blur', required = false) {
+  if (!required) {
+    return generateNotRequiredValidator(errorMsg, weChatReg, trigger)
+  }
+  return {
+    validator: generateFormItemValidator(weChatReg, errorMsg),
     message: errorMsg,
     trigger: trigger
   }
