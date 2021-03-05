@@ -69,6 +69,8 @@ import BillUrl from '@api/bill/billUrl.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GoodsApi from '@api/goods'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
+import { createNamespacedHelpers } from 'vuex'
+const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'BillList',
@@ -122,7 +124,7 @@ export default {
           label: '报账单号',
           render: (h, data) => {
             let { row = {} } = data
-            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}00000</el-link>
+            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}</el-link>
           }
         },
         {
@@ -198,7 +200,18 @@ export default {
       ]
     }
   },
+  watch: {
+    supplierId: {
+      handler (val, oldVal) {
+        if (val) {
+          // 刷新页面时,存在store中的supplierId不能及时获得值
+          this.gotoPage()
+        }
+      }
+    }
+  },
   computed: {
+    ...userMapState(['supplierId']),
     canExport () {
       return this.selections.length > 0
     },
@@ -209,7 +222,7 @@ export default {
   methods: {
     getAttachmentsText (row) {
       let auditRecords = row.auditRecords || []
-      if (row.status === '-1' || (row.status === '0' && auditRecords.length === 0)) {
+      if (row.status === -1 || (row.status === 0 && auditRecords.length === 0)) {
         this.attachmentsManageStatus = 'edit'
         return '上传附件'
       }
@@ -221,6 +234,9 @@ export default {
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      if (!params.supplierId) {
+        return
+      }
       GoodsApi.getReimbursementList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -228,6 +244,7 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.tableData = [{ reimbursementId: 1, status: -1 }, { reimbursementId: 2 }]
         }
       }).finally(() => {
         this.$refs.listView.loading = false
@@ -246,6 +263,7 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
+        supplierId: this.supplierId,
         requestPayoutStartAt: createAts && createAts[0] ? createAts[0] : '',
         requestPayoutEndAt: createAts && createAts[1] ? createAts[1] : ''
       }

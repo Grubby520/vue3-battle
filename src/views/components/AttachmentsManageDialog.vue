@@ -28,11 +28,16 @@
         slot="tip"
         class="el-upload__tip"
       >上传附件支持的文件的格式: jpg、png、rar、pdf、zip。最多上传20个。每个文件最大50M。</div>
-      <div slot="file" slot-scope="{file}" class="file-container clearfix">
-        <span :title="file.name">{{file.name}}</span>
-        <div class="float-right">
-          <el-link type="primary" @click="download(file)">下载</el-link>&nbsp;
-          <el-link v-if="canEdit" type="primary" @click="handleRemove(file)">删除</el-link>
+      <div slot="file" slot-scope="{file}">
+        <div class="file-container clearfix">
+          <span :title="file.name">{{file.name}}</span>
+          <div class="float-right">
+            <el-link type="primary" @click="download(file)">下载</el-link>&nbsp;
+            <el-link v-if="canEdit" type="primary" @click="handleRemove(file)">删除</el-link>
+          </div>
+        </div>
+        <div style="position:relative;">
+          <VirtualProgress :status="file.status"></VirtualProgress>
         </div>
       </div>
     </el-upload>
@@ -47,10 +52,13 @@
 <script>
 import { mapActions } from 'vuex'
 import { asyncSome, exportFileFromRemote } from '@/shared/util'
+import VirtualProgress from '@/views/components/VirtualProgress.vue'
 
 export default {
   name: 'AttachmentsManageDialog',
-  components: {},
+  components: {
+    VirtualProgress
+  },
   props: {
     title: {
       type: String,
@@ -319,5 +327,28 @@ li:focus {
 .file-container {
   padding: 0 1em;
   background-color: #ecf0f5;
+}
+
+/deep/ {
+  .el-upload-list__item .el-progress {
+    position: unset;
+    top: 0;
+  }
+  .el-upload-list__item .el-progress-bar {
+    margin-right: -55px;
+    padding-right: 50px;
+  }
+
+  .el-upload-list__item .el-progress__text {
+    position: unset;
+    right: auto;
+    top: auto;
+  }
+  .el-upload-list__item:hover {
+    background: unset;
+    & .el-progress__text {
+      display: unset;
+    }
+  }
 }
 </style>
