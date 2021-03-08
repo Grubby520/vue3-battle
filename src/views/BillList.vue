@@ -237,7 +237,6 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
-          this.tableData = [{ reimbursementId: 1, status: -1 }, { reimbursementId: 2 }]
         }
       }).finally(() => {
         this.$refs.listView.loading = false
