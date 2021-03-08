@@ -82,6 +82,7 @@ axiosInstance.interceptors.response.use(
   err => {
     let errorStatus
     let errorData
+    let isCancelReq = err instanceof axios.Cancel
     store.dispatch('CLOSE_LOADING')
     store.commit('SET_LOADING_COUNT', 0)
     // 错误处理
@@ -122,11 +123,11 @@ axiosInstance.interceptors.response.use(
       httpErrorCache[errorStatus] = {
         time: +new Date()
       }
-      errorNotify(null, err.message)
+      !isCancelReq && errorNotify(null, err.message)
     } else {
       let now = +new Date()
       if (now - httpErrorCache[errorStatus].time > errorTimeInterval) {
-        errorNotify(null, err.message)
+        !isCancelReq && errorNotify(null, err.message)
         httpErrorCache[errorStatus].time = now
       }
     }

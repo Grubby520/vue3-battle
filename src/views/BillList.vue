@@ -51,15 +51,7 @@
       :status="attachmentsManageStatus"
       data-key="associationId"
       @submitHandler="saveAttachments"
-    >
-      <template slot="footer">
-        <el-button
-          :loading="loading"
-          type="primary"
-          @click="saveAttachments"
-        >{{$t('button.saveText')}}</el-button>
-      </template>
-    </AttachmentsManageDialog>
+    ></AttachmentsManageDialog>
   </div>
 </template>
 

@@ -5,15 +5,16 @@
     :visible.sync="dialogVisible"
     :width="width"
     :show-close="showClose"
-    :before-close="handleClose"
     :close-on-press-escape="false"
     :destroy-on-close="destroyOnClose"
     :close-on-click-modal="false"
     :lock-scroll="false"
     :append-to-body="true"
+    @close="dialogCloseHandler"
     @closed="dialogClosedHandler"
   >
     <el-upload
+      ref="elUpload"
       action="#"
       :multiple="multiple"
       :limit="limitNumber"
@@ -32,7 +33,7 @@
         <div class="file-container clearfix">
           <span :title="file.name">{{file.name}}</span>
           <div class="float-right">
-            <el-link type="primary" @click="download(file)">下载</el-link>&nbsp;
+            <el-link type="primary" @click="download(file)" :disabled="file.status !== 'success'">下载</el-link>&nbsp;
             <el-link v-if="canEdit" type="primary" @click="handleRemove(file)">删除</el-link>
           </div>
         </div>
@@ -42,9 +43,7 @@
       </div>
     </el-upload>
     <span v-if="canEdit" slot="footer" class="dialog-footer">
-      <slot name="footer">
-        <el-button type="primary" @click="submit">{{$t('button.saveText')}}</el-button>
-      </slot>
+      <el-button type="primary" @click="submit" :disabled="!canSubmit">{{$t('button.saveText')}}</el-button>
     </span>
   </el-dialog>
 </template>
@@ -170,6 +169,10 @@ export default {
   computed: {
     canEdit () {
       return this.status === 'edit'
+    },
+    canSubmit () {
+      const uploadFiles = this.$refs.elUpload.uploadFiles || []
+      return uploadFiles.length > 0 && uploadFiles.every(item => item.status === 'success')
     }
   },
   methods: {
@@ -178,9 +181,13 @@ export default {
       'UPLOAD_FILE', // 上传oss
       'DELETE_FILES' // 删除oss文件
     ]),
-    handleClose (done) {
-      this.dialogVisible = false
-      this.$emit('before-close', done)
+    dialogCloseHandler () {
+      const uploadFiles = this.$refs.elUpload.uploadFiles || []
+      uploadFiles.forEach((file) => {
+        if (file.status !== 'success') {
+          this.deleteCancelFile(file)
+        }
+      })
     },
     dialogClosedHandler () {
       this.emitChange([])
@@ -198,21 +205,31 @@ export default {
         lockScroll: false,
         type: 'warning'
       }).then(() => {
+        const files = this.data.filter(item => item.name !== file.name)
         // 如果存在与业务关联的主键
         if (typeof file[this.dataKey] !== 'undefined') {
-          const files = this.data.filter(item => item.name !== file.name)
           this.emitChange(files)
           return
         }
 
         // 如果不存在与业务关联的主键则直接删除oss上的文件
+        if (file.status !== 'success') {
+          let elUploadFiles = this.$refs.elUpload.uploadFiles || []
+          this.deleteCancelFile(elUploadFiles.find(item => item.name === file.name))
+          return
+        }
         this.DELETE_FILES({ url: file.src })
           .then(res => {
-            const files = this.data.filter(item => item.name !== file.name)
             this.emitChange(files)
             this.$message.success('删除成功')
           })
       })
+    },
+    deleteCancelFile (uploadFailFile) {
+      if (uploadFailFile) {
+        uploadFailFile.raw.abort()
+        this.$refs.elUpload.handleRemove(uploadFailFile)
+      }
     },
     download (file) {
       exportFileFromRemote({
@@ -250,17 +267,18 @@ export default {
     },
     uploadToOss (data, file) {
       // 根据预上传oss地址上传图片到oss上 , Content-Type：如image/png 图片格式
+      const newFile = {
+        src: data.showUrl,
+        name: file.name,
+        uid: file.uid
+      }
       this.UPLOAD_FILE({
         preUploadUrl: data.preUploadUrl,
         file
       })
         .then(res => {
-          const newFile = {
-            src: data.showUrl,
-            name: file.name,
-            uid: file.uid
-          }
           this.emitChange([...this.data, newFile])
+        }).catch(() => {
         })
     },
 
