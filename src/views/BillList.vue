@@ -32,6 +32,7 @@
         :selection="true"
         :operate="true"
         :tooltip="false"
+        rowKey="reimbursementId"
       >
         <div slot="operation" slot-scope="{row}">
           <el-button type="text" @click="download(row,1)">下载Invoice</el-button>
@@ -63,7 +64,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, downloadFile } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, downloadFile, errorMessageTip } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
@@ -292,7 +293,9 @@ export default {
           this.$store.dispatch('CLOSE_LOADING')
         },
         successFn: () => { },
-        errorFn: () => { }
+        errorFn: () => {
+          errorMessageTip('导出失败,请重试')
+        }
       })
     },
     download (row, type) {
@@ -313,7 +316,7 @@ export default {
           break
       }
       exportFileFromRemote({
-        url: url,
+        url: url + `/${row.reimbursementId}`,
         name: fileName,
         params: {},
         beforeLoad: () => {
@@ -325,7 +328,9 @@ export default {
           this.$store.dispatch('CLOSE_LOADING')
         },
         successFn: () => { },
-        errorFn: () => { }
+        errorFn: () => {
+          errorMessageTip('下载失败,请重试')
+        }
       })
     },
     openAttachmentsManageDialog (row) {

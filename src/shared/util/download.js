@@ -44,6 +44,10 @@ export function exportFileFromRemote ({
     beforeLoad()
   }
   get(url, params, { responseType: 'blob' }).then(res => {
+    if (res.type === 'application/json') {
+      errorFn()
+      return
+    }
     if (window.navigator.msSaveOrOpenBlob) {
       navigator.msSaveBlob(res, name)
     } else {
