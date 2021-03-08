@@ -62,8 +62,6 @@ import BillUrl from '@api/bill/billUrl.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GoodsApi from '@api/goods'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
-import { createNamespacedHelpers } from 'vuex'
-const { mapState: userMapState } = createNamespacedHelpers('user')
 
 export default {
   name: 'BillList',
@@ -194,17 +192,8 @@ export default {
     }
   },
   watch: {
-    supplierId: {
-      handler (val, oldVal) {
-        if (val) {
-          // 刷新页面时,存在store中的supplierId不能及时获得值
-          this.gotoPage()
-        }
-      }
-    }
   },
   computed: {
-    ...userMapState(['supplierId']),
     canExport () {
       return this.selections.length > 0
     },
@@ -227,9 +216,6 @@ export default {
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      if (!params.supplierId) {
-        return
-      }
       GoodsApi.getReimbursementList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -255,7 +241,6 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        supplierId: this.supplierId,
         requestPayoutStartAt: createAts && createAts[0] ? createAts[0] : '',
         requestPayoutEndAt: createAts && createAts[1] ? createAts[1] : ''
       }
