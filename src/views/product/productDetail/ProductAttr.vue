@@ -27,6 +27,7 @@
                   v-model="attribute.value"
                   :is="itemType(attribute)"
                   :multiple="attribute.checkbox"
+                  collapse-tags
                   clearable
                   filterable
                 >
