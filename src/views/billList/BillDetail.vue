@@ -3,9 +3,9 @@
     <p class="border-bottom mb-2rem">
       <el-button type="text" size="medium" @click="goBack">返回</el-button>
       <el-divider direction="vertical"></el-divider>
-      <span v-if="reimbursementNo">
+      <span v-if="reimbursementId">
         付款单号：
-        <b class="color-text--gray-mid">{{reimbursementNo}}</b>
+        <b class="color-text--gray-mid">{{paymentInfo.reimbursementNo}}</b>
       </span>
     </p>
     <SlPanel title="报账单信息">
@@ -20,7 +20,7 @@
         </div>
         <div>
           <span>结算方式:</span>
-          <span>{{paymentInfo.clearingForm | parseClearingForm}}</span>
+          <span>{{paymentInfo.clearingFormName}}</span>
         </div>
         <div>
           <span>报账单号:</span>
@@ -28,7 +28,7 @@
         </div>
         <div>
           <span>报账单状态:</span>
-          <span>{{paymentInfo.status | parseStatus}}</span>
+          <span>{{paymentInfo.statusName}}</span>
         </div>
         <div>
           <span>创建时间:</span>
@@ -40,8 +40,7 @@
         </div>
         <div>
           <span>附件数量:</span>
-          <!-- TODO: 链接 -->
-          <a @click="openAttachmentsManageDialog">{{paymentInfo.attachmentNum}}</a>
+          <el-link type="primary" @click="openAttachmentsManageDialog">{{paymentInfo.attachmentNum}}</el-link>
         </div>
         <div>
           <span>申请报账总金额:</span>
@@ -127,7 +126,7 @@
       :data.sync="attachments"
       :status="attachmentsManageStatus"
       :fileType="3"
-      data-key="reimbursementNo"
+      data-key="reimbursementId"
     ></AttachmentsManageDialog>
   </div>
 </template>
@@ -144,7 +143,7 @@ const settlementOrderColumns = [
     label: '发货单号',
     render: (h, data) => {
       const { row = {} } = data
-      return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}00000</el-link>
+      return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementId}00000</el-link>
     }
   },
   {
@@ -152,7 +151,7 @@ const settlementOrderColumns = [
     label: '结算单号',
     render: (h, data) => {
       const { row = {} } = data
-      return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}00000</el-link>
+      return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementId}00000</el-link>
     }
   },
   {
@@ -176,7 +175,7 @@ const settlementOrderColumns = [
     label: '运费补贴(¥)',
     render: (h, data) => {
       const { row = {} } = data
-      return <span>{thousandsSeparate(row.reimbursementNo)}</span>
+      return <span>{thousandsSeparate(row.reimbursementId)}</span>
     }
   },
   {
@@ -241,25 +240,10 @@ export default {
   components: {
     AttachmentsManageDialog
   },
-  filters: {
-    parseClearingForm: function (value) {
-      const enums = ['网商100%预付', '货到付款', '周结', '半月结', '月结', '预付转账', '阿里账期', '档口现付']
-      return enums[value]
-    },
-    parseStatus: function (value) {
-      const enums = Object.freeze({
-        '-1': '待上传合同',
-        0: '审核中',
-        1: '审核驳回',
-        2: '审核通过'
-      })
-      return enums[value]
-    }
-  },
   data () {
-    const { reimbursementNo } = this.$route.query
+    const { reimbursementId } = this.$route.query
     return {
-      reimbursementNo,
+      reimbursementId,
       paymentInfo: {},
       financeInfo: {},
       settlementOrder: {
@@ -280,21 +264,24 @@ export default {
     }
   },
   async mounted () {
+    this.fetchPaymentInfo()
+    this.fetchFinanceInfo()
   },
   methods: {
     fetchPaymentInfo () {
-      GOODS_API.getPaymentInfo({ reimbursementNo: this.reimbursementNo }).then(({ success, data }) => {
+      GOODS_API.getPaymentInfo({ reimbursementId: this.reimbursementId }).then(({ success, data }) => {
         if (success) this.paymentInfo = data
       })
     },
     fetchFinanceInfo () {
-      GOODS_API.getFinanceInfo({ paymentRequestId: this.reimbursementNo }).then(({ success, data }) => {
+      GOODS_API.getFinanceInfo({ paymentRequestId: this.reimbursementId }).then(({ success, data }) => {
         if (success) this.financeInfo = data
       })
     },
     fetchSettlementOrder (pageSize = pageCfg.size, pageIndex = pageCfg.index) {
+      console.log('fetchSettlementOrder')
       this.$set(this.settlementOrder, 'loading', true)
-      GOODS_API.getSettlementOrder({ reimbursementNo: this.reimbursementNo, pageIndex, pageSize }).then(({ success, data }) => {
+      GOODS_API.getSettlementOrder({ reimbursementId: this.reimbursementId, pageIndex, pageSize }).then(({ success, data }) => {
         if (success) {
           const { list, total } = data
           this.settlementOrder = {
@@ -312,8 +299,9 @@ export default {
       })
     },
     fetchSupplementaryDeduction (pageSize = pageCfg.size, pageIndex = pageCfg.index) {
+      console.log('fetchSupplementaryDeduction')
       this.$set(this.supplementaryDeduction, 'loading', true)
-      GOODS_API.getSupplementaryDeduction({ reimbursementNo: this.reimbursementNo, pageIndex, pageSize }).then(({ success, data }) => {
+      GOODS_API.getSupplementaryDeduction({ reimbursementId: this.reimbursementId, pageIndex, pageSize }).then(({ success, data }) => {
         if (success) {
           const { list, total } = data
           this.supplementaryDeduction = {
@@ -330,17 +318,8 @@ export default {
         this.$set(this.supplementaryDeduction, 'loading', false)
       })
     },
-    goBack () {
-      this.$router.push({
-        path: localStorage.getItem('activePath')
-      })
-    },
-    openAttachmentsManageDialog () {
-      this.getAttachmentList()
-      this.attachmentsManageDialogShow = true
-    },
-    getAttachmentList () {
-      CommonApi.getAttachmentList({ associationId: this.reimbursementNo, associationType: '3' }).then((success, data) => {
+    fetchAttachmentList () {
+      CommonApi.getAttachmentList({ associationId: this.reimbursementId, associationType: '3' }).then((success, data) => {
         if (success) {
           this.attachments = data.map(({ associationId, ...item }) => {
             return {
@@ -351,6 +330,15 @@ export default {
           })
         }
       })
+    },
+    goBack () {
+      this.$router.push({
+        path: localStorage.getItem('activePath')
+      })
+    },
+    openAttachmentsManageDialog () {
+      this.fetchAttachmentList()
+      this.attachmentsManageDialogShow = true
     }
   }
 }
@@ -361,5 +349,12 @@ export default {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-row-gap: 30px;
+  div {
+    span:first-child {
+      display: inline-block;
+      text-align: right;
+      width: 120px;
+    }
+  }
 }
 </style>
