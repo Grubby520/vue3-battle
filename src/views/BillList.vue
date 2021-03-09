@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, downloadFile, errorMessageTip } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
@@ -212,7 +212,21 @@ export default {
       return '查看附件'
     },
     downloadTemplate () {
-      downloadFile(BillUrl.templateTar)
+      exportFileFromRemote({
+        url: BillUrl.templateTar,
+        name: '参考范本.rar',
+        params: {},
+        beforeLoad: () => {
+          this.loading = true
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '下载中' })
+        },
+        afterLoad: () => {
+          this.loading = false
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
+      })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
