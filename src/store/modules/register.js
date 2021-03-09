@@ -36,13 +36,20 @@ export default {
           if (key === 'password' && state.application[key]) {
             baseInfo[key] = valueToMd5(state.application[key])
           }
+
+          // if (key === 'shopLink' && state.application[key]) {
+          //   baseInfo[key] = valueToListByEnter(state.application[key])
+          // }
         }
       })
       // 银行信息转换
-      let bankKeys = ['currency', 'payeeCompany', 'payee', 'payeeIdCard', 'payeePhone', 'bank', 'bankBranch', 'bankAccount']
+      let bankKeys = ['currency', 'payeeCompany', 'payee', 'payeeIdCard', 'payeePhone', 'bank', 'bankBranch', 'bankAccount', 'bankCity']
       Object.keys(state.additionalInfo).forEach(key => {
         if (bankKeys.includes(key)) {
           bankInfo[key] = state.additionalInfo[key]
+        }
+        if (key === 'bankCity') {
+          bankInfo[key] = JSON.stringify(state.additionalInfo[key])
         }
       })
       // 资质信息转换
@@ -51,6 +58,8 @@ export default {
       certification['payeeDelegationImage'] = getHandledPictureUrl(state.additionalInfo.payeeDelegationImage[0])
       certification['idCardFront'] = getHandledPictureUrl(state.additionalInfo.idCardImages[0])
       certification['idCardBack'] = getHandledPictureUrl(state.additionalInfo.idCardImages[1])
+      certification['payeeIdCardFront'] = getHandledPictureUrl(state.additionalInfo.payeeIdCardImages[0])
+      certification['payeeIdCardBack'] = getHandledPictureUrl(state.additionalInfo.payeeIdCardImages[1])
       certification['organizationImage'] = getHandledPictureUrl(state.additionalInfo.organizationImage[0])
       certification['taxRegisterImage'] = getHandledPictureUrl(state.additionalInfo.taxRegisterImage[0])
       certification['companyShareholderImage'] = getHandledPictureUrl(state.additionalInfo.companyShareholderImage[0])
@@ -81,7 +90,10 @@ export default {
         confirmPassword: '',
         contactName: '',
         contactNumber: '',
-        contactQq: ''
+        contactQq: '',
+        selfShop: null, // 是否自有1688店铺
+        shopLink: null, // 1688店铺链接
+        contactWebChat: '' // 联系微信
       }
 
       state.additionalInfo = {
@@ -92,6 +104,7 @@ export default {
         payeePhone: '',
         bank: '',
         bankBranch: '',
+        bankCity: '',
         bankAccount: '',
         idCardImages: [],
         certificationImage: [],

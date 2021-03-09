@@ -150,18 +150,27 @@ export default {
       if (certification.idCardBack) {
         idCardImages[1] = this.transformImageData(certification.idCardBack)
       }
+      let payeeIdCardImages = []
+      if (certification.payeeIdCardFront) {
+        payeeIdCardImages[0] = this.transformImageData(certification.payeeIdCardFront)
+      }
+      if (certification.payeeIdCardBack) {
+        payeeIdCardImages[1] = this.transformImageData(certification.payeeIdCardBack)
+      }
       additionalInfo = {
-        idCardImages
+        idCardImages,
+        payeeIdCardImages
       }
       Object.keys(certification).forEach(key => {
-        if (!['idCardFront', 'idCardBack', 'certificationNo'].includes(key)) {
+        if (!['idCardFront', 'idCardBack', 'payeeIdCardFront', 'payeeIdCardBack', 'certificationNo'].includes(key)) {
           additionalInfo[key] = certification[key] ? [this.transformImageData(certification[key])] : []
         }
       })
       Object.keys(bankInfo).forEach(key => {
         additionalInfo[key] = bankInfo[key]
       })
-
+      let bankCity = bankInfo.bankCity ? JSON.parse(bankInfo.bankCity) : []
+      additionalInfo['bankCity'] = bankCity
       this.SET_APPLICATION(application)
       this.SET_ADDITIONAL_INFO(additionalInfo)
     },
