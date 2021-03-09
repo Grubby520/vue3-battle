@@ -23,6 +23,18 @@ export const setLang = function (lang) {
   localStorage.setItem('lang', lang)
 }
 
+export const valueToListByEnter = function (value) {
+  if (!value) {
+    return false
+  }
+  if (Array.isArray(value)) {
+    return value
+  }
+  if (typeof value === 'string') {
+    return value.split(/[(\r\n)\r\n]+/)
+  }
+}
+
 export function isEmpty (value) {
   if (typeof value === 'string') {
     return value.trim() === ''
