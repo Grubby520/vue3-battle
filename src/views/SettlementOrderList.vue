@@ -181,7 +181,7 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
-          this.disabledKeys = data.list.map(item => item.status).filter(status => status !== 1)
+          this.disabledKeys = data.list.filter(item => item.status !== 1).map(item => item.id)
         }
       }).finally(() => {
         this.$refs.listView.loading = false
