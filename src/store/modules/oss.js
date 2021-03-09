@@ -21,7 +21,7 @@ export default {
       let { preUploadUrl, file } = params
 
       return put(preUploadUrl, file, {
-        headers: { 'Content-Type': file.type },
+        headers: { 'Content-Type': file.type ? file.type : 'application/octet-stream' },
         cancelToken: new CancelToken(function executor (c) {
           params.file.abort = c
         })
