@@ -33,6 +33,33 @@
       <el-form-item label="身份证号码" prop="payeeIdCard">
         <el-input v-model="form.payeeIdCard" clearable placeholder="请输入身份证号码"></el-input>
       </el-form-item>
+      <el-form-item label="收款人身份证" prop="payeeIdCardImages">
+        <el-row>
+          <el-col :span="8" style="min-width:120px">
+            <SlUploadImages
+              v-model="payeeIdCardFronts"
+              :folder="certificationNo"
+              :imageType="2"
+              :limit="1"
+              :tools="['download', 'delete']"
+              :limits="[{type: 'size',meta: {size: 1}}]"
+            ></SlUploadImages>
+            <p>身份证正面</p>
+          </el-col>
+          <el-col :span="8" style="min-width:120px">
+            <SlUploadImages
+              v-model="payeeIdCardBacks"
+              :folder="certificationNo"
+              :imageType="2"
+              :limit="1"
+              :tools="['download', 'delete']"
+              :limits="[{type: 'size',meta: {size: 1}}]"
+            ></SlUploadImages>
+            <p>身份证反面</p>
+          </el-col>
+        </el-row>
+        <p>复印件需加盖公章,图片小于1M</p>
+      </el-form-item>
       <el-form-item label="收款方手机号" prop="payeePhone">
         <el-input
           v-model="form.payeePhone"
@@ -40,6 +67,15 @@
           placeholder="请输入收款方手机号"
           maxlength="11"
           show-word-limit
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="银行卡号" prop="bankAccount">
+        <el-input
+          v-model="form.bankAccount"
+          clearable
+          placeholder="请输入银行卡号"
+          show-word-limit
+          maxlength="19"
         ></el-input>
       </el-form-item>
       <el-form-item label="银行开户行" prop="bank">
@@ -51,6 +87,9 @@
           show-word-limit
         ></el-input>
       </el-form-item>
+      <el-form-item label="银行卡归属地" prop="bankCity">
+        <SlAreaCascader :showProvinceAndCityData="true" v-model="form.bankCity" class="form-item"></SlAreaCascader>
+      </el-form-item>
       <el-form-item label="开户支行" prop="bankBranch">
         <el-input
           v-model="form.bankBranch"
@@ -58,15 +97,6 @@
           clearable
           placeholder="请输入开户支行"
           show-word-limit
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="银行卡号" prop="bankAccount">
-        <el-input
-          v-model="form.bankAccount"
-          clearable
-          placeholder="请输入银行卡号"
-          show-word-limit
-          maxlength="19"
         ></el-input>
       </el-form-item>
       <el-form-item label="法人身份证" prop="idCardImages">
@@ -182,6 +212,8 @@ export default {
       currencyOptions: [],
       idCardFronts: [],
       idCardBacks: [],
+      payeeIdCardFronts: [],
+      payeeIdCardBacks: [],
       form: {
         currency: null,
         payeeCompany: '',
@@ -190,8 +222,10 @@ export default {
         payeePhone: '',
         bank: '',
         bankBranch: '',
+        bankCity: [],
         bankAccount: '',
         idCardImages: [],
+        payeeIdCardImages: [],
         certificationImage: [],
         payeeDelegationImage: [],
         organizationImage: [],
@@ -206,8 +240,10 @@ export default {
         payeePhone: [emptyValidator('请输入收款人手机号'), phoneNoValidator()],
         bank: [emptyValidator('请输入银行开户行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
         bankBranch: [emptyValidator('请输入开户支行'), charLimitValidator('输入字符长度在100以内', 1, 100)],
+        bankCity: [emptyValidator('请选择银行卡归属地')],
         bankAccount: [emptyValidator('请输入银行卡号'), bankCardNumberValidator()],
-        idCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator()],
+        idCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator('idCardImages')],
+        payeeIdCardImages: [emptyValidator('请上传身份证信息'), this.getIdCardImagesValidator('payeeIdCardImages')],
         certificationImage: [emptyValidator('请上传营业执照图片', 'change')],
         payeeDelegationImage: [emptyValidator('请上传委托书图片', 'change')],
         organizationImage: [emptyValidator('请上传组织结构代码证件图片', 'change')],
@@ -228,6 +264,10 @@ export default {
           this.idCardFronts = [].concat(this.form.idCardImages[0])
           this.idCardBacks = [].concat(this.form.idCardImages[1])
         }
+        if (this.form.payeeIdCardImages.length > 0) {
+          this.payeeIdCardFronts = [].concat(this.form.payeeIdCardImages[0])
+          this.payeeIdCardBacks = [].concat(this.form.payeeIdCardImages[1])
+        }
       },
       immediate: true,
       deep: true
@@ -239,6 +279,14 @@ export default {
     idCardBacks: function (val) {
       this.form.idCardImages[1] = val[0]
       this.$refs.form.validateField('idCardImages')
+    },
+    payeeIdCardFronts: function (val) {
+      this.form.payeeIdCardImages[0] = val[0]
+      this.$refs.form.validateField('payeeIdCardImages')
+    },
+    payeeIdCardBacks: function (val) {
+      this.form.payeeIdCardImages[1] = val[0]
+      this.$refs.form.validateField('payeeIdCardImages')
     }
   },
   mounted: function () {
@@ -262,18 +310,18 @@ export default {
         })
       })
     },
-    getIdCardImagesValidator () {
+    getIdCardImagesValidator (key) {
       return {
         validator: (rule, value, callback) => {
           let errorMsg = ''
           switch (true) {
-            case this.form.idCardImages.length === 0 || (!this.form.idCardImages[0] && !this.form.idCardImages[1]):
+            case this.form[key].length === 0 || (!this.form[key][0] && !this.form[key][1]):
               errorMsg = '请上传身份证信息'
               break
-            case !this.form.idCardImages[0]:
+            case !this.form[key][0]:
               errorMsg = '请上传身份证正面信息'
               break
-            case !this.form.idCardImages[1]:
+            case !this.form[key][1]:
               errorMsg = '请上传身份证反面信息'
               break
           }

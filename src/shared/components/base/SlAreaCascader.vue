@@ -1,6 +1,6 @@
 <template>
   <el-cascader
-    :options="regionData"
+    :options="showProvinceAndCityData? provinceAndCityData : regionData"
     v-model="address"
     @change="handleChange"
     :disabled="disabled"
@@ -10,12 +10,13 @@
 </template>
 
 <script>
-import { regionData } from 'element-china-area-data'
+import { regionData, provinceAndCityData } from 'element-china-area-data'
 export default {
   name: 'SlAreaCascader',
   data () {
     return {
       regionData, // 地址信息
+      provinceAndCityData,
       address: ''
     }
   },
@@ -44,6 +45,10 @@ export default {
     size: {
       type: String,
       default: 'small'
+    },
+    showProvinceAndCityData: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {
