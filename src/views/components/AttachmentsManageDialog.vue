@@ -171,8 +171,7 @@ export default {
       return this.status === 'edit'
     },
     canSubmit () {
-      const uploadFiles = this.$refs.elUpload ? (this.$refs.elUpload.uploadFiles || []) : []
-      return this.data.length > 0 && uploadFiles.every(item => item.status === 'success')
+      return this.data.length > 0 && this.$refs.elUpload.uploadFiles.every(item => item.status === 'success')
     }
   },
   methods: {
