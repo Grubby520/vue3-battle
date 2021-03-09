@@ -352,7 +352,8 @@ export default {
   div {
     span:first-child {
       display: inline-block;
-      width: 100px;
+      text-align: right;
+      width: 120px;
     }
   }
 }
