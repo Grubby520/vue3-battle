@@ -27,7 +27,7 @@
             />
           </el-form-item>
           <el-form-item label="品牌" prop="brand">
-            <el-input clearable v-model.trim="form.brand" placeholder="请填写品牌" maxlength="20" />
+            <el-input clearable v-model.trim="form.brand" placeholder="请填写品牌" maxlength="30" />
           </el-form-item>
           <el-form-item label="商品描述" prop="description">
             <el-input

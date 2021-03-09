@@ -5,16 +5,13 @@
         <span>销售属性</span>
       </div>
       <el-alert
-        v-if="noSaleAttributes"
+        v-if="showAttrHint"
         title="销售属性不能为空"
         type="error"
         effect="dark"
         style="margin-bottom: 1rem;"
       />
-      <p
-        v-if="noSaleAttributes && productParams.mode === 'create'"
-        class="align-center no-data"
-      >~暂无数据~</p>
+      <p v-if="showAttrHint" class="align-center no-data">~暂无数据~</p>
       <div class="form" v-else>
         <el-form :model="form" ref="form" label-width="12rem" class="ProductSale-form">
           <el-form-item
@@ -112,7 +109,7 @@
                     <!-- 供货价格/sku/吊牌/带包装 -->
                     <el-input
                       v-else
-                      v-model="scope.row[item.name]"
+                      v-model.trim="scope.row[item.name]"
                       :maxlength="item.maxlength"
                       v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
                     />
@@ -227,6 +224,9 @@ export default {
         if (['size', 'color', 'specification'].includes(item)) len.push(showAttrs[item])
       })
       return len.every(item => item > 0)
+    },
+    showAttrHint () {
+      return this.noSaleAttributes && this.productParams.mode === 'create'
     }
   },
   watch: {
