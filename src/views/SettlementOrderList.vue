@@ -226,7 +226,8 @@ export default {
       this.$router.push({
         path: '/home/finance/settlement-order-detail',
         query: {
-          settlementOrderNo: row.settlementOrderNo,
+          settlementOrderId: String(row.id),
+          settlementOrderNo: String(row.settlementOrderNo),
           deliveryNo: row.deliveryNo
         }
       })

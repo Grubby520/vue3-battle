@@ -35,7 +35,7 @@ export default {
       type: String,
       default: ''
     },
-    settlementOrderNo: {
+    settlementOrderId: {
       type: String,
       default: ''
     }
@@ -77,13 +77,13 @@ export default {
       return sums
     },
     getData () {
-      if (!this.deliveryNo && !this.settlementOrderNo) {
+      if (!this.deliveryNo && !this.settlementOrderId) {
         return
       }
       this.loading = true
       GoodsApi.getDeliveryInfo({
         deliveryNo: this.deliveryNo,
-        settlementOrderNo: this.settlementOrderNo
+        settlementOrderId: this.settlementOrderId
       }).then(res => {
         if (res.success) {
           this.tableData = res.data || []

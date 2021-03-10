@@ -28,7 +28,7 @@ export default {
       type: String,
       default: ''
     },
-    settlementOrderNo: {
+    settlementOrderId: {
       type: String,
       default: ''
     }
@@ -43,7 +43,7 @@ export default {
       },
       query: {
         deliveryNo: this.deliveryNo,
-        settlementOrderNo: this.settlementOrderNo
+        settlementOrderId: this.settlementOrderId
       },
       columns: [
         {
@@ -111,7 +111,7 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      if (!params.deliveryNo && !params.settlementOrderNo) {
+      if (!params.deliveryNo && !params.settlementOrderId) {
         return
       }
       GoodsApi.getSupplyDetails(params).then(res => {

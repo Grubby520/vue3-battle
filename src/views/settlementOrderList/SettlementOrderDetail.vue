@@ -3,7 +3,7 @@
     <p class="border-bottom mb-2rem">
       <el-button type="text" size="medium" @click="goBack">返回</el-button>
       <el-divider direction="vertical"></el-divider>
-      <span v-if="settlementOrderNo">
+      <span v-if="settlementOrderId">
         结算单号：
         <b class="color-text--gray-mid">{{settlementOrderNo}}</b>
       </span>
@@ -14,13 +14,13 @@
     </p>
 
     <SlPanel title="发货单结算信息">
-      <DeliverySettleInfo :deliveryNo="deliveryNo" :settlementOrderNo="settlementOrderNo"></DeliverySettleInfo>
+      <DeliverySettleInfo :deliveryNo="deliveryNo" :settlementOrderId="settlementOrderId"></DeliverySettleInfo>
     </SlPanel>
     <SlPanel title="供货明细">
-      <SupplyInfo :deliveryNo="deliveryNo" :settlementOrderNo="settlementOrderNo"></SupplyInfo>
+      <SupplyInfo :deliveryNo="deliveryNo" :settlementOrderId="settlementOrderId"></SupplyInfo>
     </SlPanel>
     <SlPanel title="补扣款单信息">
-      <SupplyDeductMoneyInfo :deliveryNo="deliveryNo" :settlementOrderNo="settlementOrderNo"></SupplyDeductMoneyInfo>
+      <SupplyDeductMoneyInfo :deliveryNo="deliveryNo" :settlementOrderId="settlementOrderId"></SupplyDeductMoneyInfo>
     </SlPanel>
   </div>
 </template>
@@ -40,6 +40,7 @@ export default {
   data () {
     return {
       deliveryNo: this.$route.query.deliveryNo,
+      settlementOrderId: this.$route.query.settlementOrderId,
       settlementOrderNo: this.$route.query.settlementOrderNo
     }
   },
