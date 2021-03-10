@@ -49,7 +49,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" :selectable="checkSelectable"></el-table-column>
-        <el-table-column prop="date" label="发货单号" width="120px" align="center">
+        <el-table-column prop="date" label="发货单号" width="150px" align="center">
           <template slot-scope="scope">
             <el-button @click="odmDetail(scope.row,'see')" type="text">{{scope.row.orderNumber}}</el-button>
           </template>
