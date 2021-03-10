@@ -40,7 +40,12 @@
         </div>
         <div>
           <span>附件数量:</span>
-          <el-link type="primary" @click="openAttachmentsManageDialog">{{paymentInfo.attachmentNum}}</el-link>
+          <el-link
+            v-if="+paymentInfo.attachmentNum > 0"
+            type="primary"
+            @click="openAttachmentsManageDialog"
+          >{{paymentInfo.attachmentNum}}</el-link>
+          <span v-else>0</span>
         </div>
         <div>
           <span>申请报账总金额:</span>
@@ -135,106 +140,7 @@
 import GOODS_API from '@api/goods'
 import { thousandsSeparate } from '@shared/util'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
-import CommonApi from '@api/api'
 const pageCfg = Object.freeze({ index: 1, size: 10 })
-const settlementOrderColumns = [
-  {
-    prop: 'deliveryNo',
-    label: '发货单号',
-    render: (h, data) => {
-      const { row = {} } = data
-      return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementId}00000</el-link>
-    }
-  },
-  {
-    prop: 'settlementOrderNo',
-    label: '结算单号',
-    render: (h, data) => {
-      const { row = {} } = data
-      return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementId}00000</el-link>
-    }
-  },
-  {
-    prop: 'settlementAmount',
-    label: '结算金额(¥)',
-    render: (h, data) => {
-      const { row = {} } = data
-      return <span>{thousandsSeparate(row.settlementAmount)}</span>
-    }
-  },
-  {
-    prop: 'supplierAmount',
-    label: '供货金额(¥)',
-    render: (h, data) => {
-      const { row = {} } = data
-      return <span>{thousandsSeparate(row.supplierAmount)}</span>
-    }
-  },
-  {
-    prop: 'freightSubsidy',
-    label: '运费补贴(¥)',
-    render: (h, data) => {
-      const { row = {} } = data
-      return <span>{thousandsSeparate(row.reimbursementId)}</span>
-    }
-  },
-  {
-    prop: 'supplierTotal',
-    label: '供货数量'
-  },
-  {
-    prop: 'status',
-    label: '结算单状态',
-    render: (h, data) => {
-      const { row = {} } = data
-      const enums = ['待采购确认', '待商家确认', '已确认', '待结算', '结算中', '已结算', '结算失败']
-      return enums[row.status]
-    }
-  },
-  {
-    prop: 'paymentAt',
-    label: '账期时间'
-  },
-  {
-    prop: 'confirmAt',
-    label: '确认时间'
-  }
-]
-
-const supplementaryDeductionColumns = [
-  {
-    prop: 'supplementaryDeductionNo',
-    label: '补扣款单号'
-  },
-  {
-    prop: 'paymentType',
-    label: '款项类型'
-  },
-  {
-    prop: 'sourceOrderType',
-    label: '源单类型'
-  },
-  {
-    prop: 'sourceOrderNo',
-    label: '源单编号'
-  },
-  {
-    prop: 'supplementaryDeductionAmount',
-    label: '总金额(¥)',
-    render: (h, data) => {
-      const { row = {} } = data
-      return <span>{thousandsSeparate(row.sesupplementaryDeductionAmount)}</span>
-    }
-  },
-  {
-    prop: 'remarks',
-    label: '备注'
-  },
-  {
-    prop: 'confirmAt',
-    label: '确认时间'
-  }
-]
 
 export default {
   components: {
@@ -256,8 +162,98 @@ export default {
         page: {},
         loading: false
       },
-      settlementOrderColumns,
-      supplementaryDeductionColumns,
+      settlementOrderColumns: [
+        {
+          prop: 'deliveryNo',
+          label: '发货单号',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.deliveryNo}</el-link>
+          }
+        },
+        {
+          prop: 'settlementOrderNo',
+          label: '结算单号',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}</el-link>
+          }
+        },
+        {
+          prop: 'settlementAmount',
+          label: '结算金额(¥)',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <span>{thousandsSeparate(row.settlementAmount)}</span>
+          }
+        },
+        {
+          prop: 'supplierAmount',
+          label: '供货金额(¥)',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <span>{thousandsSeparate(row.supplierAmount)}</span>
+          }
+        },
+        {
+          prop: 'freightSubsidy',
+          label: '运费补贴(¥)',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <span>{thousandsSeparate(row.freightSubsidy)}</span>
+          }
+        },
+        {
+          prop: 'supplierTotal',
+          label: '供货数量'
+        },
+        {
+          prop: 'statusName',
+          label: '结算单状态'
+        },
+        {
+          prop: 'paymentAt',
+          label: '账期时间'
+        },
+        {
+          prop: 'confirmAt',
+          label: '确认时间'
+        }
+      ],
+      supplementaryDeductionColumns: [
+        {
+          prop: 'supplementaryDeductionNo',
+          label: '补扣款单号'
+        },
+        {
+          prop: 'paymentType',
+          label: '款项类型'
+        },
+        {
+          prop: 'sourceOrderType',
+          label: '源单类型'
+        },
+        {
+          prop: 'sourceOrderNo',
+          label: '源单编号'
+        },
+        {
+          prop: 'supplementaryDeductionAmount',
+          label: '总金额(¥)',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <span>{thousandsSeparate(row.sesupplementaryDeductionAmount)}</span>
+          }
+        },
+        {
+          prop: 'remarks',
+          label: '备注'
+        },
+        {
+          prop: 'confirmAt',
+          label: '确认时间'
+        }
+      ],
       attachmentsManageDialogShow: false,
       attachmentsManageStatus: 'view',
       attachments: []
@@ -279,7 +275,6 @@ export default {
       })
     },
     fetchSettlementOrder (pageSize = pageCfg.size, pageIndex = pageCfg.index) {
-      console.log('fetchSettlementOrder')
       this.$set(this.settlementOrder, 'loading', true)
       GOODS_API.getSettlementOrder({ reimbursementId: this.reimbursementId, pageIndex, pageSize }).then(({ success, data }) => {
         if (success) {
@@ -299,7 +294,6 @@ export default {
       })
     },
     fetchSupplementaryDeduction (pageSize = pageCfg.size, pageIndex = pageCfg.index) {
-      console.log('fetchSupplementaryDeduction')
       this.$set(this.supplementaryDeduction, 'loading', true)
       GOODS_API.getSupplementaryDeduction({ reimbursementId: this.reimbursementId, pageIndex, pageSize }).then(({ success, data }) => {
         if (success) {
@@ -319,7 +313,7 @@ export default {
       })
     },
     fetchAttachmentList () {
-      CommonApi.getAttachmentList({ associationId: this.reimbursementId, associationType: '3' }).then((success, data) => {
+      GOODS_API.getAttachmentList({ associationId: this.reimbursementId, associationType: '3' }).then(({ success, data }) => {
         if (success) {
           this.attachments = data.map(({ associationId, ...item }) => {
             return {
@@ -328,6 +322,17 @@ export default {
               src: item.attachmentUrl
             }
           })
+        }
+      })
+    },
+    toDetail ({ settlementOrderId, settlementOrderNo, deliveryNo }) {
+      console.log('toDetail')
+      this.$router.push({
+        path: '/home/finance/settlement-order-detail',
+        query: {
+          settlementOrderId,
+          settlementOrderNo,
+          deliveryNo
         }
       })
     },
@@ -354,6 +359,7 @@ export default {
       display: inline-block;
       text-align: right;
       width: 120px;
+      margin-right: 5px;
     }
   }
 }
