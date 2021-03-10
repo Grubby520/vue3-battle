@@ -1,5 +1,6 @@
 
 import { get } from '@shared/http'
+const Qs = require('qs')
 
 /**
  * 下载blob格式的文件
@@ -43,7 +44,12 @@ export function exportFileFromRemote ({
   if (typeof beforeLoad === 'function') {
     beforeLoad()
   }
-  get(url, params, { responseType: 'blob' }).then(res => {
+  get(url, params, {
+    responseType: 'blob',
+    paramsSerializer: function (params) {
+      return Qs.stringify(params)
+    }
+  }).then(res => {
     if (res.type === 'application/json') {
       errorFn()
       return
