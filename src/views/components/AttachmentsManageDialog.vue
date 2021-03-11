@@ -42,6 +42,8 @@
         </div>
       </div>
     </el-upload>
+    <!-- 无数据 -->
+    <el-alert v-if="data.length === 0" title="暂无附件" type="info" center :closable="false"></el-alert>
     <span v-if="canEdit" slot="footer" class="dialog-footer">
       <el-button type="primary" @click="submit" :disabled="!canSubmit">{{$t('button.saveText')}}</el-button>
     </span>
