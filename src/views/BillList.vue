@@ -263,7 +263,8 @@ export default {
       this.$router.push({
         path: '/home/finance/bill-detail',
         query: {
-          reimbursementId: row.reimbursementId
+          reimbursementId: row.reimbursementId,
+          status: row.status
         }
       })
     },

@@ -36,7 +36,7 @@
         </div>
         <div>
           <span>币种:</span>
-          <span>{{paymentInfo.currency}}</span>
+          <span>{{paymentInfo.currencyName}}</span>
         </div>
         <div>
           <span>附件数量:</span>
@@ -147,9 +147,10 @@ export default {
     AttachmentsManageDialog
   },
   data () {
-    const { reimbursementId } = this.$route.query
+    const { reimbursementId, status } = this.$route.query
     return {
       reimbursementId,
+      status,
       paymentInfo: {},
       financeInfo: {},
       settlementOrder: {
@@ -168,7 +169,11 @@ export default {
           label: '发货单号',
           render: (h, data) => {
             const { row = {} } = data
-            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.deliveryNo}</el-link>
+            if (+this.status === 1) {
+              return <span>{row.deliveryNo}</span>
+            } else {
+              return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.deliveryNo}</el-link>
+            }
           }
         },
         {
@@ -176,7 +181,11 @@ export default {
           label: '结算单号',
           render: (h, data) => {
             const { row = {} } = data
-            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}</el-link>
+            if (+this.status === 1) {
+              return <span>{row.settlementOrderNo}</span>
+            } else {
+              return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}</el-link>
+            }
           }
         },
         {
@@ -238,11 +247,10 @@ export default {
           label: '源单编号'
         },
         {
-          prop: 'supplementaryDeductionAmount',
           label: '总金额(¥)',
           render: (h, data) => {
             const { row = {} } = data
-            return <span>{thousandsSeparate(row.sesupplementaryDeductionAmount)}</span>
+            return <span>{thousandsSeparate(row.supplementaryDeductionAmount)}</span>
           }
         },
         {
