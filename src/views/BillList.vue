@@ -356,6 +356,7 @@ export default {
         if (res.success) {
           this.attachmentsManageDialogShow = false
           this.$message.success('保存成功')
+          this.gotoPage()
         }
       }).finally(() => {
         this.loading = false
