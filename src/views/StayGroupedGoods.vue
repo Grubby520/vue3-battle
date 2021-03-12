@@ -381,7 +381,6 @@ export default {
         },
         afterLoad: () => {
           this.loading = false
-          this.selections = []
           this.$store.dispatch('CLOSE_LOADING')
         },
         successFn: () => { },
