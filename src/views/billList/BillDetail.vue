@@ -335,11 +335,11 @@ export default {
     },
     toDetail ({ settlementOrderId, settlementOrderNo, deliveryNo }, type) {
       let query = {
-        deliveryNo
+        settlementOrderId,
+        settlementOrderNo
       }
       if (type === 1) {
-        query.settlementOrderId = settlementOrderId
-        query.settlementOrderNo = settlementOrderNo
+        query.deliveryNo = deliveryNo
       }
       this.$router.push({
         path: '/home/finance/settlement-order-detail',
