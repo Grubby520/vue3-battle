@@ -334,7 +334,6 @@ export default {
       })
     },
     toDetail ({ settlementOrderId, settlementOrderNo, deliveryNo }) {
-      console.log('toDetail')
       this.$router.push({
         path: '/home/finance/settlement-order-detail',
         query: {
