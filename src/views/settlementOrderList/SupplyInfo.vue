@@ -8,6 +8,7 @@
   >
     <SlTable
       ref="table"
+      height="250"
       :tableData="tableData"
       :columns="columns"
       :selection="false"

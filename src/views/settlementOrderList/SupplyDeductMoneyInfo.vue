@@ -1,5 +1,6 @@
 <template>
   <el-table
+    ref="table"
     v-loading="loading"
     :data="tableData"
     border
@@ -83,6 +84,9 @@ export default {
       }).then(res => {
         if (res.success) {
           this.tableData = res.data || []
+          this.$nextTick(() => {
+            this.$refs.table.doLayout()
+          })
         }
       }).finally(() => {
         this.loading = false

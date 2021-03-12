@@ -6,6 +6,7 @@
     @selection-change="handleSelectionChange"
     :border="border"
     :row-key="rowKey"
+    :height="height"
     size="mini"
     ref="multipleTable"
   >
@@ -132,7 +133,8 @@ export default {
     operate: { type: Boolean, required: false, default: true },
     tooltip: { type: Boolean, required: false, default: true },
     disabledKeys: { type: Array, required: false, default: () => { return [] } }, // 禁址选中的行标识数据
-    loading: { type: Boolean, required: false, default: false }
+    loading: { type: Boolean, required: false, default: false },
+    height: { type: [String, Number], required: false, default: undefined }
   },
   methods: {
     handleSelectionChange (val) {
