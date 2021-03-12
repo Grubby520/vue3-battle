@@ -14,7 +14,9 @@
     <el-table-column prop="sourceOrderTypeName" label="源单类型"></el-table-column>
     <el-table-column prop="sourceOrderNo" label="源单编号"></el-table-column>
     <el-table-column prop="amount" label="总金额 (￥)">
-      <template slot-scope="scope">{{ scope.row.amount | numFormat('thousandsSeparate') }}</template>
+      <template
+        slot-scope="scope"
+      >{{ (scope.row.paymentType === 1?-scope.row.amount:scope.row.amount) | numFormat('thousandsSeparate') }}</template>
     </el-table-column>
     <el-table-column prop="remarks" label="备注"></el-table-column>
     <el-table-column prop="confirmAt" label="确认时间" width="200"></el-table-column>
@@ -61,6 +63,9 @@ export default {
           let total = 0
           data.forEach(item => {
             let value = Number(item[column.property])
+            if (item.paymentType === 1) { // 扣款加负号
+              value = -value
+            }
             if (!isNaN(value)) {
               total += value
             }

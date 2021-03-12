@@ -5,7 +5,8 @@
  * @param {number} extra 保留小数位
  */
 export function thousandsSeparate (value, extra = 2) {
-  let num = Number(value)
+  let isNegative = /^-/.test(value)
+  let num = Math.abs(Number(value))
   let valueStr = '' + num
   let arr = []
   if (isNaN(num)) {
@@ -18,5 +19,5 @@ export function thousandsSeparate (value, extra = 2) {
     arr[1] = ''
   }
 
-  return arr[0].replace(/(?!^)(?=(\d{3})+$)/g, ',') + arr[1]
+  return (isNegative ? '-' : '') + arr[0].replace(/(?!^)(?=(\d{3})+$)/g, ',') + arr[1]
 }

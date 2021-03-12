@@ -250,7 +250,8 @@ export default {
           label: '总金额(¥)',
           render: (h, data) => {
             const { row = {} } = data
-            return <span>{thousandsSeparate(row.supplementaryDeductionAmount)}</span>
+            const amount = row.paymentType === 1 ? -row.supplementaryDeductionAmount : row.supplementaryDeductionAmount
+            return <span>{thousandsSeparate(amount)}</span>
           }
         },
         {
