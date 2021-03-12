@@ -204,7 +204,8 @@ export default {
   methods: {
     getAttachmentsText (row) {
       let auditRecords = row.auditRecords || []
-      if (row.status === -1 || (row.status === 0 && auditRecords.length === 0)) {
+      let hasAuditResult = auditRecords.some(item => item.auditStatus === 'REJECT' || item.auditStatus === 'PASS')
+      if (row.status === -1 || (row.status === 0 && !hasAuditResult)) {
         this.attachmentsManageStatus = 'edit'
         return '上传附件'
       }
