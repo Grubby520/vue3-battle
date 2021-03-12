@@ -153,18 +153,9 @@ export default {
           label: '关联报账单号'
         },
         {
-          prop: '',
+          prop: 'createdAt',
           label: '账期时间',
-          width: '280',
-          render: (h, data) => {
-            let { row = {} } = data
-            return (
-              <div>
-                {row.settlementStartTime ? row.settlementStartTime : ''}
-                {row.settlementEndTime ? ' - ' + row.settlementEndTime : ''}
-              </div>
-            )
-          }
+          width: '150'
         },
         {
           prop: 'supplierConfirmAt',

@@ -20,7 +20,7 @@
     <el-table-column prop="freightSubsidy" label="运费补贴 (￥)">
       <template slot-scope="scope">{{ scope.row.freightSubsidy | numFormat('thousandsSeparate') }}</template>
     </el-table-column>
-    <el-table-column prop="paymentAt" label="账期时间" width="200"></el-table-column>
+    <el-table-column prop="createdAt" label="账期时间" width="200"></el-table-column>
   </el-table>
 </template>
 
