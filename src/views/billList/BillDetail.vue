@@ -235,11 +235,11 @@ export default {
           label: '补扣款单号'
         },
         {
-          prop: 'paymentType',
+          prop: 'paymentTypeName',
           label: '款项类型'
         },
         {
-          prop: 'sourceOrderType',
+          prop: 'sourceOrderTypeName',
           label: '源单类型'
         },
         {
