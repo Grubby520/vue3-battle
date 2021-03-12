@@ -2,7 +2,7 @@
   <div class="sku-container" v-show="false">
     <div class="sku-print" id="print-a" ref="print">
       <div class="tittle">
-        <h3>商家名：{{info.merchantName}}</h3>
+        <h3>{{info.merchantName}}</h3>
         <div class="barcode">
           <p>{{info.deliveryNum}}</p>
           <svg class="barcodeSvg" />
