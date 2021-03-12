@@ -72,7 +72,7 @@ export default {
           width: '120'
         },
         {
-          prop: 'attributesNam',
+          prop: 'attributesName',
           label: '销售属性',
           width: '120'
         },
