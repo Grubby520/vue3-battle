@@ -31,7 +31,10 @@
       >上传附件支持的文件的格式: jpg、png、rar、pdf、zip。最多上传20个。每个文件最大50M。</div>
       <div slot="file" slot-scope="{file}">
         <div class="file-container clearfix">
-          <span :title="file.name">{{file.name}}</span>
+          <el-tooltip placement="top" effect="light">
+            <div slot="content" style="max-width:300px">{{file.name}}</div>
+            <p class="display-inline-block text-overflow" style="max-width:300px">{{file.name}}</p>
+          </el-tooltip>
           <div class="float-right">
             <el-link type="primary" @click="download(file)" :disabled="file.status !== 'success'">下载</el-link>&nbsp;
             <el-link v-if="canEdit" type="primary" @click="handleRemove(file)">删除</el-link>
