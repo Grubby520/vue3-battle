@@ -48,9 +48,7 @@ export default {
   },
   methods: {
     goBack () {
-      this.$router.push({
-        path: localStorage.getItem('activePath')
-      })
+      this.$router.go(-1)
     }
   }
 }

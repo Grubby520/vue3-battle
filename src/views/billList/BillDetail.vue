@@ -172,7 +172,7 @@ export default {
             if (+this.status === 1) {
               return <span>{row.deliveryNo}</span>
             } else {
-              return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.deliveryNo}</el-link>
+              return <el-link type="primary" onClick={() => this.toDetail(row, 1)}>{row.deliveryNo}</el-link>
             }
           }
         },
@@ -184,7 +184,7 @@ export default {
             if (+this.status === 1) {
               return <span>{row.settlementOrderNo}</span>
             } else {
-              return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}</el-link>
+              return <el-link type="primary" onClick={() => this.toDetail(row, 2)}>{row.settlementOrderNo}</el-link>
             }
           }
         },
@@ -333,20 +333,21 @@ export default {
         }
       })
     },
-    toDetail ({ settlementOrderId, settlementOrderNo, deliveryNo }) {
+    toDetail ({ settlementOrderId, settlementOrderNo, deliveryNo }, type) {
+      let query = {
+        deliveryNo
+      }
+      if (type === 1) {
+        query.settlementOrderId = settlementOrderId
+        query.settlementOrderNo = settlementOrderNo
+      }
       this.$router.push({
         path: '/home/finance/settlement-order-detail',
-        query: {
-          settlementOrderId,
-          settlementOrderNo,
-          deliveryNo
-        }
+        query
       })
     },
     goBack () {
-      this.$router.push({
-        path: localStorage.getItem('activePath')
-      })
+      this.$router.go(-1)
     },
     openAttachmentsManageDialog () {
       this.fetchAttachmentList()

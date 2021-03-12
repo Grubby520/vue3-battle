@@ -33,11 +33,11 @@ export default {
   name: 'DeliverySettleInfo',
   props: {
     deliveryNo: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     settlementOrderId: {
-      type: String,
+      type: [String, Number],
       default: ''
     }
   },

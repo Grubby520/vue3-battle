@@ -26,11 +26,11 @@ export default {
   name: 'SupplyInfo',
   props: {
     deliveryNo: {
-      type: String,
+      type: [String, Number],
       default: ''
     },
     settlementOrderId: {
-      type: String,
+      type: [String, Number],
       default: ''
     }
   },
