@@ -78,7 +78,7 @@
             <p v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</p>
           </template>
         </el-table-column>
-        <el-table-column prop="settlementOrderId" label="结算单id" width="100px" align="center"></el-table-column>
+        <el-table-column prop="settleOrderNumber" label="结算单号" width="100px" align="center"></el-table-column>
         <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.logisticsNumber">
