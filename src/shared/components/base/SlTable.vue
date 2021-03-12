@@ -1,5 +1,6 @@
 <template>
   <el-table
+    v-loading="loading"
     :data="tableData"
     class="tableData"
     @selection-change="handleSelectionChange"
@@ -130,7 +131,8 @@ export default {
     selection: { type: Boolean, required: false, default: true },
     operate: { type: Boolean, required: false, default: true },
     tooltip: { type: Boolean, required: false, default: true },
-    disabledKeys: { type: Array, required: false, default: () => { return [] } } // 禁址选中的行标识数据
+    disabledKeys: { type: Array, required: false, default: () => { return [] } }, // 禁址选中的行标识数据
+    loading: { type: Boolean, required: false, default: false }
   },
   methods: {
     handleSelectionChange (val) {
