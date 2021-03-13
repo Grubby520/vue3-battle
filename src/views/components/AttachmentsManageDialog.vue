@@ -28,7 +28,8 @@
         v-if="canEdit"
         slot="tip"
         class="el-upload__tip"
-      >上传附件支持的文件的格式: jpg、png、rar、pdf、zip。最多上传20个。每个文件最大50M。</div>
+      >上传附件支持的文件的格式: jpg、png、rar、pdf、zip。最多上传{{limitNumber}}个。每个文件最大50M。</div>
+
       <div slot="file" slot-scope="{file}">
         <div class="file-container clearfix">
           <el-tooltip placement="top" effect="light">
@@ -113,7 +114,7 @@ export default {
     limitNumber: {
       type: Number,
       required: false,
-      default: 20
+      default: 30
     },
     // oss相关接口需要,0为商品图片 1为尺寸图片 2供应商资质图片 3报账单 4付款申请 5扣款单 6付款单
     fileType: {
@@ -125,7 +126,7 @@ export default {
     multiple: {
       type: Boolean,
       required: false,
-      default: false
+      default: true
     },
     // 上传文件限制
     limits: {
@@ -359,6 +360,11 @@ li:focus {
 }
 
 /deep/ {
+  .el-upload-list {
+    max-height: 25em;
+    overflow: auto;
+  }
+
   .el-upload-list__item .el-progress {
     position: unset;
     top: 0;
