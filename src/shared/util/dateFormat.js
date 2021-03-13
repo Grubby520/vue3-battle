@@ -155,11 +155,11 @@ export function getDatePickerOptions (type = 'daterange') {
         onClick: shortcutClick('yesterday')
       },
       {
-        text: '最近三天',
+        text: '最近3天',
         onClick: shortcutClick('3d')
       },
       {
-        text: '最近一周',
+        text: '最近1周',
         onClick: shortcutClick('7d')
       },
       {
