@@ -184,7 +184,7 @@ export default {
       return this.status === 'edit'
     },
     canSubmit () {
-      return this.data.length > 0 && this.$refs.elUpload.uploadFiles.every(item => item.status === 'success')
+      return this.data.length === 0 || (this.data.length > 0 && this.$refs.elUpload.uploadFiles.every(item => item.status === 'success'))
     }
   },
   methods: {
