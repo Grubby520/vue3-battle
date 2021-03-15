@@ -3,7 +3,7 @@
     <p class="border-bottom mb-2rem">
       <el-button type="text" size="medium" @click="goBack">返回</el-button>
       <el-divider direction="vertical"></el-divider>
-      <span v-if="settlementOrderId">
+      <span v-if="settlementOrderId" class="mr-2rem">
         结算单号：
         <b class="color-text--gray-mid">{{settlementOrderNo}}</b>
       </span>
