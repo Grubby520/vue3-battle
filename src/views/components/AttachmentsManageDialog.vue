@@ -126,7 +126,7 @@ export default {
     multiple: {
       type: Boolean,
       required: false,
-      default: true
+      default: false
     },
     // 上传文件限制
     limits: {
