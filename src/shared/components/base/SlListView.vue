@@ -44,10 +44,10 @@ export default {
     },
     searchPage () {
       this.loading = true
-      this.$emit('gotoPage', 10, 1)
+      this.$emit('gotoPage', this.pageSize, 1)
     },
     refresh () {
-      this.$emit('gotoPage', 10, 1)
+      this.$emit('gotoPage', this.pageSize, 1)
     },
     reset () {
       this.$emit('reset')
