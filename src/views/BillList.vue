@@ -368,6 +368,8 @@ export default {
           this.attachmentsManageDialogShow = false
           this.$message.success('保存成功')
           this.gotoPage()
+        } else {
+          errorMessageTip(res.error && res.error.message)
         }
       }).finally(() => {
         this.loading = false
