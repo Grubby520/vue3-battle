@@ -49,7 +49,7 @@
     <!-- 无数据 -->
     <el-alert
       class="mt-1rem"
-      v-if="data.length === 0"
+      v-if="!$refs.elUpload || data.length === 0 && $refs.elUpload.uploadFiles.length === 0"
       title="暂无附件"
       type="info"
       center
@@ -126,7 +126,7 @@ export default {
     multiple: {
       type: Boolean,
       required: false,
-      default: false
+      default: true
     },
     // 上传文件限制
     limits: {
@@ -224,12 +224,15 @@ export default {
           return
         }
 
-        // 如果不存在与业务关联的主键则直接删除oss上的文件
+        // 上传中的处理
         if (file.status !== 'success') {
           let elUploadFiles = this.$refs.elUpload.uploadFiles || []
           this.deleteCancelFile(elUploadFiles.find(item => item.name === file.name))
+          this.emitChange(files)
           return
         }
+
+        // 如果不存在与业务关联的主键则直接删除oss上的文件
         this.DELETE_FILES({ url: file.src })
           .then(res => {
             this.emitChange(files)
@@ -240,8 +243,11 @@ export default {
     deleteCancelFile (uploadFailFile) {
       if (uploadFailFile) {
         uploadFailFile.raw.abort()
-        this.$refs.elUpload.handleRemove(uploadFailFile)
+        this.deleteUploadFile(uploadFailFile)
       }
+    },
+    deleteUploadFile (file) {
+      this.$refs.elUpload.handleRemove(file)
     },
     download (file) {
       exportFileFromRemote({
@@ -289,7 +295,12 @@ export default {
         file
       })
         .then(res => {
-          this.emitChange([...this.data, newFile])
+          this.emitChange(this.$refs.elUpload.uploadFiles.map(item => {
+            if (item.name === newFile.name) {
+              return newFile
+            }
+            return item
+          }))
         }).catch(() => {
         })
     },
@@ -319,7 +330,9 @@ export default {
             break
         }
         if (isError) {
-          this.$message.error(message)
+          setTimeout(() => {
+            this.$message.error(message)
+          }, 0)
           // 不符合条件中断上传
           return new Promise((resolve, reject) => { reject(new Error()) })
         }
