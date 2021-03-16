@@ -88,6 +88,10 @@
           <span>{{financeInfo.payeeBankBranch}}</span>
         </div>
         <div>
+          <span>收款人身份证号:</span>
+          <span>{{financeInfo.payeeIdCard}}</span>
+        </div>
+        <div>
           <span>联系电话:</span>
           <span>{{financeInfo.phoneNumber}}</span>
         </div>
