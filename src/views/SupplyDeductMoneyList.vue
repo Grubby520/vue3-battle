@@ -125,27 +125,46 @@ export default {
         },
         {
           prop: 'settlementOrderNo',
-          label: '关联结算单'
+          label: '关联结算单',
+          width: '90'
         },
         {
           prop: 'createdAt',
           label: '创建时间',
-          width: '200'
+          width: '150'
         },
         {
           prop: 'rejectReason',
           label: '驳回原因',
-          width: '200'
+          width: '200',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip placement="top" effect="light">
+                <div slot="content" style="max-width:200px">{row.rejectReason}</div>
+                <p v-slClamp={{ clamp: 2 }}>{row.rejectReason}</p>
+              </el-tooltip>
+            )
+          }
         },
         {
           prop: 'auditAt',
           label: '审核通过时间/驳回时间',
-          width: '200'
+          width: '150'
         },
         {
           prop: 'remarks',
           label: '备注',
-          width: '200'
+          width: '200',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip placement="top" effect="light">
+                <div slot="content" style="max-width:200px">{row.remarks}</div>
+                <p v-slClamp={{ clamp: 2 }}>{row.remarks}</p>
+              </el-tooltip>
+            )
+          }
         },
         {
           prop: 'attachmentAmount',

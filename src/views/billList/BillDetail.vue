@@ -260,7 +260,16 @@ export default {
         },
         {
           prop: 'remarks',
-          label: '备注'
+          label: '备注',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip placement="top" effect="light">
+                <div slot="content" style="max-width:200px">{row.remarks}</div>
+                <p v-slClamp={{ clamp: 2 }}>{row.remarks}</p>
+              </el-tooltip>
+            )
+          }
         },
         {
           prop: 'confirmAt',
