@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="sl-search-form">
     <el-form :model="form" :label-width="`${labelWidth}px`">
       <el-row :gutter="15">
         <el-col v-if="$slots.before" :span="24">
@@ -145,18 +145,20 @@ export default {
 
 }
 </script>
-<style lang="scss">
-.form-item-col {
-  height: 50px;
-}
-
-.block /deep/ {
-  .el-select {
-    display: block;
+<style lang="scss" scoped>
+.sl-search-form /deep/ {
+  .form-item-col {
+    height: 50px;
   }
-  .el-date-editor.el-input,
-  .el-date-editor.el-input__inner {
-    width: 100%;
+
+  .block {
+    .el-select {
+      display: block;
+    }
+    .el-date-editor.el-input,
+    .el-date-editor.el-input__inner {
+      width: 100% !important;
+    }
   }
 }
 </style>
