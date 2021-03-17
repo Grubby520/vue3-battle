@@ -18,7 +18,14 @@
         slot-scope="scope"
       >{{ (scope.row.paymentType === 1?-scope.row.amount:scope.row.amount) | numFormat('thousandsSeparate') }}</template>
     </el-table-column>
-    <el-table-column prop="remarks" label="备注"></el-table-column>
+    <el-table-column prop="remarks" label="备注">
+      <template slot-scope="scope">
+        <el-tooltip placement="top" effect="light">
+          <div slot="content" style="max-width:200px">{{scope.row.remarks}}</div>
+          <p v-slClamp="{ clamp: 2 }">{{scope.row.remarks }}</p>
+        </el-tooltip>
+      </template>
+    </el-table-column>
     <el-table-column prop="confirmAt" label="确认时间" width="200"></el-table-column>
   </el-table>
 </template>
