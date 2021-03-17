@@ -149,8 +149,7 @@ export default {
               'image/png',
               'image/jpeg',
               'application/zip',
-              'application/x-zip-compressed',
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              'application/x-zip-compressed'
             ]
           }
         },
