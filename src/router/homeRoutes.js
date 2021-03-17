@@ -83,24 +83,6 @@ export const homeRoutes = [
           }
         },
         component: () => import('@/views/components/recommendProducts/OdmDetail.vue')
-      },
-      {
-        path: 'import-spu',
-        name: '导入SPU',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        component: () => import('@/views/ImportSpu.vue')
-      },
-      {
-        path: 'import-product-imgs',
-        name: '导入商品图片',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        component: () => import('@/views/ImportProductImgs')
       }
     ]
   },
