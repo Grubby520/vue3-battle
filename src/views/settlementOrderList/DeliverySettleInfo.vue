@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { thousandsSeparate } from '@shared/util'
 import GoodsApi from '@api/goods'
 
@@ -66,10 +67,10 @@ export default {
           data.forEach(item => {
             let value = Number(item[column.property])
             if (!isNaN(value)) {
-              total += value
+              total = BigNumber(value).plus(total)
             }
           })
-          sums[index] = thousandsSeparate(total, 2)
+          sums[index] = thousandsSeparate(total)
         } else {
           sums[index] = ''
         }

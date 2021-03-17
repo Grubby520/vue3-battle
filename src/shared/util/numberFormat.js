@@ -4,7 +4,7 @@
  * @param {number|string} value 数值
  * @param {number} extra 保留小数位
  */
-export function thousandsSeparate (value, extra = 2) {
+export function thousandsSeparate (value, extra) {
   let isNegative = /^-/.test(value)
   let num = Math.abs(Number(value))
   let valueStr = '' + num

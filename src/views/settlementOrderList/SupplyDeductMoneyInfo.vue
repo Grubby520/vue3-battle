@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { thousandsSeparate } from '@shared/util'
 import GoodsApi from '@api/goods'
 
@@ -74,10 +75,10 @@ export default {
               value = -value
             }
             if (!isNaN(value)) {
-              total += value
+              total = BigNumber(value).plus(total)
             }
           })
-          sums[index] = thousandsSeparate(total, 2)
+          sums[index] = thousandsSeparate(total)
         } else {
           sums[index] = ''
         }
