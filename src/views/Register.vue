@@ -30,11 +30,11 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
-import Steps from '@/views/components/register/Steps.vue'
-import Application from '@/views/components/register/Application.vue'
-import AdditionalInfo from '@/views/components/register/AdditionalInfo.vue'
-import Protocol from '@/views/components/register/Protocol.vue'
+import RegisterHeader from '@/views/register/RegisterHeader.vue'
+import Steps from '@/views/register/Steps.vue'
+import Application from '@/views/register/Application.vue'
+import AdditionalInfo from '@/views/register/AdditionalInfo.vue'
+import Protocol from '@/views/register/Protocol.vue'
 import UserApi from '@api/user'
 import { getCookie, scrollToTop } from '@shared/util'
 const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
