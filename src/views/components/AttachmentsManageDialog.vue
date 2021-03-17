@@ -28,7 +28,7 @@
         v-if="canEdit"
         slot="tip"
         class="el-upload__tip"
-      >上传附件支持的文件的格式: jpg、png、rar、pdf、zip。最多上传{{limitNumber}}个。每个文件最大50M。</div>
+      >上传附件支持的文件的格式: jpg、jpeg、png、rar、pdf、zip。最多上传{{limitNumber}}个。每个文件最大50M。</div>
 
       <div slot="file" slot-scope="{file}">
         <div class="file-container clearfix">
@@ -141,7 +141,7 @@ export default {
         },
         {
           type: 'fileType',
-          message: `文件格式不正确,仅支持jpg、png、rar、pdf、zip`,
+          message: `文件格式不正确,仅支持jpg、jpeg、png、rar、pdf、zip`,
           meta: {
             fileSuffixs: ['.jpg', '.jpeg', '.png', '.rar', '.pdf', '.zip'],
             accept: [
