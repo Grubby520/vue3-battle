@@ -11,10 +11,6 @@ import '@shared/components/register.js'
 import '@shared/directives/register.js'
 import '@shared/filters/register.js'
 
-// if (process.env.NODE_ENV === 'development') {
-//   require('@/mock')
-// }
-
 Vue.config.productionTip = false
 
 new Vue({
