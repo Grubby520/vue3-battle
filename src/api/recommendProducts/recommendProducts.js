@@ -1,69 +1,50 @@
 import { get, del, put, post } from '@shared/http'
-import RECOMMENDURLS from './recommendProductsUrl'
+import RECOMMEND_URLS from './recommendProductsUrl'
 // import qs from 'qs'
 const RECOMMEND = {
   // odm推品列表
-  getRecommedList ({ ...params }) {
-    return post(RECOMMENDURLS.recommendproducts, params)
+  getList ({ ...params }) {
+    return post(RECOMMEND_URLS.getList, params)
   },
-  // odm 推品删除
-  deleteRecommed (id) {
-    return del(`${RECOMMENDURLS.rcommenduel}/${id}`)
+  // 尺码对照表
+  pageList (id) {
+    return get(RECOMMEND_URLS.pageList + id)
   },
-  // 上传Spu数据
-  // uploadSpuData (formData) {
-  //   return post(RECOMMENDURLS.upload_spu_data, formData)
-  // },
-  // 下载SPU数据模板
-  // spuDataTemplate (formData) {
-  //   return get(RECOMMENDURLS.spu_data_template, formData)
-  // },
-  // odm撤回
-  cancelrcommend (id) {
-    return put(`${RECOMMENDURLS.cancelrcommend}/${id}`)
+  // 分类获取属性值
+  plmCategoryAttrs (id, params) {
+    return get(`${RECOMMEND_URLS.plmCategoryAttrs}/${id}/attribute-and-term`, params)
   },
-  // odm 提交
-  recommend (info) {
-    return put(RECOMMENDURLS.recommend, info)
+  // 校验供应商是否存在
+  checkedItemNo (params) {
+    return get(`${RECOMMEND_URLS.checkedItemNo}${params}`)
   },
-  // odm 推品详情
-  recommendDetail (id) {
-    return get(`${RECOMMENDURLS.rcommenduel}/${id}`)
+  // 保存
+  productSave (params) {
+    return post(RECOMMEND_URLS.productSave, params)
   },
-  // 编辑推品
-  modifyDetail (info) {
-    return post(`${RECOMMENDURLS.rcommenduel}`, info)
+  // 保存提交
+  productSaveSubmit (params) {
+    return post(RECOMMEND_URLS.productSaveSubmit, params)
   },
-  // 校验供应商货号是否已存在
-  checkItem (itemNo) {
-    return get(`${RECOMMENDURLS.checkItem}/${itemNo}`)
+  // 补充信息
+  replenish (params) {
+    return put(RECOMMEND_URLS.replenish, params)
   },
-  save (params) {
-    return post(RECOMMENDURLS.rcommenduel, params)
+  // 详情
+  product (params) {
+    return get(`${RECOMMEND_URLS.product}/${params}`)
   },
-  // 保存并提交
-  saveSubmit (params) {
-    return post(RECOMMENDURLS.saveSubmit, params)
+  // 列表提交
+  submit (params) {
+    return put(RECOMMEND_URLS.submit, params)
   },
-  // 保存补充
-  supplementSave (params) {
-    return put(RECOMMENDURLS.supplementSave, params)
+  // 删除商品
+  deleteProduct (id) {
+    return del(`${RECOMMEND_URLS.product}/${id}`)
   },
-  // 保存并补充提交
-  supplement (params) {
-    return put(RECOMMENDURLS.supplement, params)
-  },
-  // 属性项列表,颜色 id:1、尺寸 id:2
-  getAttrList (id, params) {
-    return get(RECOMMENDURLS.getAttrList + id, params)
-  },
-  // 自定义属性
-  getMetadata (id) {
-    return get(`/product-service/metadata/${id}/metafileds`)
-  },
-  // 根据用户获取颜色尺寸id
-  allByUser (params) {
-    return get(RECOMMENDURLS.allByUser, params)
+  // 撤回
+  cancel (id) {
+    return put(`${RECOMMEND_URLS.cancel}/${id}`)
   }
 }
 export default RECOMMEND

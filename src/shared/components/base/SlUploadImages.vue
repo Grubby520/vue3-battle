@@ -137,10 +137,12 @@ export default {
         },
         {
           type: 'ppi',
-          message: `图片高宽均不能超过4096像素`,
+          message: `图片高宽均不能超过4096像素,不能小于100像素`,
           meta: {
-            width: 4096,
-            height: 4096
+            maxWidth: 4096,
+            maxHeight: 4096,
+            minWidth: 100,
+            minHeight: 100
           }
         }
       ]
@@ -235,7 +237,7 @@ export default {
         if (isError) {
           this.$message.error(message)
           // 不符合条件中断上传
-          return new Promise((resolve, reject) => { reject(new Error()) })
+          return new Promise((resolve, reject) => { reject(new Error(isError)) })
         }
         return isError
       }
@@ -274,7 +276,9 @@ export default {
                 resolve(limitItem.meta.scales.includes(scale))
               }
               // 宽高是否超过最大值
-              resolve(image.height < limitItem.meta.height && image.width < limitItem.meta.width)
+              const maxScaleCondition = image.height < limitItem.meta.maxWidth && image.width < limitItem.meta.maxHeight
+              const minScalConditon = image.height > limitItem.meta.minWidth && image.width > limitItem.meta.minHeight
+              resolve(maxScaleCondition && minScalConditon)
             }
           }
         } catch (error) {

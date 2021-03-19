@@ -1,5 +1,5 @@
 <template>
-  <div class="cascader">
+  <div class="cascader" v-loading="loading">
     <div class="cascader__body" v-for="(element, optionIndex) of options" :key="optionIndex">
       <div class="cascader__body-content">
         <div
@@ -9,7 +9,7 @@
           :key="index"
           @click="change(ca, optionIndex)"
         >
-          <span>{{ca.label}}</span>
+          <span>{{ca.name}}</span>
           <i class="el-icon-arrow-right icon" v-if="!ca.leaf"></i>
         </div>
       </div>
@@ -37,7 +37,8 @@ export default {
     return {
       options: [],
       isActive: false,
-      final: false
+      final: false,
+      loading: false
     }
   },
   mounted () {
@@ -45,10 +46,14 @@ export default {
   },
   methods: {
     load () {
-      CommonApi.category({ type: 1 })
+      this.loading = true
+      CommonApi.plmCategory()
         .then(res => {
           this.options.push(res.data)
           this.changeInitData(res.data)
+        })
+        .finally(() => {
+          this.loading = false
         })
     },
     change (data, level) {
@@ -72,17 +77,17 @@ export default {
     },
     updateNodes (level, currentId, data) {
       // 当前点击父级节点下的所有值
-      this.$set(this.currentEl, level, { id: currentId, label: data.label, categoryLevel: data.path, leaf: data.leaf })
+      this.$set(this.currentEl, level, { id: currentId, name: data.name, categoryLevel: data.levelPath, leaf: data.leaf })
       this.highlightSign(this.options, level, currentId)
       // 更新点击后的子级节点
       if (data.children.length > 0) this.$set(this.options, level + 1, data.children)
     },
     highlightSign (options, level, currentId) {
-      options[level].forEach((cur, curIndex) => {
+      options[level].forEach((cur) => {
         // 子级同级切换，不是当前id就删除isActive
         cur.id !== currentId ? delete cur.isActive : this.$set(cur, 'isActive', true)
         // 删除子级的isActive
-        cur.children.forEach((el, index) => {
+        cur.children.forEach((el) => {
           el.isActive && delete el.isActive
         })
       })
@@ -107,14 +112,13 @@ export default {
   margin: 0 auto;
   .cascader {
     display: flex;
+    border: 1px solid #ccc;
     justify-content: flex-start;
     // 总高度为每行高度的倍数
-    height: 476px;
+    height: 47.6rem;
     width: 100%;
-    line-height: 34px;
+    line-height: 3.4rem;
     color: #606266;
-    border: 1px solid #ccc;
-    border-left: none;
     z-index: 100;
     &__body {
       width: 25%;
@@ -127,7 +131,6 @@ export default {
         }
         box-sizing: border-box;
         cursor: pointer;
-        border-left: 1px solid #ccc;
         height: 100%;
       }
       &-menu {
@@ -142,25 +145,25 @@ export default {
         }
         span {
           display: inline-block;
-          padding-left: 20px;
+          padding-left: 2rem;
         }
       }
     }
     .active {
-      font-weight: 70px;
+      font-weight: 7rem;
       color: #fff;
       font-weight: bold;
       background-color: #65adf5;
     }
     .activeLast {
-      font-weight: 70px;
+      font-weight: 7rem;
       color: #fff;
       font-weight: bold;
       background-color: #268cf1;
     }
     .icon {
-      line-height: 34px;
-      padding-right: 10px;
+      line-height: 3.4rem;
+      padding-right: 1rem;
     }
   }
 }
