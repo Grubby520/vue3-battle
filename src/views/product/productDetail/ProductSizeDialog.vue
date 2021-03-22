@@ -95,24 +95,26 @@ export default {
       return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
     },
     sizeTableData () {
-      const sizeSegments = {}
+      const sizeSegmentMap = new Map()
       // 表格数据处理前需要先排序
       const sortSizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
       // sizeSegmentId 属性值id  sizeStandardId尺码标准id（表头）
       sortSizeTable.forEach(size => {
-        if (!sizeSegments[size.sizeSegmentId]) {
-          sizeSegments[size.sizeSegmentId] = [size]
+        const sizeSegmentId = size.sizeSegmentId
+        let sizeSegments = sizeSegmentMap.get(sizeSegmentId)
+        if (isEmpty(sizeSegments)) {
+          sizeSegmentMap.set(sizeSegmentId, [size])
         } else {
-          sizeSegments[size.sizeSegmentId].push(size)
+          sizeSegments.push(size)
         }
       })
       const tableRows = []
-      for (const key in sizeSegments) {
+      for (const [key, value] of sizeSegmentMap.entries()) {
         const rowData = {}
-        sizeSegments[key].forEach(size => {
+        value.forEach(size => {
           if (!tableRows.some(row => row.sizeStandardId === size.sizeStandardId && row.sizeSegmentId === size.sizeSegmentId)) {
             const sizeAttrIds = this.sizeAttr.terms.reduce((init, a) => init.concat(`${a.id}`), [])
-            sizeAttrIds.includes(key) ? rowData['size'] = size.sizeSegmentName : rowData['size'] = `${size.sizeSegmentName}(已删除)`
+            sizeAttrIds.includes(`${key}`) ? rowData['size'] = size.sizeSegmentName : rowData['size'] = `${size.sizeSegmentName}(已删除)`
             rowData[size.sizeStandardId] = [size.minValue, size.maxValue, size.id]
           }
         })
