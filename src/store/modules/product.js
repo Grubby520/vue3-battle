@@ -3,7 +3,7 @@ export default {
   state: {
     // 创建产品需要的所有参数
     productParams: null,
-    sizeAttr: null,
+    sizeAttr: [],
     // 回显基本属性
     productBase: [],
     // 回显商品属性
@@ -29,7 +29,7 @@ export default {
     productSalesAttributeDetail: state => state.productSalesAttributeDetail || [],
     productImagesIInfo: state => state.productImages || [],
     productSize: state => state.productSize || [],
-    sizeAttr: state => state.sizeAttr || {},
+    sizeAttr: state => state.sizeAttr || [],
     sizeStandard: state => state.sizeStandard || {},
     customAttributesData: state => state.customAttributesData || []
   },
@@ -69,7 +69,6 @@ export default {
       clearAttrs.forEach(attr => {
         store[attr] = data
       })
-      console.log(22222222222)
     }
   },
   actions: {}

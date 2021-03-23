@@ -114,6 +114,8 @@ export default {
         value.forEach(size => {
           if (!tableRows.some(row => row.sizeStandardId === size.sizeStandardId && row.sizeSegmentId === size.sizeSegmentId)) {
             const sizeAttrIds = this.sizeAttr.terms.reduce((init, a) => init.concat(`${a.id}`), [])
+            console.log('sizeAttr.terms', sizeAttrIds)
+            console.log('key', key)
             sizeAttrIds.includes(`${key}`) ? rowData['size'] = size.sizeSegmentName : rowData['size'] = `${size.sizeSegmentName}(已删除)`
             rowData[size.sizeStandardId] = [size.minValue, size.maxValue, size.id]
           }
