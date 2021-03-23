@@ -135,7 +135,7 @@ export default {
           if (!value) {
             callback(new Error('供方货号不能为空'))
           } else {
-            if (value === this.supplierItemNo) {
+            if (value === this.form.supplierItemNo) {
               callback()
             } else {
               RecommondApi.checkedItemNo(value)
