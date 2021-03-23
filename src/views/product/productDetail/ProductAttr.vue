@@ -36,7 +36,7 @@
                     :key="index"
                     :label="term.name"
                     :value="term.id"
-                    :disabled="term.deleted"
+                    :disabled="term.deleted||!term.usable"
                   ></el-option>
                 </component>
               </el-form-item>
@@ -66,7 +66,7 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters('product', ['customAttributesData', 'productCustomAttributes']),
+    ...mapGetters('product', ['customAttributesData', 'productParams', 'productCustomAttributes']),
     customAttributes () {
       const { customAttributesData, productCustomAttributes } = this
       return { customAttributesData, productCustomAttributes }
@@ -76,7 +76,10 @@ export default {
     customAttributes: {
       handler (data) {
         const attributes = this.parseCustomerAttributes(data)
-        this.form.attributesData = attributes.filter((attribute) => attribute.usable) // 属性是可用的
+        const usableAttrs = attributes.filter((attribute) => attribute.usable)
+        // 创建时不展示禁用属性，其他情况展示禁用属性
+        const usableAttrType = this.productParams.mode !== 'create' ? attributes : usableAttrs
+        this.form.attributesData = usableAttrType // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
@@ -154,6 +157,7 @@ export default {
         .filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).some((term) => term.deleted))
       // 属性列表加上属性详情中已经被删掉的属性
       attributes = attributes.map((attribute) => {
+        if (!attribute.usable) attribute.name = `${attribute.name}(已禁用)`
         const hasDeletedTermsdAttribute = hasDeletedTermsdAttributes
           .find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
         let terms = attribute.terms
