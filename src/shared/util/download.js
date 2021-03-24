@@ -1,5 +1,6 @@
 
 import { get } from '@shared/http'
+import { getSameProtocol } from '@shared/util'
 const Qs = require('qs')
 
 /**
@@ -21,7 +22,7 @@ export const downloadBlobData = (blobData, fileName) => {
 export const downloadFile = (file, fileName) => {
   let link = document.createElement('a')
   link.download = fileName
-  link.href = file
+  link.href = getSameProtocol(file)
   link.style.display = 'hidden'
   link.target = '_blank'
   document.body.appendChild(link)
@@ -44,7 +45,8 @@ export function exportFileFromRemote ({
   if (typeof beforeLoad === 'function') {
     beforeLoad()
   }
-  get(url, params, {
+
+  get(getSameProtocol(url), params, {
     responseType: 'blob',
     paramsSerializer: function (params) {
       return Qs.stringify(params)

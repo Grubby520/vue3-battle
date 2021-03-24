@@ -91,3 +91,11 @@ export function scrollToElFormElement (elForm, offset = 0, fn) {
     scrollToTop(computedTop, offset)
   }
 }
+
+// 替换请求协议为本站相同的协议
+export function getSameProtocol (url) {
+  if (!url) {
+    return url
+  }
+  return url.replace(/^(http|https)/, window.location.protocol.split(':')[0])
+}
