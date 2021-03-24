@@ -19,7 +19,7 @@
           <div class="check-area">
             <el-checkbox-group v-model="checkedSizes">
               <template v-for="(item, index) in sizeOptions">
-                <el-checkbox :key="index" :label="item.id">{{item.name}}</el-checkbox>
+                <el-checkbox :disabled="!usable" :key="index" :label="item.id">{{item.name}}</el-checkbox>
               </template>
             </el-checkbox-group>
           </div>
@@ -60,6 +60,7 @@ export default {
       checkedSizes: [],
       sizeOptions: [],
       formSizes: [],
+      usable: false, // 属性禁用
       sizeContrastTableList: [],
       hints: ['注意事项：', '1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；', '2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；']
     }
@@ -68,11 +69,14 @@ export default {
     ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
+      console.log('sizeAttr', this.sizeAttr)
+      console.log('sizeStandard', this.sizeStandard)
       let tableHeader = []
       const standardData = this.sizeStandard.terms || []
+      const { name, usable } = this.sizeAttr
       const sizeHeader = {
         id: 'size',
-        name: '尺码段'
+        name: usable ? name : `${name}(已禁用)`
       }
       const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
       this.sizeContrastTableList.forEach(tableStandard => {
@@ -130,10 +134,12 @@ export default {
   },
   methods: {
     open (data) {
-      const { sizeOptions, formSizes } = data
+      const { sizeOptions, formSizes, usable } = data
       this.sizeOptions = sizeOptions
       this.formSizes = formSizes
       this.dialogVisible = true
+      this.usable = usable
+      console.log('usable', usable)
       this.getSizeTable()
     },
     getSizeTable () {
