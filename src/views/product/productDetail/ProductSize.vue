@@ -56,10 +56,13 @@ export default {
   computed: {
     ...mapGetters('product', ['checkedSizes', 'productParams', 'sizeAttr', 'sizeStandard', 'productSize']),
     tableHeadData () {
+      // 存了尺码表，删除了尺码标准，所有的属性都标记已删除
+      const hasSizeAttr = Object.keys(this.sizeStandard).length === 0 && this.productSize.sizeInfoList.length > 0
+      const headName = hasSizeAttr ? `${this.sizeAttr.name}(删除)` : this.sizeAttr.name
       // 表头信息
       const sizes = {
         id: 'size',
-        name: this.sizeAttr.name,
+        name: headName,
         status: 'text'
       }
       // 回显情况的表头
@@ -78,7 +81,8 @@ export default {
       return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
     },
     showProductSizeTable () {
-      return Object.keys(this.sizeStandard).length === 0 || this.checkedSizes.length === 0
+      const hasProductSize = !isEmpty(this.productSize.sizeInfoList)
+      return (Object.keys(this.sizeStandard).length === 0 && !hasProductSize) || (this.checkedSizes.length === 0 && !hasProductSize)
     }
   },
   watch: {

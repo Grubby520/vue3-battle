@@ -171,13 +171,8 @@ export default {
             if (data.description.length > 30) {
               data.description = data.description.substring(0, 30) + '...'
             }
-            // 列表品类name
-            if (data.categoryName) {
-              const cateName = data.categoryName.split('>')
-              data.categoryName = cateName.join('/')
-            }
             data.src = data.productImageUrlList[0]
-            data.statusName = data.status.name
+            if (data.status) data.statusName = data.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
