@@ -94,6 +94,7 @@ export default {
           }
         }
       })
+      // if (!standardData)
       return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
     },
     sizeTableData () {
