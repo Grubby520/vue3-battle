@@ -23,7 +23,7 @@
             <span
               class="ProductSale-sizes"
               v-if="productParams.mode!=='view'"
-              @click="openDialog('size',!showSaleLabel[`sizeUsable`])"
+              @click="openDialog('size',showSaleLabel[`sizeUsable`])"
             >添加尺码</span>
             <el-tag
               style="margin: 0 0 .5rem 1rem"
@@ -340,7 +340,7 @@ export default {
               // 尺码
               case 'NZ011':
                 buildSaleData(showSaleLabel, item, 'size')
-                this.$store.commit('product/SIZE_ATTR', { name: item.name, attributeId: item.id, terms: item.terms })
+                this.$store.commit('product/SIZE_ATTR', { name: item.name, attributeId: item.id, terms: item.terms, usable: item.usable })
                 break
               // 尺码标准
               case 'NZ013':
@@ -383,7 +383,6 @@ export default {
       this.$refs.form.validateField('sizes')
     },
     openDialog (type, usable) {
-      if (usable) return
       let dialog = null
       let data = []
       switch (type) {
@@ -398,7 +397,8 @@ export default {
           const { sizes } = this.form
           data = {
             'sizeOptions': this.sizeOptions || [],
-            'formSizes': sizes || []
+            'formSizes': sizes || [],
+            'usable': usable
           }
       }
       dialog.open(data)
