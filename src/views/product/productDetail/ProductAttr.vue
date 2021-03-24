@@ -36,7 +36,7 @@
                     :key="index"
                     :label="term.name"
                     :value="term.id"
-                    :disabled="term.deleted||!term.usable"
+                    :disabled="term.deleted||(productParams.mode!=='create'&& !attribute.usable)"
                   ></el-option>
                 </component>
               </el-form-item>
@@ -99,7 +99,8 @@ export default {
               checkbox: attribute.checkbox,
               required: attribute.required,
               terms: attribute.terms,
-              value: value
+              value: value,
+              usable: attribute.usable
             }
           })
       },
