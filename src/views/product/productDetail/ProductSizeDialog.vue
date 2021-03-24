@@ -69,8 +69,6 @@ export default {
     ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
-      console.log('sizeAttr', this.sizeAttr)
-      console.log('sizeStandard', this.sizeStandard)
       let tableHeader = []
       const standardData = this.sizeStandard.terms || []
       const { name, usable } = this.sizeAttr
@@ -139,7 +137,6 @@ export default {
       this.formSizes = formSizes
       this.dialogVisible = true
       this.usable = usable
-      console.log('usable', usable)
       this.getSizeTable()
     },
     getSizeTable () {
