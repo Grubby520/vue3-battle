@@ -91,6 +91,11 @@ export default {
           name: 'reimbursementNo'
         },
         {
+          type: 'input',
+          label: '结算单号',
+          name: 'settlementOrderNo'
+        },
+        {
           type: 'single-select',
           label: '状态',
           name: 'status',
