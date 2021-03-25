@@ -10,7 +10,6 @@
       <div class="hintTiles">
         <p v-for="(hint,index) in hints" :key="index">{{hint}}</p>
       </div>
-
       <div class="sizeDialog-title align-center">
         <span>尺码</span>
       </div>
@@ -78,8 +77,8 @@ export default {
       const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
       this.sizeContrastTableList.forEach(tableStandard => {
         // 去重复数据
-        const noSizeStandardId = !tableHeader.some(header => header.id === tableStandard.sizeStandardId)
-        if (noSizeStandardId) {
+        const hasSizeStandardId = tableHeader.some(header => header.id === tableStandard.sizeStandardId)
+        if (!hasSizeStandardId) {
           if (standardDataIds.includes(tableStandard.sizeStandardId)) {
             tableHeader.push({
               id: tableStandard.sizeStandardId,
@@ -88,9 +87,10 @@ export default {
           }
         }
       })
-      return !isEmpty(this.sizeContrastTableList) ? [sizeHeader, ...tableHeader] : []
+      return !isEmpty(this.sizeContrastTableList) ? tableHeader.concat(sizeHeader) : []
     },
     sizeTableData () {
+      // debugger
       const sizeSegmentMap = new Map()
       // 表格数据处理前需要先排序
       const sortSizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
