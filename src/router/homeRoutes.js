@@ -171,7 +171,7 @@ export const homeRoutes = [
       },
       {
         path: 'bill-list',
-        name: '报账单列表',
+        name: '请款单列表',
         meta: {
           icon: 'el-icon-paperclip',
           code: 'menu_my_info'
@@ -189,7 +189,7 @@ export const homeRoutes = [
       },
       {
         path: 'bill-detail',
-        name: '报账单详情',
+        name: '请款单详情',
         meta: {
           icon: '',
           notMenu: true

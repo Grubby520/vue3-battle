@@ -8,7 +8,7 @@
         <b class="color-text--gray-mid">{{paymentInfo.reimbursementNo}}</b>
       </span>
     </p>
-    <SlPanel title="报账单信息">
+    <SlPanel title="请款单信息">
       <div class="grid">
         <div>
           <span>供应商编号:</span>
@@ -23,11 +23,11 @@
           <span>{{paymentInfo.clearingFormName}}</span>
         </div>
         <div>
-          <span>报账单号:</span>
+          <span>请款单号:</span>
           <span>{{paymentInfo.reimbursementNo}}</span>
         </div>
         <div>
-          <span>报账单状态:</span>
+          <span>请款单状态:</span>
           <span>{{paymentInfo.statusName}}</span>
         </div>
         <div>
@@ -48,7 +48,7 @@
           <span v-else>0</span>
         </div>
         <div>
-          <span>申请报账总金额:</span>
+          <span>申请请款总金额:</span>
           <span>{{paymentInfo.applyReimbursementAmount | numFormat('thousandsSeparate')}}</span>
         </div>
         <div>

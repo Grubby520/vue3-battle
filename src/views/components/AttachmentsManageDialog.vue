@@ -116,7 +116,7 @@ export default {
       required: false,
       default: 30
     },
-    // oss相关接口需要,0为商品图片 1为尺寸图片 2供应商资质图片 3报账单 4付款申请 5扣款单 6付款单
+    // oss相关接口需要,0为商品图片 1为尺寸图片 2供应商资质图片 3请款单 4付款申请 5扣款单 6付款单
     fileType: {
       type: Number,
       required: false,

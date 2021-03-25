@@ -87,7 +87,7 @@ export default {
       searchItems: [
         {
           type: 'input',
-          label: '报账单号',
+          label: '请款单号',
           name: 'reimbursementNo'
         },
         {
@@ -112,7 +112,7 @@ export default {
       columns: [
         {
           prop: 'reimbursementNo',
-          label: '报账单号',
+          label: '请款单号',
           render: (h, data) => {
             let { row = {} } = data
             return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}</el-link>
@@ -120,7 +120,7 @@ export default {
         },
         {
           prop: 'applyReimbursementAmount',
-          label: '报账总金额(￥)',
+          label: '请款总金额(￥)',
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
@@ -281,7 +281,7 @@ export default {
     exportList () {
       exportFileFromRemote({
         url: GoodsUrl.exportReimbursementList,
-        name: `报账单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
+        name: `请款单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         params: {
           reimbursementIds: this.selections.map(item => item.reimbursementId)
         },

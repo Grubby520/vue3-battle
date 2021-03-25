@@ -25,7 +25,7 @@
           title
           width="200"
           trigger="click"
-          content="说明：选择多个结算单可合并结算，确认结算将在报账单列表生成报账单"
+          content="说明：选择多个结算单可合并结算，确认结算将在请款单列表生成请款单"
         >
           <span slot="reference" class="el-icon-info"></span>
         </el-popover>
@@ -150,7 +150,7 @@ export default {
         },
         {
           prop: 'paymentRequestNo',
-          label: '关联报账单号'
+          label: '关联请款单号'
         },
         {
           prop: 'createdAt',
@@ -204,7 +204,7 @@ export default {
         paymentAtEnd: paymentAts && paymentAts[1] ? paymentAts[1] : ''
       }
     },
-    // 确认报账
+    // 确认请款
     confirmReimbursement () {
       this.loading = true
       GoodsApi.supplierConfirm(this.selections.map(item => {
@@ -214,7 +214,7 @@ export default {
       })
       ).then(res => {
         if (res.success) {
-          this.$message.success(`已生成报账单${res.data ? res.data : ''},请前往报账单列表上传对应报账单资料`)
+          this.$message.success(`已生成请款单${res.data ? res.data : ''},请前往请款单列表上传对应请款单资料`)
           this.selections = []
           this.gotoPage()
         }
