@@ -23,7 +23,7 @@
             <span
               class="ProductSale-sizes"
               v-if="productParams.mode!=='view'"
-              @click="openDialog('size',showSaleLabel[`sizeUsable`])"
+              @click="openDialog('size',!showSaleLabel[`sizeUsable`],showSaleLabel)"
             >添加尺码</span>
             <el-tag
               style="margin: 0 0 .5rem 1rem"
@@ -382,7 +382,7 @@ export default {
       this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
       this.$refs.form.validateField('sizes')
     },
-    openDialog (type, usable) {
+    openDialog (type, usable, showSaleLabel) {
       let dialog = null
       let data = []
       switch (type) {
@@ -398,7 +398,8 @@ export default {
           data = {
             'sizeOptions': this.sizeOptions || [],
             'formSizes': sizes || [],
-            'usable': usable
+            'usable': usable,
+            'showSaleLabel': showSaleLabel
           }
       }
       dialog.open(data)
