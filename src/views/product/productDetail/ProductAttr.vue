@@ -102,7 +102,7 @@ export default {
             }
           }).filter(attr => {
             // 创建时不展示禁用属性，编辑和查看有值展示禁用属性否则不展示
-            return this.productParams.mode !== 'create' ? attr.value : attr.usable
+            return this.productParams.mode !== 'create' ? attr.usable || (attr.value && !attr.usable) : attr.usable
           })
       },
       deep: true,
@@ -179,11 +179,11 @@ export default {
         }
       }).concat(hasDeletedAttributes)
       // 属性禁用
-      attributes.forEach(usable => {
-        if (!usable.usable && !usable.deleted) {
-          usable.name = `${usable.name}(已禁用)`
-        }
-      })
+      attributes
+        .filter(attribute => !attribute.usable)
+        .forEach((usableAttr) => {
+          usableAttr.name = !usableAttr.deleted ? `${usableAttr.name}(已禁用)` : usableAttr.name
+        })
       return attributes
     },
     /**
