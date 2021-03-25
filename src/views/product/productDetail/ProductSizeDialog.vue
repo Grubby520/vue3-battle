@@ -62,8 +62,7 @@ export default {
       formSizes: [],
       usable: {}, // 属性禁用
       sizeContrastTableList: [],
-      hints: ['注意事项：', '1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；', '2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；'],
-      sizeHeadNmae: ''
+      hints: ['注意事项：', '1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；', '2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；']
     }
   },
   computed: {
@@ -74,7 +73,7 @@ export default {
       const standardData = this.sizeStandard.terms || []
       const sizeHeader = {
         id: 'size',
-        name: this.sizeHeadNmae
+        name: '尺码段'
       }
       const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
       this.sizeContrastTableList.forEach(tableStandard => {
@@ -133,7 +132,6 @@ export default {
       this.formSizes = formSizes
       this.dialogVisible = true
       this.usable = usable && !showSaleLabel['sizedeleted']
-      this.sizeHeadNmae = showSaleLabel.size.split('(')[0]
       this.getSizeTable()
     },
     getSizeTable () {
