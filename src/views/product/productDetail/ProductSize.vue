@@ -54,15 +54,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'productParams', 'sizeAttr', 'sizeStandard', 'productSize']),
+    ...mapGetters('product', ['checkedSizes', 'productParams', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
     tableHeadData () {
-      // 存了尺码表，删除了尺码标准，所有的属性都标记已删除
-      const hasSizeAttr = Object.keys(this.sizeStandard).length === 0 && this.productSize.sizeInfoList.length > 0
-      const headName = hasSizeAttr ? `${this.sizeAttr.name}(删除)` : this.sizeAttr.name
-      // 表头信息
       const sizes = {
         id: 'size',
-        name: headName,
+        name: this.showSaleLabel.size,
         status: 'text'
       }
       // 回显情况的表头
