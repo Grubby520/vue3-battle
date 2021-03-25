@@ -304,6 +304,12 @@ export default {
             // 下拉框添加删除的属性值
             this[`${typeOption}Options`].push(...deletedItems)
           })
+          this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
+          Object.keys(this.showSaleLabel).forEach(label => {
+            const attrlabel = this.showSaleLabel[label]
+            const deletedAttr = this.showSaleLabel[`${label}deleted`]
+            if (deletedAttr && attrlabel.indexOf('已禁用') > 0) this.showSaleLabel[label] = attrlabel.split('(已禁用)')[0]
+          })
         }
       }
     }

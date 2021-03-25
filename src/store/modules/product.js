@@ -19,7 +19,8 @@ export default {
     // 品类绑定标准属性
     sizeStandard: null,
     // 品类商品属性
-    customAttributesData: []
+    customAttributesData: [],
+    showSaleLabel: {}
   },
   getters: {
     productParams: state => state.productParams || {},
@@ -31,7 +32,8 @@ export default {
     productSize: state => state.productSize || [],
     sizeAttr: state => state.sizeAttr || [],
     sizeStandard: state => state.sizeStandard || {},
-    customAttributesData: state => state.customAttributesData || []
+    customAttributesData: state => state.customAttributesData || [],
+    showSaleLabel: state => state.showSaleLabel || {}
   },
   mutations: {
     PRODUCT_PARAMS: (store, data) => {
@@ -63,6 +65,9 @@ export default {
     },
     CUSTOM_ATTRIBUTES_DATA: (store, data) => {
       store.customAttributesData = data
+    },
+    SHOW_SALE_LABEL: (store, data) => {
+      store.showSaleLabel = data
     },
     REMOVE_STASH_ATTRS: (store, data) => {
       const clearAttrs = ['productBase', 'productCustomAttributes', 'productSalesAttributeDetail', 'productImages', 'productSize', 'checkedSizes']
