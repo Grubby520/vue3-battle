@@ -87,10 +87,10 @@ export default {
           }
         }
       })
-      return !isEmpty(this.sizeContrastTableList) ? tableHeader.concat(sizeHeader) : []
+      tableHeader.unshift(sizeHeader)
+      return !isEmpty(this.sizeContrastTableList) ? tableHeader : []
     },
     sizeTableData () {
-      // debugger
       const sizeSegmentMap = new Map()
       // 表格数据处理前需要先排序
       const sortSizeTable = this.sortTable(this.sizeContrastTableList, 'priority')
