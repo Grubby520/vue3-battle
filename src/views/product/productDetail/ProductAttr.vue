@@ -101,8 +101,10 @@ export default {
               usable: attribute.usable
             }
           }).filter(attr => {
+            const isArrayAttr = Array.isArray(attr.value)
+            const hasAttrValue = isArrayAttr ? attr.value.length > 0 && !attr.usable : attr.value && !attr.usable
             // 创建时不展示禁用属性，编辑和查看有值展示禁用属性否则不展示
-            return this.productParams.mode !== 'create' ? attr.usable || (attr.value && !attr.usable) : attr.usable
+            return this.productParams.mode !== 'create' ? attr.usable || hasAttrValue : attr.usable
           })
       },
       deep: true,
