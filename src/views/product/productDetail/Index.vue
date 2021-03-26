@@ -56,7 +56,7 @@ export default {
     '$props': {
       handler () {
         this.$store.commit('product/PRODUCT_PARAMS', this.$props)
-        // 清除编辑状态的数据
+        this.$store.commit('product/REMOVE_STASH_ATTRS', []) // 清除store里的缓存数据
       },
       immediate: true,
       deep: true
@@ -75,7 +75,13 @@ export default {
     load () {
       RecommondApi.product(this.id)
         .then(res => {
-          const { productBase, productCustomAttributes, productImages, productSalesAttributeDetail, productSize } = res.data
+          const {
+            productBase,
+            productCustomAttributes,
+            productImages,
+            productSalesAttributeDetail,
+            productSize
+          } = res.data
           const productData = {
             'PRODUCT_BASE': productBase, // 基础属性
             'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
@@ -111,7 +117,7 @@ export default {
             0: 'productSave'
           }
           // productStatus 2:保存 非2：修改补充信息
-          this.productStatus !== 2 ? interfacesStatus[1] = 'productSaveSubmit' : interfacesStatus[1] = 'replenish'
+          interfacesStatus[1] = this.productStatus !== 2 ? 'productSaveSubmit' : 'replenish'
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
             .then((res) => {
@@ -134,9 +140,17 @@ export default {
       }
       return Promise.all(result)
         .then((res) => {
-          const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize } = {}, { productCustomAttributes } = {}] = res
+          const [
+            { productBase },
+            { productImages },
+            { productSalesAttributes },
+            { productSize } = {},
+            { productCustomAttributes } = {}
+          ] = res
           Object.assign(productBase, {
-            'id': this.id, 'categoryId': this.categoryId, 'categoryPath': this.categoryPath
+            'id': this.id,
+            'categoryId': this.categoryId,
+            'categoryPath': this.categoryPath
           })
           return {
             productBase,
