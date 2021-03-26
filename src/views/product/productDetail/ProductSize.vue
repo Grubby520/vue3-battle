@@ -10,8 +10,8 @@
           <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
               <el-table-column
-                v-for="item in tableHeadData"
-                :key="item.name"
+                v-for="(item,index) in tableHeadData"
+                :key="`${item.name}${index}`"
                 :label="item.name"
                 align="center"
               >

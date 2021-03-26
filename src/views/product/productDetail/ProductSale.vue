@@ -28,7 +28,7 @@
             <el-tag
               style="margin: 0 0 .5rem 1rem"
               v-for="(tag, index) in form.sizes"
-              :key="tag.id"
+              :key="index"
               :closable="showSaleLabel[`sizeUsable`]"
               effect="dark"
               :type="['success', 'info', 'danger', 'warning', ''][index%5]"
@@ -79,8 +79,8 @@
           <div class="ProductSale-table">
             <el-table :data="form.productSalesAttributes" row-key="key" border>
               <el-table-column
-                v-for="item in tableHeadData"
-                :key="item.label"
+                v-for="(item,index) in tableHeadData"
+                :key="`${item.label}${index}`"
                 :width="item.width"
                 align="center"
               >
