@@ -229,7 +229,6 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
       padding-right: 25px;
-      height: 45px;
       &::after {
         position: absolute;
         right: 10px;
