@@ -83,7 +83,7 @@
           v-model="form.bank"
           maxlength="100"
           clearable
-          placeholder="请输入银行开户行"
+          placeholder="请输入银行开户行，格式为XX银行"
           show-word-limit
         ></el-input>
       </el-form-item>
@@ -95,7 +95,7 @@
           v-model="form.bankBranch"
           maxlength="100"
           clearable
-          placeholder="请输入开户支行"
+          placeholder="请输入开户支行，格式为XX支行"
           show-word-limit
         ></el-input>
       </el-form-item>
