@@ -134,7 +134,7 @@ export default {
       }
       return Promise.all(result)
         .then((res) => {
-          const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
+          const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize } = {}, { productCustomAttributes } = {}] = res
           Object.assign(productBase, {
             'id': this.id, 'categoryId': this.categoryId, 'categoryPath': this.categoryPath
           })

@@ -75,9 +75,11 @@ export default {
         const isComponent = currentRef[0] ? Object.keys(currentRef[0].$refs).length > 0 : Object.keys(currentRef.$refs).length > 0
         if (isComponent) {
           const validComponent = currentRef[0] ? currentRef[0] : currentRef
-          validComponent.$refs[this.form].validate(valid => {
-            result[ref] = valid
-          })
+          if (validComponent.$refs[this.form]) {
+            validComponent.$refs[this.form].validate(valid => {
+              result[ref] = valid
+            })
+          }
         }
       }
       const validResults = Object.values(result)
@@ -89,7 +91,7 @@ export default {
         this.someBtnParams = someBtnParams
       } else {
         // 校验失败滚动到错误位置
-        const firstValidIndex = validResults.findIndex(errorValid => errorValid === false)
+        const firstValidIndex = validResults.findIndex(errorValid => !errorValid)
         const errValidRef = Object.keys(result)[firstValidIndex]
         let current = this.references[errValidRef][0] ? this.references[errValidRef][0].$refs.form : this.references[errValidRef].$refs.form
         // 滚动到指定节点
