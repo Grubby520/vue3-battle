@@ -356,8 +356,8 @@ export default {
                 // 商品属性（其他属性）
                 const customAttributesData = data.filter(item => item.type.value === 4)
                 this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
+                this.$store.commit('product/SHOW_SALE_LABEL', showSaleLabel)
             }
-            // }
           })
 
           // 判断是否有销售属性
