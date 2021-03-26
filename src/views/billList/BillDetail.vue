@@ -4,7 +4,7 @@
       <el-button type="text" size="medium" @click="goBack">返回</el-button>
       <el-divider direction="vertical"></el-divider>
       <span v-if="reimbursementId">
-        付款单号：
+        请款单号：
         <b class="color-text--gray-mid">{{paymentInfo.reimbursementNo}}</b>
       </span>
     </p>
@@ -48,7 +48,7 @@
           <span v-else>0</span>
         </div>
         <div>
-          <span>申请请款总金额:</span>
+          <span>请款总金额:</span>
           <span>{{paymentInfo.applyReimbursementAmount | numFormat('thousandsSeparate')}}</span>
         </div>
         <div>
