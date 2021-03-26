@@ -35,10 +35,31 @@
         rowKey="reimbursementId"
       >
         <div slot="operation" slot-scope="{row}">
-          <el-button type="text" @click="download(row,1)">下载Invoice</el-button>
-          <el-button type="text" @click="download(row,2)">下载请款单</el-button>
-          <el-button type="text" @click="download(row,3)">下载供货清单</el-button>
-          <el-button type="text" @click="openAttachmentsManageDialog(row)">{{attachmentsText(row)}}</el-button>
+          <el-button
+            class="mb-05rem operation-btn"
+            type="primary"
+            size="mini"
+            @click="download(row,1)"
+          >下载Invoice</el-button>
+          <el-button
+            class="mb-05rem operation-btn"
+            type="primary"
+            size="mini"
+            @click="download(row,2)"
+          >下载请款单</el-button>
+          <el-button
+            class="mb-05rem operation-btn"
+            type="primary"
+            size="mini"
+            @click="download(row,3)"
+          >下载供货清单</el-button>
+          <el-button
+            class="operation-btn"
+            type="primary"
+            size="mini"
+            plain
+            @click="openAttachmentsManageDialog(row)"
+          >{{attachmentsText(row)}}</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -385,4 +406,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.operation-btn {
+  width: 8em;
+  padding: 0.5em;
+  margin-left: 0 !important;
+}
 </style>

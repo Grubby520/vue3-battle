@@ -60,7 +60,7 @@ export default {
         {
           prop: 'skuCode',
           label: 'SKU',
-          width: '100'
+          width: '120'
         },
         {
           prop: 'supplierSkuCode',
@@ -70,6 +70,11 @@ export default {
         {
           prop: 'supplierItemNumber',
           label: '供方货号',
+          width: '120'
+        },
+        {
+          prop: 'productName',
+          label: '商品名称',
           width: '120'
         },
         {
