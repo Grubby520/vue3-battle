@@ -70,7 +70,7 @@ export default {
       return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     },
     productComponents () {
-      return this.productStatus !== 3 ? ['ProductBase', 'ProductImages', 'ProductSale'] : ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr']
+      return this.productStatus === 3 || this.productStatus === 4 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale']
     }
   },
   methods: {
