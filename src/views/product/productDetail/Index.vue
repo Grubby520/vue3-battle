@@ -48,8 +48,7 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
-      productStatus: undefined,
-      productComponents: ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr']
+      productStatus: undefined
     }
   },
   watch: {
@@ -68,7 +67,10 @@ export default {
       return this.mode === 'view'
     },
     saveText () {
-      return this.isStatus ? [] : this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+      return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+    },
+    productComponents () {
+      return this.productStatus !== 3 ? ['ProductBase', 'ProductImages', 'ProductSale'] : ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr']
     }
   },
   methods: {
@@ -110,8 +112,8 @@ export default {
           let interfacesStatus = {
             0: 'productSave'
           }
-          // productStatus 2:保存 非2：修改补充信息
-          this.productStatus !== 2 ? interfacesStatus[1] = 'productSaveSubmit' : interfacesStatus[1] = 'replenish'
+          // productStatus 3:保存 非3：修改补充信息
+          interfacesStatus[1] = this.productStatus !== 3 ? 'productSaveSubmit' : 'replenish'
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
             .then((res) => {
@@ -134,7 +136,7 @@ export default {
       }
       return Promise.all(result)
         .then((res) => {
-          const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize }, { productCustomAttributes }] = res
+          const [{ productBase }, { productImages }, { productSalesAttributes }, { productSize } = {}, { productCustomAttributes } = {}] = res
           Object.assign(productBase, {
             'id': this.id, 'categoryId': this.categoryId, 'categoryPath': this.categoryPath
           })
