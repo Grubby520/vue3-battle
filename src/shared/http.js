@@ -1,7 +1,8 @@
 import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
-import { merge, getCookie, errorMessageTip, errorNotify } from '@shared/util'
+import { getCookie, errorMessageTip, errorNotify } from '@shared/util'
+import { merge } from 'lodash'
 
 // 存储http错误状态信息
 let httpErrorCache = {}
@@ -24,7 +25,7 @@ axiosInstance.interceptors.request.use(config => {
   const userKey = getCookie('userKey')
 
   if (config.headers['addLoading']) {
-    store.dispatch('OPEN_LOADING', true)
+    store.dispatch('OPEN_LOADING', { isCount: true })
     delete config.headers['addLoading']
   }
 
@@ -61,6 +62,7 @@ axiosInstance.interceptors.response.use(
         case '200005': // 当前账号已冻结
         case '200006': // 供应商信息保存失败
         case '200007': // 供应商注册信息更新失败:审核未通过情况下允许此操作
+        case '200010':
         case '500001': // 参数异常
         case '500002': // 数据不存在
         case '500003': // 数据冲突
@@ -68,6 +70,9 @@ axiosInstance.interceptors.response.use(
         case '900001':
         case '200017': // feign调用失败
           errorMessageTip(error.message)
+          break
+        case '100005': // 失效的token
+          errorMessageTip('身份验证信息失效,请重新登录')
           break
       }
     }
@@ -77,6 +82,7 @@ axiosInstance.interceptors.response.use(
   err => {
     let errorStatus
     let errorData
+    let isCancelReq = err instanceof axios.Cancel
     store.dispatch('CLOSE_LOADING')
     store.commit('SET_LOADING_COUNT', 0)
     // 错误处理
@@ -97,10 +103,11 @@ axiosInstance.interceptors.response.use(
           break
         case 505: err.message = `HTTP版本不受支持`
           break
+        case 506: err.message = `发货单已取消，无法打印批次号` // 特殊处理发货单取消，因为下载的时候，无法捕获到success为false的情况
+          break
         case 401:
           err.message = errorData.error.message
-          store.dispatch('user/RESET_USER_DATA')
-          router.push('/login')
+          redirectToLogin()
           break
         case 404: err.message = `访问资源不存在`
           break
@@ -116,16 +123,21 @@ axiosInstance.interceptors.response.use(
       httpErrorCache[errorStatus] = {
         time: +new Date()
       }
-      errorNotify(null, err.message)
+      !isCancelReq && errorNotify(null, err.message)
     } else {
       let now = +new Date()
       if (now - httpErrorCache[errorStatus].time > errorTimeInterval) {
-        errorNotify(null, err.message)
+        !isCancelReq && errorNotify(null, err.message)
         httpErrorCache[errorStatus].time = now
       }
     }
     return Promise.reject(err)
   })
+
+function redirectToLogin () {
+  store.dispatch('user/RESET_USER_DATA')
+  router.push('/login')
+}
 
 function addLoadingConfigToHeader (config) {
   if (config && config.addLoading !== undefined) {

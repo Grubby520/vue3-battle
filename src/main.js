@@ -9,10 +9,7 @@ import i18n from '@/lang'
 import '@shared/components/elementUI.js'
 import '@shared/components/register.js'
 import '@shared/directives/register.js'
-
-// if (process.env.NODE_ENV === 'development') {
-//   require('@/mock')
-// }
+import '@shared/filters/register.js'
 
 Vue.config.productionTip = false
 

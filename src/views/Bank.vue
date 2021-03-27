@@ -106,7 +106,7 @@
               maxlength="100"
               clearable
               disabled
-              placeholder="请输入银行开户行"
+              placeholder="请输入银行开户行，格式为XX银行"
               show-word-limit
               class="form-item"
             ></el-input>
@@ -131,7 +131,7 @@
               maxlength="100"
               clearable
               disabled
-              placeholder="请输入开户支行"
+              placeholder="请输入开户支行，格式为XX支行"
               show-word-limit
               class="form-item"
             ></el-input>

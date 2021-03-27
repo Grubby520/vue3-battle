@@ -24,7 +24,7 @@
       <SlContentTitle text="联系人" :fontSize="titleFontSize" :line="false" columnIcon></SlContentTitle>
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="运营负责人" prop="baseInfo.contactName">
+          <el-form-item label="联系人" prop="baseInfo.contactName">
             <el-input
               v-model.trim="form.baseInfo.contactName"
               class="form-item"
@@ -164,7 +164,7 @@ export default {
       rules: {
         baseInfo: {
           contactName: [
-            emptyValidator('请输入运营负责人'),
+            emptyValidator('请输入联系人'),
             charLimitValidator('长度在 2 到 20 个字符', 2, 20)
           ],
           contactNumber: [

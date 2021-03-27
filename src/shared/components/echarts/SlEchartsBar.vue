@@ -1,11 +1,12 @@
 <template>
   <div ref="barChart" class="echarts-bar" :style="{height}">
-      <sl-chart :options="barOption" :autoresize="true"></sl-chart>
+    <sl-chart :options="barOption" :autoresize="true"></sl-chart>
   </div>
 </template>
 
 <script>
-import { merge } from '@shared/util'
+// import { merge } from '@shared/util'
+import { merge } from 'lodash'
 import { BASE_OPTION } from './baseOption'
 import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
@@ -38,5 +39,4 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-
 </style>

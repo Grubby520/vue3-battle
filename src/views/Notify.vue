@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
+import RegisterHeader from '@/views/register/RegisterHeader.vue'
 export default {
   name: 'Notify',
   components: {
