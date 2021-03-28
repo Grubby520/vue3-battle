@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
@@ -217,6 +217,8 @@ export default {
           this.$message.success(`已生成请款单${res.data ? res.data : ''},请前往请款单列表上传对应请款单资料`)
           this.selections = []
           this.gotoPage()
+        } else {
+          errorMessageTip(res.error && res.error.message)
         }
       }).finally(() => {
         this.loading = false
