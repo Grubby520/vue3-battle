@@ -60,4 +60,8 @@ router.afterEach((to, from) => {
   NProgress.done()
 })
 
+router.onError(() => {
+  window.location.reload()
+})
+
 export default router

@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <div class="sl-search-form">
     <el-form :model="form" :label-width="`${labelWidth}px`">
       <el-row :gutter="15">
+        <el-col v-if="$slots.before" :span="24">
+          <slot name="before"></slot>
+        </el-col>
         <el-col
           v-for="(item,index) in items"
+          class="form-item-col"
           :xs="24"
           :sm="24"
           :md="24"
@@ -18,7 +22,7 @@
           >
             <el-input
               :placeholder="item.label"
-              v-model="form[item.name]"
+              v-model.trim="form[item.name]"
               @input="formChange"
               clearable
             ></el-input>
@@ -33,6 +37,7 @@
                 :label="item.isLabel?item.label:'请选择'"
                 v-model="form[item.name]"
                 :remoteUrl="item.data.remoteUrl"
+                :reqParams="item.data.params"
                 :options="options[item.name]"
               ></SlSingleSelect>
             </el-form-item>
@@ -51,12 +56,34 @@
               ></SlTreeSelect>
             </el-form-item>
           </template>
+          <template v-else-if="item.type === 'date'">
+            <el-form-item
+              :label="item.isLabel? '':item.label"
+              :prop="item.name"
+              :class="{'block':item.data.isBlock}"
+            >
+              <el-date-picker
+                v-model="form[item.name]"
+                :type="item.data.datetype"
+                placeholder="选择日期"
+                unlink-panels
+                :picker-options="item.data.pickerOptions ? item.data.pickerOptions : getDatePickerOptions(item.data.datetype)"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :default-time="['00:00:00','23:59:59']"
+                :format="item.data.format?item.data.format:'yyyy-MM-dd'"
+                :value-format="item.data.valueFormat?item.data.valueFormat:'yyyy-MM-dd HH:mm:ss'"
+              ></el-date-picker>
+            </el-form-item>
+          </template>
         </el-col>
       </el-row>
     </el-form>
   </div>
 </template>
 <script>
+import { getDatePickerOptions } from '@shared/util/dateFormat'
+
 export default {
   name: 'SlSearchForm',
   model: {
@@ -82,7 +109,8 @@ export default {
     return {
       options: {},
       resetForm: {},
-      form: {}
+      form: {},
+      getDatePickerOptions: getDatePickerOptions
     }
   },
   methods: {
@@ -95,6 +123,7 @@ export default {
     }
   },
   created () {
+    this.form = Object.assign({}, JSON.parse(JSON.stringify(this.modelVal)))
     this.items.forEach(item => {
       /// 判断入参是否有设置默认值。
       /// 若有就取传入的默认值。
@@ -116,10 +145,20 @@ export default {
 
 }
 </script>
-<style lang="scss">
-.block /deep/ {
-  .el-select {
-    display: block;
+<style lang="scss" scoped>
+.sl-search-form /deep/ {
+  .form-item-col {
+    height: 50px;
+  }
+
+  .block {
+    .el-select {
+      display: block;
+    }
+    .el-date-editor.el-input,
+    .el-date-editor.el-input__inner {
+      width: 100% !important;
+    }
   }
 }
 </style>

@@ -143,14 +143,14 @@
       </template>
 
       <SlContentTitle text="联系人" :textStyle="titleTextStyle" line></SlContentTitle>
-      <el-form-item label="运营负责人" prop="contactName">
+      <el-form-item label="联系人" prop="contactName">
         <el-input
           v-model="form.contactName"
           minlength="2"
           maxlength="20"
           clearable
           show-word-limit
-          placeholder="请输入运营负责人"
+          placeholder="请输入联系人"
         ></el-input>
       </el-form-item>
       <el-form-item label="运营手机号" prop="contactNumber">
@@ -306,7 +306,7 @@ export default {
           sameValueValidator
         ],
         contactName: [
-          emptyValidator('请输入运营联系人'),
+          emptyValidator('请输入联系人'),
           charLimitValidator('长度在 2 到 20 个字符', 2, 20)
         ],
         contactNumber: [

@@ -27,13 +27,17 @@ export default {
   },
   props: {
     modelVal: {
-      type: [String, Number],
+      type: [String, Number, Boolean],
       required: true,
       default: null
     },
     remoteUrl: {
       type: String,
       default: null
+    },
+    reqParams: {
+      type: Object,
+      default: () => ({})
     },
     options: {
       type: Array,
@@ -54,7 +58,7 @@ export default {
     remoteUrl: {
       handler: function (val, oldVal) {
         if (val) {
-          get(val).then(res => {
+          get(val, this.reqParams ? this.reqParams : {}).then(res => {
             this.selfOptions = res.data || []
           })
         }
@@ -90,6 +94,4 @@ export default {
 }
 </script>
 <style lang="scss">
-.sl-single-select {
-}
 </style>

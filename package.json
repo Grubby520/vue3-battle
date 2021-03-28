@@ -13,7 +13,8 @@
   "dependencies": {
     "@riophae/vue-treeselect": "^0.4.0",
     "animejs": "^3.1.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
+    "bignumber.js": "^9.0.1",
     "core-js": "^3.4.4",
     "crypto-js": "^4.0.0",
     "d3": "^5.15.0",
@@ -21,10 +22,12 @@
     "element-china-area-data": "^5.0.2",
     "element-ui": "^2.13.0",
     "js-cookie": "^2.2.1",
+    "jsbarcode": "^3.11.3",
     "json2csv": "^5.0.5",
     "jsplumb": "^2.12.8",
     "lodash": "^4.17.20",
     "nprogress": "^0.2.0",
+    "qs": "^6.9.6",
     "vue": "^2.6.10",
     "vue-echarts": "^4.1.0",
     "vue-i18n": "^8.15.3",
@@ -52,6 +55,7 @@
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.6.10",
+    "vue-text-ellipsis": "^1.0.4",
     "webpack-bundle-analyzer": "^4.1.0"
   },
   "gitHooks": {

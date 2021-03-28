@@ -3,9 +3,9 @@
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="pageIndex"
+      :current-page.sync="page.pageIndex"
+      :page-size.sync="page.pageSize"
       :page-sizes="pageSizes"
-      :page-size="page.limit"
       layout="total, sizes, prev, pager, next, jumper"
       background
       :total="total"
@@ -22,16 +22,41 @@ export default {
     },
     pageIndex: {
       type: Number
+    },
+    pageSize: {
+      type: Number,
+      default: 10
     }
   },
   data () {
     return {
-      pageSizes: [10, 20, 50, 100, 200],
+      pageSizes: [10, 20, 50],
       page: {
         pageIndex: 1,
         pageSize: 10
       }
     }
+  },
+  watch: {
+    pageIndex: {
+      handler (val, oldVal) {
+        if (val !== oldVal) {
+          this.page.pageIndex = val
+        }
+      },
+      immediate: true
+    },
+    pageSize: {
+      handler (val, oldVal) {
+        if (val !== oldVal) {
+          this.page.pageSize = val
+        }
+      },
+      immediate: true
+    }
+  },
+  mounted () {
+
   },
   methods: {
     // 每页查看条数变化
@@ -41,7 +66,6 @@ export default {
     },
     // 当前页码变化
     handleCurrentChange (val) {
-      this.page.pageIndex = val
       this.$emit('pageChange', this.page)
     }
   }

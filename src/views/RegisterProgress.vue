@@ -21,7 +21,7 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex'
-import RegisterHeader from '@/views/components/register/RegisterHeader.vue'
+import RegisterHeader from '@/views/register/RegisterHeader.vue'
 import { getCookie } from '@shared/util'
 const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 
