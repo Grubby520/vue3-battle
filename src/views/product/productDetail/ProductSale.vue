@@ -209,10 +209,14 @@ export default {
     ...mapGetters('product', ['productParams', 'productSalesAttributeDetail']),
     changeForm () {
       const saleAttrArr = []
-      const { sizes = [], colors = [], specifications = [] } = this.form
+      // debugger
+      // const { sizes = [], colors = [], specifications = [] } = this.form
+      const sizes = JSON.parse(JSON.stringify(this.form.sizes))
+      const colors = JSON.parse(JSON.stringify(this.form.colors))
+      const specifications = JSON.parse(JSON.stringify(this.form.specifications))
       const saleTypes = { 'size': sizes, 'color': colors, 'specification': specifications }
       Object.keys(saleTypes).forEach(saleType => {
-        this.hasUsable(saleType) && saleAttrArr.push(saleTypes[saleType])
+        this.hasUsable(saleType, saleTypes[`${saleType}`].length) && saleAttrArr.push(saleTypes[saleType])
       })
       return saleAttrArr
     },
@@ -272,7 +276,6 @@ export default {
                 // 有删除的销售属性
                 _this.$set(_this.showSaleLabel, typeOption, `${productSaleAttr.attribute.name}(已删除)`)
                 _this.$set(_this.showSaleLabel, `${typeOption}deleted`, true)
-                _this.$set(_this.showSaleLabel, `${typeOption}Usable`, true)
                 const attributeTerms = productSaleAttr.attributeTerms
                   .map(term => {
                     term.extendCode = extendCode
@@ -315,9 +318,6 @@ export default {
                   }
                 })
                 this.form[classified] = attributeTermInfo
-                // 属性被禁用
-                const saleUsable = this.showSaleLabel[`${typeOption}Usable`]
-                if (!saleUsable) _this.showSaleLabel[`${typeOption}`] = `${_this.showSaleLabel[`${typeOption}`]}(已禁用)`
                 // 重新修改尺码表数据
                 if (classified === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[classified])
                 // 下拉框添加删除的属性值
@@ -326,6 +326,32 @@ export default {
             })
             this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
             Object.keys(this.showSaleLabel).forEach(label => {
+              const saleUsable = _this.showSaleLabel[`${label}Usable`]
+              const saleDeleted = _this.showSaleLabel[`${label}deleted`]
+              const hasAttr = this.form[`${label}s`].length
+              if (!saleUsable) {
+                // 禁用
+                _this.showSaleLabel[`${label}`] = `${_this.showSaleLabel[`${label}`]}(已禁用)`
+                if (hasAttr > 0) {
+                  this.tableHeadData.forEach(head => {
+                    if (!saleDeleted) {
+                      if (head.name === label) {
+                        head.label = `${head.label}(已禁用)`
+                      }
+                    }
+                  })
+                } else {
+                  const delIndex = this.tableHeadData.findIndex(headData => headData.name === label)
+                  this.tableHeadData.splice(delIndex, 1)
+                }
+              }
+              if (saleDeleted) {
+                this.tableHeadData.forEach(head => {
+                  if (head.name === label) {
+                    head.label = `${head.label}(已删除)`
+                  }
+                })
+              }
               const attrlabel = this.showSaleLabel[label]
               const deletedAttr = this.showSaleLabel[`${label}deleted`]
               if (deletedAttr && attrlabel.indexOf('已禁用') > 0) {
@@ -567,14 +593,14 @@ export default {
             return hasAttr > 0
           }
         } else {
-          return this.hasUsable(status)
+          return this.hasUsable(status, hasAttr)
         }
       }
     },
-    hasUsable (type) {
+    hasUsable (type, hasAttr) {
       // 判断属性是否被禁用，创建状态不显示，保存以后禁用编辑进行展示
       const hasUsable = this.showSaleLabel[`${type}Usable`]
-      const isShowSale = (this.productParams.mode === 'create' && hasUsable) || this.productParams.mode !== 'create'
+      const isShowSale = (this.productParams.mode === 'create' && hasUsable) || (this.productParams.mode !== 'create' && hasAttr > 0)
       return isShowSale
     },
     result () {
