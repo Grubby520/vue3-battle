@@ -7,8 +7,14 @@ export * from './download'
 export * from './optimize'
 export * from './browserStorage'
 export * from './crypto'
+export * from './dateFormat'
+export * from './numberFormat'
 
-export const merge = require('lodash/merge')
+/**
+ * 在文件使用的地方使用，import {merge} from "lodash"
+ * 不建议使用require的方式引用，这样不能做摇树优化
+ */
+// export const merge = require('lodash/merge')
 
 export const getLang = function () {
   return localStorage.getItem('lang') || process.env.VUE_APP_LANG || 'zh'
@@ -85,4 +91,12 @@ export function scrollToElFormElement (elForm, offset = 0, fn) {
     let computedTop = scrollTop + boxModel.top
     scrollToTop(computedTop, offset)
   }
+}
+
+// 替换请求协议为本站相同的协议
+export function getSameProtocol (url) {
+  if (!url) {
+    return url
+  }
+  return url.replace(/^(http|https)/, window.location.protocol.split(':')[0])
 }

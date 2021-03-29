@@ -306,7 +306,7 @@ export default {
           sameValueValidator
         ],
         contactName: [
-          emptyValidator('请输入运营联系人'),
+          emptyValidator('请输入联系人'),
           charLimitValidator('长度在 2 到 20 个字符', 2, 20)
         ],
         contactNumber: [

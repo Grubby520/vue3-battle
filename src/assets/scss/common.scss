@@ -21,8 +21,28 @@
   color: $color-gray;
 }
 
+.color-text--gray-mid {
+  color: #c3c5c7
+}
+
 .color-text--red {
   color: $color-red;
+}
+
+.color-text--yellow {
+  color: $color-yellow;
+}
+
+.color-text--danger {
+  color: $color-danger;
+}
+
+.color-text--primary {
+  color: $color-primary;
+}
+
+.color-bg--white {
+  background-color: $color-white;
 }
 
 .mr-1rem {
@@ -35,6 +55,10 @@
 
 .mt-1rem {
   margin-top: 1rem !important;
+}
+
+.mb-05rem {
+  margin-bottom: 0.5rem !important;
 }
 
 .mb-1rem {
@@ -115,7 +139,7 @@
 }
 
 .display-inline-block {
-  display: inline-block;
+  display: inline-block!important;
 }
 
 .reset-autofill {
@@ -171,5 +195,28 @@
   }
   .pointer-disable {
     pointer-events: none;
+  }
+}
+
+
+.switch-nav {
+  position: relative;
+  margin-bottom: 2em;
+  .switch-nav-status {
+    vertical-align: top;
+  }
+}
+
+.table-search-statistics {
+  padding:0 0.5em;
+  margin-bottom: 2em;
+  background-color: $color-breadcrumb-bg;
+  & /deep/ {
+    .sl-checked-list {
+      border-bottom: 1px solid $color-gray;
+      &:last-child {
+        border:none
+      }
+    }
   }
 }

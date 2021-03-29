@@ -54,8 +54,8 @@ input:focus {
 ::-webkit-scrollbar-track {
   border-radius: 1rem;
   background-color: white;
-  box-shadow: inset 0 0 0.6rem rgba(0, 0, 0, 0);
-  -webkit-box-shadow: inset 0 0 0.6rem rgba(0, 0, 0, 0);
+  box-shadow: inset 0 0 0.6rem rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: inset 0 0 0.6rem rgba(0, 0, 0, 0.2);
   &:hover {
     background-color: rgba(0, 0, 0, 0.01);
     box-shadow: inset 0 0 0.6rem rgba(0, 0, 0, 0.4);
@@ -69,7 +69,7 @@ input:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #0000000d;
+  background-color: #0000007d;
   border-radius: 1rem;
   box-shadow: inset 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: inset 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.1);

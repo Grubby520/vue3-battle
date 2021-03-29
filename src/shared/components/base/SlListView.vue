@@ -13,6 +13,7 @@
         :total="total"
         @pageChange="pageChange"
         :pageIndex="pageIndex"
+        :pageSize="pageSize"
         v-if="isPagination"
       />
     </template>
@@ -25,6 +26,7 @@ export default {
   props: {
     total: { type: Number, required: false, default: undefined },
     pageIndex: { type: Number, required: false, default: undefined },
+    pageSize: { type: Number, required: false, default: 10 },
     isReset: { type: Boolean, required: false, default: true },
     isPagination: { type: Boolean, required: false, default: true }
   },
@@ -42,10 +44,10 @@ export default {
     },
     searchPage () {
       this.loading = true
-      this.$emit('gotoPage', 10, 1)
+      this.$emit('gotoPage', this.pageSize, 1)
     },
     refresh () {
-      this.$emit('gotoPage', 10, 1)
+      this.$emit('gotoPage', this.pageSize, 1)
     },
     reset () {
       this.$emit('reset')

@@ -29,7 +29,7 @@
         :tableData="tableData"
         :columns="columns"
         v-model="selections"
-        :selectionsDisabled="selectionsDisabled"
+        :disabledKeys="disabledKeys"
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
@@ -54,7 +54,7 @@ export default {
     return {
       tableData: [],
       selections: [], // 复选框数据
-      selectionsDisabled: [],
+      disabledKeys: [],
       page: {
         pageIndex: 1,
         total: 0
@@ -89,7 +89,7 @@ export default {
       ],
       columns: [
         {
-          prop: 'productName',
+          prop: '',
           label: '商品信息',
           width: '300',
           isInImg: 'src',
@@ -112,7 +112,7 @@ export default {
           label: '状态'
         },
         {
-          prop: 'skuCode',
+          prop: '',
           label: '创建时间/更新时间',
           pre: {
             createTime: '创建',
@@ -177,7 +177,7 @@ export default {
           this.tableData = list
           this.$refs.listView.loading = false
           // 待推品复选框置灰数据
-          this.selectionsDisabled = list.filter(item => item.status.value !== 0)
+          this.disabledKeys = list.filter(item => item.productStatus !== 0).map(item => item.id)
           this.page.total = total
         })
     },
