@@ -20,8 +20,8 @@
       </div>
       <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="recommon" :disabled="selections.length <= 0">批量提交</el-button>
-        <!-- <el-button type="primary" @click="odmDetail('create','')" class="recommond-create">创建产品</el-button> -->
+        <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
+        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -33,16 +33,12 @@
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
-          <el-button
-            @click="odmDetail('modify',row)"
-            type="text"
-            v-if="[0].includes(row.productStatus)"
-          >编辑</el-button>
-          <el-button @click="odmDetail('view',row)" type="text">查看</el-button>
-          <el-button type="text" @click="recommon(row)" v-if="row.productStatus===0">提交</el-button>
-          <el-button type="text" @click="cancel(row)" v-if="row.productStatus===1">撤回</el-button>
-          <el-button type="text" @click="deleteProduct(row)" v-if="row.productStatus===0">删除</el-button>
-          <el-button type="text" @click="odmDetail('modify',row)" v-if="row.productStatus===2">修改</el-button>
+          <el-button @click="productDetail('modify',row)" v-if="row.status.value===0" type="text">编辑</el-button>
+          <el-button @click="productDetail('view',row)" type="text">查看</el-button>
+          <el-button @click="productDetail('modify',row)" v-if="row.status.value===2" type="text">修改</el-button>
+          <el-button @click="commit(row)" v-if="row.status.value===0" type="text">提交</el-button>
+          <el-button @click="cancel(row)" v-if="row.status.value===1" type="text">撤回</el-button>
+          <el-button @click="deleteProduct(row)" v-if="row.status.value===0" type="text">删除</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -84,9 +80,9 @@ export default {
           type: 'single-select',
           label: '状态',
           isLabel: true,
-          name: 'productStatus',
+          name: 'status',
           data: {
-            remoteUrl: RecommondUrl.recommendstatus,
+            remoteUrl: RecommondUrl.recommendStatus,
             options: []
           }
         }
@@ -112,7 +108,7 @@ export default {
           label: '商品描述'
         },
         {
-          prop: 'productStatusName',
+          prop: 'statusName',
           label: '状态'
         },
         {
@@ -136,7 +132,7 @@ export default {
      * 初始化筛选的基础数据
      */
     initFilter () {
-      CommonApi.category({ type: 1 }).then((response) => {
+      CommonApi.plmCategory().then((response) => {
         if (response.success) {
           let data = response.data
           this.shakingTree(data)
@@ -152,7 +148,7 @@ export default {
     shakingTree (treeData) {
       treeData.forEach((node) => {
         // 将树的id换成path
-        node.id = node.path
+        node.id = node.levelPath
         if (node.children && node.children.length > 0) {
           this.shakingTree(node.children)
         } else {
@@ -166,21 +162,17 @@ export default {
       const path = requestParams.categoryId || ''
       requestParams.categoryIdLevel = path
       requestParams.categoryId = path.split(',').reverse()[0]
-
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
-      RecommondApi.getRecommedList({ ...RECOMMONDPAR })
+      RecommondApi.getList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
           list.forEach(data => {
             if (data.description.length > 30) {
               data.description = data.description.substring(0, 30) + '...'
             }
-            // 列表品类name
-            if (data.categoryName) {
-              const cateName = data.categoryName.split('>')
-              data.categoryName = cateName.join('/')
-            }
+            data.src = data.productImageUrlList[0]
+            if (data.status) data.statusName = data.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
@@ -194,25 +186,24 @@ export default {
       // 更新列表
       this.$refs.listView.refresh()
     },
-    recommon (row) {
-      // this.$refs.table.$refs.multipleTable.toggleAllSelection() // 全选
+    commit (row) {
       // 批量推品
-      const SELECTIONARR = this.selections.reduce((init, a) => init.concat(a.id), [])
+      const selectionarr = this.selections.reduce((init, a) => init.concat(a.id), [])
       // 批量图品供方货号
-      const ITEMNOALLARR = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
+      const supplierItemNo = this.selections.reduce((init, a) => init.concat(a.supplierItemNo), []).join(',')
       // 判断批量推品还是单独推品
-      const PUSHPRODUCTS = SELECTIONARR && SELECTIONARR.length > 0 ? SELECTIONARR : [row.id]
+      const commitParams = selectionarr && selectionarr.length > 0 ? selectionarr : [row.id]
       // 批量推品供方货号和单独供方货号
-      const ITEMNOALL = SELECTIONARR && SELECTIONARR.length > 0 ? ITEMNOALLARR : row.supplierItemNo
+      const itemNoAll = selectionarr && selectionarr.length > 0 ? supplierItemNo : row.supplierItemNo
       confirmBox(this, '是否提交商品', '')
         .then(() => {
-          RecommondApi.recommend({ productIdList: PUSHPRODUCTS })
+          RecommondApi.submit(commitParams)
             .then((res) => {
               if (res.success) {
-                successNotify(this, `供方货号[${ITEMNOALL}]提交成功`, true)
+                successNotify(this, `供方货号[${itemNoAll}]提交成功`, true)
                 this.$refs.listView.refresh()
               } else {
-                errorNotify(this, `供方货号[${ITEMNOALL}]${res.error.message}`, true, 4500, '')
+                errorNotify(this, `供方货号[${itemNoAll}]${res.error.message}`, true, 4500, '')
               }
             })
         })
@@ -220,7 +211,7 @@ export default {
     deleteProduct (row) {
       confirmBox(this, '是否删除商品', '')
         .then(() => {
-          RecommondApi.deleteRecommed(row.id)
+          RecommondApi.deleteProduct(row.id)
             .then(res => {
               if (res.success) {
                 this.gotoPage()
@@ -234,7 +225,7 @@ export default {
     cancel (row) {
       confirmBox(this, '是否取消提交', '')
         .then(() => {
-          RecommondApi.cancelrcommend(row.id)
+          RecommondApi.cancel(row.id)
             .then(res => {
               if (res.success) {
                 this.$refs.listView.refresh()
@@ -245,13 +236,11 @@ export default {
             })
         })
     },
-    odmDetail (status, row) {
+    productDetail (status, row) {
       const { id, categoryId, supplierItemNo } = row
-      if (status !== 'create') {
-        this.$router.push({ path: '/home/recommend-products/odmDetail', query: { mode: status, id, categoryId, supplierItemNo } })
-      } else {
-        this.$router.push({ path: '/home/recommend-products/odmOneDetails', query: { categoryId, mode: status, id, supplierItemNo } })
-      }
+      const params = { mode: status, id, categoryId, supplierItemNo }
+      const routerPath = status === 'create' ? '/home/recommend-products/category' : '/home/recommend-products/productDetail'
+      this.$router.push({ path: routerPath, query: params })
     }
   }
 }

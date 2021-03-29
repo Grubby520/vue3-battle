@@ -1,24 +1,24 @@
 <template>
   <div class="odmOneDetails">
     <p class="odmOneDetails-title">选择类目</p>
-    <Cascader v-model="currentNodes"></Cascader>
-    <p class="odmOneDetails-des">当前选择分类：{{cateLabels}}</p>
-    <div class="odmOneDetails-btn">
+    <CategoryCascader v-model="currentNodes"></CategoryCascader>
+    <p class="odmOneDetails-des align-left">当前选择分类：{{cateLabels}}</p>
+    <div class="align-center">
       <el-button @click="save" type="primary">确认</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import Cascader from './Cascader'
+import CategoryCascader from './CategoryCascader'
 import { throttle } from '@/shared/util'
 export default {
-  components: { Cascader },
   props: {
     mode: { type: String, required: false, default: 'create' },
     id: { type: [Number, String], required: false, default: '' },
     categoryId: { type: [Number, String], required: false, default: undefined }
   },
+  components: { CategoryCascader },
   data () {
     return {
       currentNodes: []
@@ -29,31 +29,31 @@ export default {
   },
   computed: {
     cateLabels () {
-      return this.currentNodes.reduce((init, a) => init.concat(a.label), []).join('>')
+      return this.currentNodes.reduce((init, a) => init.concat(a.name), []).join('>')
     }
   },
   methods: {
     save () {
       const current = this.currentNodes[this.currentNodes.length - 1]
-      if (current && current.leaf) {
-        const categoryId = current.id > 0 ? current.id : this.categoryId
+      const isFourCategory = this.currentNodes.length === 4
+      if (current && current.leaf && isFourCategory) {
+        const categoryId = current.id
         this.$router.push({
-          path: '/home/recommend-products/OdmDetail',
+          path: '/home/recommend-products/productDetail',
           query: {
             cateLabels: this.cateLabels,
             categoryId: categoryId,
-            categoryLevel: current.categoryLevel,
+            categoryPath: current.categoryLevel,
             mode: this.mode,
             id: this.id
           }
-        }
-        )
+        })
       } else {
         this._throttle()
       }
     },
     throttleMessage () {
-      this.$message.error('请选择完整的类目！')
+      this.$message.error('请选择第四级类目！')
     }
   }
 }
@@ -63,19 +63,14 @@ export default {
 .odmOneDetails {
   width: 80%;
   margin: 0 auto;
-
   &-title {
-    font-size: 18px;
+    font-size: 1.8rem;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
   }
   &-des {
-    margin: 20px 0;
-    font-size: 15px;
-    text-align: left;
-  }
-  &-btn {
-    text-align: center;
+    margin: 2rem 0;
+    font-size: 1.5rem;
   }
 }
 </style>
