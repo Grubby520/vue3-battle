@@ -22,7 +22,7 @@
               </template>
             </el-checkbox-group>
           </div>
-          <div class="table-area align-center">
+          <div class="table-area align-center" v-if="sizeTableData.length > 0">
             <h2>尺码对照表</h2>
             <el-table :data="sizeTableData" border max-height="400">
               <el-table-column
@@ -135,9 +135,13 @@ export default {
       this.getSizeTable()
     },
     getSizeTable () {
+      this.sizeContrastTableList = []
       RecommendApi.pageList(this.productParams.categoryId)
         .then(res => {
-          this.sizeContrastTableList = res.data.sizeContrastTableList || []
+          const sizeContrastTableList = res.data.sizeContrastTableList || []
+          if (sizeContrastTableList.length > 0 && sizeContrastTableList[0].usable) {
+            this.sizeContrastTableList = sizeContrastTableList
+          }
         })
     },
     sortTable (arr, key) {
