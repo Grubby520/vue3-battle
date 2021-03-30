@@ -325,7 +325,8 @@ export default {
               }
             })
             this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
-            Object.keys(this.showSaleLabel).forEach(label => {
+            const attr = ['color', 'size', 'specification']
+            attr.forEach(label => {
               const saleUsable = _this.showSaleLabel[`${label}Usable`]
               const saleDeleted = _this.showSaleLabel[`${label}deleted`]
               let hasAttr = 0
@@ -342,7 +343,8 @@ export default {
                     }
                   })
                 } else {
-                  const delIndex = this.tableHeadData.findIndex(headData => headData.name === label)
+                  const table = this.tableHeadData.filter(head => head.extendCode)
+                  const delIndex = table.findIndex(headData => headData.name === label && headData.extendCode)
                   this.tableHeadData.splice(delIndex, 1)
                 }
               }
