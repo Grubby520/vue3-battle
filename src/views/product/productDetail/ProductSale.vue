@@ -328,7 +328,8 @@ export default {
             Object.keys(this.showSaleLabel).forEach(label => {
               const saleUsable = _this.showSaleLabel[`${label}Usable`]
               const saleDeleted = _this.showSaleLabel[`${label}deleted`]
-              const hasAttr = this.form[`${label}s`].length
+              let hasAttr = 0
+              if (!isEmpty(this.form[`${label}s`])) hasAttr = this.form[`${label}s`].length
               if (!saleUsable) {
                 // 禁用
                 _this.showSaleLabel[`${label}`] = `${_this.showSaleLabel[`${label}`]}(已禁用)`
