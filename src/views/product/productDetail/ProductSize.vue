@@ -113,10 +113,14 @@ export default {
       // 增加行
       const sizeInfoList = []
       const showLabels = {}
+      let attributeId = ''
+      if (!isEmpty(this.productSize.sizeInfoList)) {
+        attributeId = this.productSize.sizeInfoList[0].attributeId
+      }
       sizes.forEach(size => {
         const { attributeTermId, ...rest } = size
         const addItem = {
-          attributeId: this.sizeAttr.attributeId,
+          attributeId: this.sizeAttr.attributeId || attributeId,
           attributeTermId: size.id || attributeTermId,
           ...rest
         }
