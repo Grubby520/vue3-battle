@@ -29,7 +29,7 @@
               style="margin: 0 0 .5rem 1rem"
               v-for="(tag, index) in form.sizes"
               :key="index"
-              :closable="showSaleLabel[`sizeUsable`]"
+              :closable="!disabledSaleAttr('size')"
               effect="dark"
               :type="['success', 'info', 'danger', 'warning', ''][index%5]"
               @close="removeSizeTag(tag)"
@@ -50,7 +50,7 @@
               multiple
               clearable
               isObj
-              :disabled="!showSaleLabel[`colorUsable`]"
+              :disabled="disabledSaleAttr('color')"
               placeholder="请选择颜色"
               @change="selectChange($event, 'colors')"
             />
@@ -71,7 +71,7 @@
               multiple
               clearable
               isObj
-              :disabled="!showSaleLabel[`specificationUsable`]"
+              :disabled="disabledSaleAttr('specificationUsable')"
               placeholder="请选择规格"
               @change="selectChange($event, 'specifications')"
             />
@@ -602,6 +602,18 @@ export default {
       const hasUsable = this.showSaleLabel[`${type}Usable`]
       const isShowSale = (this.productParams.mode === 'create' && hasUsable) || (this.productParams.mode !== 'create' && hasAttr > 0)
       return isShowSale
+    },
+    disabledSaleAttr (type) {
+      // 已经删除的属性可以删除，已经禁用的不可以修改
+      const usable = this.showSaleLabel[`${type}Usable`]
+      const deletedAttr = this.showSaleLabel[`${type}deleted`]
+      if (Object.keys(this.showSaleLabel).includes(`${type}deleted`) && deletedAttr) {
+        return !deletedAttr
+      } else {
+        if (Object.keys(this.showSaleLabel).includes(`${type}Usable`)) {
+          return !usable
+        }
+      }
     },
     result () {
       return new Promise(resolve => {
