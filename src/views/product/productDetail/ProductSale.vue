@@ -575,25 +575,25 @@ export default {
         const hasDeleted = this.showSaleLabel[`${status}deleted`]
         // 是否有属性值
         const hasAttr = this.form[`${status}s`] ? this.form[`${status}s`].length : 0
-        if (this.hasUsable(status)) {
-          if (!hasDeleted) {
-            return this.showSaleLabel[status]
+        if (!hasDeleted) {
+          if (!this.hasUsable(status, hasAttr) && Object.keys(this.showSaleLabel).includes(status)) {
+            return this.hasUsable(status, hasAttr) && this.showSaleLabel[status]
           } else {
-            // 有删除属性，如果属性值为空隐藏
-            if (hasAttr <= 0) {
-              delete this.showSaleLabel[status]
-              delete this.showSaleLabel[`${status}deleted`]
-              this[`${status}Options`] = []
-              // 重新触发排列组合
-              this.form[`${status}s`] = []
-              // 删除表头信息
-              const delIndex = this.tableHeadData.findIndex(head => head.name === status)
-              this.tableHeadData.splice(delIndex, 1)
-            }
-            return hasAttr > 0
+            return this.showSaleLabel[status]
           }
         } else {
-          return this.hasUsable(status, hasAttr)
+          // 有删除属性，如果属性值为空隐藏
+          if (hasAttr <= 0) {
+            delete this.showSaleLabel[status]
+            delete this.showSaleLabel[`${status}deleted`]
+            this[`${status}Options`] = []
+            // 重新触发排列组合
+            this.form[`${status}s`] = []
+            // 删除表头信息
+            const delIndex = this.tableHeadData.findIndex(head => head.name === status)
+            this.tableHeadData.splice(delIndex, 1)
+          }
+          return hasAttr > 0
         }
       }
     },
