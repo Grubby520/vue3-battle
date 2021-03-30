@@ -31,7 +31,6 @@
           </el-form-item>
           <el-form-item label="商品描述" prop="description">
             <el-input
-              v-if="productParams.mode!== 'view'"
               type="textarea"
               rows="5"
               clearable
@@ -40,11 +39,9 @@
               v-model.trim="form.description"
               placeholder="描述提示：1.务必填写完整的100%面料成分比：例如90%棉、5%氨纶、5%涤纶；2.制作工艺及功能特点、设计创意等。"
             />
-            <p v-else>{{form.description}}</p>
           </el-form-item>
           <el-form-item label="商品备注">
             <el-input
-              v-if="productParams.mode!== 'view'"
               type="textarea"
               rows="5"
               maxlength="300"
@@ -53,7 +50,6 @@
               v-model.trim="form.remark"
               placeholder="描述提示：1.最终商品是否包含图片上的配饰；2.包装后产品重量。3.包装后产品体积 长*宽*高。"
             />
-            <p v-else>{{form.remark}}</p>
           </el-form-item>
         </el-form>
       </div>

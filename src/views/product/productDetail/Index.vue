@@ -18,7 +18,7 @@
         :modify="modify"
         :cancel="cancel"
         :saveText="saveText"
-        cancelText="取消"
+        cancelText="返回列表"
       />
     </div>
   </div>
