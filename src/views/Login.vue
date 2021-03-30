@@ -7,7 +7,13 @@
       <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
           <span class="el-icon-s-custom form-item-icon"></span>
-          <el-input name="username" type="text" v-model="loginForm.username" placeholder="用户名" />
+          <el-input
+            name="username"
+            type="text"
+            v-model="loginForm.username"
+            placeholder="用户名"
+            maxlength="100"
+          />
         </el-form-item>
         <el-form-item prop="password">
           <span class="el-icon-lock form-item-icon"></span>
@@ -47,11 +53,11 @@ export default {
       loginRules: {
         username: [
           emptyValidator('账户不能为空'),
-          charLimitValidator('字符长度不能超过100', 1, 100)
+          charLimitValidator('用户名不正确', 1, 100)
         ],
         password: [
           emptyValidator('密码不能为空'),
-          passwordValidator()
+          passwordValidator('密码不正确')
         ]
       },
       isLoading: false
