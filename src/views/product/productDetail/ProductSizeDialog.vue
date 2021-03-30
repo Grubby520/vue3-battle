@@ -73,7 +73,7 @@ export default {
         name: '尺码段'
       }
       const tableHeader = this.sizeContrastTableList.reduce((init, tableStandard) => {
-        if (!init.includes(tableStandard.sizeStandardId)) {
+        if (!init.some(item => item.id === tableStandard.sizeStandardId)) {
           init.push({
             id: tableStandard.sizeStandardId,
             name: tableStandard.sizeStandardName
