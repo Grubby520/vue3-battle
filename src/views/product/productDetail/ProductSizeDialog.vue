@@ -68,25 +68,19 @@ export default {
     ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
-      let tableHeader = []
-      const standardData = this.sizeStandard.terms || []
       const sizeHeader = {
         id: 'size',
         name: '尺码段'
       }
-      const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
-      this.sizeContrastTableList.forEach(tableStandard => {
-        // 去重复数据
-        const hasSizeStandardId = tableHeader.some(header => header.id === tableStandard.sizeStandardId)
-        if (!hasSizeStandardId) {
-          if (standardDataIds.includes(tableStandard.sizeStandardId)) {
-            tableHeader.push({
-              id: tableStandard.sizeStandardId,
-              name: tableStandard.sizeStandardName
-            })
-          }
+      const tableHeader = this.sizeContrastTableList.reduce((init, tableStandard) => {
+        if (!init.includes(tableStandard.sizeStandardId)) {
+          init.push({
+            id: tableStandard.sizeStandardId,
+            name: tableStandard.sizeStandardName
+          })
         }
-      })
+        return init
+      }, [])
       tableHeader.unshift(sizeHeader)
       return !isEmpty(this.sizeContrastTableList) ? tableHeader : []
     },
