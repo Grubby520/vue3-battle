@@ -9,15 +9,15 @@
     custom-class="batch-attributes"
     @close="hide"
   >
-    <el-form :model="form" ref="form" label-width="120px" class="odmDetailBase-form-con">
+    <el-form :model="form" ref="form" label-width="12rem" class="odmDetailBase-form-con">
       <!-- sku -->
       <el-form-item label="SKU" prop="skuList">
         <el-checkbox :indeterminate="false" v-model="checkAll" @change="handleCheckAllSku">全选</el-checkbox>
-        <div style="margin: 15px 0;"></div>
+        <div style="margin: 1.5rem 0;"></div>
         <el-checkbox-group v-model="form.skuList" @change="handleCheckSku">
           <el-checkbox
             v-for="(sku, index) in skuList"
-            :label="sku.colorAttributeId"
+            :label="sku.attributeTermId"
             :key="index"
           >{{sku.colorAttributeName}}</el-checkbox>
         </el-checkbox-group>
@@ -27,7 +27,7 @@
         <el-input
           clearable
           v-model="form.supplyPrice"
-          v-slFormatNumber="{type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2}"
+          v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
         />
       </el-form-item>
       <hr class="separation" />
@@ -39,7 +39,7 @@
             <template v-slot="{row}">
               <el-input
                 v-model="row.weight"
-                v-slFormatNumber="{type: 'integer', max: 999999, compareLength: true, includeZero:true}"
+                v-slFormatNumber="{ type: 'integer', max: 99999999, compareLength: true, includeZero: true }"
               ></el-input>
             </template>
           </el-table-column>
@@ -86,30 +86,31 @@ export default {
       this.checkAll = skuList.length === this.skuList.length
     },
     handleCheckAllSku (isChecked) {
-      this.form.skuList = isChecked ? this.skuList.map((sku) => sku.colorAttributeId) : []
+      this.form.skuList = isChecked ? this.skuList.map((sku) => sku.attributeTermId) : []
     },
     /**
     * 打开弹窗
     * @param {String} dialogType 弹窗类型
     * @param {Object} data 入口传入的数据
     */
-    open (dialogType, data) {
-      this.dialogType = dialogType
+    open (data) {
       this.show = true
-      data = data || []
-      this.skuList = this.deduplication(data, 'colorAttributeId').map((sku) => {
-        return {
-          colorAttributeId: sku.colorAttributeId,
-          colorAttributeName: sku.colorAttributeName
-        }
-      })
-      this.form.sizeList = this.deduplication(data, 'sizeAttributeId').map((sku) => {
-        return {
-          sizeAttributeId: sku.sizeAttributeId,
-          sizeAttributeName: sku.sizeAttributeName,
-          weight: ''
-        }
-      })
+      const { sizes, colors } = data
+      this.skuList = this.deduplication(colors, 'id')
+        .map((sku) => {
+          return {
+            attributeTermId: sku.id,
+            colorAttributeName: sku.name
+          }
+        })
+      this.form.sizeList = this.deduplication(sizes, 'id')
+        .map((sku) => {
+          return {
+            attributeTermId: sku.id,
+            sizeAttributeName: sku.name,
+            weight: ''
+          }
+        })
     },
     /**
      * 对象数组去重
@@ -122,12 +123,6 @@ export default {
         return locationData ? pre : pre.concat(cur)
       }, [])
     },
-    /**
-    * 初始化表单数据
-    */
-    initData () {
-
-    },
     // 提交表单数据
     confirm () {
       // 表单业务操作完毕，关闭弹窗
@@ -135,7 +130,7 @@ export default {
       this.show = false
     },
     hide () {
-      this.$emit('hide', this.dialogType, !this.isCancel, this.form)
+      this.$emit('hide', this.form)
       this.resetData()
     },
     // 重置弹窗数据

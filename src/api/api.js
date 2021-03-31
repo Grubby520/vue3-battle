@@ -1,6 +1,6 @@
 // 用于声明调用接口的方法
 import URL from './url'
-import { get, post, del } from '@shared/http'
+import { get, post } from '@shared/http'
 import { yesOrNo } from './static'
 
 const COMMONAPI = {
@@ -19,16 +19,9 @@ const COMMONAPI = {
   generatePreUploadUrl (params) {
     return post(URL.generatePreUploadUrl, params)
   },
-
-  // 删除oss文件
-  deleteFiles (params) {
-    return del(URL.deleteFilesUrl, params)
-  },
-
-  // 分类树
-  category (params) {
-    return get(URL.categoryUrl, params)
+  // plm分类树
+  plmCategory () {
+    return get(URL.plmCategory)
   }
-
 }
 export default COMMONAPI
