@@ -22,7 +22,7 @@
               </template>
             </el-checkbox-group>
           </div>
-          <div class="table-area align-center" v-if="sizeTableData.length > 0">
+          <div class="table-area align-center" v-if="showSizeContrast">
             <h2>尺码对照表</h2>
             <el-table :data="sizeTableData" border max-height="400">
               <el-table-column
@@ -53,6 +53,9 @@ import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
 import { isEmpty } from '@shared/util'
 export default {
+  props: {
+    mode: { type: String, required: false, default: '' }
+  },
   data () {
     return {
       dialogVisible: false,
@@ -112,6 +115,16 @@ export default {
         tableRows.push(rowData)
       }
       return tableRows
+    },
+    // 是否隐藏尺码对照表
+    showSizeContrast () {
+      // 新建的时候尺码标准为空则不显示尺码对照表
+      const hideContrast = this.isCreate && isEmpty(this.sizeStandard)
+      return this.sizeTableData.length > 0 && !hideContrast
+    },
+    // 当前是否是创建
+    isCreate () {
+      return this.mode === 'create'
     }
   },
   watch: {
