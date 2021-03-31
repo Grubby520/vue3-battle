@@ -27,7 +27,7 @@
         <el-input
           clearable
           v-model="form.supplyPrice"
-          v-slFormatNumber="{ type: 'integer', max: 99999999, compareLength: true, includeZero: true }"
+          v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
         />
       </el-form-item>
       <hr class="separation" />
