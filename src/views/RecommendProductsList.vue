@@ -167,17 +167,17 @@ export default {
       RecommondApi.getList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
-          list.forEach(data => {
-            if (data.description.length > 30) {
-              data.description = data.description.substring(0, 30) + '...'
+          list.forEach(item => {
+            if (item.description.length > 30) {
+              item.description = item.description.substring(0, 30) + '...'
             }
-            data.src = data.productImageUrlList[0]
-            if (data.status) data.statusName = data.status.name
+            item.src = item.productImageUrlList[0]
+            if (item.status) item.statusName = item.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
           // 待推品复选框置灰数据
-          this.disabledKeys = list.filter(item => item.productStatus !== 0).map(item => item.id)
+          this.disabledKeys = list.filter(item => item.status.value !== 0).map(item => item.id)
           this.page.total = total
         })
     },
