@@ -131,7 +131,7 @@
         </el-form>
       </div>
       <!-- 尺码弹框 -->
-      <ProductSizeDialog ref="ProductSizeDialog" @confirm="sizeSelectConfirm" />
+      <ProductSizeDialog ref="ProductSizeDialog" :mode="mode" @confirm="sizeSelectConfirm" />
       <!-- 批量设置弹窗 -->
       <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
     </el-card>
@@ -146,6 +146,9 @@ import { isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
 export default {
   components: { ProductSizeDialog, BatchAttributes },
+  props: {
+    mode: { type: String, required: false, default: '' }
+  },
   data () {
     return {
       form: {
