@@ -5,7 +5,7 @@
       :key="component"
       :class="{'view-container': isStatus}"
     >
-      <component :is="component" :mode="mode" :ref="component" />
+      <component :is="component" :ref="component" />
     </div>
     <div class="product-btn">
       <SlDetails
