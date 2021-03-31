@@ -285,27 +285,30 @@ export default {
             this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
             const attr = ['color', 'size', 'specification']
             attr.forEach(label => {
-              const saleUsable = this.showSaleLabel[`${label}Usable`]
-              const saleDeleted = this.showSaleLabel[`${label}deleted`]
+              const isUsable = this.showSaleLabel[`${label}Usable`]
+              const isDeleted = this.showSaleLabel[`${label}deleted`]
               let hasAttr = 0
               if (!isEmpty(this.form[`${label}s`])) hasAttr = this.form[`${label}s`].length
-              if (!saleUsable) {
+              if (!isUsable) {
                 // 禁用
                 this.showSaleLabel[`${label}`] = `${this.showSaleLabel[`${label}`]}(已禁用)`
                 if (hasAttr > 0) {
                   this.tableHeadData.forEach(head => {
-                    if (!saleDeleted) {
+                    if (!isDeleted) {
                       if (head.name === label) {
                         head.label = `${head.label}(已禁用)`
                       }
                     }
                   })
                 } else {
-                  // const delIndex = this.tableHeadData.findIndex(headData => headData.name === label)
-                  // this.tableHeadData.splice(delIndex, 1)
+                  // 编辑状态如果有禁用属性表头删除禁用属性值
+                  let tableHeadData = this.tableHeadData
+                  const delIndex = tableHeadData.findIndex(headData => headData.name === label)
+                  tableHeadData.splice(delIndex, 1)
+                  this.tableHeadData = tableHeadData
                 }
               }
-              if (saleDeleted) {
+              if (isDeleted) {
                 this.tableHeadData.forEach(head => {
                   if (head.name === label) {
                     head.label = `${head.label}(已删除)`
@@ -583,18 +586,19 @@ export default {
     showSaleCondition (status) {
       // 属性是否被删除
       if (Object.keys(this.showSaleLabel).length > 0) {
-        const hasDeleted = this.showSaleLabel[`${status}deleted`]
+        const isDeleted = this.showSaleLabel[`${status}deleted`]
         // 是否有属性值
         const hasAttr = this.form[`${status}s`] ? this.form[`${status}s`].length : 0
         const isUsable = this.showSaleLabel[`${status}Usable`]
-        if (!hasDeleted) {
+        if (!isDeleted) {
           if (this.productParams.mode === 'create' && !isUsable) {
             return isUsable
           } else {
-            // 编辑
             if (!isUsable && hasAttr > 0) {
+              // 禁用有值
               return !isUsable
             } else if (this.showSaleLabel[status] && isUsable) {
+              // 分类绑定属性有正常值
               return isUsable
             }
           }
