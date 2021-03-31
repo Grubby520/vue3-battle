@@ -40,12 +40,12 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    OPEN_LOADING ({ state, commit }, isCount = false) {
+    OPEN_LOADING ({ state, commit }, { isCount = false, loadingText = '加载中' }) {
       if (isCount) { // 是否计数,用于请求拦截场景
         state.loadingCount++
       }
       if (!state.loadingInstance) {
-        commit('SET_LAODING', Loading.service({ fullscreen: true }))
+        commit('SET_LAODING', Loading.service({ fullscreen: true, text: loadingText }))
       }
     },
     CLOSE_LOADING ({ state, commit }, isCount = false) {

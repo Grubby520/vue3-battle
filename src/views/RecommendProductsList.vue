@@ -29,7 +29,7 @@
         :tableData="tableData"
         :columns="columns"
         v-model="selections"
-        :selectionsDisabled="selectionsDisabled"
+        :disabledKeys="disabledKeys"
         :tooltip="false"
       >
         <div slot="operation" slot-scope="{row}" class="operate">
@@ -54,7 +54,7 @@ export default {
     return {
       tableData: [],
       selections: [], // 复选框数据
-      selectionsDisabled: [],
+      disabledKeys: [],
       page: {
         pageIndex: 1,
         total: 0
@@ -89,7 +89,7 @@ export default {
       ],
       columns: [
         {
-          prop: 'productName',
+          prop: '',
           label: '商品信息',
           width: '300',
           isInImg: 'src',
@@ -112,7 +112,7 @@ export default {
           label: '状态'
         },
         {
-          prop: 'skuCode',
+          prop: '',
           label: '创建时间/更新时间',
           pre: {
             createTime: '创建',
@@ -167,17 +167,17 @@ export default {
       RecommondApi.getList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
-          list.forEach(data => {
-            if (data.description.length > 30) {
-              data.description = data.description.substring(0, 30) + '...'
+          list.forEach(item => {
+            if (item.description.length > 30) {
+              item.description = item.description.substring(0, 30) + '...'
             }
-            data.src = data.productImageUrlList[0]
-            if (data.status) data.statusName = data.status.name
+            item.src = item.productImageUrlList[0]
+            if (item.status) item.statusName = item.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
           // 待推品复选框置灰数据
-          this.selectionsDisabled = list.filter(item => item.status.value !== 0)
+          this.disabledKeys = list.filter(item => item.status.value !== 0).map(item => item.id)
           this.page.total = total
         })
     },
@@ -237,7 +237,6 @@ export default {
         })
     },
     productDetail (status, row) {
-      this.$store.commit('product/REMOVE_STASH_ATTRS', []) // 清除store里的缓存数据
       const { id, categoryId, supplierItemNo } = row
       const params = { mode: status, id, categoryId, supplierItemNo }
       const routerPath = status === 'create' ? '/home/recommend-products/category' : '/home/recommend-products/productDetail'

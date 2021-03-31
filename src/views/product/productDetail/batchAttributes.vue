@@ -27,7 +27,7 @@
         <el-input
           clearable
           v-model="form.supplyPrice"
-          v-slFormatNumber="{type: 'gold', max: 999999, compareLength: true, decimalPlaces: 2}"
+          v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
         />
       </el-form-item>
       <hr class="separation" />
@@ -39,7 +39,7 @@
             <template v-slot="{row}">
               <el-input
                 v-model="row.weight"
-                v-slFormatNumber="{type: 'integer', max: 999999, compareLength: true, includeZero:true}"
+                v-slFormatNumber="{ type: 'integer', max: 99999999, compareLength: true, includeZero: true }"
               ></el-input>
             </template>
           </el-table-column>

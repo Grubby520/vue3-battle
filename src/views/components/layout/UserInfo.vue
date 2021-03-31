@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isAdmin" class="user-info color-text--white align-right">
-    <div>{{supplierName}}</div>
+    <div class="text-overflow" :title="supplierName" style="max-width:20em">{{supplierName}}</div>
     <div class="color-text--gray">{{supplierStatus}}</div>
   </div>
   <div v-else class="display-inline-block color-text--white align-right">管理员</div>

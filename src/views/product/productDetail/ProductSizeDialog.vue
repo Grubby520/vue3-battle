@@ -22,7 +22,7 @@
               </template>
             </el-checkbox-group>
           </div>
-          <div class="table-area align-center">
+          <div class="table-area align-center" v-if="sizeTableData.length > 0">
             <h2>尺码对照表</h2>
             <el-table :data="sizeTableData" border max-height="400">
               <el-table-column
@@ -68,25 +68,19 @@ export default {
     ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
     tableHeadData () {
       // 表头数据信息
-      let tableHeader = []
-      const standardData = this.sizeStandard.terms || []
       const sizeHeader = {
         id: 'size',
         name: '尺码段'
       }
-      const standardDataIds = standardData.reduce((init, standardId) => init.concat(standardId.id), [])
-      this.sizeContrastTableList.forEach(tableStandard => {
-        // 去重复数据
-        const hasSizeStandardId = tableHeader.some(header => header.id === tableStandard.sizeStandardId)
-        if (!hasSizeStandardId) {
-          if (standardDataIds.includes(tableStandard.sizeStandardId)) {
-            tableHeader.push({
-              id: tableStandard.sizeStandardId,
-              name: tableStandard.sizeStandardName
-            })
-          }
+      const tableHeader = this.sizeContrastTableList.reduce((init, tableStandard) => {
+        if (!init.some(item => item.id === tableStandard.sizeStandardId)) {
+          init.push({
+            id: tableStandard.sizeStandardId,
+            name: tableStandard.sizeStandardName
+          })
         }
-      })
+        return init
+      }, [])
       tableHeader.unshift(sizeHeader)
       return !isEmpty(this.sizeContrastTableList) ? tableHeader : []
     },
@@ -135,9 +129,13 @@ export default {
       this.getSizeTable()
     },
     getSizeTable () {
+      this.sizeContrastTableList = []
       RecommendApi.pageList(this.productParams.categoryId)
         .then(res => {
-          this.sizeContrastTableList = res.data.sizeContrastTableList || []
+          const sizeContrastTableList = res.data.sizeContrastTableList || []
+          if (sizeContrastTableList.length > 0 && sizeContrastTableList[0].usable) {
+            this.sizeContrastTableList = sizeContrastTableList
+          }
         })
     },
     sortTable (arr, key) {

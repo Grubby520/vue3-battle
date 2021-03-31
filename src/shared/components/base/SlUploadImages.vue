@@ -50,14 +50,19 @@
             </span>
           </span>
         </div>
-        <div class="container-freedom">
+        <div v-if="$slots.content" class="container-freedom">
           <slot name="content" :file="file"></slot>
         </div>
       </template>
     </el-upload>
 
     <!-- 预览图片 -->
-    <el-dialog :visible.sync="dialogVisible" width="20%" :append-to-body="true">
+    <el-dialog
+      :visible.sync="dialogVisible"
+      width="20%"
+      :lock-scroll="false"
+      :append-to-body="true"
+    >
       <img width="100%" :src="dialogImageUrl" alt />
     </el-dialog>
   </div>
@@ -295,6 +300,7 @@ export default {
       this.$confirm('确实要删除该图片吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
+        lockScroll: false,
         type: 'warning'
       }).then(() => {
         // 取消上传文件

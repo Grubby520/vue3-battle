@@ -10,8 +10,8 @@
           <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
               <el-table-column
-                v-for="item in tableHeadData"
-                :key="item.name"
+                v-for="(item,index) in tableHeadData"
+                :key="`${item.name}${index}`"
                 :label="item.name"
                 align="center"
               >
@@ -113,10 +113,14 @@ export default {
       // 增加行
       const sizeInfoList = []
       const showLabels = {}
+      let attributeId = ''
+      if (!isEmpty(this.productSize.sizeInfoList)) {
+        attributeId = this.productSize.sizeInfoList[0].attributeId
+      }
       sizes.forEach(size => {
         const { attributeTermId, ...rest } = size
         const addItem = {
-          attributeId: this.sizeAttr.attributeId,
+          attributeId: this.sizeAttr.attributeId || attributeId,
           attributeTermId: size.id || attributeTermId,
           ...rest
         }
