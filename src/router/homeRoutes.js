@@ -48,15 +48,15 @@ export const homeRoutes = [
         },
         component: () => import('@/views/RecommendProductsList.vue')
       },
-      {
-        path: 'category',
-        name: '创建产品',
-        meta: {
-          icon: 'el-icon-paperclip',
-          code: 'menu_create_product'
-        },
-        component: () => import('@/views/product/Category.vue')
-      },
+      // {
+      //   path: 'category',
+      //   name: '创建产品',
+      //   meta: {
+      //     icon: 'el-icon-paperclip',
+      //     code: 'menu_create_product'
+      //   },
+      //   component: () => import('@/views/product/Category.vue')
+      // },
       {
         path: 'productDetail',
         name: '产品详情',
