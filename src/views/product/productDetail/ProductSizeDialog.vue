@@ -53,9 +53,6 @@ import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
 import { isEmpty } from '@shared/util'
 export default {
-  props: {
-    mode: { type: String, required: false, default: '' }
-  },
   data () {
     return {
       dialogVisible: false,
@@ -118,13 +115,7 @@ export default {
     },
     // 是否隐藏尺码对照表
     showSizeContrast () {
-      // 新建的时候尺码标准为空则不显示尺码对照表
-      const hideContrast = this.isCreate && isEmpty(this.sizeStandard)
-      return this.sizeTableData.length > 0 && !hideContrast
-    },
-    // 当前是否是创建
-    isCreate () {
-      return this.mode === 'create'
+      return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard)
     }
   },
   watch: {
