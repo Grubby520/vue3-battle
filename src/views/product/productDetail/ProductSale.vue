@@ -209,8 +209,6 @@ export default {
     ...mapGetters('product', ['productParams', 'productSalesAttributeDetail']),
     changeForm () {
       const saleAttrArr = []
-      // debugger
-      // const { sizes = [], colors = [], specifications = [] } = this.form
       const sizes = JSON.parse(JSON.stringify(this.form.sizes))
       const colors = JSON.parse(JSON.stringify(this.form.colors))
       const specifications = JSON.parse(JSON.stringify(this.form.specifications))
@@ -255,8 +253,6 @@ export default {
       handler (newValue) {
         const [catagoryDataStatus, productSalesAttributeDetail] = newValue
         if (catagoryDataStatus && !isEmpty(productSalesAttributeDetail)) {
-          const data = this.catagoryData
-          const _this = this
           const saleTypes = {
             'NZ011': ['size', 'sizes'],
             'NZ010': ['color', 'colors'],
@@ -264,76 +260,38 @@ export default {
           }
           const { productCategorySalesAttributeSelectedList = [], productSalesAttributes } = productSalesAttributeDetail
           this.form.productSalesAttributes = productSalesAttributes
-          const categorySaleAttrsIds = data
-            .filter(sale => ['NZ010', 'NZ011', 'NZ012'].includes(sale.extendCode))
-            .reduce((init, extendCode) => init.concat(extendCode.extendCode), [])
           if (!isEmpty(productCategorySalesAttributeSelectedList)) {
             productCategorySalesAttributeSelectedList.forEach(productSaleAttr => {
               const extendCode = productSaleAttr.attribute.extendCode
               const classified = saleTypes[`${extendCode}`][1]
               const typeOption = saleTypes[`${extendCode}`][0]
-              if (!categorySaleAttrsIds.includes(extendCode)) {
-                // 有删除的销售属性
-                _this.$set(_this.showSaleLabel, typeOption, `${productSaleAttr.attribute.name}(已删除)`)
-                _this.$set(_this.showSaleLabel, `${typeOption}deleted`, true)
-                const attributeTerms = productSaleAttr.attributeTerms
-                  .map(term => {
-                    term.extendCode = extendCode
-                    return term
-                  })
-                const options = attributeTerms.map(attr => {
-                  attr.name = `${attr.name}(已删除)`
-                  return {
-                    ...attr,
-                    attributeId: productSaleAttr.attributeId,
-                    extendCode: extendCode
-                  }
-                })
-                // 删除属性回填数据
-                this.form[`${saleTypes[extendCode][1]}`] = attributeTerms
-                // 删除属性下拉框数据
-                this[`${saleTypes[extendCode][0]}Options`] = options
-                // 重新修改尺码表数据
-                if (classified === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[classified])
-                this.tableHeadData.unshift({ name: saleTypes[extendCode][0], label: productSaleAttr.attribute.name, extendCode: extendCode })
-              } else {
-                const deletedItems = []
-                const { attributeId, attribute, attributeTerms } = productSaleAttr
-                const categorySaleAttrsTermIds = data
-                  .filter(attr => attr.extendCode === extendCode)
-                  .map(attr => {
-                    const terms = attr.terms.reduce((init, attrTerms) => init.concat(attrTerms.id), [])
-                    return terms
-                  })
-                const attributeTermInfo = attributeTerms.map(attr => {
-                  // 属性值被删除
-                  if (!categorySaleAttrsTermIds.flat().includes(attr.id)) {
-                    attr.name = `${attr.name}(已删除)`
-                    deletedItems.push({ ...attr, name: attr.name, extendCode: attribute.extendCode })
-                  }
-                  return {
-                    ...attr,
-                    attributeId: attributeId,
-                    extendCode: attribute.extendCode
-                  }
-                })
-                this.form[classified] = attributeTermInfo
-                // 重新修改尺码表数据
-                if (classified === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[classified])
-                // 下拉框添加删除的属性值
-                this[`${typeOption}Options`].push(...deletedItems)
+              // 属性是否在表头中
+              const attributeInHead = this.tableHeadData.some(head => head.id === productSaleAttr.attribute.id)
+              // 属性的extendCode是否在表头中
+              const extendCodeInHeadIndex = this.tableHeadData.findIndex(head => head.extendCode === extendCode)
+              // 当前属性作为表头的数据格式
+              const attributeHeadData = { name: typeOption, label: productSaleAttr.attribute.name, extendCode: extendCode, id: productSaleAttr.attribute.id }
+              // 当前类型的销售属性没在表头中
+              if (extendCodeInHeadIndex === -1) {
+                this.deletedProductAttrs(productSaleAttr, typeOption, classified, extendCode)
+                this.tableHeadData.unshift(attributeHeadData)
+              } else if (!attributeInHead) { // 当前销售属性没有在表头中（分类的销售属性已全部加入到表头）
+                this.deletedProductAttrs(productSaleAttr, typeOption, classified, extendCode)
+                this.tableHeadData.splice(extendCodeInHeadIndex, 1, attributeHeadData)
+              } else { // 正常的数据
+                this.deletedSaleAttrsTerms(productSaleAttr, typeOption, classified, extendCode)
               }
             })
             this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
             const attr = ['color', 'size', 'specification']
             attr.forEach(label => {
-              const saleUsable = _this.showSaleLabel[`${label}Usable`]
-              const saleDeleted = _this.showSaleLabel[`${label}deleted`]
+              const saleUsable = this.showSaleLabel[`${label}Usable`]
+              const saleDeleted = this.showSaleLabel[`${label}deleted`]
               let hasAttr = 0
               if (!isEmpty(this.form[`${label}s`])) hasAttr = this.form[`${label}s`].length
               if (!saleUsable) {
                 // 禁用
-                _this.showSaleLabel[`${label}`] = `${_this.showSaleLabel[`${label}`]}(已禁用)`
+                this.showSaleLabel[`${label}`] = `${this.showSaleLabel[`${label}`]}(已禁用)`
                 if (hasAttr > 0) {
                   this.tableHeadData.forEach(head => {
                     if (!saleDeleted) {
@@ -343,9 +301,8 @@ export default {
                     }
                   })
                 } else {
-                  const table = this.tableHeadData.filter(head => head.extendCode)
-                  const delIndex = table.findIndex(headData => headData.name === label && headData.extendCode)
-                  this.tableHeadData.splice(delIndex, 1)
+                  // const delIndex = this.tableHeadData.findIndex(headData => headData.name === label)
+                  // this.tableHeadData.splice(delIndex, 1)
                 }
               }
               if (saleDeleted) {
@@ -371,6 +328,57 @@ export default {
     this.load()
   },
   methods: {
+    deletedProductAttrs (productSaleAttr, typeOption, classified, extendCode) {
+      // 有删除的销售属性
+      this.$set(this.showSaleLabel, typeOption, `${productSaleAttr.attribute.name}(已删除)`)
+      this.$set(this.showSaleLabel, `${typeOption}deleted`, true)
+      const attributeTerms = productSaleAttr.attributeTerms
+        .map(term => {
+          term.extendCode = extendCode
+          return term
+        })
+      const options = attributeTerms.map(attr => {
+        attr.name = `${attr.name}(已删除)`
+        return {
+          ...attr,
+          attributeId: productSaleAttr.attributeId,
+          extendCode: extendCode
+        }
+      })
+      // 删除属性回填数据
+      this.form[classified] = attributeTerms
+      // 删除属性下拉框数据
+      this[`${typeOption}Options`] = options
+      // 重新修改尺码表数据
+      if (classified === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[classified])
+    },
+    deletedSaleAttrsTerms (productSaleAttr, typeOption, classified, extendCode) {
+      const deletedItems = []
+      const { attributeId, attribute, attributeTerms } = productSaleAttr
+      const categorySaleAttrsTermIds = this.catagoryData
+        .filter(attr => attr.extendCode === extendCode)
+        .map(attr => {
+          const terms = attr.terms.reduce((init, attrTerms) => init.concat(attrTerms.id), [])
+          return terms
+        })
+      const attributeTermInfo = attributeTerms.map(attr => {
+        // 属性值被删除
+        if (!categorySaleAttrsTermIds.flat().includes(attr.id)) {
+          attr.name = `${attr.name}(已删除)`
+          deletedItems.push({ ...attr, name: attr.name, extendCode: attribute.extendCode })
+        }
+        return {
+          ...attr,
+          attributeId: attributeId,
+          extendCode: attribute.extendCode
+        }
+      })
+      this.form[classified] = attributeTermInfo
+      // 重新修改尺码表数据
+      if (classified === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[classified])
+      // 下拉框添加删除的属性值
+      this[`${typeOption}Options`].push(...deletedItems)
+    },
     load () {
       return RecommendApi.plmCategoryAttrs(this.productParams.categoryId, { system: 2 })
         .then(res => {
@@ -387,7 +395,7 @@ export default {
         this[`${type}Options`] = this.addExtendCode(item.terms, item.extendCode, item.id)
         // 禁用属性表头显示
         const isShowSaleHead = (this.productParams.mode === 'create' && item.usable) || this.productParams.mode !== 'create'
-        isShowSaleHead && this.tableHeadData.unshift({ name: type, label: item.name, extendCode: item.extendCode })
+        isShowSaleHead && this.tableHeadData.unshift({ name: type, label: item.name, extendCode: item.extendCode, id: item.id })
         if (item.name) showSaleLabel[type] = item.name
         showSaleLabel[`${type}Usable`] = item.usable
       }
@@ -578,11 +586,17 @@ export default {
         const hasDeleted = this.showSaleLabel[`${status}deleted`]
         // 是否有属性值
         const hasAttr = this.form[`${status}s`] ? this.form[`${status}s`].length : 0
+        const isUsable = this.showSaleLabel[`${status}Usable`]
         if (!hasDeleted) {
-          if (!this.hasUsable(status, hasAttr) && Object.keys(this.showSaleLabel).includes(status)) {
-            return this.hasUsable(status, hasAttr) && this.showSaleLabel[status]
+          if (this.productParams.mode === 'create' && !isUsable) {
+            return isUsable
           } else {
-            return this.showSaleLabel[status]
+            // 编辑
+            if (!isUsable && hasAttr > 0) {
+              return !isUsable
+            } else if (this.showSaleLabel[status] && isUsable) {
+              return isUsable
+            }
           }
         } else {
           // 有删除属性，如果属性值为空隐藏
