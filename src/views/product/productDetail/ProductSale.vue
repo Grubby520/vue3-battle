@@ -200,7 +200,7 @@ export default {
         }
       ],
       numberRule: {
-        'supplyPrice': { type: 'integer', max: 99999999, compareLength: true, includeZero: true },
+        'supplyPrice': { type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 },
         'weight': { type: 'integer', max: 9999999999, compareLength: true, includeZero: true }
       }
     }
