@@ -409,11 +409,12 @@ export default {
       this.saleLabelSign.forEach(label => {
         const isUsable = this.showSaleLabel[`${label}Usable`]
         const isDeleted = this.showSaleLabel[`${label}deleted`]
-        let hasAttr = 0
-        if (!isEmpty(this.form[`${label}s`])) hasAttr = this.form[`${label}s`].length
-        if (!isUsable) {
+        const attrlabel = this.showSaleLabel[label]
+        const formSaleAttr = this.form[`${label}s`] || []
+        let hasAttr = formSaleAttr.length
+        if (!isUsable && Object.keys(this.showSaleLabel).includes(`${label}Usable`)) {
           // 禁用
-          this.showSaleLabel[`${label}`] = `${this.showSaleLabel[`${label}`]}(已禁用)`
+          if (attrlabel) this.showSaleLabel[`${label}`] = `${attrlabel}(已禁用)`
           if (hasAttr > 0) {
             this.tableHeadData.forEach(head => {
               if (!isDeleted) {
@@ -437,9 +438,7 @@ export default {
             }
           })
         }
-        const attrlabel = this.showSaleLabel[label]
-        const deletedAttr = this.showSaleLabel[`${label}deleted`]
-        if (deletedAttr && attrlabel.indexOf('已禁用') > 0) {
+        if (isDeleted && attrlabel.indexOf('已禁用') > 0) {
           this.showSaleLabel[label] = attrlabel.split('(已禁用)')[0]
         }
       })
