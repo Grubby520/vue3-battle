@@ -269,20 +269,19 @@ export default {
             'NZ012': ['specification', 'specifications']
           }
           const { productCategorySalesAttributeSelectedList = [], productSalesAttributes } = productSalesAttributeDetail
-          // const productSaleList = JSON.parse(JSON.stringify(productCategorySalesAttributeSelectedList))
-          // productSaleList.map(productItem => {
-          //   const terms = productItem.attribute.attributeTerms
-          //   terms.map(term => {
-          //     return {
-          //       ...term,
-          //       attributeId: productItem.attributeId,
-          //       extendCode: productItem.attribute.extendCode
-          //     }
-          //   })
-          // })
+          const productSaleList = JSON.parse(JSON.stringify(productCategorySalesAttributeSelectedList))
+          const productCategoryList = productSaleList.map(productItem => {
+            productItem.attributeTerms.forEach(term => {
+              Object.assign(term, {
+                tattributeId: productItem.attributeId,
+                extendCode: productItem.attribute.extendCode
+              })
+            })
+            return productItem
+          })
           this.form.productSalesAttributes = productSalesAttributes
-          if (!isEmpty(productCategorySalesAttributeSelectedList)) {
-            productCategorySalesAttributeSelectedList.forEach(productSaleAttr => {
+          if (!isEmpty(productCategoryList)) {
+            productCategoryList.forEach(productSaleAttr => {
               const { extendCode, name, id } = productSaleAttr.attribute
               const formSaleType = saleTypes[`${extendCode}`][1]
               const optionType = saleTypes[`${extendCode}`][0]
@@ -421,10 +420,11 @@ export default {
     },
     deletedProductAttrs (productSaleAttr, optionType, formSaleType) {
       // 有删除的销售属性
-      const { name, attributeTerms } = productSaleAttr.attribute
-      this.$set(this.showSaleLabel, optionType, `${name}(已删除)`)
+      const saleName = productSaleAttr.attribute
+      const attributeTerms = productSaleAttr.attributeTerms
+      this.$set(this.showSaleLabel, optionType, `${saleName}(已删除)`)
       this.$set(this.showSaleLabel, `${optionType}deleted`, true)
-      const options = attributeTerms.map(attr => {
+      const options = productSaleAttr.attributeTerms.map(attr => {
         attr.name = `${attr.name}(已删除)`
         return attr
       })
@@ -451,11 +451,6 @@ export default {
           }
         }
         return attr
-        // return {
-        //   ...attr,
-        //   // attributeId: attributeId,
-        //   // extendCode: attribute.extendCode
-        // }
       })
       this.form[formSaleType] = attributeTermInfo
       // 重新修改尺码表数据
