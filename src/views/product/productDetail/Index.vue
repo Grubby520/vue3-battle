@@ -75,7 +75,7 @@ export default {
       return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     },
     productComponents () {
-      return this.productStatus === 3 || this.productStatus === 4 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale']
+      return this.productStatus === 3 || this.productStatus === 4 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr']
     }
   },
   mounted () {
@@ -228,6 +228,29 @@ export default {
     height: 10rem;
     color: #909399;
     line-height: 10rem;
+  }
+  /deep/.el-form-item {
+    .el-form-item__label {
+      position: relative;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 25px;
+      height: 45px;
+      &::after {
+        position: absolute;
+        right: 10px;
+        top: 0;
+      }
+
+      .form-label--tag {
+        position: absolute;
+        right: 25px;
+        bottom: 0;
+        color: #909399;
+        line-height: 20px;
+      }
+    }
   }
 }
 </style>
