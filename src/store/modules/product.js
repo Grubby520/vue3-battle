@@ -20,7 +20,9 @@ export default {
     sizeStandard: null,
     // 品类商品属性
     customAttributesData: [],
-    showSaleLabel: {}
+    showSaleLabel: {},
+    // 分类数据
+    categoryData: []
   },
   getters: {
     productParams: state => state.productParams || {},
@@ -33,9 +35,13 @@ export default {
     sizeAttr: state => state.sizeAttr || [],
     sizeStandard: state => state.sizeStandard || {},
     customAttributesData: state => state.customAttributesData || [],
-    showSaleLabel: state => state.showSaleLabel || {}
+    showSaleLabel: state => state.showSaleLabel || {},
+    categoryData: state => state.categoryData || []
   },
   mutations: {
+    CATEGORY_DATA: (store, data) => {
+      store.categoryData = data
+    },
     PRODUCT_PARAMS: (store, data) => {
       store.productParams = data
     },

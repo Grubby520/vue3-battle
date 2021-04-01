@@ -1,12 +1,15 @@
 <template>
   <div class="product">
-    <div
-      v-for="component in productComponents"
-      :key="component"
-      :class="{'view-container': isStatus}"
-    >
-      <component :is="component" :ref="component" />
-    </div>
+    <template>
+      <div
+        v-loading="loading"
+        v-for="component in productComponents"
+        :key="component"
+        :class="{'view-container': isStatus}"
+      >
+        <component :is="component" :ref="component" />
+      </div>
+    </template>
     <div class="product-btn">
       <SlDetails
         ref="control"
@@ -32,6 +35,7 @@ import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
+// import { deepClone } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -48,7 +52,8 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
-      productStatus: undefined
+      productStatus: undefined,
+      loading: false
     }
   },
   watch: {
@@ -73,28 +78,63 @@ export default {
       return this.productStatus === 3 || this.productStatus === 4 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale']
     }
   },
+  mounted () {
+    if (this.mode === 'create') {
+      this.getCategoryAttr()
+    }
+  },
   methods: {
     load () {
-      RecommondApi.product(this.id)
-        .then(res => {
-          const {
-            productBase,
-            productCustomAttributes,
-            productImages,
-            productSalesAttributeDetail,
-            productSize
-          } = res.data
-          const productData = {
-            'PRODUCT_BASE': productBase, // 基础属性
-            'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
-            'PRODUCT_IMAGES': productImages, // 图片属性
-            'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
-            'PRODUCT_SIZE': productSize // 尺码表
-          }
-          for (let product in productData) {
-            this.$store.commit(`product/${product}`, productData[product] || [])
-          }
-          this.productStatus = productBase.status
+      const productAttrsRequest = RecommondApi.product(this.id)
+      const categoryAttrsRequest = RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
+      Promise.all([productAttrsRequest, categoryAttrsRequest])
+        .then(responses => {
+          this.loading = true
+          responses.forEach((response, index) => {
+            if (index === 0) {
+              this.productAttrsInfo(response)
+            } else if (index === 1) {
+              this.categoryAttrs(response)
+            }
+          })
+        }).finally(() => {
+          this.loading = false
+        })
+    },
+    productAttrsInfo (response) {
+      const {
+        productBase,
+        productCustomAttributes,
+        productImages,
+        productSalesAttributeDetail,
+        productSize
+      } = response.data
+      const productData = {
+        'PRODUCT_BASE': productBase, // 基础属性
+        'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
+        'PRODUCT_IMAGES': productImages, // 图片属性
+        'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
+        'PRODUCT_SIZE': productSize // 尺码表
+      }
+      for (let product in productData) {
+        this.$store.commit(`product/${product}`, productData[product] || [])
+      }
+      this.productStatus = productBase.status
+    },
+    categoryAttrs (response) {
+      const categoryData = response.data.map(categoryItem => {
+        categoryItem.terms.forEach(term => {
+          term.extendCode = categoryItem.extendCode
+          term.attributeId = categoryItem.id
+        })
+        return categoryItem
+      })
+      this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+    },
+    getCategoryAttr () {
+      RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
+        .then(response => {
+          this.categoryAttrs(response)
         })
     },
     create () {
