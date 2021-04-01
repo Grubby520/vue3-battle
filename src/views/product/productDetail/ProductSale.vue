@@ -139,7 +139,6 @@
 </template>
 
 <script>
-// import RecommendApi from '@api/recommendProducts/recommendProducts'
 import ProductSizeDialog from './ProductSizeDialog'
 import BatchAttributes from './batchAttributes'
 import { deepClone, isEmpty } from '@shared/util'
@@ -229,17 +228,13 @@ export default {
     },
     showTable () {
       // 多个属性，需要都选择值以后数据插入表格中
-      const { sizes, colors, specifications } = this.form
-      const len = []
-      const showAttrs = {
-        'size': sizes.length,
-        'color': colors.length,
-        'specification': specifications.length
-      }
-      Object.keys(this.showSaleLabel).forEach(item => {
-        if (this.saleLabelSign.includes(item) && this.hasUsable(item)) len.push(showAttrs[item])
-      })
-      return len.every(item => item > 0)
+      const saleLens = this.saleLabelSign
+        .reduce((lens, sign) => {
+          const length = this.form[`${sign}s`].length
+          if (this.showSaleLabel[`${sign}`]) lens.push(length)
+          return lens
+        }, [])
+      return !isEmpty(saleLens) && saleLens.every(item => item && item > 0)
     },
     showAttrHint () {
       return this.noSaleAttributes && this.productParams.mode === 'create'
@@ -281,11 +276,10 @@ export default {
           }
           const { productCategorySalesAttributeSelectedList = [], productSalesAttributes } = productSalesAttributeDetail
           this.form.productSalesAttributes = productSalesAttributes
-          const productSaleList = JSON.parse(JSON.stringify(productCategorySalesAttributeSelectedList))
-          const productCategoryList = productSaleList.map(productItem => {
+          const productCategoryList = productCategorySalesAttributeSelectedList.map(productItem => {
             productItem.attributeTerms.forEach(term => {
               Object.assign(term, {
-                tattributeId: productItem.attributeId,
+                attributeId: productItem.attributeId,
                 extendCode: productItem.attribute.extendCode
               })
             })
@@ -353,10 +347,10 @@ export default {
               usable: item.usable
             })
             break
-          // 尺码标准
-          case 'NZ013':
-            this.$store.commit('product/SIZE_STANDARD', { terms: item.terms })
-            break
+          // // 尺码标准
+          // case 'NZ013':
+          //   this.$store.commit('product/SIZE_STANDARD', { terms: item.terms })
+          //   break
           default:
             // 商品属性（其他属性）
             const customAttributesData = useCategoryData.filter(item => item.type.value === 4)
@@ -373,7 +367,10 @@ export default {
     buildSaleData (showSaleLabel, item, type) {
       const { terms, name, usable, extendCode, id } = item
       this[`${type}Options`] = terms.map(term => {
-        if (!term.usable) term.name = `${term.name}(已禁用)`
+        if (!term.usable) {
+          term.name = `${term.name}(已禁用)`
+          term.disabled = true
+        }
         return term
       })
       if (name) {
@@ -400,6 +397,7 @@ export default {
           let isDeleted = false
           const termIds = cateTerm.terms.reduce((ids, term) => ids.concat(term.id), []) || []
           const termUsable = cateTerm.terms.find(term => term.id === termId)
+          console.log('terms', termUsable)
           if (!isEmpty(termIds)) isDeleted = !termIds.includes(termId)
           if (!isEmpty(termUsable)) isUsable = termUsable.usable
           cateTermStatus = isDeleted ? { isDeleted } : { isUsable }
@@ -455,12 +453,12 @@ export default {
         let hasAttr = formSaleAttr.length
         if (!isUsable && Object.keys(this.showSaleLabel).includes(`${label}Usable`)) {
           // 禁用
-          if (attrlabel) this.showSaleLabel[`${label}`] = `${attrlabel}(已禁用)`
+          // if (attrlabel) this.showSaleLabel[`${label}`] = `${attrlabel}(已禁用)`
           if (hasAttr > 0) {
             this.tableHeadData.forEach(head => {
               if (!isDeleted) {
                 if (head.name === label) {
-                  head.label = `${head.label}(已禁用)`
+                  // head.label = `${head.label}(已禁用)`
                 }
               }
             })
@@ -475,7 +473,7 @@ export default {
         if (isDeleted) {
           this.tableHeadData.forEach(head => {
             if (head.name === label) {
-              head.label = `${head.label}(已删除)`
+              // head.label = `${head.label}(已删除)`
             }
           })
         }

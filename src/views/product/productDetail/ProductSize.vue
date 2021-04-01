@@ -54,7 +54,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'productParams', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
+    ...mapGetters('product', ['checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'productSize', 'showSaleLabel']),
+    sizeStandard () {
+      return this.categoryData.filter(categoryItem => categoryItem.extendCode === 'NZ013') || []
+    },
     tableHeadData () {
       const sizes = {
         id: 'size',
@@ -62,19 +65,23 @@ export default {
         status: 'text'
       }
       // 回显情况的表头
-      let echoSizeStandard = []
-      const sizePositions = !isEmpty(this.productSize.sizeInfoList) ? this.productSize.sizeInfoList[0].sizePositions : []
-      const sizeStandardTerms = this.sizeStandard.terms || []
-      const sizeStandardIds = sizeStandardTerms.reduce((init, standard) => init.concat(standard.id), [])
-      if (sizePositions && sizePositions.length > 0) {
-        echoSizeStandard = sizePositions.map(options => {
-          if (!sizeStandardIds.includes(options.attributeTermId)) {
-            options.attributeTerm.name = `${options.attributeTerm.name}(已删除)`
-          }
-          return { id: options.attributeTermId, name: options.attributeTerm.name }
-        })
+      const sizePositions = this.productSize.sizeInfoList ? this.productSize.sizeInfoList[0].sizePositions : []
+      let headStandard = []
+      if (!isEmpty(sizePositions)) {
+        const echoSizeStandard = sizePositions
+          .map(saleSizeItem => {
+            const { attributeTermId, attributeTerm } = saleSizeItem
+            const saleSizeStatus = this.isSaleTermsStatus('NZ013', attributeTermId)
+            if (saleSizeStatus.isDeleted) {
+              saleSizeItem.attributeTerm.name = `${attributeTerm.name}(已删除)`
+            } else if (!saleSizeStatus.isUsable) {
+              saleSizeItem.attributeTerm.name = `${attributeTerm.name}(已禁用)`
+            }
+            return attributeTerm
+          })
+        headStandard = this.deduplication([sizes, ...echoSizeStandard || []], 'id')
       }
-      return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
+      return !isEmpty(headStandard) ? headStandard : this.deduplication([sizes], 'id')
     },
     showProductSizeTable () {
       const hasProductSize = !isEmpty(this.productSize.sizeInfoList)
@@ -160,6 +167,24 @@ export default {
         })
         return sizeInfoList
       }
+    },
+    /**
+   * 判断销售属性值是删除还是禁用
+   */
+    isSaleTermsStatus (extendCode, termId) {
+      return this.categoryData
+        .filter(cateTerm => cateTerm.extendCode === extendCode)
+        .reduce((cateTermStatus, cateTerm) => {
+          // 属性值如果被删除，展示属性值的状态，否则展示是否被禁用的状态
+          let isUsable = false
+          let isDeleted = false
+          const termIds = cateTerm.terms.reduce((ids, term) => ids.concat(term.id), []) || []
+          const termUsable = cateTerm.terms.find(term => term.id === termId) || {}
+          if (!isEmpty(termIds)) isDeleted = !termIds.includes(termId)
+          if (!isEmpty(termUsable)) isUsable = termUsable.usable
+          cateTermStatus = isDeleted ? { isDeleted } : { isUsable }
+          return cateTermStatus
+        }, {})
     },
     result () {
       return new Promise(resolve => {
