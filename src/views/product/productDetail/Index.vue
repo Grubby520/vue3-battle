@@ -229,5 +229,28 @@ export default {
     color: #909399;
     line-height: 10rem;
   }
+  /deep/.el-form-item {
+    .el-form-item__label {
+      position: relative;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 25px;
+      height: 45px;
+      &::after {
+        position: absolute;
+        right: 10px;
+        top: 0;
+      }
+
+      .form-label--tag {
+        position: absolute;
+        right: 25px;
+        bottom: 0;
+        color: #909399;
+        line-height: 20px;
+      }
+    }
+  }
 }
 </style>
