@@ -35,7 +35,8 @@ router.beforeEach((to, from, next) => {
     let paths = to.matched.filter(ele => { return ele.path !== '/home' })
     let breadcrumbs = paths.map(ele => {
       return {
-        path: ele.path.replace(/(?<=\/)(:\w+)(?=\/)?/, function (w) {
+        // safafi不支持(?<=xx)语法 /(?<=\/)(:\w+)(?=\/)?/
+        path: ele.path.replace(/(?:\/)(:\w+)(?=\/)?/, function (w) {
           return to.params[w.replace(':', '')]
         }),
         label: ele.meta.alias ? ele.meta.alias : ele.name
