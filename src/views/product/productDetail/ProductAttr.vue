@@ -152,11 +152,11 @@ export default {
       })
 
       // 如果不是待补充信息，应该过滤掉品类树上不存在详情中的数据
-      if (this.productStatus !== 3) {
-        // 属性列表加上属性详情中已经被删掉的属性
-        attributes = attributes
-          .filter((attribute) => this.dataMap.get(`${attribute.id}`)) // 确保要展示的属性都是推品保存时就有的
-      }
+      // if (this.productStatus !== 3) {
+      //   // 属性列表加上属性详情中已经被删掉的属性
+      //   attributes = attributes
+      //     .filter((attribute) => this.dataMap.get(`${attribute.id}`)) // 确保要展示的属性都是推品保存时就有的
+      // }
 
       // 已经删除的属性
       const hasDeletedAttributes = attributesData
