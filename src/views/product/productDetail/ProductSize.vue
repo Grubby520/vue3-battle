@@ -54,20 +54,31 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
+    ...mapGetters('product', ['productBase', 'checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
+    productStatus () {
+      return this.productBase.status
+    },
     tableHeadData () {
       const sizes = {
         id: 'size',
         name: this.showSaleLabel.size,
         status: 'text'
       }
+      return [sizes, ...this.sizeStandardHeadData]
+    },
+    sizeStandardHeadData () {
       let categoryAttributeTerms = this.sizeStandard.terms || []
       categoryAttributeTerms.forEach(term => {
         if (!term.usable) {
           term.name = `${term.name}(已禁用)`
         }
       })
-      const productAttributeTerms = this.productAttributeTerms
+      let productAttributeTerms = this.productAttributeTerms
+      // 如果不是待补充信息，应该过滤掉品类树上不存在详情中的数据
+      if (this.productStatus !== 3) {
+        categoryAttributeTerms = this.categoryAttributeTerms
+          .filter(term => productAttributeTerms.find(productTerm => productTerm.id === term.id))
+      }
       const deletedTerms = productAttributeTerms
         .filter(term => isEmpty(categoryAttributeTerms.find(categoryTerm => categoryTerm.id === term.id)))
         .map(term => {
@@ -79,12 +90,12 @@ export default {
           }
         })
       categoryAttributeTerms = categoryAttributeTerms.concat(deletedTerms)
-      return [sizes, ...categoryAttributeTerms]
+      return categoryAttributeTerms
     },
     showTable () {
       const sizeStandardTerms = this.sizeStandard.terms
       const hasSizeStandard = !isEmpty(sizeStandardTerms) // 存在尺码标准属性值
-      const checkedSizes = this.checkedSizes // 存在选中的尺码
+      const checkedSizes = !isEmpty(this.checkedSizes) // 存在选中的尺码
       return hasSizeStandard && checkedSizes
     },
     productAttributeTerms () {
@@ -191,18 +202,11 @@ export default {
     result () {
       return new Promise(resolve => {
         let productSize = {}
-        let echoSizes = []
-        // 编辑使用回显标准尺码
-        if (!isEmpty(this.productSize.sizeInfoList)) {
-          echoSizes = this.productSize.sizeInfoList[0].sizePositions.reduce((init, size) => init.concat(size.attributeTermId), [])
-        }
         const sizelist = this.form.sizeInfoList || []
         const sizeInfoList = sizelist.map((size) => {
           const { attributeTermId, attributeId } = size
-          const sizeStandardTerms = this.sizeStandard.terms || []
           // 新增使用分类标准尺码
-          const sizeStandard = sizeStandardTerms.map(standard => standard.id)
-          const standardIds = echoSizes.length > 0 ? echoSizes : sizeStandard
+          const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
           const sizePositions = standardIds.map(key => {
             return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
           })
