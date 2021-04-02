@@ -55,7 +55,7 @@
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
-import { isEmpty } from '@shared/util'
+import { deepClone, isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -119,6 +119,7 @@ export default {
     },
     // 是否隐藏尺码对照表
     showSizeContrast () {
+      deepClone(this.sizeTableData)
       return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard)
     }
   },

@@ -16,8 +16,6 @@ export default {
     productSize: [],
     // 选中尺寸
     checkedSizes: [],
-    // 品类绑定标准属性
-    // sizeStandard: null,
     // 品类商品属性
     customAttributesData: [],
     showSaleLabel: {},
@@ -33,7 +31,7 @@ export default {
     productImagesIInfo: state => state.productImages || [],
     productSize: state => state.productSize || [],
     sizeAttr: state => state.sizeAttr || [],
-    // sizeStandard: state => state.sizeStandard || {},
+    sizeStandard: (state, getters) => getters.categoryData.find(categoryItem => categoryItem.extendCode === 'NZ013') || {},
     customAttributesData: state => state.customAttributesData || [],
     showSaleLabel: state => state.showSaleLabel || {},
     categoryData: state => state.categoryData || []
@@ -66,9 +64,6 @@ export default {
     PRODUCT_SIZE: (store, data) => {
       store.productSize = data
     },
-    // SIZE_STANDARD: (store, data) => {
-    //   store.sizeStandard = data
-    // },
     CUSTOM_ATTRIBUTES_DATA: (store, data) => {
       store.customAttributesData = data
     },

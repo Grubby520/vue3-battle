@@ -4,8 +4,7 @@
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
-      <p v-if="showProductSizeTable" class="align-center no-data">~暂无数据~</p>
-      <div class="form" v-else>
+      <div class="form" v-if="showTable">
         <el-form :model="form" ref="form" class="productSize-from">
           <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
@@ -31,6 +30,7 @@
           </div>
         </el-form>
       </div>
+      <p class="align-center no-data" v-else>~暂无数据~</p>
     </el-card>
   </div>
 </template>
@@ -54,38 +54,42 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'productSize', 'showSaleLabel']),
-    sizeStandard () {
-      return this.categoryData.filter(categoryItem => categoryItem.extendCode === 'NZ013') || []
-    },
+    ...mapGetters('product', ['checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
     tableHeadData () {
       const sizes = {
         id: 'size',
         name: this.showSaleLabel.size,
         status: 'text'
       }
-      // 回显情况的表头
-      const sizePositions = this.productSize.sizeInfoList ? this.productSize.sizeInfoList[0].sizePositions : []
-      let headStandard = []
-      if (!isEmpty(sizePositions)) {
-        const echoSizeStandard = sizePositions
-          .map(saleSizeItem => {
-            const { attributeTermId, attributeTerm } = saleSizeItem
-            const saleSizeStatus = this.isSaleTermsStatus('NZ013', attributeTermId)
-            if (saleSizeStatus.isDeleted) {
-              saleSizeItem.attributeTerm.name = `${attributeTerm.name}(已删除)`
-            } else if (!saleSizeStatus.isUsable) {
-              saleSizeItem.attributeTerm.name = `${attributeTerm.name}(已禁用)`
-            }
-            return attributeTerm
-          })
-        headStandard = this.deduplication([sizes, ...echoSizeStandard || []], 'id')
-      }
-      return !isEmpty(headStandard) ? headStandard : this.deduplication([sizes], 'id')
+      let categoryAttributeTerms = this.sizeStandard.terms || []
+      categoryAttributeTerms.forEach(term => {
+        if (!term.usable) {
+          term.name = `${term.name}(已禁用)`
+        }
+      })
+      const productAttributeTerms = this.productAttributeTerms
+      const deletedTerms = productAttributeTerms
+        .filter(term => isEmpty(categoryAttributeTerms.find(categoryTerm => categoryTerm.id === term.id)))
+        .map(term => {
+          return {
+            ...term,
+            name: `${term.name}(已删除)`,
+            deleted: true,
+            usable: true
+          }
+        })
+      categoryAttributeTerms = categoryAttributeTerms.concat(deletedTerms)
+      return [sizes, ...categoryAttributeTerms]
     },
-    showProductSizeTable () {
-      const hasProductSize = !isEmpty(this.productSize.sizeInfoList)
-      return (Object.keys(this.sizeStandard).length === 0 && !hasProductSize) || (this.checkedSizes.length === 0 && !hasProductSize) || isEmpty(this.sizeStandard)
+    showTable () {
+      const sizeStandardTerms = this.sizeStandard.terms
+      const hasSizeStandard = !isEmpty(sizeStandardTerms) // 存在尺码标准属性值
+      const checkedSizes = this.checkedSizes // 存在选中的尺码
+      return hasSizeStandard && checkedSizes
+    },
+    productAttributeTerms () {
+      const sizePositions = this.productSize.sizeInfoList ? this.productSize.sizeInfoList[0].sizePositions : []
+      return sizePositions.map(position => position.attributeTerm)
     }
   },
   watch: {
@@ -171,20 +175,18 @@ export default {
     /**
    * 判断销售属性值是删除还是禁用
    */
-    isSaleTermsStatus (extendCode, termId) {
-      return this.categoryData
-        .filter(cateTerm => cateTerm.extendCode === extendCode)
-        .reduce((cateTermStatus, cateTerm) => {
-          // 属性值如果被删除，展示属性值的状态，否则展示是否被禁用的状态
-          let isUsable = false
-          let isDeleted = false
-          const termIds = cateTerm.terms.reduce((ids, term) => ids.concat(term.id), []) || []
-          const termUsable = cateTerm.terms.find(term => term.id === termId) || {}
-          if (!isEmpty(termIds)) isDeleted = !termIds.includes(termId)
-          if (!isEmpty(termUsable)) isUsable = termUsable.usable
-          cateTermStatus = isDeleted ? { isDeleted } : { isUsable }
-          return cateTermStatus
-        }, {})
+    attributeTermsStatus (extendCode, termId) {
+      const attribute = this.categoryData
+        .find(cateTerm => cateTerm.extendCode === extendCode) || {}
+      if (isEmpty(attribute)) {
+        console.error(`extendCode: ${extendCode} is not exsit in tree`)
+        return { isDeleted: true }
+      }
+      const term = attribute.terms.find(term => term.id === termId)
+      if (isEmpty(term)) {
+        return { isDeleted: true }
+      }
+      return { isUsable: term.usable }
     },
     result () {
       return new Promise(resolve => {
