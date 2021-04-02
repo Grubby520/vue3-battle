@@ -76,7 +76,7 @@ export default {
       let productAttributeTerms = this.productAttributeTerms
       // 如果不是待补充信息，应该过滤掉品类树上不存在详情中的数据
       if (this.productStatus !== 3) {
-        categoryAttributeTerms = this.categoryAttributeTerms
+        categoryAttributeTerms = categoryAttributeTerms
           .filter(term => productAttributeTerms.find(productTerm => productTerm.id === term.id))
       }
       const deletedTerms = productAttributeTerms
