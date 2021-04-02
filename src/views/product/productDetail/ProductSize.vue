@@ -68,6 +68,10 @@ export default {
     },
     sizeStandardHeadData () {
       let categoryAttributeTerms = this.sizeStandard.terms || []
+      // 创建模式（可不用考虑）或者补充信息的时候过滤掉不可用的
+      if (this.productParams.mode === 'create' || this.productStatus === 3) {
+        categoryAttributeTerms = categoryAttributeTerms.filter(attributeTerm => attributeTerm.usable)
+      }
       categoryAttributeTerms.forEach(term => {
         if (!term.usable) {
           term.name = `${term.name}(已禁用)`
