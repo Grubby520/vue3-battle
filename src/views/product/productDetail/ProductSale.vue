@@ -656,7 +656,7 @@ export default {
           this.form[`${status}s`] = []
           // 删除表头信息
           const delIndex = this.tableHeadData.findIndex(head => head.name === status)
-          this.tableHeadData.splice(delIndex, 1)
+          if (delIndex !== -1) this.tableHeadData.splice(delIndex, 1)
         }
         // 正常可用属性
         const avaliableAttribute = this.showSaleLabel[status] && isUsable && !isDeleted
