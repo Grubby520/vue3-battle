@@ -195,7 +195,9 @@ export default {
         specificationdeleted: false,
         sizeUsable: true,
         colorUsable: true,
-        specificationUsable: true
+        specificationUsable: true,
+        // 销售属性数据是否已经加载完毕
+        done: false
       },
       tableLabel: {}, // 表头展示的销售属性name
       noSaleAttributes: undefined,
@@ -337,6 +339,7 @@ export default {
             })
             this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
             this.refreshSaleLabel()
+            this.showSaleLabel.done = true
           }
         }
       },
@@ -638,7 +641,7 @@ export default {
     showSaleCondition (status) {
       let show = false
       // 避免三个销售属性都没有值的情况
-      if (Object.keys(this.showSaleLabel).length > 0) {
+      if (this.showSaleLabel.done) {
         // 是否有属性值
         const hasAttr = (this.form[`${status}s`] || []).length > 0
         const isDeleted = this.showSaleLabel[`${status}deleted`]
