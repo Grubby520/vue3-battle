@@ -339,9 +339,9 @@ export default {
             })
             this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
             this.refreshSaleLabel()
-            this.showSaleLabel.done = true
           }
         }
+        this.showSaleLabel.done = true
       },
       immediate: true
     }
