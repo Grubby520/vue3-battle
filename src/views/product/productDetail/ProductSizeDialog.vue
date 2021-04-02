@@ -26,7 +26,7 @@
               </template>
             </el-checkbox-group>
           </div>
-          <div class="table-area align-center" v-if="sizeTableData.length > 0">
+          <div class="table-area align-center" v-if="showSizeContrast">
             <h2>尺码对照表</h2>
             <el-table :data="sizeTableData" border max-height="400">
               <el-table-column
@@ -116,6 +116,10 @@ export default {
         tableRows.push(rowData)
       }
       return tableRows
+    },
+    // 是否隐藏尺码对照表
+    showSizeContrast () {
+      return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard)
     }
   },
   watch: {

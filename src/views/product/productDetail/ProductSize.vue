@@ -85,7 +85,7 @@ export default {
     },
     showProductSizeTable () {
       const hasProductSize = !isEmpty(this.productSize.sizeInfoList)
-      return (Object.keys(this.sizeStandard).length === 0 && !hasProductSize) || (this.checkedSizes.length === 0 && !hasProductSize)
+      return (Object.keys(this.sizeStandard).length === 0 && !hasProductSize) || (this.checkedSizes.length === 0 && !hasProductSize) || isEmpty(this.sizeStandard)
     }
   },
   watch: {
