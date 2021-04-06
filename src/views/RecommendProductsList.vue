@@ -21,7 +21,7 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
-        <!-- <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button> -->
+        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
