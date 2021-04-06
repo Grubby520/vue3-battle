@@ -194,7 +194,6 @@ export default {
       const attribute = this.categoryData
         .find(cateTerm => cateTerm.extendCode === extendCode) || {}
       if (isEmpty(attribute)) {
-        console.error(`extendCode: ${extendCode} is not exsit in tree`)
         return { isDeleted: true }
       }
       const term = attribute.terms.find(term => term.id === termId)
