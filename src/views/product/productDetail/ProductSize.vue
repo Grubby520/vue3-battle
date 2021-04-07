@@ -145,8 +145,9 @@ export default {
       }
       sizes.forEach(size => {
         const { attributeTermId, ...rest } = size
+        const sizeAttrAttributeId = this.sizeAttr.attributeId ? this.sizeAttr.attributeId : attributeId
         const addItem = {
-          attributeId: this.sizeAttr.attributeId || attributeId,
+          attributeId: sizeAttrAttributeId,
           attributeTermId: size.id || attributeTermId,
           ...rest
         }

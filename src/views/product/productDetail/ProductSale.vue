@@ -460,6 +460,8 @@ export default {
       this[`${optionType}Options`] = [...options, ...deletedItems]
       // 重新修改尺码表数据
       if (formSaleType === 'sizes') this.$store.commit('product/CHECKED_SIZES', this.form[formSaleType])
+      // 重新修改尺码表销售属性数据
+      this.$store.commit('product/SIZE_ATTR', attributeTerms)
     },
     refreshSaleLabel () {
       this.saleLabelSign.forEach(label => {
