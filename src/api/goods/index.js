@@ -4,6 +4,10 @@ import URL from './goodsUrl'
 
 const GOODS_API = {
   // 获取附件列表
+  remarks (params) {
+    return put(URL.remarks, params)
+  },
+  // 获取附件列表
   getAttachmentList (params) {
     return get(URL.attachmentListUrl, params)
   },

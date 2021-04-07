@@ -95,6 +95,7 @@
             >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
           </template>
         </el-table-column>
+        <el-table-column prop="remarks" label="总金额（￥）" width="100px" align="center"></el-table-column>
         <el-table-column label="操作" width="180px" align="center" fixed="right">
           <template slot-scope="scope">
             <!-- <el-button
@@ -102,22 +103,26 @@
               type="text"
               v-if="[0,1].includes(Number(scope.row.orderStatus))"
             >修改</el-button>-->
-            <el-button @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
+            <el-button class="operate-btn" @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
             <el-button
+              class="operate-btn"
               @click="exportExcle(scope.row)"
               type="text"
               v-if="scope.row.orderStatus != 5"
             >导出表格</el-button>
             <el-button
+              class="operate-btn"
               @click="printOrder(scope.row)"
               type="text"
               v-if="scope.row.orderStatus != 5"
             >打印发货单</el-button>
             <el-button
+              class="operate-btn"
               @click="printBatch(scope.row)"
               type="text"
               v-if="scope.row.orderStatus != 5"
             >打印批次号</el-button>
+            <el-button class="operate-btn" type="text" @click="handleRemark(scope.row)">备注</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -130,6 +135,24 @@
     <shipping-details ref="shippingDetail"></shipping-details>
     <print-batch-no ref="printBatch"></print-batch-no>
     <print-invoice ref="printInvoice"></print-invoice>
+    <!-- 备注 -->
+    <el-dialog
+      title="备注"
+      :visible.sync="remarksDialogVisible"
+      width="600px"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="remarksForm">
+        <el-form-item>
+          <el-input v-model="remarksForm.remarks" type="textarea" :rows="4" maxlength="200"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="remarksDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSaveRemarks">保 存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -150,6 +173,11 @@ export default {
   components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo, PrintInvoice },
   data () {
     return {
+      remarksForm: {
+        remarks: ''
+      },
+      remarksRow: {},
+      remarksDialogVisible: false,
       page: {
         pageIndex: 1,
         pageSize: 10,
@@ -210,6 +238,33 @@ export default {
   },
 
   methods: {
+    handleSaveRemarks () {
+      const deliveryOrderNumber = this.remarksRow.orderNumber
+      GOODS_API.remarks({
+        deliveryOrderNumber,
+        remarks: this.remarksForm.remarks
+      }).then((res) => {
+        if (res.success) {
+          this.$notify({
+            title: '成功',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.$set(this.remarksForm, 'remarks', '')
+          this.remarksDialogVisible = false
+          let params = this.getParams(10, 1)
+          this.getInvoiceList(params)
+        }
+      })
+    },
+
+    handleRemark (row) {
+      this.remarksDialogVisible = true
+      this.remarksRow = row
+      this.$set(this.remarksForm, 'remarks', row.remarks)
+    },
+
     checkSelectable (row) {
       return row.orderStatus !== 5
     },
@@ -446,6 +501,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.operate-btn {
+  display: block;
+  &:first-child {
+    margin-left: 10px;
+  }
+}
 .delivery-list {
   width: 100%;
   .delivery-introduce {
