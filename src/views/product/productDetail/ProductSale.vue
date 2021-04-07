@@ -131,8 +131,8 @@
                         :key="index"
                       >
                         <span
-                          v-if="(tableLabel[tableAttr.attributeTermId+'']).extendCode === item.extendCode"
-                        >{{tableLabel[tableAttr.attributeTermId+''].name}}</span>
+                          v-if="(tableLabel[`${tableAttr.attributeTermId}`]).extendCode === item.extendCode"
+                        >{{tableLabel[`${tableAttr.attributeTermId}`].name}}</span>
                       </div>
                     </template>
                     <!-- 供货价格/sku/吊牌/带包装 -->
@@ -200,7 +200,6 @@ export default {
         done: false
       },
       tableLabel: {}, // 表头展示的销售属性name
-      noSaleAttributes: undefined,
       tableHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
@@ -266,12 +265,16 @@ export default {
       return !isEmpty(saleLens) && saleLens.every(item => item && item > 0)
     },
     showAttrHint () {
-      return this.noSaleAttributes && this.productParams.mode === 'create'
+      // 判断是否有销售属性
+      const hasSaleAttributes = this.filterUableSaleAttrs.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode)).length === 0
+      return hasSaleAttributes && this.productParams.mode === 'create'
     },
     productAttrFill () {
+      // 回显数据
       return [this.categoryData, this.productSalesAttributeDetail]
     },
     filterUableSaleAttrs () {
+      // 创建时过滤禁用的属性和属性值
       const categoryData = deepClone(this.categoryData)
         .filter(categoryItem => categoryItem.usable)
         .reduce((init, categoryItem) => {
@@ -330,15 +333,17 @@ export default {
               if (extendCodeInHeadIndex === -1) {
                 this.deletedProductAttrs(productSaleAttr, optionType, formSaleType)
                 this.tableHeadData.unshift(attributeHeadData)
+                this.refreshHeads()
               } else if (!attributeInHead) { // 当前销售属性没有在表头中（分类的销售属性已全部加入到表头）
                 this.deletedProductAttrs(productSaleAttr, optionType, formSaleType)
+                // 删除分类上新的销售属性
                 this.tableHeadData.splice(extendCodeInHeadIndex, 1, attributeHeadData)
+                this.refreshHeads()
               } else { // 正常的数据
                 this.deletedSaleAttrsTerms(productSaleAttr, optionType, formSaleType)
+                this.refreshHeads()
               }
             })
-            this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
-            this.refreshSaleLabel()
           }
         }
         this.showSaleLabel.done = true
@@ -377,11 +382,9 @@ export default {
             // 商品属性（其他属性）
             const customAttributesData = useCategoryData.filter(item => item.type.value === 4)
             this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
-            this.$store.commit('product/SHOW_SALE_LABEL', this.showSaleLabel)
+            this.$store.commit('product/SHOW_SALE_LABEL', { size: this.showSaleLabel.size })
         }
       })
-      // 判断是否有销售属性
-      this.noSaleAttributes = useCategoryData.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode)).length === 0
     },
     /**
     * 构建销售属性表头/销售属性展示label/下拉赋值
@@ -398,14 +401,15 @@ export default {
       if (name) {
         showSaleLabel[type] = name
         showSaleLabel[`${type}Usable`] = usable
+        showSaleLabel[`${type}Type`] = {
+          id: id,
+          name: type,
+          usable: usable,
+          label: name,
+          extendCode: extendCode
+        }
       }
-      this.tableHeadData.unshift({
-        name: type,
-        label: name,
-        extendCode: extendCode,
-        id: id,
-        usable: usable
-      })
+      this.tableHeadData.unshift(showSaleLabel[`${type}Type`])
     }, /**
    * 判断销售属性值是删除还是禁用
    */
@@ -463,42 +467,23 @@ export default {
       // 重新修改尺码表销售属性数据
       this.$store.commit('product/SIZE_ATTR', attributeTerms)
     },
-    refreshSaleLabel () {
-      this.saleLabelSign.forEach(label => {
-        const isUsable = this.showSaleLabel[`${label}Usable`]
-        const isDeleted = this.showSaleLabel[`${label}deleted`]
-        const attrlabel = this.showSaleLabel[label]
-        const formSaleAttr = this.form[`${label}s`] || []
-        let hasAttr = formSaleAttr.length
-        if (!isUsable && Object.keys(this.showSaleLabel).includes(`${label}Usable`)) {
-          // 禁用
-          // if (attrlabel) this.showSaleLabel[`${label}`] = `${attrlabel}(已禁用)`
-          if (hasAttr > 0) {
-            this.tableHeadData.forEach(head => {
-              if (!isDeleted) {
-                if (head.name === label) {
-                  // head.label = `${head.label}(已禁用)`
-                }
-              }
-            })
-          } else {
-            // 编辑状态如果有禁用属性表头删除禁用属性值
-            let tableHeadData = this.tableHeadData
-            const delIndex = tableHeadData.findIndex(headData => headData.name === label)
-            tableHeadData.splice(delIndex, 1)
-            this.tableHeadData = tableHeadData
-          }
-        }
-        if (isDeleted) {
-          this.tableHeadData.forEach(head => {
-            if (head.name === label) {
-              // head.label = `${head.label}(已删除)`
+    refreshHeads () {
+      // 更新表头数据信息
+      this.saleLabelSign.forEach(sign => {
+        this.tableHeadData.forEach(head => {
+          const saleDelted = this.showSaleLabel[`${sign}deleted`]
+          const saleUsable = this.showSaleLabel[`${sign}Usable`]
+          if (head.name === sign) {
+            if (saleDelted) {
+              if (head.label.indexOf('已删除') > 0) return
+              head.label = `${head.label}(已删除)`
+            } else if (!saleUsable) {
+              if (head.label.indexOf('已禁用') > 0) return
+              head.label = `${head.label}(已禁用)`
             }
-          })
-        }
-        if (isDeleted && attrlabel.indexOf('已禁用') > 0) {
-          this.showSaleLabel[label] = attrlabel.split('(已禁用)')[0]
-        }
+            if (sign === 'size') this.$store.commit('product/SHOW_SALE_LABEL', { size: head.label })
+          }
+        })
       })
     },
     selectChange (e, attribute) {
