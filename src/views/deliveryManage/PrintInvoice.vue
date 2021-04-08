@@ -39,7 +39,7 @@
               <td>
                 <SlImage size="8rem" :src="item.image" />
               </td>
-              <td>{{item.purchaseOrderId}}</td>
+              <td>{{item.purchaseOrderNumber}}</td>
               <td>{{item.spu}}</td>
               <td>{{item.sku}}</td>
               <td>{{item.skuAttribute}}</td>
