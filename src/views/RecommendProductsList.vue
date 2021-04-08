@@ -21,7 +21,7 @@
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
-        <!-- <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button> -->
+        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -35,7 +35,7 @@
         <div slot="operation" slot-scope="{row}" class="operate">
           <el-button @click="productDetail('modify',row)" v-if="row.status.value===0" type="text">编辑</el-button>
           <el-button @click="productDetail('view',row)" type="text">查看</el-button>
-          <el-button @click="productDetail('modify',row)" v-if="row.status.value===2" type="text">修改</el-button>
+          <el-button @click="productDetail('modify',row)" v-if="row.status.value===3" type="text">修改</el-button>
           <el-button @click="commit(row)" v-if="row.status.value===0" type="text">提交</el-button>
           <el-button @click="cancel(row)" v-if="row.status.value===1" type="text">撤回</el-button>
           <el-button @click="deleteProduct(row)" v-if="row.status.value===0" type="text">删除</el-button>

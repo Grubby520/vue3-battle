@@ -20,12 +20,17 @@
                       <el-tooltip effect="dark" :content="attribute.name" placement="top">
                         <span class="form-label pointer-enable">{{attribute.name}}</span>
                       </el-tooltip>
+                      <span
+                        class="form-label--tag"
+                        v-if="attribute.deleted || !attribute.usable"
+                      >({{attribute.deleted ? '已删除' : !attribute.usable ? '已禁用' : ''}})</span>
                     </template>
 
                     <component
                       v-model="attribute.value"
                       :is="itemType(attribute)"
                       :multiple="attribute.checkbox"
+                      :disabled="!attribute.usable"
                       collapse-tags
                       clearable
                       filterable
@@ -35,7 +40,7 @@
                         :key="index"
                         :label="term.name"
                         :value="term.id"
-                        :disabled="term.deleted||(productParams.mode!=='create'&& !attribute.usable)"
+                        :disabled="hideTerms(term, attribute.value)"
                       ></el-option>
                     </component>
                   </el-form-item>
@@ -50,7 +55,7 @@
 </template>
 
 <script>
-import { deepClone } from '@shared/util'
+import { deepClone, isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
 export default {
   data () {
@@ -67,7 +72,10 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters('product', ['customAttributesData', 'productParams', 'productCustomAttributes']),
+    ...mapGetters('product', ['productBase', 'customAttributesData', 'productParams', 'productCustomAttributes']),
+    productStatus () {
+      return this.productBase.status
+    },
     customAttributes () {
       const { customAttributesData, productCustomAttributes } = this
       return { customAttributesData, productCustomAttributes }
@@ -79,10 +87,13 @@ export default {
         const attributes = this.parseCustomerAttributes(data)
         this.form.attributesData = attributes // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
+          .filter(attribute => this.showAttribute(attribute))
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
             // termValueType [1: 标准化文本] [2: 自定义文本]
-            const attributeValues = (attributeData.attribute || {}).termValueType === 1
+            const isStandardAttribute =
+              (attributeData.attribute || {}).termValueType === 1
+            const attributeValues = isStandardAttribute
               ? (attributeData.attributeTerms || []).map(term => term.id) : attributeData.attributeValue
             let value = attributeValues || []
             // 如果值存在 且是数组 且不是多选
@@ -98,13 +109,9 @@ export default {
               required: attribute.required,
               terms: attribute.terms,
               value: value,
+              deleted: attribute.deleted,
               usable: attribute.usable
             }
-          }).filter(attr => {
-            const isArrayAttr = Array.isArray(attr.value)
-            const hasAttrValue = isArrayAttr ? attr.value.length > 0 && !attr.usable : attr.value && !attr.usable
-            // 创建时不展示禁用属性，编辑和查看有值展示禁用属性否则不展示
-            return this.productParams.mode !== 'create' ? attr.usable || hasAttrValue : attr.usable
           })
       },
       deep: true,
@@ -114,6 +121,14 @@ export default {
   methods: {
     itemType (item) {
       return item.termValueType === 1 ? 'el-select' : 'el-input'
+    },
+    hideTerms (term, attributeValue) {
+      attributeValue = isEmpty(attributeValue) ? [] : attributeValue
+      const deleted = term.deleted
+      const termValue = term.id
+      const valueIsEqual = typeof attributeValue === 'object' ? attributeValue.includes(termValue) : false
+      const termUsable = term.usable
+      return (deleted && !valueIsEqual) || !termUsable
     },
     /**
      * 构造界面需要展示的自定义属性集合
@@ -130,47 +145,69 @@ export default {
       // 遍历属性数据列表，给他们加上是否删除的标识
       attributesData.forEach((attributeData) => {
         const categoryAttribute = attributes.find(catetoryAttribute => catetoryAttribute.id === attributeData.attributeId)
-        attributeData.attribute.deleted = !categoryAttribute
+        attributeData.deleted = !categoryAttribute
+        // 如果属性已删除，则不判断属性值是否已经删除了
         if (!categoryAttribute) return
-        attributeData.attribute.usable = categoryAttribute.usable
         const categoryAttributeTerms = categoryAttribute.terms || [];
         (attributeData.attributeTerms || []).forEach(attributeTerm => {
           attributeTerm.deleted = !categoryAttributeTerms.some(term => term.id === attributeTerm.id)
         })
       })
+
+      // 如果不是待补充信息，应该过滤掉品类树上不存在详情中的数据
+      // if (this.productStatus !== 3) {
+      //   // 属性列表加上属性详情中已经被删掉的属性
+      //   attributes = attributes
+      //     .filter((attribute) => this.dataMap.get(`${attribute.id}`)) // 确保要展示的属性都是推品保存时就有的
+      // }
+
       // 已经删除的属性
       const hasDeletedAttributes = attributesData
-        .filter((attribute) => attribute.attribute.deleted)
+        .filter((attribute) => attribute.deleted)
         .map((attribute) => {
           return {
             ...attribute.attribute,
-            name: `${attribute.attribute.name}（已删除）`,
+            name: `${attribute.attribute.name}`,
             required: false,
+            deleted: true,
             usable: true,
             priority: 0,
             terms: (attribute.attributeTerms || []).map((term) => {
               return {
                 id: term.id,
                 name: `${term.name}（已删除）`,
-                deleted: true
+                deleted: true,
+                usable: true
               }
             })
           }
         })
+
       // 已经删除了属性值的属性 (属性未删除，但是属性值是删除了的)
       const hasDeletedTermsdAttributes = attributesData
-        .filter((attribute) => !attribute.attribute.deleted && (attribute.attributeTerms || []).some((term) => term.deleted))
+        .filter((attribute) => !attribute.deleted && (attribute.attributeTerms || []).some((term) => term.deleted))
+
       // 属性列表加上属性详情中已经被删掉的属性
       attributes = attributes.map((attribute) => {
         const hasDeletedTermsdAttribute = hasDeletedTermsdAttributes
           .find(deletedAttribute => deletedAttribute.attributeId === attribute.id)
         let terms = attribute.terms
+        terms.forEach(term => {
+          if (!term.usable) {
+            term.name = `${term.name}(已禁用)`
+            term.disabled = true
+          }
+        })
         if (hasDeletedTermsdAttribute) {
-          terms = terms.concat(hasDeletedTermsdAttribute.attributeTerms.filter(terms => terms.deleted).map((term) => {
+          const attributeTerms = hasDeletedTermsdAttribute.attributeTerms
+          // 属性值已删除的
+          const deletedTerms = attributeTerms.filter(term => term.deleted)
+          terms = terms.concat(deletedTerms.map((term) => {
             return {
               id: term.id,
-              name: `${term.name}（已删除）`,
-              deleted: true
+              name: `${term.name}(已删除)`,
+              deleted: term.deleted,
+              usable: term.usable
             }
           }))
         }
@@ -180,12 +217,6 @@ export default {
           terms: terms
         }
       }).concat(hasDeletedAttributes)
-      // 属性禁用
-      attributes
-        .filter(attribute => !attribute.usable)
-        .forEach((usableAttr) => {
-          usableAttr.name = !usableAttr.deleted ? `${usableAttr.name}(已禁用)` : usableAttr.name
-        })
       return attributes
     },
     /**
@@ -197,6 +228,9 @@ export default {
       attributesData.forEach((attributeData) => {
         this.dataMap.set(`${attributeData.attributeId}`, attributeData)
       })
+    },
+    showAttribute (attribute) {
+      return (!attribute.deleted && attribute.usable) || !isEmpty(attribute.value)
     },
     result () {
       return new Promise(resolve => {

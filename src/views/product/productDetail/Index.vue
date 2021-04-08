@@ -1,12 +1,15 @@
 <template>
   <div class="product">
-    <div
-      v-for="component in productComponents"
-      :key="component"
-      :class="{'view-container': isStatus}"
-    >
-      <component :is="component" :ref="component" />
-    </div>
+    <template>
+      <div
+        v-loading="loading"
+        v-for="component in productComponents"
+        :key="component"
+        :class="{'view-container': isStatus}"
+      >
+        <component :is="component" :ref="component" />
+      </div>
+    </template>
     <div class="product-btn">
       <SlDetails
         ref="control"
@@ -32,6 +35,7 @@ import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
+// import { deepClone } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -49,7 +53,7 @@ export default {
   data () {
     return {
       productStatus: undefined,
-      productComponents: ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr']
+      loading: false
     }
   },
   watch: {
@@ -68,31 +72,69 @@ export default {
       return this.mode === 'view'
     },
     saveText () {
-      return this.isStatus ? [] : this.productStatus !== 2 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+      return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+    },
+    productComponents () {
+      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale']
+    }
+  },
+  mounted () {
+    if (this.mode === 'create') {
+      this.getCategoryAttr()
     }
   },
   methods: {
     load () {
-      RecommondApi.product(this.id)
-        .then(res => {
-          const {
-            productBase,
-            productCustomAttributes,
-            productImages,
-            productSalesAttributeDetail,
-            productSize
-          } = res.data
-          const productData = {
-            'PRODUCT_BASE': productBase, // 基础属性
-            'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
-            'PRODUCT_IMAGES': productImages, // 图片属性
-            'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
-            'PRODUCT_SIZE': productSize // 尺码表
-          }
-          for (let product in productData) {
-            this.$store.commit(`product/${product}`, productData[product] || [])
-          }
-          this.productStatus = productBase.status
+      const productAttrsRequest = RecommondApi.product(this.id)
+      const categoryAttrsRequest = RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
+      Promise.all([productAttrsRequest, categoryAttrsRequest])
+        .then(responses => {
+          this.loading = true
+          responses.forEach((response, index) => {
+            if (index === 0) {
+              this.productAttrsInfo(response)
+            } else if (index === 1) {
+              this.categoryAttrs(response)
+            }
+          })
+        }).finally(() => {
+          this.loading = false
+        })
+    },
+    productAttrsInfo (response) {
+      const {
+        productBase,
+        productCustomAttributes,
+        productImages,
+        productSalesAttributeDetail,
+        productSize
+      } = response.data
+      const productData = {
+        'PRODUCT_BASE': productBase, // 基础属性
+        'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
+        'PRODUCT_IMAGES': productImages, // 图片属性
+        'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
+        'PRODUCT_SIZE': productSize // 尺码表
+      }
+      for (let product in productData) {
+        this.$store.commit(`product/${product}`, productData[product] || [])
+      }
+      this.productStatus = productBase.status
+    },
+    categoryAttrs (response) {
+      const categoryData = response.data.map(categoryItem => {
+        categoryItem.terms.forEach(term => {
+          term.extendCode = categoryItem.extendCode
+          term.attributeId = categoryItem.id
+        })
+        return categoryItem
+      })
+      this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+    },
+    getCategoryAttr () {
+      RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
+        .then(response => {
+          this.categoryAttrs(response)
         })
     },
     create () {
@@ -116,8 +158,8 @@ export default {
           let interfacesStatus = {
             0: 'productSave'
           }
-          // productStatus 2:保存 非2：修改补充信息
-          interfacesStatus[1] = this.productStatus !== 2 ? 'productSaveSubmit' : 'replenish'
+          // productStatus 3:保存 非3：修改补充信息
+          interfacesStatus[1] = this.productStatus !== 3 ? 'productSaveSubmit' : 'replenish'
           const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
           RecommondApi[interfaces](res)
             .then((res) => {
@@ -186,6 +228,29 @@ export default {
     height: 10rem;
     color: #909399;
     line-height: 10rem;
+  }
+  /deep/.el-form-item {
+    .el-form-item__label {
+      position: relative;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding-right: 25px;
+      height: 45px;
+      &::after {
+        position: absolute;
+        right: 10px;
+        top: 0;
+      }
+
+      .form-label--tag {
+        position: absolute;
+        right: 25px;
+        bottom: 0;
+        color: #909399;
+        line-height: 20px;
+      }
+    }
   }
 }
 </style>

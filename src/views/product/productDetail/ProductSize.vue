@@ -4,8 +4,7 @@
       <div slot="header" class="title">
         <span>尺码表</span>
       </div>
-      <p v-if="showProductSizeTable" class="align-center no-data">~暂无数据~</p>
-      <div class="form" v-else>
+      <div class="form" v-if="showTable">
         <el-form :model="form" ref="form" class="productSize-from">
           <div class="productSize-from__table">
             <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
@@ -31,13 +30,14 @@
           </div>
         </el-form>
       </div>
+      <p class="align-center no-data" v-else>~暂无数据~</p>
     </el-card>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { isEmpty } from '@shared/util'
+import { deepClone, isEmpty } from '@shared/util'
 import inputFilter from '@shared/directives/inputFilter/index.js'
 export default {
   directives: {
@@ -54,31 +54,36 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['checkedSizes', 'productParams', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
+    ...mapGetters('product', ['productBase', 'checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
+    productStatus () {
+      return this.productBase.status
+    },
     tableHeadData () {
       const sizes = {
         id: 'size',
         name: this.showSaleLabel.size,
         status: 'text'
       }
-      // 回显情况的表头
-      let echoSizeStandard = []
-      const sizePositions = !isEmpty(this.productSize.sizeInfoList) ? this.productSize.sizeInfoList[0].sizePositions : []
-      const sizeStandardTerms = this.sizeStandard.terms || []
-      const sizeStandardIds = sizeStandardTerms.reduce((init, standard) => init.concat(standard.id), [])
-      if (sizePositions && sizePositions.length > 0) {
-        echoSizeStandard = sizePositions.map(options => {
-          if (!sizeStandardIds.includes(options.attributeTermId)) {
-            options.attributeTerm.name = `${options.attributeTerm.name}(已删除)`
-          }
-          return { id: options.attributeTermId, name: options.attributeTerm.name }
-        })
-      }
-      return !isEmpty(echoSizeStandard) ? this.deduplication([sizes, ...echoSizeStandard || []], 'id') : this.deduplication([sizes, ...sizeStandardTerms], 'id')
+      return [sizes, ...this.sizeStandardHeadData]
     },
-    showProductSizeTable () {
-      const hasProductSize = !isEmpty(this.productSize.sizeInfoList)
-      return (Object.keys(this.sizeStandard).length === 0 && !hasProductSize) || (this.checkedSizes.length === 0 && !hasProductSize) || isEmpty(this.sizeStandard)
+    sizeStandardHeadData () {
+      let categoryAttributeTerms = []
+      if (this.sizeStandard && !isEmpty(this.sizeStandard.terms)) {
+        categoryAttributeTerms = deepClone(this.sizeStandard.terms)
+      }
+      // 禁用和删除的属性值都不展示
+      const filterCategoryUsable = categoryAttributeTerms.filter(categoryTerms => categoryTerms.usable)
+      return filterCategoryUsable
+    },
+    showTable () {
+      const sizeStandardTerms = this.sizeStandard.terms
+      const hasSizeStandard = !isEmpty(sizeStandardTerms) // 存在尺码标准属性值
+      const checkedSizes = !isEmpty(this.checkedSizes) // 存在选中的尺码
+      return (hasSizeStandard && checkedSizes)
+    },
+    productAttributeTerms () {
+      const sizePositions = this.productSize.sizeInfoList ? this.productSize.sizeInfoList[0].sizePositions : []
+      return sizePositions.map(position => position.attributeTerm)
     }
   },
   watch: {
@@ -119,8 +124,9 @@ export default {
       }
       sizes.forEach(size => {
         const { attributeTermId, ...rest } = size
+        const sizeAttrAttributeId = this.sizeAttr.attributeId ? this.sizeAttr.attributeId : attributeId
         const addItem = {
-          attributeId: this.sizeAttr.attributeId || attributeId,
+          attributeId: sizeAttrAttributeId,
           attributeTermId: size.id || attributeTermId,
           ...rest
         }
@@ -130,13 +136,6 @@ export default {
       })
       this.showLabels = showLabels
       this.form.sizeInfoList = this.stashTableInfo(sizeInfoList)
-    },
-    deduplication (data, primaryKey) {
-      // 数组对象去重
-      return data.reduce((pre, cur) => {
-        const locationData = pre.find((item) => item[primaryKey] === cur[primaryKey])
-        return locationData ? pre : pre.concat(cur)
-      }, [])
     },
     /**
     * 暂存尺码之前输入记录和回显
@@ -164,26 +163,21 @@ export default {
     result () {
       return new Promise(resolve => {
         let productSize = {}
-        let echoSizes = []
-        // 编辑使用回显标准尺码
-        if (!isEmpty(this.productSize.sizeInfoList)) {
-          echoSizes = this.productSize.sizeInfoList[0].sizePositions.reduce((init, size) => init.concat(size.attributeTermId), [])
-        }
-        const sizelist = this.form.sizeInfoList || []
-        const sizeInfoList = sizelist.map((size) => {
-          const { attributeTermId, attributeId } = size
-          const sizeStandardTerms = this.sizeStandard.terms || []
-          // 新增使用分类标准尺码
-          const sizeStandard = sizeStandardTerms.map(standard => standard.id)
-          const standardIds = echoSizes.length > 0 ? echoSizes : sizeStandard
-          const sizePositions = standardIds.map(key => {
-            return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+        if (this.showTable) {
+          const sizelist = this.form.sizeInfoList || []
+          const sizeInfoList = sizelist.map((size) => {
+            const { attributeTermId, attributeId } = size
+            // 新增使用分类标准尺码
+            const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
+            const sizePositions = standardIds.map(key => {
+              return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+            })
+            return { sizePositions, attributeTermId, attributeId }
           })
-          return { sizePositions, attributeTermId, attributeId }
-        })
-        productSize['sizeInfoList'] = sizeInfoList
-        productSize.id = this.productSize.id
-        resolve({ 'productSize': productSize || [] })
+          productSize['sizeInfoList'] = sizeInfoList
+          productSize.id = this.productSize.id
+        }
+        resolve({ 'productSize': productSize })
       })
     }
   }
