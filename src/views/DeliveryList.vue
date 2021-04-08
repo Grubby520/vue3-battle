@@ -95,7 +95,7 @@
             >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
           </template>
         </el-table-column>
-        <el-table-column prop="remarks" label="总金额（￥）" width="100px" align="center"></el-table-column>
+        <el-table-column prop="remarks" label="备注" width="200px" align="center"></el-table-column>
         <el-table-column label="操作" width="180px" align="center" fixed="right">
           <template slot-scope="scope">
             <!-- <el-button
