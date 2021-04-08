@@ -252,7 +252,7 @@ export default {
       Object.keys(saleTypes).forEach(saleType => {
         !isEmpty(saleTypes[saleType]) && saleAttrArr.push(saleTypes[saleType])
       })
-      return saleAttrArr
+      return { saleAttrArr, done: this.showSaleLabel.done }
     },
     showTable () {
       // 多个属性，需要都选择值以后数据插入表格中
@@ -289,9 +289,14 @@ export default {
   watch: {
     'changeForm': {
       // 监听尺码/颜色/规格变化
-      handler (newValue) {
+      handler ({ saleAttrArr, done }) {
         // 多个属性都选择了数据数据添加到table中，否则就重置table
-        this.form.productSalesAttributes = this.showTable ? this.addTableItems(newValue) : []
+        if (done) {
+          // this.form.productSalesAttributes = this.showTable ? this.addTableItems(saleAttrArr) : []
+          if (this.showTable) {
+            this.form.productSalesAttributes = this.addTableItems(saleAttrArr)
+          }
+        }
       },
       immediate: true,
       deep: true
