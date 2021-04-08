@@ -9,7 +9,7 @@
         <el-form :model="form" ref="form" label-width="20rem">
           <el-row :gutter="8">
             <template v-for="(attribute, index) in form.attributesData">
-              <el-col :span="12" :key="attribute.attributeId" v-if="showAttribute(attribute)">
+              <el-col :span="12" :key="attribute.attributeId">
                 <div>
                   <el-form-item
                     :label="attribute.name"
@@ -87,6 +87,7 @@ export default {
         const attributes = this.parseCustomerAttributes(data)
         this.form.attributesData = attributes // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
+          .filter(attribute => this.showAttribute(attribute))
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
             // termValueType [1: 标准化文本] [2: 自定义文本]
