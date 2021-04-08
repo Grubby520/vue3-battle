@@ -233,7 +233,8 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        const data = this.form.attributesData.map((attribute) => {
+        const avaliableDada = this.form.attributesData.filter(attribute => this.showAttribute(attribute)) || []
+        const data = avaliableDada.map((attribute) => {
           return {
             attributeId: attribute.attributeId,
             attributeValues: attribute.checkbox ? attribute.value : (attribute.value ? [attribute.value] : []),
