@@ -67,7 +67,10 @@ export default {
       return [sizes, ...this.sizeStandardHeadData]
     },
     sizeStandardHeadData () {
-      let categoryAttributeTerms = deepClone(this.sizeStandard.terms) || []
+      let categoryAttributeTerms = []
+      if (this.sizeStandar && !isEmpty(this.sizeStandard.terms)) {
+        categoryAttributeTerms = deepClone(this.sizeStandard.terms)
+      }
       // 禁用和删除的属性值都不展示
       const filterCategoryUsable = categoryAttributeTerms.filter(categoryTerms => categoryTerms.usable)
       return filterCategoryUsable
