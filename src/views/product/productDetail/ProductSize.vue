@@ -37,7 +37,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { isEmpty } from '@shared/util'
+import { deepClone, isEmpty } from '@shared/util'
 import inputFilter from '@shared/directives/inputFilter/index.js'
 export default {
   directives: {
@@ -67,34 +67,10 @@ export default {
       return [sizes, ...this.sizeStandardHeadData]
     },
     sizeStandardHeadData () {
-      let categoryAttributeTerms = this.sizeStandard.terms || []
-      // 创建模式（可不用考虑）或者补充信息的时候过滤掉不可用的
-      if (this.productParams.mode === 'create' || this.productStatus === 3) {
-        categoryAttributeTerms = categoryAttributeTerms.filter(attributeTerm => attributeTerm.usable)
-      }
-      categoryAttributeTerms.forEach(term => {
-        if (!term.usable) {
-          term.name = `${term.name}(已禁用)`
-        }
-      })
-      let productAttributeTerms = this.productAttributeTerms
-      // 如果不是待补充信息，应该过滤掉品类树上不存在详情中的数据
-      // if (this.productStatus !== 3) {
-      //   categoryAttributeTerms = categoryAttributeTerms
-      //     .filter(term => productAttributeTerms.find(productTerm => productTerm.id === term.id))
-      // }
-      const deletedTerms = productAttributeTerms
-        .filter(term => isEmpty(categoryAttributeTerms.find(categoryTerm => categoryTerm.id === term.id)))
-        .map(term => {
-          return {
-            ...term,
-            name: `${term.name}(已删除)`,
-            deleted: true,
-            usable: true
-          }
-        })
-      categoryAttributeTerms = categoryAttributeTerms.concat(deletedTerms)
-      return categoryAttributeTerms
+      let categoryAttributeTerms = deepClone(this.sizeStandard.terms) || []
+      // 禁用和删除的属性值都不展示
+      const filterCategoryUsable = categoryAttributeTerms.filter(categoryTerms => categoryTerms.usable)
+      return filterCategoryUsable
     },
     showTable () {
       const sizeStandardTerms = this.sizeStandard.terms
@@ -159,13 +135,6 @@ export default {
       this.showLabels = showLabels
       this.form.sizeInfoList = this.stashTableInfo(sizeInfoList)
     },
-    deduplication (data, primaryKey) {
-      // 数组对象去重
-      return data.reduce((pre, cur) => {
-        const locationData = pre.find((item) => item[primaryKey] === cur[primaryKey])
-        return locationData ? pre : pre.concat(cur)
-      }, [])
-    },
     /**
     * 暂存尺码之前输入记录和回显
     */
@@ -188,21 +157,6 @@ export default {
         })
         return sizeInfoList
       }
-    },
-    /**
-   * 判断销售属性值是删除还是禁用
-   */
-    attributeTermsStatus (extendCode, termId) {
-      const attribute = this.categoryData
-        .find(cateTerm => cateTerm.extendCode === extendCode) || {}
-      if (isEmpty(attribute)) {
-        return { isDeleted: true }
-      }
-      const term = attribute.terms.find(term => term.id === termId)
-      if (isEmpty(term)) {
-        return { isDeleted: true }
-      }
-      return { isUsable: term.usable }
     },
     result () {
       return new Promise(resolve => {
