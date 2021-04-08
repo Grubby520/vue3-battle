@@ -80,7 +80,7 @@ export default {
       const hasSizeStandard = !isEmpty(sizeStandardTerms) // 存在尺码标准属性值
       const checkedSizes = !isEmpty(this.checkedSizes) // 存在选中的尺码
       const hasProductSizeStandard = this.productSize.sizeInfoList
-      return (hasSizeStandard && checkedSizes) || (!hasSizeStandard && hasProductSizeStandard)
+      return (hasSizeStandard && checkedSizes) || (!hasSizeStandard && !isEmpty(hasProductSizeStandard))
     },
     productAttributeTerms () {
       const sizePositions = this.productSize.sizeInfoList ? this.productSize.sizeInfoList[0].sizePositions : []
