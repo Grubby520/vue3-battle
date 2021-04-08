@@ -75,7 +75,6 @@ export default {
       clearAttrs.forEach(attr => {
         store[attr] = data
       })
-      console.log('store', store)
     }
   },
   actions: {}
