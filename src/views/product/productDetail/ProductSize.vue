@@ -68,7 +68,7 @@ export default {
     },
     sizeStandardHeadData () {
       let categoryAttributeTerms = []
-      if (this.sizeStandar && !isEmpty(this.sizeStandard.terms)) {
+      if (this.sizeStandard && !isEmpty(this.sizeStandard.terms)) {
         categoryAttributeTerms = deepClone(this.sizeStandard.terms)
       }
       // 禁用和删除的属性值都不展示
