@@ -161,19 +161,21 @@ export default {
     result () {
       return new Promise(resolve => {
         let productSize = {}
-        const sizelist = this.form.sizeInfoList || []
-        const sizeInfoList = sizelist.map((size) => {
-          const { attributeTermId, attributeId } = size
-          // 新增使用分类标准尺码
-          const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
-          const sizePositions = standardIds.map(key => {
-            return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+        if (this.showTable) {
+          const sizelist = this.form.sizeInfoList || []
+          const sizeInfoList = sizelist.map((size) => {
+            const { attributeTermId, attributeId } = size
+            // 新增使用分类标准尺码
+            const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
+            const sizePositions = standardIds.map(key => {
+              return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+            })
+            return { sizePositions, attributeTermId, attributeId }
           })
-          return { sizePositions, attributeTermId, attributeId }
-        })
-        productSize['sizeInfoList'] = sizeInfoList
-        productSize.id = this.productSize.id
-        resolve({ 'productSize': productSize || [] })
+          productSize['sizeInfoList'] = sizeInfoList
+          productSize.id = this.productSize.id
+        }
+        resolve({ 'productSize': productSize })
       })
     }
   }
