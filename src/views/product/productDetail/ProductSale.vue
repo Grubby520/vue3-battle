@@ -656,9 +656,9 @@ export default {
       // 已经删除的属性可以删除，已经禁用的不可以修改
       const usable = this.showSaleLabel[`${type}Usable`]
       const deletedAttr = this.showSaleLabel[`${type}deleted`]
-      if (deletedAttr) {
+      if (Object.keys(this.showSaleLabel).includes(`${type}deleted`) && deletedAttr) {
         return !deletedAttr
-      } else {
+      } else if (Object.keys(this.showSaleLabel).includes(`${type}Usable`)) {
         return !usable
       }
     },
