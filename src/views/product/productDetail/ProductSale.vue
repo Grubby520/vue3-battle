@@ -401,15 +401,14 @@ export default {
       if (name) {
         showSaleLabel[type] = name
         showSaleLabel[`${type}Usable`] = usable
-        showSaleLabel[`${type}Type`] = {
-          id: id,
-          name: type,
-          usable: usable,
-          label: name,
-          extendCode: extendCode
-        }
       }
-      this.tableHeadData.unshift(showSaleLabel[`${type}Type`])
+      this.tableHeadData.unshift({
+        id: id,
+        name: type,
+        usable: usable,
+        label: name,
+        extendCode: extendCode
+      })
     }, /**
    * 判断销售属性值是删除还是禁用
    */
