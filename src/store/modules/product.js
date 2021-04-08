@@ -71,10 +71,11 @@ export default {
       store.showSaleLabel = data
     },
     REMOVE_STASH_ATTRS: (store, data) => {
-      const clearAttrs = ['productBase', 'productCustomAttributes', 'productSalesAttributeDetail', 'productImages', 'productSize', 'checkedSizes']
+      const clearAttrs = ['productBase', 'productCustomAttributes', 'productSalesAttributeDetail', 'productImages', 'productSize', 'checkedSizes', 'categoryData']
       clearAttrs.forEach(attr => {
         store[attr] = data
       })
+      console.log('store', store)
     }
   },
   actions: {}
