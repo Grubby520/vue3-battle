@@ -71,9 +71,33 @@ export default {
       if (this.sizeStandard && !isEmpty(this.sizeStandard.terms)) {
         categoryAttributeTerms = deepClone(this.sizeStandard.terms)
       }
-      // 禁用和删除的属性值都不展示
-      const filterCategoryUsable = categoryAttributeTerms.filter(categoryTerms => categoryTerms.usable)
-      return filterCategoryUsable
+      // 创建模式（可不用考虑）或者补充信息的时候过滤掉不可用的
+      if (this.productParams.mode === 'create' || this.productStatus === 3) {
+        categoryAttributeTerms = categoryAttributeTerms.filter(attributeTerm => attributeTerm.usable)
+      }
+      categoryAttributeTerms.forEach(term => {
+        if (!term.usable) {
+          term.name = `${term.name}(已禁用)`
+        }
+      })
+      let productAttributeTerms = this.productAttributeTerms
+      // 如果不是待补充信息，应该过滤掉品类树上不存在详情中的数据
+      // if (this.productStatus !== 3) {
+      //   categoryAttributeTerms = categoryAttributeTerms
+      //     .filter(term => productAttributeTerms.find(productTerm => productTerm.id === term.id))
+      // }
+      const deletedTerms = productAttributeTerms
+        .filter(term => isEmpty(categoryAttributeTerms.find(categoryTerm => categoryTerm.id === term.id)))
+        .map(term => {
+          return {
+            ...term,
+            name: `${term.name}(已删除)`,
+            deleted: true,
+            usable: true
+          }
+        })
+      categoryAttributeTerms = categoryAttributeTerms.concat(deletedTerms)
+      return categoryAttributeTerms
     },
     showTable () {
       const sizeStandardTerms = this.sizeStandard.terms
