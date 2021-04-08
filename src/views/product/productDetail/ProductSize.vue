@@ -68,7 +68,7 @@ export default {
     },
     sizeStandardHeadData () {
       let categoryAttributeTerms = []
-      if (this.sizeStandar && !isEmpty(this.sizeStandard.terms)) {
+      if (this.sizeStandard && !isEmpty(this.sizeStandard.terms)) {
         categoryAttributeTerms = deepClone(this.sizeStandard.terms)
       }
       // 禁用和删除的属性值都不展示
@@ -80,7 +80,7 @@ export default {
       const hasSizeStandard = !isEmpty(sizeStandardTerms) // 存在尺码标准属性值
       const checkedSizes = !isEmpty(this.checkedSizes) // 存在选中的尺码
       const hasProductSizeStandard = this.productSize.sizeInfoList
-      return (hasSizeStandard && checkedSizes) || (!hasSizeStandard && hasProductSizeStandard)
+      return (hasSizeStandard && checkedSizes) || (!hasSizeStandard && !isEmpty(hasProductSizeStandard))
     },
     productAttributeTerms () {
       const sizePositions = this.productSize.sizeInfoList ? this.productSize.sizeInfoList[0].sizePositions : []
