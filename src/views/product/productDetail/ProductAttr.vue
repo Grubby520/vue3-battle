@@ -126,7 +126,8 @@ export default {
       const deleted = term.deleted
       const termValue = term.id
       const valueIsEqual = typeof attributeValue === 'object' ? attributeValue.includes(termValue) : false
-      return deleted && !valueIsEqual
+      const termUsable = term.usable
+      return (deleted && !valueIsEqual) || !termUsable
     },
     /**
      * 构造界面需要展示的自定义属性集合
@@ -193,6 +194,7 @@ export default {
         terms.forEach(term => {
           if (!term.usable) {
             term.name = `${term.name}(已禁用)`
+            term.disabled = true
           }
         })
         if (hasDeletedTermsdAttribute) {
