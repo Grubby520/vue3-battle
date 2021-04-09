@@ -7,7 +7,13 @@
       <div class="form" v-if="showTable">
         <el-form :model="form" ref="form" class="productSize-from">
           <div class="productSize-from__table">
-            <el-table :data="form.sizeInfoList" style="width:100%;" row-key="key" border>
+            <el-table
+              :data="form.sizeInfoList"
+              style="width:100%;"
+              row-key="key"
+              border
+              class="pointer-enable"
+            >
               <el-table-column
                 v-for="(item,index) in tableHeadData"
                 :key="`${item.name}${index}`"
@@ -22,6 +28,7 @@
                       v-model="scope.row[item.id]"
                       v-input-filter:specialIntDecimalsFilter
                       maxlength="15"
+                      class="pointer-disable"
                     />
                   </el-form-item>
                 </template>
