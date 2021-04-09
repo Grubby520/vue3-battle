@@ -18,7 +18,11 @@
           <div class="check-area">
             <el-checkbox-group v-model="checkedSizes">
               <template v-for="(item, index) in sizeOptions">
-                <el-checkbox :disabled="usable" :key="index" :label="item.id">{{item.name}}</el-checkbox>
+                <el-checkbox
+                  :disabled="usable || !item.usable"
+                  :key="index"
+                  :label="item.id"
+                >{{item.name}}</el-checkbox>
               </template>
             </el-checkbox-group>
           </div>
@@ -51,7 +55,7 @@
 <script>
 import RecommendApi from '@api/recommendProducts/recommendProducts'
 import { mapGetters } from 'vuex'
-import { isEmpty } from '@shared/util'
+import { deepClone, isEmpty } from '@shared/util'
 export default {
   data () {
     return {
@@ -115,6 +119,7 @@ export default {
     },
     // 是否隐藏尺码对照表
     showSizeContrast () {
+      deepClone(this.sizeTableData)
       return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard)
     }
   },
