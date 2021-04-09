@@ -25,6 +25,7 @@
         <table style="width: 100%">
           <thead>
             <th>图片</th>
+            <th style="width:150px">采购单号</th>
             <th>SPU</th>
             <th>SKU</th>
             <th style="width:150px">SKU销售属性</th>
@@ -38,6 +39,7 @@
               <td>
                 <SlImage size="8rem" :src="item.image" />
               </td>
+              <td>{{item.purchaseOrderNumber}}</td>
               <td>{{item.spu}}</td>
               <td>{{item.sku}}</td>
               <td>{{item.skuAttribute}}</td>
