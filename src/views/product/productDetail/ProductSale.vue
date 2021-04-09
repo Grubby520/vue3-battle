@@ -292,10 +292,7 @@ export default {
       handler ({ saleAttrArr, done }) {
         // 多个属性都选择了数据数据添加到table中，否则就重置table
         if (done) {
-          // this.form.productSalesAttributes = this.showTable ? this.addTableItems(saleAttrArr) : []
-          if (this.showTable) {
-            this.form.productSalesAttributes = this.addTableItems(saleAttrArr)
-          }
+          this.form.productSalesAttributes = this.showTable ? this.addTableItems(saleAttrArr) : []
         }
       },
       immediate: true,
