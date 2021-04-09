@@ -87,7 +87,6 @@ export default {
         const attributes = this.parseCustomerAttributes(data)
         this.form.attributesData = attributes // 属性是可用的
           .sort((prev, next) => prev.priority - next.priority) // 根据优先级进行排序
-          .filter(attribute => this.showAttribute(attribute))
           .map((attribute) => {
             const attributeData = this.dataMap.get(`${attribute.id}`) || {}
             // termValueType [1: 标准化文本] [2: 自定义文本]
@@ -113,6 +112,7 @@ export default {
               usable: attribute.usable
             }
           })
+          .filter(attribute => this.showAttribute(attribute))
       },
       deep: true,
       immediate: true
