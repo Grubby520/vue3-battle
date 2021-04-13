@@ -189,6 +189,10 @@ const GOODS_API = {
 
   getStockOutList (params) {
     return get(URL.stockOutList, params)
+  },
+
+  doStockOutApply (params) {
+    return post(URL.stockOutApply, params)
   }
 
 }

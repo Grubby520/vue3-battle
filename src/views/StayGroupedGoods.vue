@@ -67,6 +67,12 @@
       :inData="dialogForm"
       @submit="submitSplitOrder"
     ></SplitOrderDialog>
+    <!-- 缺货申请对话框 -->
+    <StockOutDialog
+      :showDialog.sync="showStockOutDialog"
+      :inData="stockOutDialogForm"
+      @submit="submitStockOutApply"
+    ></StockOutDialog>
   </div>
 </template>
 
@@ -77,18 +83,21 @@ import GoodsUrl from '@api/goods/goodsUrl'
 import GoodsApi from '@api/goods'
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
 import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
+import StockOutDialog from './stayGroupedGoods/StockOutDialog'
 
 export default {
   name: 'StayGroupedGoods',
   components: {
     MerchantNotice,
-    SplitOrderDialog
+    SplitOrderDialog,
+    StockOutDialog
   },
   data () {
     return {
       loading: false,
       activeIndex: '-1',
       showSplitOrderDialog: false,
+      showStockOutDialog: false,
       switchNavs: [],
       tableData: [],
       selections: [],
@@ -245,12 +254,16 @@ export default {
                 <div class="mt-1rem">
                   <el-button type="primary" style="width:100%" onClick={() => this.openSplitDialog(row)} disabled={!row.shippedEnable}>拆单</el-button>
                 </div>
+                <div class="mt-1rem">
+                  <el-button type="primary" style="width:100%" onClick={() => this.openStockOutDialog(row)} disabled={!row.canApplyStockOut}>缺货申请</el-button>
+                </div>
               </div>
             )
           }
         }
       ],
-      dialogForm: {}
+      dialogForm: {},
+      stockOutDialogForm: {}
     }
   },
   computed: {
@@ -366,6 +379,8 @@ export default {
           this.$message.success(`生成发货单(${res.data})成功`)
           this.selections = []
           this.gotoPage()
+        } else {
+          errorMessageTip(res.error && res.error.message)
         }
       }).finally(() => {
         this.loading = false
@@ -399,6 +414,19 @@ export default {
       }
       this.showSplitOrderDialog = true
     },
+    openStockOutDialog (row) {
+      this.stockOutDialogForm = {
+        id: row.id,
+        sku: row.baseInfo.sku,
+        src: row.baseInfo.imageUrl,
+        merchantSku: row.baseInfo.merchantSku,
+        requiredNum: row.requiredNum,
+        type: '',
+        quantity: undefined,
+        remarks: undefined
+      }
+      this.showStockOutDialog = true
+    },
     submitSplitOrder (submitData) {
       GoodsApi.groupSplite({
         id: submitData.id,
@@ -409,6 +437,25 @@ export default {
           this.showSplitOrderDialog = false
           this.gotoPage()
           this.$message.success(`拆单成功`)
+        } else {
+          errorMessageTip(res.error && res.error.message)
+        }
+      })
+    },
+    submitStockOutApply (submitData) {
+      console.log(submitData)
+      GoodsApi.doStockOutApply({
+        purchaseOrderItemId: submitData.id,
+        type: submitData.type,
+        quantity: parseInt(submitData.quantity),
+        remarks: submitData.remarks
+      }).then(res => {
+        if (res.success) {
+          this.showStockOutDialog = false
+          this.gotoPage()
+          this.$message.success(`申请成功`)
+        } else {
+          errorMessageTip(res.error && res.error.message)
         }
       })
     }

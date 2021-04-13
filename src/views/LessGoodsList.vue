@@ -21,7 +21,7 @@
         :selection="false"
         :operate="false"
         :tooltip="false"
-        rowKey="id"
+        rowKey="stackOutId"
       ></SlTable>
     </SlListView>
   </div>
