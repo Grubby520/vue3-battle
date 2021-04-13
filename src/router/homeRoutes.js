@@ -123,6 +123,15 @@ export const homeRoutes = [
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/DefectiveList.vue')
+      },
+      {
+        path: 'less-goods-list',
+        name: '缺货列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/LessGoodsList.vue')
       }
     ]
   },
