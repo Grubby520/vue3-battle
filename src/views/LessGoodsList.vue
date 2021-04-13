@@ -116,8 +116,8 @@ export default {
             let { row = {} } = data
             return (
               <el-tooltip placement="top" effect="light">
-                <div slot="content" style="max-width:300px">{row.name}</div>
-                <p v-slClamp={{ clamp: 2 }}>{row.name}</p>
+                <div slot="content" style="max-width:300px">{row.productName}</div>
+                <p v-slClamp={{ clamp: 2 }}>{row.productName}</p>
               </el-tooltip>
             )
           }
