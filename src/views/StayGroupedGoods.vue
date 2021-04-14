@@ -58,6 +58,7 @@
         :columns="columns"
         :operate="false"
         :tooltip="false"
+        :disabledKeys="disabledKeys"
         rowKey="id"
       ></SlTable>
     </SlListView>
@@ -101,6 +102,7 @@ export default {
       switchNavs: [],
       tableData: [],
       selections: [],
+      disabledKeys: [],
       extraQuery: {
         type: -1
       },
@@ -324,6 +326,7 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.disabledKeys = this.tableData.filter(item => item.canDeliveryOrder === false).map(item => item.id)
         }
       }).finally(() => {
         this.$refs.listView.loading = false
@@ -426,7 +429,7 @@ export default {
         src: row.baseInfo.imageUrl,
         merchantSku: row.baseInfo.merchantSku,
         requiredNum: row.requiredNum,
-        type: '',
+        type: 0,
         quantity: undefined,
         remarks: undefined
       }

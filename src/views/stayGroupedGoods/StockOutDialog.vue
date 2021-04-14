@@ -47,8 +47,8 @@
           <el-form-item label="备注" prop="remarks">
             <el-input
               type="textarea"
-              rows="4"
-              maxlength="200"
+              rows="2"
+              maxlength="50"
               show-word-limit
               clearable
               v-model.trim="form.remarks"
