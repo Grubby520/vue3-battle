@@ -448,7 +448,6 @@ export default {
       })
     },
     submitStockOutApply (submitData) {
-      console.log(submitData)
       GoodsApi.doStockOutApply({
         purchaseOrderItemId: submitData.id,
         type: submitData.type,
