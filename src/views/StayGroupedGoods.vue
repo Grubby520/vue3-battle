@@ -254,12 +254,12 @@ export default {
                   vModel={row.shippedNum} placeholder="请输入数量"
                   vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }} disabled></el-input>
                 <div class="mt-1rem">
-                  <el-button type="primary" style="width:100%" onClick={() => this.openSplitDialog(row)} disabled={!row.shippedEnable}>拆单</el-button>
+                  <el-button type="primary" style="width:100%" onClick={() => this.openSplitDialog(row)} disabled={!row.shippedEnable && !row.hasWaitStockOutApplication}>拆单</el-button>
                 </div>
                 {
-                  row.canApplyStockOut && (
+                  row.shippedEnable && (
                     <div class="mt-1rem">
-                      <el-button type="primary" style="width:100%" onClick={() => this.openStockOutDialog(row)}>缺货申请</el-button>
+                      <el-button type="primary" style="width:100%" onClick={() => this.openStockOutDialog(row)} disabled={row.hasWaitStockOutApplication}>缺货申请</el-button>
                     </div>
                   )
                 }
