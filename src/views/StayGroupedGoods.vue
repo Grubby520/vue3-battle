@@ -374,6 +374,7 @@ export default {
     exportDetail () {
       exportFileFromRemote({
         url: GoodsUrl.groupExport,
+        params: this.generateParams(),
         name: `待发货SKU维度详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
           this.loading = true
