@@ -407,9 +407,13 @@ export default {
         saveRequiredNum: parseInt(submitData.retainRequiredNum)
       }).then(res => {
         if (res.success) {
-          this.showSplitOrderDialog = false
-          this.gotoPage()
-          this.$message.success(`拆单成功`)
+          if (res.data.success) {
+            this.showSplitOrderDialog = false
+            this.gotoPage()
+            this.$message.success(`拆单成功`)
+          } else {
+            this.$message.error(res.data.failMsg)
+          }
         }
       })
     }
