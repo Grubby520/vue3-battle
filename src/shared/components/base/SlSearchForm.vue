@@ -15,8 +15,30 @@
           :xl="6"
           :key="'item_'+index"
         >
+          <el-input
+            v-if="item.type === 'prepend-input'"
+            :placeholder="item.label"
+            v-model.trim="form[item.name]"
+            @input="formChange"
+            clearable
+          >
+            <el-select
+              v-if="item.prepend && item.prepend.type === 'select'"
+              v-model="form[`${item.name}_prepend`]"
+              slot="prepend"
+              placeholder="请选择"
+              style="width:100px"
+            >
+              <el-option
+                v-for="(item,index) in item.prepend.options"
+                :key="'prepend_opt_'+index"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-input>
           <el-form-item
-            v-if="item.type === 'input'"
+            v-else-if="item.type === 'input'"
             :label="item.isLabel? '':item.label"
             :prop="item.name"
           >
@@ -130,6 +152,9 @@ export default {
       /// 若没有，则根据是否是多选设置默认值。
       const defaultValue = item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
       this.$set(this.form, item.name, defaultValue)
+      if (item['prepend']) {
+        this.$set(this.form, `${item.name}_prepend`, item['prepend'].value)
+      }
       if (item.data && item.data.options) {
         this.$set(this.options, item.name, item.data.options)
       }

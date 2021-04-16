@@ -123,25 +123,16 @@ export const homeRoutes = [
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/DefectiveList.vue')
+      },
+      {
+        path: 'less-goods-list',
+        name: '缺货列表',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/LessGoodsList.vue')
       }
-      // {
-      //   path: 'import-spu',
-      //   name: '导入SPU',
-      //   meta: {
-      //     icon: '',
-      //     notMenu: true
-      //   },
-      //   component: () => import('@/views/ImportSpu.vue')
-      // },
-      // {
-      //   path: 'import-product-imgs',
-      //   name: '导入商品图片',
-      //   meta: {
-      //     icon: '',
-      //     notMenu: true
-      //   },
-      //   component: () => import('@/views/ImportProductImgs')
-      // }
     ]
   },
   {

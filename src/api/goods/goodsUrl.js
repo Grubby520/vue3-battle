@@ -37,5 +37,7 @@ export default {
   exportInvoice: baseURL + 'reimbursement/export/invoice', // 下载发票
   exportRequestForm: baseURL + 'reimbursement/export/request-form', // 下载请款单
   exportSupplyList: baseURL + 'reimbursement/export/supply-list', // 下载供货清单
-  updateReimbursementAttachments: baseURL + 'reimbursement/update-attachment' // 保存请款单附件
+  updateReimbursementAttachments: baseURL + 'reimbursement/update-attachment', // 保存请款单附件
+  stockOutList: baseURL + 'stock-out/page-srm-list', // 缺货列表
+  stockOutApply: baseURL + 'stock-out' // 申请缺货
 }
