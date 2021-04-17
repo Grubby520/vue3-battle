@@ -26,11 +26,14 @@ export default {
     pageSize: {
       type: Number,
       default: 10
+    },
+    pageSizes: {
+      type: Array,
+      default: () => [10, 20, 50]
     }
   },
   data () {
     return {
-      pageSizes: [10, 20, 50],
       page: {
         pageIndex: 1,
         pageSize: 10
