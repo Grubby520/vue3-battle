@@ -47,18 +47,7 @@
     </el-form>
     <div class="sl-dialog-footer">
       <el-button @click="cancel">{{$t('button.cancelText')}}</el-button>
-      <el-popconfirm
-        v-if="form.retainRequiredNum > 200 || form.shippedNum > 200"
-        title="拆单后存在SKU件数大于200是否确认拆单"
-        @onConfirm="submit"
-      >
-        <el-button
-          slot="reference"
-          type="primary"
-          style="margin-left: 20px"
-        >{{$t('button.submitText')}}</el-button>
-      </el-popconfirm>
-      <el-button v-else type="primary" @click="submit">{{$t('button.submitText')}}</el-button>
+      <el-button type="primary" @click="submit">{{$t('button.submitText')}}</el-button>
     </div>
     <div class="align-center color-text--yellow mt-2rem">(仅支持对原始订单拆单一次，请谨慎操作)</div>
   </el-dialog>
@@ -145,7 +134,13 @@ export default {
     submit () {
       this.$refs['dialogForm'].validate((valid) => {
         if (valid) {
-          this.$emit('submit', this.form)
+          if (this.form.retainRequiredNum > 200 || this.form.shippedNum > 200) {
+            this.$confirm('拆单后存在SKU件数大于200，是否确认拆单？').then(() => {
+              this.$emit('submit', this.form)
+            })
+          } else {
+            this.$emit('submit', this.form)
+          }
         }
       })
     }
