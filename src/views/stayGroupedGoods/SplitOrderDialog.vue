@@ -137,6 +137,7 @@ export default {
           if (this.form.retainRequiredNum > 200 || this.form.shippedNum > 200) {
             this.$confirm('拆单后存在SKU件数大于200，是否确认拆单？').then(() => {
               this.$emit('submit', this.form)
+            }).catch(() => {
             })
           } else {
             this.$emit('submit', this.form)
