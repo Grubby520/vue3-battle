@@ -68,7 +68,8 @@ export default {
     modelVal: {
       handler: function (newVal) {
         this.value = newVal
-      }
+      },
+      immediate: true
     },
     options: {
       handler: function (val, oldVal) {

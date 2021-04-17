@@ -185,6 +185,14 @@ const GOODS_API = {
 
   updateReimbursementAttachments (params) {
     return post(URL.updateReimbursementAttachments, params)
+  },
+
+  getStockOutList (params) {
+    return get(URL.stockOutList, params)
+  },
+
+  doStockOutApply (params) {
+    return post(URL.stockOutApply, params)
   }
 
 }
