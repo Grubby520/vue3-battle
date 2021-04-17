@@ -226,6 +226,11 @@ export default {
             remoteUrl: CommonUrl.dictUrl,
             params: { dataCode: 'INVOICE_STATUS_ENUM' }
           }
+        },
+        {
+          type: 'input',
+          label: '物流单号',
+          name: 'logisticsNumber'
         }
       ],
       orderStatusList: ['待发货', '已发货 ', '已到货', '异常到货', '已完成', '已取消'],
