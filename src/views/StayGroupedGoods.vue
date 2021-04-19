@@ -8,6 +8,7 @@
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
+      :pageSizes="pageSizes"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
@@ -110,9 +111,10 @@ export default {
       },
       page: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 50,
         total: 0
       },
+      pageSizes: [10, 20, 50, 100, 200],
       searchItems: [
         {
           type: 'input',
@@ -317,7 +319,7 @@ export default {
 
   },
   methods: {
-    gotoPage (pageSize = 10, pageIndex = 1) {
+    gotoPage (pageSize = 50, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
       GoodsApi.getGroupList(params).then(res => {
         let { success, data = {} } = res
@@ -397,6 +399,7 @@ export default {
     exportDetail () {
       exportFileFromRemote({
         url: GoodsUrl.groupExport,
+        params: this.generateParams(),
         name: `待发货SKU维度详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
           this.loading = true
