@@ -111,7 +111,7 @@ export default {
       },
       page: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 50,
         total: 0
       },
       pageSizes: [10, 20, 50, 100, 200],
@@ -319,7 +319,7 @@ export default {
 
   },
   methods: {
-    gotoPage (pageSize = 10, pageIndex = 1) {
+    gotoPage (pageSize = 50, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
       GoodsApi.getGroupList(params).then(res => {
         let { success, data = {} } = res
