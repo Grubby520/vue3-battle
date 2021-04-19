@@ -8,6 +8,7 @@
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
+      :pageSizes="pageSizes"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
@@ -113,6 +114,7 @@ export default {
         pageSize: 10,
         total: 0
       },
+      pageSizes: [10, 20, 50, 100, 200],
       searchItems: [
         {
           type: 'input',
@@ -397,6 +399,7 @@ export default {
     exportDetail () {
       exportFileFromRemote({
         url: GoodsUrl.groupExport,
+        params: this.generateParams(),
         name: `待发货SKU维度详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         beforeLoad: () => {
           this.loading = true

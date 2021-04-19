@@ -14,6 +14,7 @@
         @pageChange="pageChange"
         :pageIndex="pageIndex"
         :pageSize="pageSize"
+        :pageSizes="pageSizes"
         v-if="isPagination"
       />
     </template>
@@ -28,7 +29,11 @@ export default {
     pageIndex: { type: Number, required: false, default: undefined },
     pageSize: { type: Number, required: false, default: 10 },
     isReset: { type: Boolean, required: false, default: true },
-    isPagination: { type: Boolean, required: false, default: true }
+    isPagination: { type: Boolean, required: false, default: true },
+    pageSizes: {
+      type: Array,
+      default: () => [10, 20, 50]
+    }
   },
   data () {
     return {

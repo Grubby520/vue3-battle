@@ -136,8 +136,8 @@ export default {
           type: 'scale',
           message: '',
           meta: {
-            tip: '图片高宽比例仅支持1:1或4:3',
-            scales: [1, 4 / 3]
+            tip: '图片高宽比例仅支持1:1或3:4',
+            scales: [1, 1.33]
           }
         },
         {
@@ -277,7 +277,7 @@ export default {
             image.onload = function () {
               // 高宽比
               if (status === 'scale') {
-                let scale = image.height / image.width
+                let scale = Number((image.height / image.width).toFixed(2))
                 resolve(limitItem.meta.scales.includes(scale))
               }
               // 宽高是否超过最大值
