@@ -82,8 +82,8 @@ export default {
         categoryId: [{ required: true }],
         name: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
         supplierItemNo: [this.productValidata()],
-        brand: [{ required: true, message: '请输入品牌名称', trigger: 'blur' }],
-        description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
+        brand: [{ required: true, message: '请输入品牌名称', trigger: 'blur' }]
+        // description: [{ required: true, message: '请输入商品描述', trigger: 'blur' }]
       },
       pickerOptions: {
         disabledDate (time) {

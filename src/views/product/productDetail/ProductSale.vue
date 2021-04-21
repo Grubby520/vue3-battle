@@ -549,7 +549,6 @@ export default {
                   this.$set(tableLabel, value.id, value)
                   emptyArray.push([...item, { attributeTermId: value.id, attributeId: value.attributeId }])
                 } else { // * 只有最外层的第二次遍历才会调用这个，之后的数据都是数组格式
-                  // todo 此处应该补充注释 @小雪
                   this.$set(tableLabel, item.id, item, value.id, value)
                   emptyArray.push([
                     { attributeTermId: item.id, attributeId: item.attributeId },
@@ -637,7 +636,7 @@ export default {
         if ((isDeleted || !isUsable) && !hasAttr) {
           delete this.showSaleLabel[status]
           delete this.showSaleLabel[`${status}deleted`]
-          this.$set(this.showSaleLabel, `${status}Usable`, true) // todo 为了确保不会进入死循环 之后可考虑改进,比如建立一个中介值（表示已移除此销售属性）
+          this.$set(this.showSaleLabel, `${status}Usable`, true)
           this[`${status}Options`] = []
           // 重新触发排列组合
           this.form[`${status}s`] = []
