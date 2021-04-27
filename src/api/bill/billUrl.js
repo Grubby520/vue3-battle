@@ -1,3 +1,3 @@
 export default {
-  templateTar: 'http://srm-file-public-prod.oss-cn-shanghai.aliyuncs.com/a43203ac-3557-469f-b76b-11f50480d1ab.rar' // 参照范本
+  templateTar: 'http://srm-file-public-prod.oss-cn-shanghai.aliyuncs.com/ad9d2359-4d1c-4663-8b46-57f69cbf6b3e.rar' // 参照范本
 }
