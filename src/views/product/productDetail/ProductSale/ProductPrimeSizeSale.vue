@@ -4,6 +4,7 @@
       <div slot="header" class="title">
         <span>销售属性</span>
       </div>
+      {{form}}
       <el-alert
         v-if="showAttrHint"
         title="销售属性不能为空"

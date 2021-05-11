@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ProductPrimeSizeSale></ProductPrimeSizeSale>
-    <ProductPrimeSpecificationSale></ProductPrimeSpecificationSale>
+    <ProductPrimeSizeSale ref="ProductPrimeSizeSale"></ProductPrimeSizeSale>
+    <ProductPrimeSpecificationSale ref="ProductPrimeSpecificationSale"></ProductPrimeSpecificationSale>
   </div>
 </template>
 
