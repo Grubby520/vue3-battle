@@ -30,7 +30,7 @@
 <script>
 import ProductBase from './ProductBase'
 import ProductAttr from './ProductAttr'
-import ProductSale from './ProductSale'
+import ProductSale from './ProductSale/index'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
