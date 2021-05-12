@@ -30,11 +30,14 @@
 <script>
 import ProductBase from './ProductBase'
 import ProductAttr from './ProductAttr'
-import ProductSale from './ProductSale/index'
+import ProductColorMain from './ProductSale/ProductColorMain'
+import ProductSpecificationMain from './ProductSale/SpecificationMain'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
+import './mock.js'
+import axios from 'axios'
 // import { deepClone } from '@shared/util'
 export default {
   props: {
@@ -49,7 +52,7 @@ export default {
     cateLabels: { type: String, required: false, default: '' },
     supplierItemNo: { type: String, required: false, default: '' }
   },
-  components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
+  components: { ProductSize, ProductColorMain, ProductAttr, ProductBase, ProductImages, ProductSpecificationMain },
   data () {
     return {
       productStatus: undefined,
@@ -75,7 +78,8 @@ export default {
       return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     },
     productComponents () {
-      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale']
+      // return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductColorMain']
+      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
     }
   },
   mounted () {
@@ -122,14 +126,19 @@ export default {
       this.productStatus = productBase.status
     },
     categoryAttrs (response) {
-      const categoryData = response.data.map(categoryItem => {
-        categoryItem.terms.forEach(term => {
-          term.extendCode = categoryItem.extendCode
-          term.attributeId = categoryItem.id
+      // const categoryData = response.data.map(categoryItem => {
+      //   categoryItem.terms.forEach(term => {
+      //     term.extendCode = categoryItem.extendCode
+      //     term.attributeId = categoryItem.id
+      //   })
+      //   return categoryItem
+      // })
+      axios.post('/mock/similar', 'category')
+        .then(res => {
+          const categoryData = res.data
+          this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
         })
-        return categoryItem
-      })
-      this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+      // this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
     },
     getCategoryAttr () {
       RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })

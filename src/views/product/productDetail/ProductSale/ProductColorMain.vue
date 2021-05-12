@@ -4,7 +4,6 @@
       <div slot="header" class="title">
         <span>销售属性</span>
       </div>
-      {{form}}
       <el-alert
         v-if="showAttrHint"
         title="销售属性不能为空"
@@ -167,8 +166,8 @@
 </template>
 
 <script>
-import ProductSizeDialog from '../ProductSizeDialog'
-import BatchAttributes from '../batchAttributes'
+import ProductSizeDialog from './ProductSizeDialog'
+import BatchAttributes from './batchAttributes'
 import { deepClone, isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
 export default {
@@ -260,7 +259,9 @@ export default {
       const saleLens = this.saleLabelSign
         .reduce((lens, sign) => {
           const length = this.form[`${sign}s`].length
-          if (this.showSaleLabel[`${sign}`]) lens.push(length)
+          if (this.showSaleLabel[`${sign}`] && length > 0) {
+            lens.push(length)
+          }
           return lens
         }, [])
       return !isEmpty(saleLens) && saleLens.every(item => item && item > 0)
@@ -412,10 +413,9 @@ export default {
         label: name,
         extendCode: extendCode
       })
-    },
-    /**
-    * 判断销售属性值是删除还是禁用
-    */
+    }, /**
+   * 判断销售属性值是删除还是禁用
+   */
     isSaleTermsStatus (attributeId, termId) {
       const attribute = this.categoryData
         .find(cateTerm => cateTerm.id === attributeId) || {}
@@ -531,6 +531,7 @@ export default {
      * 添加尺寸、颜色、规格添加表格数据
      */
     addTableItems (attrArr) {
+      console.log('attrArr', attrArr)
       let resultArry = []
       const tableLabel = {}
       if (attrArr.length > 0) {
@@ -568,6 +569,7 @@ export default {
             productCategorySalesAttributes: item
           }
         })
+        this.form.productSalesAttributes = this.productSalesAttributeDetail.productSalesAttributes || []
         return this.stashTableInfo(result)
       }
     },
