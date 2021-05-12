@@ -2,7 +2,7 @@
 @import "@assets/scss/_mixin.scss";
 
 .align-center {
-  text-align: center;
+  text-align: center!important;
 }
 
 .align-left {
@@ -11,6 +11,10 @@
 
 .align-right {
   text-align: right;
+}
+
+.align-middle {
+  vertical-align: middle!important;
 }
 
 .color-text--white {
@@ -90,7 +94,15 @@
 }
 
 .font-wight-600 {
-  font-weight: 600;
+  font-weight: 600!important;
+}
+
+.border-bottom--gray {
+  border-bottom: 1px solid $color-gray;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .btn {
@@ -117,6 +129,10 @@
 
 .flex1 {
   flex: 1;
+}
+
+.flex2 {
+  flex: 2;
 }
 
 .text-overflow {

@@ -39,5 +39,7 @@ export default {
   exportSupplyList: baseURL + 'reimbursement/export/supply-list', // 下载供货清单
   updateReimbursementAttachments: baseURL + 'reimbursement/update-attachment', // 保存请款单附件
   stockOutList: baseURL + 'stock-out/page-srm-list', // 缺货列表
-  stockOutApply: baseURL + 'stock-out' // 申请缺货
+  stockOutApply: baseURL + 'stock-out', // 申请缺货
+  productDashboardList: baseURL + 'product-dashboard/page', // 商品看板列表查询
+  productColor: baseURL + 'product-dashboard/query-color' // 商品颜色列表
 }
