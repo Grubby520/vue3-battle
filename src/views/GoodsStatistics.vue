@@ -35,12 +35,12 @@
                     <td width="425px">
                       <div class="flex-center">
                         <div class="flex2 align-left mr-1rem">
-                          <p>SKU:{{item.skuCode}}</p>
+                          <p>SKU：{{item.skuCode}}</p>
                           <p>商家商品编码:{{item.supplierSkuCode}}</p>
                         </div>
                         <div class="flex1 align-left">
-                          <p>商家吊牌尺码:{{item.tagSize}}</p>
-                          <p>销售尺码:{{item.saleSize}}</p>
+                          <p>商家吊牌尺码：{{item.tagSize}}</p>
+                          <p>销售尺码：{{item.saleSize}}</p>
                         </div>
                       </div>
                     </td>
@@ -76,12 +76,12 @@
           <template slot-scope="scope">
             <div class="flex-center">
               <div class="flex1">
-                <SlImage size="5rem" :src="scope.row.productImage" />
+                <SlImage size="8rem" :src="scope.row.productImage" />
               </div>
               <div class="flex1 align-left">
-                <p>SPU:{{scope.row.spuCode}}</p>
-                <p>颜色:{{scope.row.color?scope.row.color:'无'}}</p>
-                <p>产品名称:{{scope.row.productName}}</p>
+                <p>SPU：{{scope.row.spuCode}}</p>
+                <p>颜色：{{scope.row.color?scope.row.color:'无'}}</p>
+                <p>产品名称：{{scope.row.productName}}</p>
               </div>
             </div>
           </template>
