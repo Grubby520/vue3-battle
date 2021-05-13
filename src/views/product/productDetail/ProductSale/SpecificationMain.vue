@@ -3,7 +3,6 @@
     <el-card>
       <div slot="header">
         <span>详情描述</span>
-        {{form}}
       </div>
       <div class="product-detail-content">
         <el-tabs v-model="activeName" type="card" @tab-remove="handleRemove">
@@ -18,8 +17,8 @@
               <div v-for="(item, index) in specificationItem.saleAttrs" :key="index">
                 <template v-if="item.extendCode ==='NZ010'">
                   <el-form-item
-                    prop="colors"
-                    :rules="[{required: true, message: '请选择颜色', trigger:'change' }]"
+                    :prop="'item.' + index + '.values'"
+                    :rules="{required: true, message: '域名不能为空', trigger: 'blur' }"
                   >
                     <template slot="label">
                       <el-tooltip effect="dark" :content="item.name" placement="top">
@@ -36,15 +35,12 @@
                       clearable
                       isObj
                       placeholder="请选择颜色"
-                      @change="selectChange($event, 'colors')"
+                      @change="selectChange($event, 'colors',item)"
                     />
                   </el-form-item>
                 </template>
                 <template v-if="item.extendCode ==='NZ011'">
-                  <el-form-item
-                    prop="sizes"
-                    :rules="[{required: true, message: '请添加尺码', trigger:'blur' }]"
-                  >
+                  <el-form-item :prop="`item.${index}.values`" :rules="rules.sizes">
                     <template slot="label">
                       <el-tooltip effect="dark" :content="item.name" placement="top">
                         <span class="form-label pointer-enable">{{item.name}}</span>
@@ -59,6 +55,7 @@
                       style="margin: 0 0 .5rem 1rem"
                       v-for="(tag, index) in item.values"
                       :key="index"
+                      closable
                       effect="dark"
                       :type="['success', 'info', 'danger', 'warning', ''][index%5]"
                       @close="removeSizeTag(tag)"
@@ -156,10 +153,7 @@ export default {
   data () {
     return {
       form: {
-        productSalesAttributes: [],
-        sizes: [], // 尺寸选中数据
-        colors: [],
-        specifications: []
+        productSalesAttributes: []
       },
       colorOptions: [], // 颜色下拉框数据
       sizeOptions: [],
@@ -223,7 +217,12 @@ export default {
       activeName: undefined,
       chooseSpecification: [], // 选中的规格
       curSaleAttrs: [], // 所有的销售属性
-      specificationData: {}
+      specificationData: {},
+      rules: {
+        colors: [
+          { required: true, message: '请添加尺码', trigger: 'blur' }
+        ]
+      }
     }
   },
   computed: {
@@ -240,6 +239,7 @@ export default {
     },
     showTable () {
       // 多个属性，需要都选择值以后数据插入表格中
+      if (isEmpty(this.changeForm[0])) return
       const saleLens = this.changeForm[0].map(sale => {
         return sale.length
       })
@@ -393,8 +393,9 @@ export default {
     * 构建销售属性表头/销售属性展示label/下拉赋值
     */
     buildSaleData (showSaleLabel, item, type) {
-      const { terms, name, usable } = item
+      const { terms, name, usable, extendCode } = item
       this[`${type}Options`] = terms.map(term => {
+        term.extendCode = extendCode
         if (!term.usable) {
           term.name = `${term.name}(已禁用)`
           term.disabled = true
@@ -482,11 +483,27 @@ export default {
         })
       })
     },
-    selectChange (e, attribute) {
-      this.$refs.form.validateField(attribute) // 重新校验表单
+    selectChange (e, attribute, item) {
+      // debugger
+      // debugger
+      // this.$refs['form'][0].validate(attribute) // 重新校验表单
     },
     removeSizeTag (tag) {
-      this.form.sizes = this.form.sizes.filter(item => item.id !== tag.id)
+      this.chooseSpecification.forEach(sale => {
+        if (sale.code === this.activeName) {
+          sale.saleAttrs.forEach((choose) => {
+            if (choose.extendCode === 'NZ011') {
+              let currentIndex = ''
+              choose.values.forEach((value, index) => {
+                if (value.id === tag.id) {
+                  currentIndex = index
+                }
+              })
+              choose.values.splice(currentIndex, 1)
+            }
+          })
+        }
+      })
       this.updateSizeData()
     },
     sizeSelectConfirm (val) {
@@ -502,15 +519,16 @@ export default {
       this.updateSizeData()
     },
     updateSizeData () {
-      this.$store.commit('product/CHECKED_SIZES', this.form.sizes)
-      this.$refs.form.validateField('sizes')
+      this.$store.commit('product/CHECKED_SIZES', this.currentSizes())
+      // console.log('ref', this.$refs['form'])
+      // this.$refs['form'][0].validate('sizes')
     },
     openDialog (ref, data) {
       let dialogData = {}
       let dialog = null
       let sizeData = {
         'sizeOptions': data || [],
-        'formSizes': this.form.sizes || [],
+        'formSizes': this.currentSizes() || [],
         'showSaleLabel': this.showSaleLabel || {},
         'activeName': this.activeName
       }
@@ -523,7 +541,6 @@ export default {
      * 添加尺寸、颜色、规格添加表格数据
      */
     addTableItems (attrArr) {
-      console.log('attrArr', attrArr)
       let resultArry = []
       const tableLabel = {}
       if (attrArr.length > 0) {
@@ -668,16 +685,13 @@ export default {
       const specificationItem = this.attachSaleAttribute(specification)
       this.chooseSpecification.push(specificationItem)
       this.activeName = specificationItem.code
-      this.form.specifications.push(specification)
     },
     attachSaleAttribute (specification) {
-      console.log('cate', this.categoryData)
       const specificationItem = deepClone(specification)
       const curRelated = this.specificationData.relatedSizes.find(size => size.termId === specificationItem.id) || {}
       specificationItem.saleAttrs = this.curSaleAttrs
         .filter(attr => attr.extendCode !== 'NZ012')
         .map(attr => {
-          console.log('attr', attr)
           const { extendCode, id } = attr
           let saleAttribute = {}
           if (extendCode === 'NZ011') {
@@ -695,7 +709,6 @@ export default {
         .filter(attr => attr)
       // 构建对应的表格数据
       specificationItem.saleHead = this.saleHead(specificationItem.saleAttrs)
-      console.log('specificationItem', specificationItem)
       return specificationItem
     },
     // 销售属性变动
@@ -714,6 +727,10 @@ export default {
         }
       })
       this.$emit('change', currentData)
+    },
+    currentSale () {
+      return this.chooseSpecification
+        .filter(sale => sale.id === this.activeName)
     },
     saleHead (saleAttrs) {
       const { id, label, extendCode, usable } = this.specificationData
@@ -747,6 +764,17 @@ export default {
           this.handleAttribute()
         })
         .catch(() => { })
+    },
+    currentSizes () {
+      const currentSpecification = this.chooseSpecification
+        .find(chooseAttr => chooseAttr.code === this.activeName)
+      return currentSpecification.saleAttrs
+        .reduce((init, chooseAttr) => {
+          if (chooseAttr.extendCode === 'NZ011') {
+            init = chooseAttr.values
+          }
+          return init
+        }, [])
     }
   }
 }
