@@ -14,6 +14,7 @@
       </div>
       <el-divider />
       <el-table
+        ref="table"
         :data="tableData"
         border
         size="mini"
@@ -80,6 +81,7 @@
               <div class="flex1 align-left">
                 <p>SPU:{{scope.row.spuCode}}</p>
                 <p>颜色:{{scope.row.color?scope.row.color:'无'}}</p>
+                <p>产品名称:{{scope.row.productName}}</p>
               </div>
             </div>
           </template>
@@ -208,7 +210,9 @@ export default {
         orderBy: null,
         orderDirect: null
       }
+      this.$refs.table.clearSort()
       this.$refs.searchForm.reset()
+
       this.$refs.listView.refresh()
     },
     sortChange (sortParams) {
