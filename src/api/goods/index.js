@@ -197,72 +197,20 @@ const GOODS_API = {
   },
   // 商品数据列表
   getProductDashboardList (params) {
-    return Promise.resolve({
-      success: true,
-      data: {
-        list: [
-          {
-            'color': 'string',
-            'intransitQuantity': 0,
-            'inventoryQuantity': 0,
-            'orderedUndeliveredQuantity': 0,
-            'productDashboardSkuInfos': [
-              {
-                'intransitQuantity': 0,
-                'inventoryQuantity': 0,
-                'orderedUndeliveredQuantity': 0,
-                'saleSize': 'string',
-                'skuCode': 'string',
-                'supplierSkuCode': 'string',
-                'tagSize': 'string',
-                'total15days': 0,
-                'total30days': 0,
-                'total7days': 0
-              }
-            ],
-            'spuCode': 'string',
-            'productImage': null,
-            'total15days': 0,
-            'total30days': 0,
-            'total7days': 0
-          }
-        ]
-      }
-    })
-
-    // return get(URL.productDashboardList, params)
+    return get(URL.productDashboardList, params)
   },
   // 商品颜色数据
   getProductColors (params) {
-    return Promise.resolve({
-      success: true,
-      error: {
-        message: ''
-      },
-      data: [
-        {
+    return get(URL.productColor, params).then(res => {
+      let result = res.data || []
+      if (result.length > 0) {
+        result.unshift({
           label: '无',
           value: noSymbolValue
-        },
-        {
-          label: '红',
-          value: '红'
-        },
-        {
-          label: '品红',
-          value: '品红'
-        },
-        {
-          label: '黄',
-          value: '黄'
-        },
-        {
-          label: '蓝',
-          value: '蓝'
-        }
-      ]
+        })
+      }
+      return result
     })
-    // return get(URL.productColor, params)
   }
 
 }

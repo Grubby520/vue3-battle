@@ -79,7 +79,7 @@
               </div>
               <div class="flex1 align-left">
                 <p>SPU:{{scope.row.spuCode}}</p>
-                <p>颜色:{{scope.row.color}}</p>
+                <p>颜色:{{scope.row.color?scope.row.color:'无'}}</p>
               </div>
             </div>
           </template>
@@ -256,8 +256,8 @@ export default {
       return params
     },
     getColorOptions () {
-      GoodsApi.getProductColors(this.searchQuery).then(res => {
-        this.colorOptions = res.data || []
+      GoodsApi.getProductColors(this.searchQuery).then(data => {
+        this.colorOptions = data
       })
     }
   }
@@ -265,7 +265,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$tdBgColor: #ecf0f5;
+$tdBgColor: #f5f7fa;
 
 .goods-statistics /deep/ {
   .el-dialog__footer {
@@ -273,7 +273,7 @@ $tdBgColor: #ecf0f5;
   }
 
   .expand-table {
-    padding: 0.5em;
+    padding: 1em 0.5em;
     tr {
       &:last-child {
         border-bottom: none;
