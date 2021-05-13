@@ -17,7 +17,7 @@
               <div v-for="(item, index) in specificationItem.saleAttrs" :key="index">
                 <template v-if="item.extendCode ==='NZ010'">
                   <el-form-item
-                    :prop="'item.' + index + '.values'"
+                    :prop="`${index}values`"
                     :rules="{required: true, message: '域名不能为空', trigger: 'blur' }"
                   >
                     <template slot="label">
@@ -40,7 +40,7 @@
                   </el-form-item>
                 </template>
                 <template v-if="item.extendCode ==='NZ011'">
-                  <el-form-item :prop="`item.${index}.values`" :rules="rules.sizes">
+                  <el-form-item :prop="`${index}values`" :rules="rules.sizes">
                     <template slot="label">
                       <el-tooltip effect="dark" :content="item.name" placement="top">
                         <span class="form-label pointer-enable">{{item.name}}</span>
