@@ -20,7 +20,8 @@ export default {
     customAttributesData: [],
     showSaleLabel: {},
     // 分类数据
-    categoryData: []
+    categoryData: [],
+    specificationsAndSizes: []
   },
   getters: {
     productParams: state => state.productParams || {},
@@ -34,7 +35,8 @@ export default {
     sizeStandard: (state, getters) => getters.categoryData.find(categoryItem => categoryItem.extendCode === 'NZ013') || {},
     customAttributesData: state => state.customAttributesData || [],
     showSaleLabel: state => state.showSaleLabel || {},
-    categoryData: state => state.categoryData || []
+    categoryData: state => state.categoryData || [],
+    specificationsAndSizes: state => state.specificationsAndSizes || []
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
@@ -75,6 +77,9 @@ export default {
       clearAttrs.forEach(attr => {
         store[attr] = data
       })
+    },
+    SPECIFICATIONS_AND_SIZES: (store, data) => {
+      store.specificationsAndSizes = data
     }
   },
   actions: {}

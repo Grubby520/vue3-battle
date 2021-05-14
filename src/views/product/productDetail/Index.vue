@@ -31,13 +31,14 @@
 import ProductBase from './ProductBase'
 import ProductAttr from './ProductAttr'
 import ProductColorMain from './ProductSale/ProductColorMain'
-import ProductSpecificationMain from './ProductSale/SpecificationMain'
+import ProductSpecificationMain from './ProductSale/SpecificationMain/SkuInfo'
+// console.log('ProductSpecificationMain', ProductSpecificationMain)
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
-import './mock.js'
-import axios from 'axios'
+// import './mock.js'
+// import axios from 'axios'
 // import { deepClone } from '@shared/util'
 export default {
   props: {
@@ -126,19 +127,19 @@ export default {
       this.productStatus = productBase.status
     },
     categoryAttrs (response) {
-      // const categoryData = response.data.map(categoryItem => {
-      //   categoryItem.terms.forEach(term => {
-      //     term.extendCode = categoryItem.extendCode
-      //     term.attributeId = categoryItem.id
-      //   })
-      //   return categoryItem
-      // })
-      axios.post('/mock/similar', 'category')
-        .then(res => {
-          const categoryData = res.data
-          this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+      const categoryData = response.data.map(categoryItem => {
+        categoryItem.terms.forEach(term => {
+          term.extendCode = categoryItem.extendCode
+          term.attributeId = categoryItem.id
         })
-      // this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+        return categoryItem
+      })
+      // axios.post('/mock/similar', 'category')
+      //   .then(res => {
+      //     const categoryData = res.data
+      //     this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+      //   })
+      this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
     },
     getCategoryAttr () {
       RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
