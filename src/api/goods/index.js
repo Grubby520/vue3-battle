@@ -203,7 +203,9 @@ const GOODS_API = {
   getProductColors (params) {
     return get(URL.productColor, params).then(res => {
       let result = res.data || []
-      if (result.length > 0) {
+      let noDataIndex = result.findIndex(item => item.value === '')
+      if (result.length > 0 && noDataIndex !== -1) {
+        result.splice(noDataIndex, 1)
         result.unshift({
           label: '无',
           value: noSymbolValue
