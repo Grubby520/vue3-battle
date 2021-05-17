@@ -170,10 +170,10 @@ export default {
     },
     // 生成sku列表
     genSkuTable (data, standardAttributeIds) {
-      // console.log('data', data)
+      console.log('data', data)
       const oldTableData = deepClone(this.tableData)
       const codes = this.genSkuTableCodes(data)
-      // console.log('codes', codes)
+      console.log('codes', codes)
       // console.log('standardAttributeIds', standardAttributeIds)
       const tableData = codes.map(item => {
         const obj = {
@@ -189,7 +189,7 @@ export default {
         }
         return obj
       })
-      // console.log('tableData', tableData)
+      console.log('tableData', tableData)
       // 生成新的表格
       this.tableData = this.recoverTableData(oldTableData, tableData)
       this.selectAttrIdList = standardAttributeIds

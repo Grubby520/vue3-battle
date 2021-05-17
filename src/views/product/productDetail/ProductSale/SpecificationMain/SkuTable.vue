@@ -35,16 +35,28 @@
         </tbody>
       </table>
     </el-form>
+    <el-row class="sku-table__batch">
+      <SlSpace />
+      <el-button
+        type="primary"
+        @click="openDialog('batchAttributes')"
+        v-if="productParams.mode!== 'view'"
+      >批量录入</el-button>
+    </el-row>
+    <!-- 批量设置弹窗 -->
+    <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
   </div>
 </template>
 
 <script>
+import BatchAttributes from './batchAttributes'
 import { mapGetters } from 'vuex'
 export default {
   model: {
     prop: 'tableData',
     event: 'change'
   },
+  components: { BatchAttributes },
   props: {
     tableData: {
       type: Array,
@@ -144,6 +156,36 @@ export default {
           setType(suffix.saleAttributeType || 1)
         )
       })
+    },
+    /**
+     * 批量录入回填
+     * @param {Array} val 需要回填的数据
+     */
+    hideDialog (val) {
+      const { skuList, supplyPrice, sizeList } = val
+      // 颜色和供货价格
+      let hasNeedSku = skuList.length > 0 && supplyPrice
+      let sizeMap = new Map()
+      sizeList.forEach((size) => {
+        // 尺码和重量
+        if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
+      })
+      this.form.productSalesAttributes.forEach(item => {
+        let saleAttrIds = []
+        item.productCategorySalesAttributes.forEach((attribute) => {
+          saleAttrIds.push(attribute.attributeTermId)
+        })
+        const includeBatchColor = saleAttrIds.find(i => skuList.includes(i))
+        const includeBatchSize = saleAttrIds.find(i => sizeMap.get(i))
+        if (hasNeedSku && includeBatchColor) this.$set(item, 'supplyPrice', supplyPrice)
+        if (includeBatchSize) this.$set(item, 'weight', sizeMap.get(includeBatchSize))
+      })
+    },
+    openDialog (data = {}) {
+      let dialog = null
+      dialog = this.$refs.batchAttributes
+      dialog.open(data)
+      dialog = null
     }
   }
 }
@@ -210,6 +252,10 @@ export default {
     color: #f56c6c;
     margin-right: 4px;
     vertical-align: middle;
+  }
+  &__batch {
+    display: flex;
+    margin-top: 1rem;
   }
 }
 </style>
