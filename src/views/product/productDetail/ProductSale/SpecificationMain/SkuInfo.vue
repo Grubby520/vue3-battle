@@ -41,14 +41,10 @@ export default {
       // 选中的属性Id列表
       selectAttrIdList: [],
       skuConfig: {
-        skuCode: '',
         supplyPrice: '',
-        sellPriceUsd: '',
-        externalSku: '',
+        skuCode: '',
         tagSize: '',
-        packageWeight: '',
-        storageWeight: '',
-        status: 3
+        weight: ''
       },
       originData: [],
       attributeMap: new Map()
@@ -125,7 +121,7 @@ export default {
             prev[index].attributeIds.push(current.attributeId)
           } else {
             prev.push({
-              saleAttributeType: current.saleAttributeType.value,
+              saleAttributeType: current.saleAttributeType,
               attributeIds: [current.attributeId]
             })
           }
@@ -174,34 +170,26 @@ export default {
     },
     // 生成sku列表
     genSkuTable (data, standardAttributeIds) {
+      // console.log('data', data)
       const oldTableData = deepClone(this.tableData)
       const codes = this.genSkuTableCodes(data)
+      // console.log('codes', codes)
+      // console.log('standardAttributeIds', standardAttributeIds)
       const tableData = codes.map(item => {
         const obj = {
           attributes: standardAttributeIds.map(attribute => {
-            const matchAttribute = item.find(attr =>
+            const matchAttribute = item.find(attr => {
+              // console.log('attr', attr)
               attribute.attributeIds.includes(attr.attributeId)
+            }
             )
             return matchAttribute || {}
           }),
           ...this.skuConfig
         }
-
-        // if (this.hasVolumeAttrs.tVolume) {
-        //   Object.assign(obj, {
-        //     length: '',
-        //     width: '',
-        //     height: ''
-        //   })
-        // }
-
-        // if (this.hasVolumeAttrs.rVolume) {
-        //   Object.assign(obj, {
-        //     volume: ''
-        //   })
-        // }
         return obj
       })
+      // console.log('tableData', tableData)
       // 生成新的表格
       this.tableData = this.recoverTableData(oldTableData, tableData)
       this.selectAttrIdList = standardAttributeIds
@@ -225,6 +213,11 @@ export default {
         el && this.$set(tableData, index, el)
       })
       return tableData
+    },
+    // 判断两个数组内容是否相同
+    isArrayEqual (a, b) {
+      const c = [...new Set([...a, ...b])].length
+      return c === a.length && c === b.length
     },
     // 生成SKU列表的Codes
     genSkuTableCodes (data) {

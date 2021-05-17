@@ -1,53 +1,39 @@
 <template>
-  <div>
-    <el-form ref="form" :rules="rules" model="form">
-      <div class="ProductSale-table">
-        <el-table :data="form.productSalesAttributes" row-key="key" border>
-          <el-table-column
-            v-for="(item,index) in selectAttrList"
-            :key="`${item.label}${index}`"
-            :width="item.width"
-            align="center"
-          >
-            <template slot="header">
-              <span class="ProductSale-from__icon" v-if="['supplyPrice','weight'].includes(item)">*</span>
-              <span>{{item}}</span>
-            </template>
-            <template slot-scope="scope">
-              <el-form-item
-                :prop="`productSalesAttributes.${scope.$index}.${item.name}`"
-                :rules="[{required: item.required, message: `${item.message}`, validator:item.validateRule, trigger:['blur','change' ]}]"
-                class="flex-center"
-              >
-                <template v-if="item.extendCode">
-                  <!-- 动态销售属性(尺码/规格/颜色) -->
-                  <div
-                    v-for="(attrItem, attrIndex) in sortedAttributes(item.attributes, true)"
-                    :key="attrIndex"
-                  >
-                    <span>{{curAttributeName(attrItem.attributeTermId)}}</span>
-                  </div>
-                </template>
-                <!-- 供货价格/sku/吊牌/带包装 -->
-                <el-input
-                  v-else
-                  v-model.trim="scope.row[item.name]"
-                  :maxlength="item.maxlength"
-                  v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
-                />
-              </el-form-item>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-row class="ProductSale-from__batch">
-          <SlSpace />
-          <el-button
-            type="primary"
-            @click="openDialog('batchAttributes',this.form)"
-            v-if="productParams.mode!== 'view'"
-          >批量录入</el-button>
-        </el-row>
-      </div>
+  <div class="sku-table">
+    <el-form ref="form" :rules="rules">
+      <table v-if="tableData.length > 0">
+        <thead>
+          <tr>
+            <th v-for="item in selectAttrList" :key="item.attributeId">{{item.name}}</th>
+            <th>销售状态</th>
+            <th>商家SKU编码</th>
+            <th>商家吊牌尺码</th>
+            <th>带包装重量（G）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in tableData" :key="index">
+            <td
+              v-for="(attrItem, attrIndex) in sortedAttributes(item.attributes, true)"
+              :key="attrIndex"
+            >
+              <span>{{curAttributeName(attrItem.attributeTermId)}}</span>
+            </td>
+            <td>
+              <el-input v-model="item.supplyPrice" clearable v-number="{ maxlength: 8 }"></el-input>
+            </td>
+            <td>
+              <el-input v-model="item.skuCode" clearable v-number="{ maxlength: 30 }"></el-input>
+            </td>
+            <td>
+              <el-input v-model="item.tagSize" clearable v-number="{ maxlength: 30 }"></el-input>
+            </td>
+            <td>
+              <el-input v-model="item.weight" clearable v-number="{ maxlength: 8 }"></el-input>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </el-form>
   </div>
 </template>
@@ -55,8 +41,24 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
+  model: {
+    prop: 'tableData',
+    event: 'change'
+  },
   props: {
+    tableData: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    },
     selectAttrIdList: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    },
+    curSaleAttrs: {
       type: Array,
       default: function () {
         return []
@@ -65,36 +67,18 @@ export default {
   },
   data () {
     return {
-      form: { productSalesAttributes: [] },
-      rules: {},
-      numberRule: {
-        'supplyPrice': { type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 },
-        'weight': { type: 'integer', max: 99999999, compareLength: true, includeZero: true }
-      }
+      form: {},
+      rules: {}
     }
   },
   computed: {
     ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail', 'saleAttrsMap']),
-    saleAttrsMap () {
-      return this.saleAttrsMap
-    }
-  },
-  created () {
-
-  },
-  mounted () {
-    console.log('21121', this.saleAttrsMap)
-  },
-  methods: {
-    // 当前属性名
-    curAttributeName (id) {
-      return id
-        ? this.disabledAttrValIds.includes(id)
-          ? `${this.saleAttrsMap.get(id)}(已禁用)`
-          : this.saleAttrsMap.has(id)
-            ? this.saleAttrsMap.get(id)
-            : `${this.extraAttrMap.get(id)}(已删除)`
-        : ''
+    curSaleAttrsMap () {
+      const attrsMap = new Map()
+      this.curSaleAttrs.forEach(attribute => {
+        attrsMap.set(attribute.attributeId, attribute)
+      })
+      return attrsMap
     },
     // 已经选中的属性list
     selectAttrList () {
@@ -121,6 +105,25 @@ export default {
           }
         }
       )
+    }
+  },
+  created () {
+
+  },
+  mounted () {
+    // console.log('21121', this.saleAttrsMap)
+  },
+  methods: {
+    // 当前属性名
+    curAttributeName (id) {
+      // return id
+      //   ? this.disabledAttrValIds.includes(id)
+      //     ? `${this.saleAttrsMap.get(id)}(已禁用)`
+      //     : this.saleAttrsMap.has(id)
+      //       ? this.saleAttrsMap.get(id)
+      //       : `${this.extraAttrMap.get(id)}(已删除)`
+      //   : ''
+      return this.saleAttrsMap.get(id)
     },
     // sku列表属性排序
     sortedAttributes (data = [], isObject = false) {
@@ -147,4 +150,66 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.sku-table {
+  $borderStyle: 1px solid #ebeef5;
+  overflow-x: auto;
+  table {
+    margin-top: 10px;
+    max-width: 100%;
+    thead {
+      th {
+        font-weight: normal;
+        text-align: center;
+        padding: 8px 15px;
+        border: $borderStyle;
+        color: #303133;
+        span {
+          float: right;
+        }
+      }
+    }
+    tr {
+      td {
+        padding: 8px 15px;
+        min-width: 120px;
+        border: $borderStyle;
+        text-align: center;
+        /deep/ .el-input {
+          float: left;
+          width: auto;
+          margin: 3px;
+
+          input {
+            width: 100px;
+            &::-webkit-input-placeholder {
+              text-align: center;
+            }
+          }
+        }
+
+        .has-offline {
+          color: #f56c6c;
+        }
+
+        .has-clearance {
+          color: #e6a23c;
+        }
+
+        .flex-container {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+
+  .required:before {
+    content: '*';
+    color: #f56c6c;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+}
 </style>

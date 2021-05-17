@@ -31,7 +31,7 @@
                     clearable
                     isObj
                     placeholder="请选择颜色"
-                    @change="selectChange($event, specificationTerm, item)"
+                    @change="selectChange($event, specificationItem, item)"
                   />
                 </el-form-item>
               </template>
@@ -218,7 +218,6 @@ export default {
   watch: {
     'productAttrFill': {
       handler () {
-        console.log('this', this.categoryData)
         this.initAttrData()
       },
       immediate: true
@@ -299,35 +298,34 @@ export default {
       this.attributeChange(specificationTerm, item)
     },
     removeSizeTag (tag) {
-      // this.chooseSpecificationTerms.forEach(sale => {
-      //   if (sale.code === this.activeName) {
-      //     sale.saleAttrs.forEach((choose) => {
-      //       if (choose.extendCode === 'NZ011') {
-      //         let currentIndex = ''
-      //         choose.values.forEach((value, index) => {
-      //           if (value.id === tag.id) {
-      //             currentIndex = index
-      //           }
-      //         })
-      //         choose.values.splice(currentIndex, 1)
-      //       }
-      //     })
-      //   }
-      // })
-      // this.updateSizeData()
+      this.chooseSpecificationTerms.forEach(sale => {
+        if (sale.code === this.activeName) {
+          sale.saleAttrs.forEach((choose) => {
+            if (choose.extendCode === 'NZ011') {
+              let currentIndex = ''
+              choose.values.forEach((value, index) => {
+                if (value.id === tag.id) {
+                  currentIndex = index
+                }
+              })
+              choose.values.splice(currentIndex, 1)
+            }
+          })
+        }
+      })
     },
     sizeSelectConfirm (val, currentChoose) {
       this.chooseSpecificationTerms.forEach(choose => {
         if (choose.code === this.activeName) {
           choose.saleAttrs.forEach(sale => {
             if (sale.extendCode === 'NZ011') {
-              console.log(deepClone(sale.values))
               sale.values = val
             }
           })
         }
       })
-      this.attributeChange(...currentChoose)
+      const { item, specificationItem } = currentChoose
+      this.attributeChange(specificationItem, item)
     },
     updateSizeData () {
       this.$store.commit('product/CHECKED_SIZES', this.currentSizes())
@@ -380,16 +378,6 @@ export default {
         })
       return specificationItem
     },
-    // saleHead (saleAttrs) {
-    //   const { id, label, extendCode, usable } = this.specificationData
-    //   let tableHead = [{ id, label, extendCode, usable }]
-    //   const saleHead = saleAttrs.map(attr => {
-    //     const { id, label, extendCode, usable } = attr
-    //     return { id, label, extendCode, usable }
-    //   })
-    //   tableHead = [...tableHead, ...saleHead, ...this.tableHeadData]
-    //   return tableHead
-    // },
     // 删除规格
     handleRemove (specificationCode) {
       this.$confirm('确定删除该规格吗？?', '提示', {
@@ -414,15 +402,15 @@ export default {
         .catch(() => { })
     },
     currentSizes () {
-      // const currentSpecification = this.chooseSpecificationTerms
-      //   .find(chooseAttr => chooseAttr.code === this.activeName)
-      // return currentSpecification.saleAttrs
-      //   .reduce((init, chooseAttr) => {
-      //     if (chooseAttr.extendCode === 'NZ011') {
-      //       init = chooseAttr.values
-      //     }
-      //     return init
-      //   }, [])
+      const currentSpecification = this.chooseSpecificationTerms
+        .find(chooseAttr => chooseAttr.code === this.activeName)
+      return currentSpecification.saleAttrs
+        .reduce((init, chooseAttr) => {
+          if (chooseAttr.extendCode === 'NZ011') {
+            init = chooseAttr.values
+          }
+          return init
+        }, [])
     },
     // 销售属性变动
     attributeChange (specificationTerm, item) {
