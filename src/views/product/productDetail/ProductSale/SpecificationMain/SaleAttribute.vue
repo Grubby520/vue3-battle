@@ -81,7 +81,7 @@
       <!-- 尺码弹框 -->
       <ProductSizeDialog ref="productSizeDialog" @confirm="sizeSelectConfirm" />
       <!-- 批量设置弹窗 -->
-      <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
+      <!-- <BatchAttributes @hide="hideDialog" ref="batchAttributes" /> -->
     </div>
     <!-- </el-card> -->
   </div>
@@ -89,11 +89,11 @@
 
 <script>
 import ProductSizeDialog from '../ProductSizeDialog'
-import BatchAttributes from '../batchAttributes'
+// import BatchAttributes from '../batchAttributes'
 import { deepClone, isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
 export default {
-  components: { ProductSizeDialog, BatchAttributes },
+  components: { ProductSizeDialog },
   data () {
     return {
       form: {

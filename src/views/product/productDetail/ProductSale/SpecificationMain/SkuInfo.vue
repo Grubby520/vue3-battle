@@ -3,6 +3,7 @@
     <div slot="header">
       <span>详情描述</span>
     </div>
+    {{selectAttrIdList}}
     <div class="sku-info-content">
       <SaleAttribute
         :table-data="tableData"
@@ -57,7 +58,7 @@ export default {
 
   },
   mounted () {
-
+    // this.initData()
   },
   computed: {
     ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail']),
@@ -86,24 +87,24 @@ export default {
   },
   methods: {
     initData () {
-      const { variantPlate: { variants = [] } = {} } = this.productInfo
-      const currentIds = [
-        ...new Set(
-          variants
-            .map(item => item.attributes.map(k => k.attributeId))
-            .flat()
-            .filter(item => !!item)
-        )
-      ]
-
-      this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
-
-      this.tableData = variants.map((variant, index) => {
-        return {
-          ...variant,
-          initialStatus: variant.status
-        }
-      })
+      // 回填数据 variantPlate 销售属性 variants尺码表数据
+      // const { variantPlate: { variants = [] } = {} } = this.productInfo
+      // const currentIds = [
+      //   ...new Set(
+      //     productSize
+      //       .map(item => item.attributes.map(k => k.attributeId))
+      //       .flat()
+      //       .filter(item => !!item)
+      //   )
+      // ]
+      // this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
+      // console.log('selectAttrIdList', this.selectAttrIdList)
+      // this.tableData = variants.map((variant, index) => {
+      //   return {
+      //     ...variant,
+      //     initialStatus: variant.status
+      //   }
+      // })
     },
     genAvaliableSelectAttribute (attributeIds) {
       return attributeIds
@@ -118,13 +119,13 @@ export default {
         })
         .reduce((prev, current) => {
           const index = prev.findIndex(
-            k => k.saleAttributeType === current.saleAttributeType
+            k => k.saleAttributeType === current.saleAttributeType.value
           )
           if (index > 0) {
             prev[index].attributeIds.push(current.attributeId)
           } else {
             prev.push({
-              saleAttributeType: current.saleAttributeType,
+              saleAttributeType: current.saleAttributeType.value,
               attributeIds: [current.attributeId]
             })
           }
@@ -139,6 +140,14 @@ export default {
         this.genSkuTable(currentData, standardAttributeIds)
       }
       this.setAttrsInfo(currentData)
+    },
+    setAttrsInfo (currentData) {
+      // todo 此处修改关联产品图片和尺码对照表
+      this.$store.commit(
+        'product/SET_CHECKED_ATTRS',
+        currentData
+      )
+      this.$store.commit('product/SET_ATTRS_CHANGED')
     },
     genAttributeRecord (data) {
       // 用于记录用户选中哪些销售属性和其属性值

@@ -21,7 +21,10 @@ export default {
     showSaleLabel: {},
     // 分类数据
     categoryData: [],
-    specificationsAndSizes: []
+    specificationsAndSizes: [],
+    saleAttrsMap: {},
+    checkedAttrs: {}, // 已经选中的销售属性
+    hasAttrsChanged: false // 销售属性变动
   },
   getters: {
     productParams: state => state.productParams || {},
@@ -36,11 +39,24 @@ export default {
     customAttributesData: state => state.customAttributesData || [],
     showSaleLabel: state => state.showSaleLabel || {},
     categoryData: state => state.categoryData || [],
-    specificationsAndSizes: state => state.specificationsAndSizes || []
+    specificationsAndSizes: state => state.specificationsAndSizes || [],
+    saleAttrsMap: state => state.saleAttrsMap || {}
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
       store.categoryData = data
+      const saleAttrs = data.filter(cate => {
+        if (cate.saleAttributeType) {
+          return [1, 2, 3].includes(cate.saleAttributeType.value)
+        }
+      })
+      const arr = saleAttrs.map((item) => item.terms).flat()
+      const curMap = new Map()
+      arr.forEach(item => {
+        curMap.set(item.id, item.name)
+      })
+      store.saleAttrsMap = curMap
+      console.log('store.saleAttrsMap', store.saleAttrsMap)
     },
     PRODUCT_PARAMS: (store, data) => {
       store.productParams = data
@@ -80,6 +96,12 @@ export default {
     },
     SPECIFICATIONS_AND_SIZES: (store, data) => {
       store.specificationsAndSizes = data
+    },
+    SET_CHECKED_ATTRS (state, payload) {
+      state.checkedAttrs = payload
+    },
+    SET_ATTRS_CHANGED (state) {
+      state.hasAttrsChanged = !state.hasAttrsChanged
     }
   },
   actions: {}

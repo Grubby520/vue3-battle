@@ -4,17 +4,14 @@
       <div class="ProductSale-table">
         <el-table :data="form.productSalesAttributes" row-key="key" border>
           <el-table-column
-            v-for="(item,index) in form.saleHead"
+            v-for="(item,index) in selectAttrList"
             :key="`${item.label}${index}`"
             :width="item.width"
             align="center"
           >
             <template slot="header">
-              <span
-                class="ProductSale-from__icon"
-                v-if="['supplyPrice','weight'].includes(item.name)"
-              >*</span>
-              <span>{{item.label}}</span>
+              <span class="ProductSale-from__icon" v-if="['supplyPrice','weight'].includes(item)">*</span>
+              <span>{{item}}</span>
             </template>
             <template slot-scope="scope">
               <el-form-item
@@ -25,12 +22,10 @@
                 <template v-if="item.extendCode">
                   <!-- 动态销售属性(尺码/规格/颜色) -->
                   <div
-                    v-for="(tableAttr,index) in scope.row.productCategorySalesAttributes"
-                    :key="index"
+                    v-for="(attrItem, attrIndex) in sortedAttributes(item.attributes, true)"
+                    :key="attrIndex"
                   >
-                    <span
-                      v-if="(tableLabel[`${tableAttr.attributeTermId}`]).extendCode === item.extendCode"
-                    >{{tableLabel[`${tableAttr.attributeTermId}`].name}}</span>
+                    <span>{{curAttributeName(attrItem.attributeTermId)}}</span>
                   </div>
                 </template>
                 <!-- 供货价格/sku/吊牌/带包装 -->
@@ -60,6 +55,14 @@
 <script>
 import { mapGetters } from 'vuex'
 export default {
+  props: {
+    selectAttrIdList: {
+      type: Array,
+      default: function () {
+        return []
+      }
+    }
+  },
   data () {
     return {
       form: { productSalesAttributes: [] },
@@ -71,16 +74,74 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail'])
+    ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail', 'saleAttrsMap']),
+    saleAttrsMap () {
+      return this.saleAttrsMap
+    }
   },
   created () {
 
   },
   mounted () {
-
+    console.log('21121', this.saleAttrsMap)
   },
   methods: {
-
+    // 当前属性名
+    curAttributeName (id) {
+      return id
+        ? this.disabledAttrValIds.includes(id)
+          ? `${this.saleAttrsMap.get(id)}(已禁用)`
+          : this.saleAttrsMap.has(id)
+            ? this.saleAttrsMap.get(id)
+            : `${this.extraAttrMap.get(id)}(已删除)`
+        : ''
+    },
+    // 已经选中的属性list
+    selectAttrList () {
+      return this.sortedAttributes(this.selectAttrIdList).map(
+        attribute => {
+          const attributeId = attribute.attributeIds.join('-')
+          const saleAttributeType = attribute.saleAttributeType
+          let name = '颜色'
+          switch (saleAttributeType) {
+            case 1:
+              name = '颜色'
+              break
+            case 2:
+              name = '尺码'
+              break
+            case 3:
+              name = '规格'
+              break
+          }
+          return {
+            attributeId: attributeId,
+            saleAttributeType,
+            name
+          }
+        }
+      )
+    },
+    // sku列表属性排序
+    sortedAttributes (data = [], isObject = false) {
+      const curData = [...data]
+      return curData.sort((a, b) => {
+        const prevKey = isObject ? a.attributeId : a.attributeIds[0]
+        const suffixKey = isObject ? b.attributeId : a.attributeIds[0]
+        const prev = this.curSaleAttrsMap.get(prevKey) || {}
+        const suffix = this.curSaleAttrsMap.get(suffixKey) || {}
+        const setType = type => {
+          if (type === 3) {
+            type = 0
+          }
+          return type
+        }
+        return (
+          setType(prev.saleAttributeType || 1) -
+          setType(suffix.saleAttributeType || 1)
+        )
+      })
+    }
   }
 }
 </script>
