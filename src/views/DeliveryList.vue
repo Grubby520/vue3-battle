@@ -10,7 +10,7 @@
       </div>
       <div class="warehouse-address delivery-introduce-bg">
         <p>仓库地址：广东省佛山市三水区云东海街道广州军区干休所创亚物流园A仓</p>
-        <p>收货人员：陈新元 &nbsp;18667186841</p>
+        <p>收货人员：18667186841</p>
       </div>
     </div>
     <SlListView
