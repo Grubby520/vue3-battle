@@ -46,7 +46,9 @@ export default {
         .filter(attr =>
           attr.saleAttributeType && [1, 2, 3].includes(attr.saleAttributeType.value)
         ) || []
-    }
+    },
+    checkedAttrs: state => state.checkedAttrs || {},
+    hasAttrsChanged: state => state.hasAttrsChanged
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {

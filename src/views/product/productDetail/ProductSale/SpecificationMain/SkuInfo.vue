@@ -2,8 +2,9 @@
   <el-card>
     <div slot="header">
       <span>详情描述</span>
+      <el-button @click="result">保存</el-button>
     </div>
-    <div class="sku-info-content">
+    <div class="sku-info-content" ref="sale">
       <SaleAttribute
         :table-data="tableData"
         :cur-sale-attrs="curSaleAttrs"
@@ -61,7 +62,8 @@ export default {
         'productParams',
         'categoryData',
         'productSalesAttributeDetail',
-        'saleAttrs'
+        'saleAttrs',
+        'checkedAttrs'
       ]),
     specification () {
       const specification =
@@ -244,6 +246,157 @@ export default {
         codes = codes.concat(cartesianSku(skuItem))
       })
       return codes
+    },
+    // 推送数据
+    // result () {
+    //   this.genSubmitData()
+    //   console.log('genSubmitData', this.genSubmitData())
+    // },
+    // 获取提交数据
+    genSubmitData () {
+      return {
+        // value: {
+        // attributes: this.genSubmitAttribute(),
+        productSalesAttributes: this.genTableData(this.tableData),
+        // productAttributeList: this.genAttributeDetail(
+        //   this.attributeMap
+        // ),
+        productMainAttributeAndTerm: this.genProductMainAttributeAndTerm(deepClone(
+          this.checkedAttrs
+        ))
+        // }
+      }
+    },
+    // 生成接口需要的格式的attribute
+    // genSubmitAttribute () {
+    //   const checkedAttrs = this.checkedAttrs
+    //   let attributes = []
+    //   const specificationTermIds = []
+    //   let specificationId = null
+    //   checkedAttrs.forEach(attribute => {
+    //     specificationId = attribute.mainAttributeId
+    //     specificationTermIds.push(attribute.mainAttributeTermId)
+    //     attributes = attributes.concat(
+    //       attribute.relatedAttributeAndTermList.map(term => {
+    //         const attributeId = term.attributeId
+    //         const attributeTermIds = term.attributeTermIds
+    //         return {
+    //           attributeId: attributeId,
+    //           attributeTermId: attributeTermIds,
+    //           mainAttribute: false
+    //         }
+    //       })
+    //     )
+    //   })
+    //   return [
+    //     {
+    //       attributeId: specificationId,
+    //       attributeTermId: specificationTermIds,
+    //       mainAttribute: true
+    //     }
+    //   ].concat(attributes)
+    // },
+    genTableData (tableData) {
+      // 提交表格数据数据结构
+      const tables = tableData.map(table => {
+        const { attributes, ...rest } = table
+        const productCategorySalesAttributes = attributes
+        return {
+          productCategorySalesAttributes,
+          ...rest
+        }
+      })
+      return tables
+    },
+    genProductMainAttributeAndTerm (checkedAttrs) {
+      // 提交关联关系数据结构
+      const relatedAttributeAndTermList = checkedAttrs.map(attr => {
+        const { relatedAttributeAndTermList, mainAttributeTermId, ...rest } = attr
+        const productMainAttributeTermRelationList = relatedAttributeAndTermList.map(term => {
+          const attributeTermIds = term.attributeTermIds.reduce((init, relate) => init.concat(relate.id), [])
+          const relatedAttributeAndTermList = {
+            attributeTermIds,
+            attributeId: term.attributeId
+          }
+          return {
+            relatedAttributeAndTermList,
+            mainAttributeTermId
+          }
+        })
+        return {
+          productMainAttributeTermRelationList,
+          ...rest
+        }
+      })
+      return relatedAttributeAndTermList
+    },
+    genAttributeDetail (attributeMap) {
+      return [...attributeMap.keys()].map(key => {
+        console.log('key', key)
+        console.log('this.curSaleAttrs', this.curSaleAttrs)
+        const el = this.curSaleAttrs.find(k => k.id === key)
+        const chooseTermIds = attributeMap.get(key) || []
+        return {
+          id: key,
+          name: el.name,
+          saleAttributeType: el.saleAttributeType,
+          mainAttribute: el.mainAttribute,
+          categoryAttributeRelatedSizes:
+            el.categoryAttributeRelatedSizes || null,
+          terms: chooseTermIds.map(termId => {
+            const term =
+              el.terms.find(term => term.id === termId) || {}
+            return {
+              attributeId: key,
+              id: term.id,
+              name: term.name
+            }
+          })
+        }
+      })
+    },
+    // 校验数据
+    validateData () {
+      // let err = false
+      // const checkedAttrs = this.checkedAttrs
+      // let hasEmptySaleAttribute = checkedAttrs.length === 0
+      // checkedAttrs.forEach(attribute => {
+      //   attribute.relatedAttributeAndTermList.forEach(
+      //     relatedAttribute => {
+      //       if (isEmpty(relatedAttribute.attributeTermIds)) {
+      //         hasEmptySaleAttribute = true
+      //       }
+      //     }
+      //   )
+      // })
+      // if (hasEmptySaleAttribute) {
+      //   this.$message.error('sku信息销售属性未选择完全')
+      //   err = true
+      //   return err
+      // }
+
+      // let supplyPrice = this.tableData.every(item => item.supplyPrice)
+      // if (!supplyPrice) {
+      //   this.$message.error('供货价格，不能为空')
+      //   err = true
+      //   return err
+      // }
+
+      // let weight = this.tableData.every(item => item.weight)
+      // if (!weight) {
+      //   this.$message.error('带包装重量，不能为空')
+      //   err = true
+      //   return err
+      // }
+      // return err
+      return true
+    },
+    result () {
+      return new Promise((resolve) => {
+        if (this.validateData()) {
+          resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
+        }
+      })
     }
   }
 }

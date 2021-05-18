@@ -71,7 +71,7 @@ export default {
     productComponents () {
       let currentComponents = []
       // 规格为是否为主属性
-      const mainAttr = this.specification.categoryAttributeRelatedSizes
+      const mainAttr = this.specificationRelatedSizes.categoryAttributeRelatedSizes
       if (this.productStatus >= 3) {
         // 通过侵权审核
         if (mainAttr) {
@@ -88,8 +88,11 @@ export default {
       }
       return currentComponents
     },
-    specification () {
-      return this.categoryData.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
+    specificationRelatedSizes () {
+      return this.categoryData
+        .find(attr =>
+          attr.saleAttributeType && attr.saleAttributeType.value === 3
+        ) || {}
     }
   },
   mounted () {
@@ -206,7 +209,6 @@ export default {
         const resultPromises = this.$refs[res][0].result()
         result.push(resultPromises)
       })
-      console.log('result', result)
       return Promise.all(result)
         .then((res) => {
           const [
@@ -221,12 +223,19 @@ export default {
             'categoryId': this.categoryId,
             'categoryPath': this.categoryPath
           })
+          let sale = {}
+          const mainAttr = this.specificationRelatedSizes.categoryAttributeRelatedSizes
+          if (mainAttr) {
+            sale = { ...productSalesAttributes }
+          } else {
+            sale = { productSalesAttributes }
+          }
           return {
             productBase,
             productImages,
-            productSalesAttributes,
             productSize,
-            productCustomAttributes
+            productCustomAttributes,
+            ...sale
           }
         })
     }
