@@ -131,14 +131,16 @@ export default {
         productCustomAttributes,
         productImages,
         productSalesAttributeDetail,
-        productSize
+        productSize,
+        productMainAttributeAndTerm
       } = response.data
       const productData = {
         'PRODUCT_BASE': productBase, // 基础属性
         'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
         'PRODUCT_IMAGES': productImages, // 图片属性
         'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
-        'PRODUCT_SIZE': productSize // 尺码表
+        'PRODUCT_SIZE': productSize, // 尺码表
+        'PRODUCT_MAIN_ATTRIBUTE_AND_TERM': productMainAttributeAndTerm
       }
       for (let product in productData) {
         this.$store.commit(`product/${product}`, productData[product] || [])

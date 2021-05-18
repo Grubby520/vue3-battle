@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
   name: 'batchAttributes',
   data () {
@@ -79,16 +78,10 @@ export default {
         sizeList: []
       },
       // 全选所有Sku
-      checkAll: false
-    }
-  },
-  computed: {
-    ...mapGetters('product', ['categoryData']),
-    specification () {
-      return this.categoryData.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
-    },
-    categoryAttributeRelatedSizes () {
-      return this.specification.categoryAttributeRelatedSizes || []
+      checkAll: false,
+      tableData: [],
+      selectAttrList: [],
+      curFormItem: []
     }
   },
   methods: {
@@ -98,29 +91,12 @@ export default {
     handleCheckAllSku (isChecked) {
       this.form.skuList = isChecked ? this.skuList.map((sku) => sku.attributeTermId) : []
     },
-    /**
-    * 打开弹窗
-    * @param {String} dialogType 弹窗类型
-    * @param {Object} data 入口传入的数据
-    */
     open (data) {
       this.show = true
-      const { sizes, colors } = data
-      this.skuList = this.deduplication(colors, 'id')
-        .map((sku) => {
-          return {
-            attributeTermId: sku.id,
-            colorAttributeName: sku.name
-          }
-        })
-      this.form.sizeList = this.deduplication(sizes, 'id')
-        .map((sku) => {
-          return {
-            attributeTermId: sku.id,
-            sizeAttributeName: sku.name,
-            weight: ''
-          }
-        })
+      const { curFormItem, selectAttrList, tableData } = data
+      this.curFormItem = curFormItem
+      this.selectAttrList = selectAttrList
+      this.tableData = tableData
     },
     /**
      * 对象数组去重
@@ -136,7 +112,6 @@ export default {
     // 提交表单数据
     confirm () {
       // 表单业务操作完毕，关闭弹窗
-      console.log('specification', this.specification)
       this.isCancel = false
       this.show = false
     },

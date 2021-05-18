@@ -2,7 +2,6 @@
   <el-card>
     <div slot="header">
       <span>详情描述</span>
-      <el-button @click="result">保存</el-button>
     </div>
     <div class="sku-info-content" ref="sale">
       <SaleAttribute
@@ -160,10 +159,12 @@ export default {
       const specificationTermIds = []
       data.forEach(item => {
         specificationTermIds.push(item.mainAttributeTermId)
+        console.log('item.relatedAttributeAndTermList', item.relatedAttributeAndTermList)
         item.relatedAttributeAndTermList.forEach(relate => {
           const attributeId = relate.attributeId
-          const attributeTermIds = relate.attributeTermIds || []
+          const attributeTermIds = this.attributeTerm(relate.attributeTermIds) || []
           const stashTermIds = attributeMap.get(attributeId) || []
+          console.log('88888888888', attributeTermIds)
           attributeMap.set(attributeId, [
             ...new Set([...attributeTermIds, ...stashTermIds])
           ])
@@ -175,6 +176,10 @@ export default {
       )
       this.attributeMap = attributeMap
       return this.genAvaliableSelectAttribute([...attributeMap.keys()])
+    },
+    attributeTerm (attributeTermIds) {
+      if (attributeTermIds) return
+      return attributeTermIds.id
     },
     // 生成sku列表
     genSkuTable (data, standardAttributeIds) {

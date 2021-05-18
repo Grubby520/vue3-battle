@@ -61,7 +61,7 @@
             </div>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane name="addBtn" disabled>
+        <el-tab-pane name="addBtn" disabled v-if="changeSpecificationOptions.length>0">
           <div slot="label">
             <el-dropdown trigger="click" @command="handleAdd">
               <el-button type="text">
@@ -100,7 +100,7 @@ export default {
       colorOptions: [], // 颜色下拉框数据
       sizeOptions: [],
       specificationOptions: [],
-      saleLabelSign: ['size', 'color', 'specification'],
+      // saleLabelSign: ['size', 'color', 'specification'],
       categoryDataStatus: false,
       stashTableData: new Map(), // 临时缓存表格数据
       showSaleLabel: { // 展示销售属性标识
@@ -117,41 +117,6 @@ export default {
         done: false
       },
       tableLabel: {}, // 表头展示的销售属性name
-      tableHeadData: [ // 表头字段
-        {
-          name: 'supplyPrice',
-          label: '供货价格（RMB）',
-          required: true,
-          message: '',
-          validateRule: function (rule, value, callback) {
-            if (value) {
-              if (Number(value) <= 0) {
-                callback(new Error('供货价格不能为0'))
-              } else {
-                callback()
-              }
-            } else {
-              callback(new Error('请输入供货价格'))
-            }
-          }
-        },
-        {
-          name: 'skuCode',
-          label: '商家SKU编码',
-          maxlength: 30
-        },
-        {
-          name: 'tagSize',
-          label: '商家吊牌尺码',
-          maxlength: 30
-        },
-        {
-          name: 'weight',
-          label: '带包装重量（G）',
-          required: true,
-          message: '请输入带包装重量'
-        }
-      ],
       activeName: undefined,
       chooseSpecificationTerms: [], // 选中的规格
       curSaleAttrs: [], // 所有的销售属性
@@ -164,7 +129,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail']),
+    ...mapGetters('product', [
+      'productParams',
+      'categoryData',
+      'categoryId',
+      'productSalesAttributeDetail',
+      'productMainAttributeAndTerm'
+    ]),
     productAttrFill () {
       // 回显数据
       return [this.categoryData, this.productSalesAttributeDetail]
@@ -191,9 +162,11 @@ export default {
         )
     },
     specification () {
+      // 分类上的规格
       return this.curSaleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     },
     specificationRelateMap () {
+      // 规格关联关系map
       const relateMap = new Map()
       const specificationRelate = this.specification
         .categoryAttributeRelatedSizes
@@ -205,6 +178,7 @@ export default {
       return relateMap
     },
     specificationTerms () {
+      // 规格属性值
       const specificationTerms = this.specification.terms || []
       return specificationTerms.filter(term =>
         [...this.specificationRelateMap.keys()].includes(term.id)
@@ -217,9 +191,67 @@ export default {
         this.initAttrData()
       },
       immediate: true
+    },
+    'categoryId': {
+      handler (newValue) {
+        if (newValue) {
+          this.initData()
+        }
+      },
+      immediate: true
     }
   },
   methods: {
+    // 初始化数据，只在编辑情况下执行
+    initData () {
+      console.log('specificationTerms', this.specificationTerms)
+      const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
+      this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
+        (attributeTerm, index) => {
+          console.log('this.specificationTerms', this.specificationTerms)
+          console.log('attributeTerm.mainAttributeTermId', attributeTerm.mainAttributeTermId)
+          const specificationTerm = deepClone(
+            this.specificationTerms.find(
+              term =>
+                term.id === attributeTerm.mainAttributeTermId
+            ) || {
+              code: `${attributeTerm.mainAttributeTermId}`,
+              id: attributeTerm.mainAttributeTermId
+              // name: `${this.extraAttrMap.get(
+              //   attributeTerm.mainAttributeTermId
+              // )}(已删除)`
+            }
+          )
+          console.log('6666666666', specificationTerm)
+          if (index === 0) {
+            this.$nextTick(() => {
+              this.activeName = specificationTerm.code
+            })
+          }
+          const saleAttributes = attributeTerm.relatedAttributeAndTermList.map(
+            saleAttr => {
+              const saleAttribute = deepClone(
+                this.curSaleAttrs.find(
+                  attr =>
+                    attr.attributeId ===
+                    saleAttr.attributeId
+                ) || {}
+              )
+              return {
+                ...saleAttribute,
+                values: saleAttr.attributeTermIds
+              }
+            }
+          )
+          return {
+            ...specificationTerm,
+            saleAttrs: saleAttributes
+          }
+        }
+      )
+      console.log('11111111111111111', this.chooseSpecificationTerms)
+      this.handleAttribute()
+    },
     initAttrData () {
       const mode = this.productParams.mode === 'create'
       const useCategoryData = mode ? this.filterUableSaleAttrs : this.categoryData
@@ -261,15 +293,15 @@ export default {
             })
             break
           default:
-            // 商品属性（其他属性）
-            const customAttributesData = useCategoryData.filter(item => item.type.value === 4)
-            this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
-            this.$store.commit('product/SHOW_SALE_LABEL', { size: this.showSaleLabel.size })
+          // 商品属性（其他属性）
+          // const customAttributesData = useCategoryData.filter(item => item.type.value === 4)
+          // this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
+          // this.$store.commit('product/SHOW_SALE_LABEL', { size: this.showSaleLabel.size })
         }
       })
     },
     buildSaleData (showSaleLabel, item, type) {
-      const { terms, name, usable, extendCode, id } = item
+      const { terms, extendCode } = item
       this[`${type}Options`] = terms.map(term => {
         term.extendCode = extendCode
         if (!term.usable) {
@@ -277,17 +309,6 @@ export default {
           term.disabled = true
         }
         return term
-      })
-      if (name) {
-        showSaleLabel[type] = name
-        showSaleLabel[`${type}Usable`] = usable
-      }
-      this.tableHeadData.unshift({
-        id: id,
-        name: type,
-        usable: usable,
-        label: name,
-        extendCode: extendCode
       })
     },
     selectChange (e, specificationTerm, item) {
@@ -350,6 +371,7 @@ export default {
     // 新增规格
     handleAdd (specification) {
       const specificationItem = this.attachSaleAttribute(specification)
+      // console.log('specificationItem', specificationItem)
       this.chooseSpecificationTerms.push(specificationItem)
       this.activeName = specificationItem.code
       this.handleAttribute()

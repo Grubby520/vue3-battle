@@ -44,7 +44,7 @@
       >批量录入</el-button>
     </el-row>
     <!-- 批量设置弹窗 -->
-    <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
+    <BatchAttributes @hide="hideDialog" ref="batchAttributes" @batchInput="handleBatchInput" />
   </div>
 </template>
 
@@ -75,6 +75,12 @@ export default {
       default: function () {
         return []
       }
+    },
+    attributeMap: {
+      type: Map,
+      default: function () {
+        return []
+      }
     }
   },
   data () {
@@ -91,6 +97,15 @@ export default {
         attrsMap.set(attribute.id, attribute)
       })
       return attrsMap
+    },
+    // 排序弹窗需要的数据结构
+    curFormItem () {
+      // console.log(
+      //   'attributeMapToObj',
+      //   this.attributeMapToObj(this.attributeMap || new Map())
+      // )
+      // console.log('21212121212', this.attributeMap)
+      return this.attributeMapToObj(this.attributeMap || new Map())
     },
     // 已经选中的属性list
     selectAttrList () {
@@ -118,12 +133,6 @@ export default {
         }
       )
     }
-  },
-  created () {
-
-  },
-  mounted () {
-    // console.log('21121', this.saleAttrsMap)
   },
   methods: {
     // 当前属性名
@@ -184,11 +193,102 @@ export default {
       })
     },
     openDialog (data = {}) {
+      const current = {
+        curFormItem: this.curFormItem,
+        selectAttrList: this.selectAttrList,
+        tableData: this.tableData
+      }
+      // console.log('current', current, this.tableData)
       let dialog = null
       dialog = this.$refs.batchAttributes
-      dialog.open(data)
+      dialog.open(current)
       dialog = null
-    }
+    },
+    attributeMapToObj (map) {
+      var attributeObject = {}
+      this.selectAttrIdList.forEach(attribute => {
+        const attributeIds = attribute.attributeIds
+        const attributeTermIds = [
+          ...new Set(
+            attributeIds
+              .map(attributeId => map.get(attributeId))
+              .flat()
+          )
+        ]
+        attributeObject[attributeIds.join('-')] = attributeTermIds.map(
+          attributeTermId => {
+            return {
+              attributeId: attributeIds.join('-'),
+              attributeTermId,
+              name: this.curAttributeName(attributeTermId)
+            }
+          }
+        )
+      })
+      console.log('1111111111111', attributeObject)
+      return attributeObject
+    },
+    handleBatchInput () { }
+    // 批量录入
+    // handleBatchInput (data) {
+    //   const {
+    //     checkedIds = {},
+    //     supplyPrice = '',
+    //     sellPriceUsd = '',
+    //     weight
+    //   } = data
+    //   const curLength = Object.values(checkedIds).flat().length
+    //   if (!curLength || (!supplyPrice && !sellPriceUsd && !weight)) {
+    //     return
+    //   } else {
+    //     this.tableData.forEach((item, index) => {
+    //       if (
+    //         item.attributes.every(
+    //           zItem =>
+    //             !checkedIds[zItem.attributeId] ||
+    //             checkedIds[zItem.attributeId].includes(
+    //               zItem.attributeTermId
+    //             )
+    //         )
+    //       ) {
+    //         supplyPrice &&
+    //           this.$set(
+    //             this.tableData[index],
+    //             'supplyPrice',
+    //             supplyPrice
+    //           )
+    //         sellPriceUsd &&
+    //           this.$set(
+    //             this.tableData[index],
+    //             'sellPriceUsd',
+    //             this.handleSellPrice(sellPriceUsd)
+    //           )
+    //         weight &&
+    //           this.$set(
+    //             this.tableData[index],
+    //             'packageWeight',
+    //             weight
+    //           )
+    //         // 批量录入了采购价、预估重量并且销售价数据为空自动计算
+    //         if (
+    //           this.tableData[index].supplyPrice &&
+    //           this.tableData[index].packageWeight &&
+    //           !this.tableData[index].sellPriceUsd
+    //         ) {
+    //           const res = computeSellPrice(
+    //             this.tableData[index].supplyPrice,
+    //             this.tableData[index].packageWeight
+    //           )
+    //           this.$set(
+    //             this.tableData[index],
+    //             'sellPriceUsd',
+    //             res
+    //           )
+    //         }
+    //       }
+    //     })
+    //   }
+    // },
   }
 }
 </script>

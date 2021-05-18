@@ -24,7 +24,9 @@ export default {
     specificationsAndSizes: [],
     saleAttrsMap: {},
     checkedAttrs: {}, // 已经选中的销售属性
-    hasAttrsChanged: false // 销售属性变动
+    hasAttrsChanged: false, // 销售属性变动
+    productMainAttributeAndTerm: {}, // 主属性
+    categoryId: undefined // 分类id
   },
   getters: {
     productParams: state => state.productParams || {},
@@ -48,7 +50,11 @@ export default {
         ) || []
     },
     checkedAttrs: state => state.checkedAttrs || {},
-    hasAttrsChanged: state => state.hasAttrsChanged
+    hasAttrsChanged: state => state.hasAttrsChanged,
+    productMainAttributeAndTerm: state => state.productMainAttributeAndTerm || {},
+    categoryId: (state) => {
+      return state.productBase.categoryId
+    }
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
@@ -109,6 +115,9 @@ export default {
     },
     SET_ATTRS_CHANGED (state) {
       state.hasAttrsChanged = !state.hasAttrsChanged
+    },
+    PRODUCT_MAIN_ATTRIBUTE_AND_TERM (state, data) {
+      state.productMainAttributeAndTerm = data
     }
   },
   actions: {}
