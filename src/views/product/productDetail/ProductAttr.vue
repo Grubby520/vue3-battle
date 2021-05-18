@@ -233,16 +233,20 @@ export default {
       return (!attribute.deleted && attribute.usable) || !isEmpty(attribute.value)
     },
     result () {
-      return new Promise(resolve => {
-        const data = this.form.attributesData.map((attribute) => {
-          return {
-            attributeId: attribute.attributeId,
-            attributeValues: attribute.checkbox ? attribute.value : (attribute.value ? [attribute.value] : []),
-            attributeTermType: attribute.termValueType,
-            id: attribute.id
-          }
-        })
-        resolve({ 'productCustomAttributes': data || [] })
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          return new Promise(resolve => {
+            const data = this.form.attributesData.map((attribute) => {
+              return {
+                attributeId: attribute.attributeId,
+                attributeValues: attribute.checkbox ? attribute.value : (attribute.value ? [attribute.value] : []),
+                attributeTermType: attribute.termValueType,
+                id: attribute.id
+              }
+            })
+            resolve({ 'productCustomAttributes': data || [] })
+          })
+        }
       })
     }
   }

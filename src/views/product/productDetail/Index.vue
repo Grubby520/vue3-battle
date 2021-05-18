@@ -10,35 +10,22 @@
         <component :is="component" :ref="component" />
       </div>
     </template>
-    <div class="product-btn">
-      <SlDetails
-        ref="control"
-        :references="$refs"
-        form="form"
-        :mode="mode"
-        :create="create"
-        :load="load"
-        :modify="modify"
-        :cancel="cancel"
-        :saveText="saveText"
-        cancelText="返回列表"
-      />
-    </div>
+    <el-button type="primary" @click="save(0)">保存</el-button>
+    <el-button type="primary" v-if="productStatus !== 3" @click="save(1)">提交</el-button>
+    <el-button type="primary" v-if="productStatus === 3">确定补充信息</el-button>
+    <el-button @click="cancel">返回列表</el-button>
   </div>
 </template>
 
 <script>
 import ProductBase from './ProductBase'
 import ProductAttr from './ProductAttr'
-import ProductColorMain from './ProductSale/ProductColorMain'
+import ProductColorMain from './ProductColorMain'
 import ProductSpecificationMain from './ProductSale/SpecificationMain/SkuInfo'
-// console.log('ProductSpecificationMain', ProductSpecificationMain)
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
-// import './mock.js'
-// import axios from 'axios'
 // import { deepClone } from '@shared/util'
 export default {
   props: {
@@ -79,8 +66,8 @@ export default {
       return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     },
     productComponents () {
-      // return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductColorMain']
-      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
+      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductColorMain']
+      // return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
     }
   },
   mounted () {
@@ -90,21 +77,23 @@ export default {
   },
   methods: {
     load () {
-      const productAttrsRequest = RecommondApi.product(this.id)
-      const categoryAttrsRequest = RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
-      Promise.all([productAttrsRequest, categoryAttrsRequest])
-        .then(responses => {
-          this.loading = true
-          responses.forEach((response, index) => {
-            if (index === 0) {
-              this.productAttrsInfo(response)
-            } else if (index === 1) {
-              this.categoryAttrs(response)
-            }
+      if (this.mode === 'view') {
+        const productAttrsRequest = RecommondApi.product(this.id)
+        const categoryAttrsRequest = RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
+        Promise.all([productAttrsRequest, categoryAttrsRequest])
+          .then(responses => {
+            this.loading = true
+            responses.forEach((response, index) => {
+              if (index === 0) {
+                this.productAttrsInfo(response)
+              } else if (index === 1) {
+                this.categoryAttrs(response)
+              }
+            })
+          }).finally(() => {
+            this.loading = false
           })
-        }).finally(() => {
-          this.loading = false
-        })
+      }
     },
     productAttrsInfo (response) {
       const {
@@ -147,12 +136,20 @@ export default {
           this.categoryAttrs(response)
         })
     },
-    create () {
+    save (status) {
+      if (this.mode === 'create') {
+        this.create(status)
+      }
+      if (this.mode === 'modify') {
+        this.modify()
+      }
+    },
+    create (status) {
       // 保存数据
       this.getResult()
         .then(res => {
           // 0：productSave 确定 1：productSaveSubmit 提交
-          const interfaces = this.$refs.control.someBtnParams === 0 ? 'productSave' : 'productSaveSubmit'
+          const interfaces = status === 0 ? 'productSave' : 'productSaveSubmit'
           RecommondApi[interfaces](res)
             .then((res) => {
               if (res.success) {
@@ -170,7 +167,7 @@ export default {
           }
           // productStatus 3:保存 非3：修改补充信息
           interfacesStatus[1] = this.productStatus !== 3 ? 'productSaveSubmit' : 'replenish'
-          const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
+          const interfaces = interfacesStatus[status]
           RecommondApi[interfaces](res)
             .then((res) => {
               if (res.success) {
@@ -186,10 +183,12 @@ export default {
     getResult () {
       // 获取需要保存/提交的数据
       const result = []
-      for (const ref in this.$refs) {
-        const currentRef = this.$refs[ref][0]
-        currentRef && result.push(currentRef.result())
-      }
+      const refs = this.productComponents
+      refs.forEach(res => {
+        const resultPromises = this.$refs[res][0].result()
+        result.push(resultPromises)
+      })
+      console.log('result', result)
       return Promise.all(result)
         .then((res) => {
           const [

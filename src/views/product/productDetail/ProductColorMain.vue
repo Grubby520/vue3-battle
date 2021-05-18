@@ -668,7 +668,11 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        resolve({ 'productSalesAttributes': this.form.productSalesAttributes || [] })
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            resolve({ 'productSalesAttributes': this.form.productSalesAttributes || [] })
+          }
+        })
       })
     }
   }
