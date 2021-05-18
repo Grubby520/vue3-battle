@@ -7,3 +7,5 @@ export const yesOrNo = [
     value: false
   }
 ]
+
+export const noSymbolValue = Symbol('无')
