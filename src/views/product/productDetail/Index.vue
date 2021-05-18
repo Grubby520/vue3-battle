@@ -10,10 +10,12 @@
         <component :is="component" :ref="component" />
       </div>
     </template>
-    <el-button type="primary" @click="save(0)">保存</el-button>
-    <el-button type="primary" v-if="productStatus !== 3" @click="save(1)">提交</el-button>
-    <el-button type="primary" v-if="productStatus === 3">确定补充信息</el-button>
-    <el-button @click="cancel">返回列表</el-button>
+    <div class="product-btn">
+      <el-button type="primary" @click="save(0)">保存</el-button>
+      <el-button type="primary" v-if="productStatus !== 3" @click="save(1)">提交</el-button>
+      <el-button type="primary" v-if="productStatus === 3">确定补充信息</el-button>
+      <el-button @click="cancel">返回列表</el-button>
+    </div>
   </div>
 </template>
 
@@ -44,7 +46,8 @@ export default {
   data () {
     return {
       productStatus: undefined,
-      loading: false
+      loading: false,
+      categoryData: []
     }
   },
   watch: {
@@ -66,8 +69,27 @@ export default {
       return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
     },
     productComponents () {
-      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductColorMain']
-      // return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
+      let currentComponents = []
+      // 规格为是否为主属性
+      const mainAttr = this.specification.categoryAttributeRelatedSizes
+      if (this.productStatus >= 3) {
+        // 通过侵权审核
+        if (mainAttr) {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain', 'ProductSize', 'ProductAttr']
+        } else {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr']
+        }
+      } else {
+        if (mainAttr) {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
+        } else {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain']
+        }
+      }
+      return currentComponents
+    },
+    specification () {
+      return this.categoryData.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     }
   },
   mounted () {
@@ -123,11 +145,7 @@ export default {
         })
         return categoryItem
       })
-      // axios.post('/mock/similar', 'category')
-      //   .then(res => {
-      //     const categoryData = res.data
-      //     this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
-      //   })
+      this.categoryData = categoryData
       this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
     },
     getCategoryAttr () {
@@ -260,6 +278,10 @@ export default {
         line-height: 20px;
       }
     }
+  }
+  &-btn {
+    display: flex;
+    justify-content: center;
   }
 }
 </style>
