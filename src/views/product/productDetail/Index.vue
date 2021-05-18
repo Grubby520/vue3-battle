@@ -58,6 +58,18 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    'categoryId': {
+      handler (newValue) {
+        if (newValue) {
+          this.getCategoryAttr()
+          if (this.mode !== 'create') {
+            this.load()
+          }
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
   computed: {
@@ -65,9 +77,9 @@ export default {
     isStatus () {
       return this.mode === 'view'
     },
-    saveText () {
-      return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
-    },
+    // saveText () {
+    //   return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
+    // },
     productComponents () {
       let currentComponents = []
       // 规格为是否为主属性
@@ -95,30 +107,23 @@ export default {
         ) || {}
     }
   },
-  mounted () {
-    if (this.mode === 'create') {
-      this.getCategoryAttr()
-    }
-  },
   methods: {
     load () {
-      if (this.mode === 'view') {
-        const productAttrsRequest = RecommondApi.product(this.id)
-        const categoryAttrsRequest = RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
-        Promise.all([productAttrsRequest, categoryAttrsRequest])
-          .then(responses => {
-            this.loading = true
-            responses.forEach((response, index) => {
-              if (index === 0) {
-                this.productAttrsInfo(response)
-              } else if (index === 1) {
-                this.categoryAttrs(response)
-              }
-            })
-          }).finally(() => {
-            this.loading = false
+      const productAttrsRequest = RecommondApi.product(this.id)
+      const categoryAttrsRequest = RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
+      Promise.all([productAttrsRequest, categoryAttrsRequest])
+        .then(responses => {
+          this.loading = true
+          responses.forEach((response, index) => {
+            if (index === 0) {
+              this.productAttrsInfo(response)
+            } else if (index === 1) {
+              this.categoryAttrs(response)
+            }
           })
-      }
+        }).finally(() => {
+          this.loading = false
+        })
     },
     productAttrsInfo (response) {
       const {
