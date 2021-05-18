@@ -1,5 +1,6 @@
 
 import { get, post, put } from '@shared/http'
+import { noSymbolValue } from '@api/static/index'
 import URL from './goodsUrl'
 
 const GOODS_API = {
@@ -193,6 +194,25 @@ const GOODS_API = {
 
   doStockOutApply (params) {
     return post(URL.stockOutApply, params)
+  },
+  // 商品数据列表
+  getProductDashboardList (params) {
+    return get(URL.productDashboardList, params)
+  },
+  // 商品颜色数据
+  getProductColors (params) {
+    return get(URL.productColor, params).then(res => {
+      let result = res.data || []
+      let noDataIndex = result.findIndex(item => item.value === '')
+      if (result.length > 0 && noDataIndex !== -1) {
+        result.splice(noDataIndex, 1)
+        result.unshift({
+          label: '无',
+          value: noSymbolValue
+        })
+      }
+      return result
+    })
   }
 
 }
