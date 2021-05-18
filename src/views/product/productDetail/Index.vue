@@ -282,6 +282,7 @@ export default {
   &-btn {
     display: flex;
     justify-content: center;
+    margin-top: 10px;
   }
 }
 </style>

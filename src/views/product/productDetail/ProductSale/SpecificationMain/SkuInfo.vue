@@ -3,7 +3,6 @@
     <div slot="header">
       <span>详情描述</span>
     </div>
-    {{selectAttrIdList}}
     <div class="sku-info-content">
       <SaleAttribute
         :table-data="tableData"
@@ -57,7 +56,13 @@ export default {
     // this.initData()
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail']),
+    ...mapGetters('product',
+      [
+        'productParams',
+        'categoryData',
+        'productSalesAttributeDetail',
+        'saleAttrs'
+      ]),
     specification () {
       const specification =
         this.curSaleAttrs.find(attr => attr.extendCode === 'NZ012') ||
@@ -66,7 +71,7 @@ export default {
     },
     curSaleAttrs () {
       // 新建筛掉已禁用属性、属性值
-      return this.categoryData.filter(item => item.usable)
+      return this.saleAttrs
     },
     curSaleAttrsMap () {
       const attrsMap = new Map()
@@ -170,18 +175,13 @@ export default {
     },
     // 生成sku列表
     genSkuTable (data, standardAttributeIds) {
-      console.log('data', data)
       const oldTableData = deepClone(this.tableData)
       const codes = this.genSkuTableCodes(data)
-      console.log('codes', codes)
-      // console.log('standardAttributeIds', standardAttributeIds)
       const tableData = codes.map(item => {
         const obj = {
           attributes: standardAttributeIds.map(attribute => {
-            const matchAttribute = item.find(attr => {
-              // console.log('attr', attr)
+            const matchAttribute = item.find(attr =>
               attribute.attributeIds.includes(attr.attributeId)
-            }
             )
             return matchAttribute || {}
           }),
@@ -189,7 +189,6 @@ export default {
         }
         return obj
       })
-      console.log('tableData', tableData)
       // 生成新的表格
       this.tableData = this.recoverTableData(oldTableData, tableData)
       this.selectAttrIdList = standardAttributeIds
@@ -236,7 +235,7 @@ export default {
             return attributeTermIds.map(attributeTermId => {
               return {
                 attributeId: attributeId,
-                attributeTermId
+                attributeTermId: attributeTermId.id
               }
             })
           })

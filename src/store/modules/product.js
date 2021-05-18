@@ -40,7 +40,13 @@ export default {
     showSaleLabel: state => state.showSaleLabel || {},
     categoryData: state => state.categoryData || [],
     specificationsAndSizes: state => state.specificationsAndSizes || [],
-    saleAttrsMap: state => state.saleAttrsMap || {}
+    saleAttrsMap: state => state.saleAttrsMap || {},
+    saleAttrs: (state) => {
+      return state.categoryData
+        .filter(attr =>
+          attr.saleAttributeType && [1, 2, 3].includes(attr.saleAttributeType.value)
+        ) || []
+    }
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
@@ -56,7 +62,6 @@ export default {
         curMap.set(item.id, item.name)
       })
       store.saleAttrsMap = curMap
-      console.log('store.saleAttrsMap', store.saleAttrsMap)
     },
     PRODUCT_PARAMS: (store, data) => {
       store.productParams = data

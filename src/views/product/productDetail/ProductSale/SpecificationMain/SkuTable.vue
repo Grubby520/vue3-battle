@@ -5,7 +5,7 @@
         <thead>
           <tr>
             <th v-for="item in selectAttrList" :key="item.attributeId">{{item.name}}</th>
-            <th>销售状态</th>
+            <th>供货价格（RMB）</th>
             <th>商家SKU编码</th>
             <th>商家吊牌尺码</th>
             <th>带包装重量（G）</th>
@@ -88,7 +88,7 @@ export default {
     curSaleAttrsMap () {
       const attrsMap = new Map()
       this.curSaleAttrs.forEach(attribute => {
-        attrsMap.set(attribute.attributeId, attribute)
+        attrsMap.set(attribute.id, attribute)
       })
       return attrsMap
     },
@@ -128,6 +128,7 @@ export default {
   methods: {
     // 当前属性名
     curAttributeName (id) {
+      console.log('444444', id)
       // return id
       //   ? this.disabledAttrValIds.includes(id)
       //     ? `${this.saleAttrsMap.get(id)}(已禁用)`
@@ -135,14 +136,17 @@ export default {
       //       ? this.saleAttrsMap.get(id)
       //       : `${this.extraAttrMap.get(id)}(已删除)`
       //   : ''
+      // console.log('id', id)
       return this.saleAttrsMap.get(id)
     },
     // sku列表属性排序
     sortedAttributes (data = [], isObject = false) {
+      console.log('table', this.tableData)
       const curData = [...data]
-      return curData.sort((a, b) => {
+      console.log('curData', curData)
+      const sss = curData.sort((a, b) => {
         const prevKey = isObject ? a.attributeId : a.attributeIds[0]
-        const suffixKey = isObject ? b.attributeId : a.attributeIds[0]
+        const suffixKey = isObject ? b.attributeId : b.attributeIds[0]
         const prev = this.curSaleAttrsMap.get(prevKey) || {}
         const suffix = this.curSaleAttrsMap.get(suffixKey) || {}
         const setType = type => {
@@ -156,6 +160,8 @@ export default {
           setType(suffix.saleAttributeType || 1)
         )
       })
+      console.log('sss', sss)
+      return sss
     },
     /**
      * 批量录入回填

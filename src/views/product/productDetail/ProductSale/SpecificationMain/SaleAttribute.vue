@@ -12,6 +12,7 @@
           <el-form ref="form" label-width="12rem" :model="specificationItem">
             <div v-for="(item, index) in specificationItem.saleAttrs" :key="index">
               <template v-if="item.extendCode ==='NZ010'">
+                {{item.values}}
                 <el-form-item
                   :prop="`${index}values`"
                   :rules="{required: true, message: '域名不能为空', trigger: 'blur' }"
@@ -36,6 +37,7 @@
                 </el-form-item>
               </template>
               <template v-if="item.extendCode ==='NZ011'">
+                {{item.values}}
                 <el-form-item :prop="`${index}values`" :rules="rules.sizes">
                   <template slot="label">
                     <el-tooltip effect="dark" :content="item.name" placement="top">
@@ -54,7 +56,7 @@
                     closable
                     effect="dark"
                     :type="['success', 'info', 'danger', 'warning', ''][index%5]"
-                    @close="removeSizeTag(tag)"
+                    @close="removeSizeTag(tag,specificationItem, item)"
                   >{{tag.name}}</el-tag>
                 </el-form-item>
               </template>
@@ -155,7 +157,7 @@ export default {
       activeName: undefined,
       chooseSpecificationTerms: [], // 选中的规格
       curSaleAttrs: [], // 所有的销售属性
-      specificationData: {},
+      // specificationData: {},
       rules: {
         colors: [
           { required: true, message: '请添加尺码', trigger: 'blur' }
@@ -191,8 +193,7 @@ export default {
         )
     },
     specification () {
-      return (
-        this.curSaleAttrs.find(attr => attr.saleAttributeType.value === 3) || {})
+      return this.curSaleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     },
     specificationRelateMap () {
       const relateMap = new Map()
@@ -239,7 +240,7 @@ export default {
           return sale
         })
         .sort((a, b) => { return a.level - b.level })
-      this.specificationData = this.curSaleAttrs.find(cur => cur.extendCode === 'NZ012')
+      // this.specificationData = this.curSaleAttrs.find(cur => cur.extendCode === 'NZ012')
 
       useCategoryData.forEach(item => {
         switch (item.extendCode) {
@@ -294,7 +295,7 @@ export default {
     selectChange (e, specificationTerm, item) {
       this.attributeChange(specificationTerm, item)
     },
-    removeSizeTag (tag) {
+    removeSizeTag (tag, specificationTerm, item) {
       this.chooseSpecificationTerms.forEach(sale => {
         if (sale.code === this.activeName) {
           sale.saleAttrs.forEach((choose) => {
@@ -310,6 +311,7 @@ export default {
           })
         }
       })
+      this.attributeChange(specificationTerm, item)
     },
     sizeSelectConfirm (val, currentChoose) {
       this.chooseSpecificationTerms.forEach(choose => {
@@ -418,7 +420,7 @@ export default {
        * 如果已经有值的【颜色】框不做填充更改；
        */
       this.chooseSpecificationTerms
-        .filter(term => term.id !== specificationTerm.attributeTermId)
+        .filter(term => term.id !== specificationTerm.id)
         .forEach(term => {
           term.saleAttrs
             .filter(attr => attr.attributeId === item.attributeId)
@@ -480,6 +482,7 @@ export default {
   }
   .el-card {
     overflow: unset !important;
+    height: 800px;
   }
   /deep/.el-input--small .el-input__inner {
     text-align: center;
