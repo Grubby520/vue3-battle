@@ -110,10 +110,11 @@ export default {
       // })
     },
     genAvaliableSelectAttribute (attributeIds) {
+      // 查找当前销售属性
       return attributeIds
         .map(attributeId => {
           const el = this.curSaleAttrs.find(
-            k => attributeId === k.id
+            k => k.id === attributeId
           )
           return {
             attributeId: attributeId,
@@ -122,9 +123,9 @@ export default {
         })
         .reduce((prev, current) => {
           const index = prev.findIndex(
-            k => k.saleAttributeType === current.saleAttributeType.value
+            k => k.saleAttributeType === current.saleAttributeType
           )
-          if (index > 0) {
+          if (index !== -1) {
             prev[index].attributeIds.push(current.attributeId)
           } else {
             prev.push({
@@ -247,11 +248,6 @@ export default {
       })
       return codes
     },
-    // 推送数据
-    // result () {
-    //   this.genSubmitData()
-    //   console.log('genSubmitData', this.genSubmitData())
-    // },
     // 获取提交数据
     genSubmitData () {
       return {
@@ -314,10 +310,11 @@ export default {
         const { relatedAttributeAndTermList, mainAttributeTermId, ...rest } = attr
         const productMainAttributeTermRelationList = relatedAttributeAndTermList.map(term => {
           const attributeTermIds = term.attributeTermIds.reduce((init, relate) => init.concat(relate.id), [])
-          const relatedAttributeAndTermList = {
+          const relatedAttributeAndTermList = []
+          relatedAttributeAndTermList.push({
             attributeTermIds,
             attributeId: term.attributeId
-          }
+          })
           return {
             relatedAttributeAndTermList,
             mainAttributeTermId
@@ -328,12 +325,10 @@ export default {
           ...rest
         }
       })
-      return relatedAttributeAndTermList
+      return relatedAttributeAndTermList[0]
     },
     genAttributeDetail (attributeMap) {
       return [...attributeMap.keys()].map(key => {
-        console.log('key', key)
-        console.log('this.curSaleAttrs', this.curSaleAttrs)
         const el = this.curSaleAttrs.find(k => k.id === key)
         const chooseTermIds = attributeMap.get(key) || []
         return {
@@ -392,6 +387,7 @@ export default {
       return true
     },
     result () {
+      console.log('this.genSubmitData()', this.genSubmitData())
       return new Promise((resolve) => {
         if (this.validateData()) {
           resolve({ 'productSalesAttributes': this.genSubmitData() || [] })

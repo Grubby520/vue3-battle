@@ -128,7 +128,6 @@ export default {
   methods: {
     // 当前属性名
     curAttributeName (id) {
-      console.log('444444', id)
       // return id
       //   ? this.disabledAttrValIds.includes(id)
       //     ? `${this.saleAttrsMap.get(id)}(已禁用)`
@@ -141,9 +140,7 @@ export default {
     },
     // sku列表属性排序
     sortedAttributes (data = [], isObject = false) {
-      console.log('table', this.tableData)
       const curData = [...data]
-      console.log('curData', curData)
       const sss = curData.sort((a, b) => {
         const prevKey = isObject ? a.attributeId : a.attributeIds[0]
         const suffixKey = isObject ? b.attributeId : b.attributeIds[0]
@@ -160,7 +157,6 @@ export default {
           setType(suffix.saleAttributeType || 1)
         )
       })
-      console.log('sss', sss)
       return sss
     },
     /**
