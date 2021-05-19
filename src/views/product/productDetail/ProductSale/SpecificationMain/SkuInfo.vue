@@ -1,8 +1,8 @@
 <template>
   <div class="skuInfo">
     <el-card class="skuInfo-card">
-      <div slot="header">
-        <span>详情描述</span>
+      <div slot="header" class="title">
+        <span>销售属性</span>
       </div>
       <div class="sku-info-content" ref="sale">
         <SaleAttribute
@@ -411,7 +411,7 @@ export default {
 
 <style scoped lang="scss">
 .skuInfo {
-  &-card {
+  .sku-info-content {
     padding: 0 12rem;
   }
   // .el-card {

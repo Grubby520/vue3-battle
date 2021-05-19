@@ -286,6 +286,12 @@ export default {
           return init
         }, [])
       return categoryData || []
+    },
+    coloerRelatedSizes () {
+      return this.categoryData
+        .find(attr =>
+          attr.saleAttributeType && attr.saleAttributeType.value === 1
+        ) || {}
     }
   },
   watch: {
@@ -670,10 +676,15 @@ export default {
       return new Promise(resolve => {
         this.$refs.form.validate((valid) => {
           if (valid) {
+            const { mainAttribute, id } = this.coloerRelatedSizes
+            const productMainAttributeAndTerm = {}
+            if (mainAttribute) {
+              productMainAttributeAndTerm['mainAttributeId'] = id
+            }
             resolve({
               'productSalesAttributes': {
                 productSalesAttributes: this.form.productSalesAttributes,
-                productMainAttributeAndTerm: { mainAttributeId: 1 }
+                productMainAttributeAndTerm: productMainAttributeAndTerm
               } || []
             })
           }
