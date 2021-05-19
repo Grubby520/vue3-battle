@@ -86,10 +86,9 @@
 </template>
 
 <script>
-import ProductSizeDialog from '../ProductSizeDialog'
+import ProductSizeDialog from '../../ProductSizeDialog'
 import { deepClone, isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
-// import { genAttrOptions } from './utils.js'
 export default {
   components: { ProductSizeDialog },
   data () {

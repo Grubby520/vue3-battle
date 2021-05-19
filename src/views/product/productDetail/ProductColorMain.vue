@@ -242,7 +242,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail']),
+    ...mapGetters('product', [
+      'productParams',
+      'categoryData',
+      'productSalesAttributeDetail',
+      'categoryId'
+    ]),
     changeForm () {
       const saleAttrArr = []
       const sizes = deepClone(this.form.sizes)

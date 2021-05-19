@@ -1,6 +1,5 @@
 <template>
   <div class="product">
-    {{specificationMain}}
     <template>
       <div
         v-loading="loading"
@@ -17,7 +16,7 @@
         <el-button type="primary" v-if="productStatus !== 3" @click="saveSubmit">提交</el-button>
         <el-button type="primary" v-if="productStatus === 3" @click="replenish">确定补充信息</el-button>
       </div>
-      <el-button @click="cancel">返回列表</el-button>
+      <el-button @click="cancel" style="margin-left:1rem;">返回列表</el-button>
     </div>
   </div>
 </template>
@@ -31,7 +30,7 @@ import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
-import { isEmpty } from '@shared/util'
+import { isEmpty, deepClone } from '@shared/util'
 // import { deepClone } from '@shared/util'
 export default {
   props: {
@@ -46,11 +45,19 @@ export default {
     cateLabels: { type: String, required: false, default: '' },
     supplierItemNo: { type: String, required: false, default: '' }
   },
-  components: { ProductSize, ProductColorMain, ProductAttr, ProductBase, ProductImages, ProductSpecificationMain },
+  components: {
+    ProductSize,
+    ProductColorMain,
+    ProductAttr,
+    ProductBase,
+    ProductImages,
+    ProductSpecificationMain
+  },
   data () {
     return {
       productStatus: undefined,
-      loading: false
+      loading: false,
+      mainAttributeType: ''
     }
   },
   watch: {
@@ -141,7 +148,7 @@ export default {
       this.productStatus = productBase.status
     },
     setSkuType (productMainAttributeAndTerm) {
-      const mainAttributeType = isEmpty(productMainAttributeAndTerm)
+      const mainAttributeType = isEmpty(productMainAttributeAndTerm.productMainAttributeTermRelationList)
         ? 'color'
         : 'specification'
 
@@ -151,33 +158,38 @@ export default {
       )
     },
     categoryAttrs (response) {
-      const categoryData = response.data.map(categoryItem => {
-        categoryItem.terms.forEach(term => {
-          term.extendCode = categoryItem.extendCode
-          term.attributeId = categoryItem.id
+      return new Promise(resolve => {
+        const categoryData = response.data.map(categoryItem => {
+          categoryItem.terms.forEach(term => {
+            term.extendCode = categoryItem.extendCode
+            term.attributeId = categoryItem.id
+          })
+          return categoryItem
         })
-        return categoryItem
+        this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+        resolve(categoryData)
       })
-      this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
-      return categoryData
     },
     getCategoryAttr () {
       RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
         .then(response => {
-          const categoryData = this.categoryAttrs(response)
-          if (this.mode === 'create') {
-            const specificationRelatedSizes = categoryData
-              .find(attr =>
-                attr.saleAttributeType && attr.saleAttributeType.value === 3
-              ) || {}
-
-            // 规格为是否为主属性
-            const {
-              categoryAttributeRelatedSizes,
-              mainAttribute
-            } = specificationRelatedSizes
-            const mainAttributeType = categoryAttributeRelatedSizes && mainAttribute ? 'specification' : 'color'
-            this.$store.commit('product/SET_MAIN_ATTRIBUTE_TYPE', mainAttributeType)
+          if (response.success) {
+            this.categoryAttrs(response)
+              .then(cate => {
+                console.log('cate', deepClone(cate))
+                if (this.mode === 'create') {
+                  const specificationRelatedSizes = cate
+                    .find(attr =>
+                      attr.saleAttributeType && attr.saleAttributeType.value === 3
+                    ) || {}
+                  // 规格为是否为主属性
+                  const {
+                    mainAttribute
+                  } = specificationRelatedSizes
+                  const mainAttributeType = mainAttribute ? 'specification' : 'color'
+                  this.$store.commit('product/SET_MAIN_ATTRIBUTE_TYPE', mainAttributeType)
+                }
+              })
           }
         })
     },
@@ -234,7 +246,7 @@ export default {
           const [
             { productBase },
             { productImages },
-            { productSalesAttributes },
+            { productSalesAttributes } = {},
             { productSize } = {},
             { productCustomAttributes } = {}
           ] = res
@@ -243,19 +255,12 @@ export default {
             'categoryId': this.categoryId,
             'categoryPath': this.categoryPath
           })
-          let sale = {}
-          const mainAttr = this.specificationRelatedSizes.categoryAttributeRelatedSizes
-          if (mainAttr) {
-            sale = { ...productSalesAttributes }
-          } else {
-            sale = { productSalesAttributes }
-          }
           return {
             productBase,
             productImages,
             productSize,
             productCustomAttributes,
-            ...sale
+            ...productSalesAttributes
           }
         })
     }

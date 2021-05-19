@@ -34,7 +34,7 @@
       <!-- 带包装重量 -->
       <el-form-item label="带包装重量" prop="sizeList">
         <el-table :data="form.sizeList" border>
-          <el-table-column prop="sizeAttributeName" label="尺码" align="center"></el-table-column>
+          <el-table-column prop="sizeAttributeName" :label="saleName" align="center"></el-table-column>
           <el-table-column prop="weight" label="带包装重量（G）" align="center">
             <template v-slot="{row}">
               <el-input
@@ -78,7 +78,8 @@ export default {
         sizeList: []
       },
       // 全选所有Sku
-      checkAll: true
+      checkAll: true,
+      saleName: ''
     }
   },
   methods: {
@@ -93,13 +94,14 @@ export default {
     * @param {String} dialogType 弹窗类型
     * @param {Object} data 入口传入的数据
     */
-    open (data) {
+    open (data, type) {
       this.show = true
       const { sizes, colors, colorAttrs, specificationAttrs } = data
       const specifications = (specificationAttrs || []).map(specification => {
         specification.id = specification.attributeTermId
         return specification
       })
+      this.saleName = type ? '规格' : '尺码'
       this.skuList = this.deduplication(colors || colorAttrs, 'id')
         .map((sku) => {
           return {

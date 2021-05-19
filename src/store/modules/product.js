@@ -46,6 +46,7 @@ export default {
     specificationsAndSizes: state => state.specificationsAndSizes || [],
     saleAttrsMap: state => state.saleAttrsMap || {},
     saleAttrs: (state) => {
+      // 所有销售属性
       return state.categoryData
         .filter(attr =>
           attr.saleAttributeType && [1, 2, 3].includes(attr.saleAttributeType.value)

@@ -90,7 +90,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'categoryData', 'productSalesAttributeDetail', 'saleAttrsMap']),
+    ...mapGetters('product', [
+      'productParams',
+      'categoryData',
+      'productSalesAttributeDetail',
+      'saleAttrsMap'
+    ]),
     curSaleAttrsMap () {
       const attrsMap = new Map()
       this.curSaleAttrs.forEach(attribute => {
@@ -203,7 +208,7 @@ export default {
     openDialog (data = {}) {
       let dialog = null
       dialog = this.$refs.batchAttributes
-      dialog.open(this.curFormItem)
+      dialog.open(this.curFormItem, 'mainSpecification')
       dialog = null
     },
     attributeColorAndSize (map) {
