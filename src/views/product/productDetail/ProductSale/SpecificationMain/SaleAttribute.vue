@@ -61,7 +61,7 @@
             </div>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane name="addBtn" disabled v-if="changeSpecificationOptions.length>0">
+        <el-tab-pane name="addBtn" disabled v-if="productParams.mode==='create'">
           <div slot="label">
             <el-dropdown trigger="click" @command="handleAdd">
               <el-button type="text">
@@ -204,16 +204,17 @@ export default {
   methods: {
     // 初始化数据，只在编辑情况下执行
     initData () {
-      console.log('specificationTerms', this.specificationTerms)
       const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
         (attributeTerm, index) => {
-          console.log('this.specificationTerms', this.specificationTerms)
-          console.log('attributeTerm.mainAttributeTermId', attributeTerm.mainAttributeTermId)
+          // console.log('this.specificationTerms', this.specificationTerms)
+          // console.log('mainAttributeTermId', attributeTerm.mainAttributeTermId)
           const specificationTerm = deepClone(
             this.specificationTerms.find(
-              term =>
-                term.id === attributeTerm.mainAttributeTermId
+              term => {
+                // return term.id === attributeTerm.mainAttributeTermId
+                return term.id === 1240
+              }
             ) || {
               code: `${attributeTerm.mainAttributeTermId}`,
               id: attributeTerm.mainAttributeTermId
@@ -222,7 +223,6 @@ export default {
               // )}(已删除)`
             }
           )
-          console.log('6666666666', specificationTerm)
           if (index === 0) {
             this.$nextTick(() => {
               this.activeName = specificationTerm.code
@@ -249,7 +249,6 @@ export default {
           }
         }
       )
-      console.log('11111111111111111', this.chooseSpecificationTerms)
       this.handleAttribute()
     },
     initAttrData () {

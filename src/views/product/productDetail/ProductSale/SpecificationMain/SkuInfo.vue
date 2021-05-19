@@ -26,7 +26,7 @@
 <script>
 import SkuTable from './SkuTable'
 import SaleAttribute from './SaleAttribute'
-import { deepClone } from '@shared/util'
+import { deepClone, isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
 import cartesianSku from '../../../../../shared/util/cartesianSku'
 export default {
@@ -49,12 +49,6 @@ export default {
       attributeMap: new Map()
     }
   },
-  created () {
-
-  },
-  mounted () {
-    // this.initData()
-  },
   computed: {
     ...mapGetters('product',
       [
@@ -62,7 +56,8 @@ export default {
         'categoryData',
         'productSalesAttributeDetail',
         'saleAttrs',
-        'checkedAttrs'
+        'checkedAttrs',
+        'categoryId'
       ]),
     specification () {
       const specification =
@@ -87,26 +82,31 @@ export default {
       return this.curSaleAttrs
     }
   },
+  watch: {
+    'categoryId': {
+      handler () {
+        this.initData()
+      },
+      immediate: true
+    }
+  },
   methods: {
     initData () {
-      // 回填数据 variantPlate 销售属性 variants尺码表数据
-      // const { variantPlate: { variants = [] } = {} } = this.productInfo
-      // const currentIds = [
-      //   ...new Set(
-      //     productSize
-      //       .map(item => item.attributes.map(k => k.attributeId))
-      //       .flat()
-      //       .filter(item => !!item)
-      //   )
-      // ]
-      // this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
-      // console.log('selectAttrIdList', this.selectAttrIdList)
-      // this.tableData = variants.map((variant, index) => {
-      //   return {
-      //     ...variant,
-      //     initialStatus: variant.status
-      //   }
-      // })
+      const { productSalesAttributes } = this.productSalesAttributeDetail
+      if (isEmpty(productSalesAttributes)) return
+      const currentIds = [
+        ...new Set(
+          productSalesAttributes
+            .map(item => item.productCategorySalesAttributes.map(k => k.attributeId))
+            .flat()
+            .filter(item => !!item)
+        )
+      ]
+      console.log('currentIds', currentIds)
+
+      this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
+
+      this.tableData = productSalesAttributes
     },
     genAvaliableSelectAttribute (attributeIds) {
       // 查找当前销售属性
@@ -115,6 +115,9 @@ export default {
           const el = this.curSaleAttrs.find(
             k => k.id === attributeId
           )
+          if (isEmpty(el)) return
+          console.log('111111', deepClone(el))
+          // let saleAttributeType = el.saleAttributeType
           return {
             attributeId: attributeId,
             saleAttributeType: el.saleAttributeType.value
