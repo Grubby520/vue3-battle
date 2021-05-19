@@ -259,7 +259,9 @@ export default {
       const saleLens = this.saleLabelSign
         .reduce((lens, sign) => {
           const length = this.form[`${sign}s`].length
-          if (this.showSaleLabel[`${sign}`]) lens.push(length)
+          if (this.showSaleLabel[`${sign}`] && length > 0) {
+            lens.push(length)
+          }
           return lens
         }, [])
       return !isEmpty(saleLens) && saleLens.every(item => item && item > 0)
@@ -566,6 +568,7 @@ export default {
             productCategorySalesAttributes: item
           }
         })
+        this.form.productSalesAttributes = this.productSalesAttributeDetail.productSalesAttributes || []
         return this.stashTableInfo(result)
       }
     },
