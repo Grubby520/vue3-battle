@@ -1,5 +1,6 @@
 <template>
   <div class="product">
+    {{specificationMain}}
     <template>
       <div
         v-loading="loading"
@@ -29,6 +30,8 @@ import ProductSpecificationMain from './ProductSale/SpecificationMain/SkuInfo'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
+import { mapGetters } from 'vuex'
+import { isEmpty } from '@shared/util'
 // import { deepClone } from '@shared/util'
 export default {
   props: {
@@ -47,8 +50,7 @@ export default {
   data () {
     return {
       productStatus: undefined,
-      loading: false,
-      categoryData: []
+      loading: false
     }
   },
   watch: {
@@ -74,22 +76,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('product', ['specificationMain']),
     isStatus () {
       return this.mode === 'view'
-    },
-    specificationRelatedSizes () {
-      return this.categoryData
-        .find(attr =>
-          attr.saleAttributeType && attr.saleAttributeType.value === 3
-        ) || {}
-    },
-    specificationMain () {
-      // 规格为是否为主属性
-      const {
-        categoryAttributeRelatedSizes,
-        mainAttribute
-      } = this.specificationRelatedSizes || {}
-      return categoryAttributeRelatedSizes && mainAttribute
     },
     productComponents () {
       let currentComponents = []
@@ -145,10 +134,21 @@ export default {
         'PRODUCT_SIZE': productSize, // 尺码表
         'PRODUCT_MAIN_ATTRIBUTE_AND_TERM': productMainAttributeAndTerm
       }
+      this.setSkuType(productMainAttributeAndTerm)
       for (let product in productData) {
         this.$store.commit(`product/${product}`, productData[product] || [])
       }
       this.productStatus = productBase.status
+    },
+    setSkuType (productMainAttributeAndTerm) {
+      const mainAttributeType = isEmpty(productMainAttributeAndTerm)
+        ? 'color'
+        : 'specification'
+
+      this.$store.commit(
+        'product/SET_MAIN_ATTRIBUTE_TYPE',
+        mainAttributeType
+      )
     },
     categoryAttrs (response) {
       const categoryData = response.data.map(categoryItem => {
@@ -158,13 +158,27 @@ export default {
         })
         return categoryItem
       })
-      this.categoryData = categoryData
       this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+      return categoryData
     },
     getCategoryAttr () {
       RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
         .then(response => {
-          this.categoryAttrs(response)
+          const categoryData = this.categoryAttrs(response)
+          if (this.mode === 'create') {
+            const specificationRelatedSizes = categoryData
+              .find(attr =>
+                attr.saleAttributeType && attr.saleAttributeType.value === 3
+              ) || {}
+
+            // 规格为是否为主属性
+            const {
+              categoryAttributeRelatedSizes,
+              mainAttribute
+            } = specificationRelatedSizes
+            const mainAttributeType = categoryAttributeRelatedSizes && mainAttribute ? 'specification' : 'color'
+            this.$store.commit('product/SET_MAIN_ATTRIBUTE_TYPE', mainAttributeType)
+          }
         })
     },
     create () {

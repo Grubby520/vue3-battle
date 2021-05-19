@@ -26,9 +26,11 @@ export default {
     checkedAttrs: {}, // 已经选中的销售属性
     hasAttrsChanged: false, // 销售属性变动
     productMainAttributeAndTerm: {}, // 主属性
-    categoryId: undefined // 分类id
+    categoryId: undefined, // 分类id
+    mainAttributeType: '' // 主属性类型
   },
   getters: {
+    specificationMain: state => state.mainAttributeType === 'specification',
     productParams: state => state.productParams || {},
     checkedSizes: state => state.checkedSizes,
     productBase: state => state.productBase || [],
@@ -70,6 +72,9 @@ export default {
         curMap.set(item.id, item.name)
       })
       store.saleAttrsMap = curMap
+    },
+    SET_MAIN_ATTRIBUTE_TYPE (state, type) {
+      state.mainAttributeType = type
     },
     PRODUCT_PARAMS: (store, data) => {
       store.productParams = data
