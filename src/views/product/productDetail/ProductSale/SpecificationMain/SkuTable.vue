@@ -44,14 +44,13 @@
       >批量录入</el-button>
     </el-row>
     <!-- 批量设置弹窗 -->
-    <BatchAttributes @hide="hideDialog" ref="batchAttributes" @batchInput="handleBatchInput" />
+    <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
   </div>
 </template>
 
 <script>
-import BatchAttributes from './batchAttributes'
+import BatchAttributes from '../../batchAttributes'
 import { mapGetters } from 'vuex'
-import { deepClone } from '@shared/util'
 export default {
   model: {
     prop: 'tableData',
@@ -101,7 +100,19 @@ export default {
     },
     // 排序弹窗需要的数据结构
     curFormItem () {
-      return this.attributeMapToObj(this.attributeMap || new Map())
+      const attributeColorAndSize = this.attributeColorAndSize(this.attributeMap || new Map())
+      const [cololrs, specificationAttrs] = attributeColorAndSize
+      const colorKeys = {}
+      const colorAttrs = (cololrs || [])
+        .map(color => color.attributeTermId)
+        .reduce((init, color) => {
+          if (!colorKeys[color.id]) {
+            init.push(color)
+            colorKeys[color.id] = true
+          }
+          return init
+        }, [])
+      return { colorAttrs, specificationAttrs }
     },
     // 已经选中的属性list
     selectAttrList () {
@@ -169,6 +180,7 @@ export default {
      * @param {Array} val 需要回填的数据
      */
     hideDialog (val) {
+      console.log('val', val)
       const { skuList, supplyPrice, sizeList } = val
       // 颜色和供货价格
       let hasNeedSku = skuList.length > 0 && supplyPrice
@@ -177,9 +189,9 @@ export default {
         // 尺码和重量
         if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
       })
-      this.form.productSalesAttributes.forEach(item => {
+      this.tableData.forEach(item => {
         let saleAttrIds = []
-        item.productCategorySalesAttributes.forEach((attribute) => {
+        item.attributes.forEach((attribute) => {
           saleAttrIds.push(attribute.attributeTermId)
         })
         const includeBatchColor = saleAttrIds.find(i => skuList.includes(i))
@@ -189,101 +201,39 @@ export default {
       })
     },
     openDialog (data = {}) {
-      const current = {
-        curFormItem: this.curFormItem,
-        selectAttrList: this.selectAttrList,
-        tableData: this.tableData
-      }
       let dialog = null
       dialog = this.$refs.batchAttributes
-      dialog.open(current)
+      dialog.open(this.curFormItem)
       dialog = null
     },
-    attributeMapToObj (map) {
-      var attributeObject = {}
+    attributeColorAndSize (map) {
+      // 批量录入需要的数据
+      var attributeAttrs = []
       this.selectAttrIdList.forEach(attribute => {
         const attributeIds = attribute.attributeIds
-        const attributeTermIds = [
-          ...new Set(
-            attributeIds
-              .map(attributeId => map.get(attributeId))
-              .flat()
-          )
-        ]
-        attributeObject[attributeIds.join('-')] = attributeTermIds.map(
-          attributeTermId => {
-            return {
-              attributeId: attributeIds.join('-'),
-              attributeTermId,
-              name: this.curAttributeName(attributeTermId)
+        const saleAttributeType = attribute.saleAttributeType
+        if (saleAttributeType !== 2) {
+          const attributeTermIds = [
+            ...new Set(
+              attributeIds
+                .map(attributeId => map.get(attributeId))
+                .flat()
+            )
+          ]
+          const attributeTerm = attributeTermIds.map(
+            attributeTermId => {
+              return {
+                attributeId: attributeIds.join('-'),
+                attributeTermId,
+                name: this.curAttributeName(attributeTermId)
+              }
             }
-          }
-        )
+          )
+          attributeAttrs.push(attributeTerm)
+        }
       })
-      console.log('attributeObject', deepClone(attributeObject))
-      return attributeObject
-    },
-    handleBatchInput () { }
-    // 批量录入
-    // handleBatchInput (data) {
-    //   const {
-    //     checkedIds = {},
-    //     supplyPrice = '',
-    //     sellPriceUsd = '',
-    //     weight
-    //   } = data
-    //   const curLength = Object.values(checkedIds).flat().length
-    //   if (!curLength || (!supplyPrice && !sellPriceUsd && !weight)) {
-    //     return
-    //   } else {
-    //     this.tableData.forEach((item, index) => {
-    //       if (
-    //         item.attributes.every(
-    //           zItem =>
-    //             !checkedIds[zItem.attributeId] ||
-    //             checkedIds[zItem.attributeId].includes(
-    //               zItem.attributeTermId
-    //             )
-    //         )
-    //       ) {
-    //         supplyPrice &&
-    //           this.$set(
-    //             this.tableData[index],
-    //             'supplyPrice',
-    //             supplyPrice
-    //           )
-    //         sellPriceUsd &&
-    //           this.$set(
-    //             this.tableData[index],
-    //             'sellPriceUsd',
-    //             this.handleSellPrice(sellPriceUsd)
-    //           )
-    //         weight &&
-    //           this.$set(
-    //             this.tableData[index],
-    //             'packageWeight',
-    //             weight
-    //           )
-    //         // 批量录入了采购价、预估重量并且销售价数据为空自动计算
-    //         if (
-    //           this.tableData[index].supplyPrice &&
-    //           this.tableData[index].packageWeight &&
-    //           !this.tableData[index].sellPriceUsd
-    //         ) {
-    //           const res = computeSellPrice(
-    //             this.tableData[index].supplyPrice,
-    //             this.tableData[index].packageWeight
-    //           )
-    //           this.$set(
-    //             this.tableData[index],
-    //             'sellPriceUsd',
-    //             res
-    //           )
-    //         }
-    //       }
-    //     })
-    //   }
-    // },
+      return attributeAttrs
+    }
   }
 }
 </script>

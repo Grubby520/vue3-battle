@@ -78,7 +78,7 @@ export default {
         sizeList: []
       },
       // 全选所有Sku
-      checkAll: false
+      checkAll: true
     }
   },
   methods: {
@@ -95,15 +95,19 @@ export default {
     */
     open (data) {
       this.show = true
-      const { sizes, colors } = data
-      this.skuList = this.deduplication(colors, 'id')
+      const { sizes, colors, colorAttrs, specificationAttrs } = data
+      const specifications = (specificationAttrs || []).map(specification => {
+        specification.id = specification.attributeTermId
+        return specification
+      })
+      this.skuList = this.deduplication(colors || colorAttrs, 'id')
         .map((sku) => {
           return {
             attributeTermId: sku.id,
             colorAttributeName: sku.name
           }
         })
-      this.form.sizeList = this.deduplication(sizes, 'id')
+      this.form.sizeList = this.deduplication(sizes || specifications, 'id')
         .map((sku) => {
           return {
             attributeTermId: sku.id,
@@ -111,6 +115,7 @@ export default {
             weight: ''
           }
         })
+      this.form.skuList = this.checkAll ? this.skuList.map((sku) => sku.attributeTermId) : []
     },
     /**
      * 对象数组去重

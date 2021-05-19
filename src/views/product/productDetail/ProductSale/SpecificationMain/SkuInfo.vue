@@ -191,8 +191,7 @@ export default {
       return this.genAvaliableSelectAttribute([...attributeMap.keys()])
     },
     attributeTerm (attributeTermIds) {
-      if (attributeTermIds) return
-      return attributeTermIds.id
+      return attributeTermIds && attributeTermIds.id ? attributeTermIds.id : attributeTermIds
     },
     // 生成sku列表
     genSkuTable (data, standardAttributeIds) {
