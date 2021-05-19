@@ -68,7 +68,7 @@ export default {
       return specification
     },
     curSaleAttrs () {
-      // 新建筛掉已禁用属性、属性值
+      // 所有销售属性
       return this.saleAttrs
     },
     curSaleAttrsMap () {

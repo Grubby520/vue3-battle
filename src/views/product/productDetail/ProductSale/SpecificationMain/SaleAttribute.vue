@@ -97,29 +97,9 @@ export default {
         productSalesAttributes: [],
         saleHead: []
       },
-      colorOptions: [], // 颜色下拉框数据
-      sizeOptions: [],
-      specificationOptions: [],
-      categoryDataStatus: false,
-      stashTableData: new Map(), // 临时缓存表格数据
-      showSaleLabel: { // 展示销售属性标识
-        size: '',
-        color: '',
-        specification: '',
-        sizedeleted: false,
-        colordeleted: false,
-        specificationdeleted: false,
-        sizeUsable: true,
-        colorUsable: true,
-        specificationUsable: true,
-        // 销售属性数据是否已经加载完毕
-        done: false
-      },
-      tableLabel: {}, // 表头展示的销售属性name
       activeName: undefined,
       chooseSpecificationTerms: [], // 选中的规格
-      curSaleAttrs: [], // 所有的销售属性
-      // specificationData: {},
+      // curSaleAttrs: [], // 所有的销售属性
       rules: {
         colors: [
           { required: true, message: '请添加尺码', trigger: 'blur' }
@@ -134,7 +114,8 @@ export default {
       'categoryId',
       'productSalesAttributeDetail',
       'productMainAttributeAndTerm',
-      'extraAttrMap'
+      'extraAttrMap',
+      'saleAttrs'
     ]),
     productAttrFill () {
       // 回显数据
@@ -153,10 +134,10 @@ export default {
       return categoryData || []
     },
     changeSpecificationOptions () {
-      if (isEmpty(this.specificationOptions)) return
+      if (isEmpty(this.specification)) return
       const checkedSpecification = this.chooseSpecificationTerms
         .reduce((init, tab) => init.concat(tab.id), [])
-      return this.specificationOptions
+      return this.specification.terms
         .filter(specificationItem =>
           !checkedSpecification.includes(specificationItem.id)
         )
@@ -183,15 +164,12 @@ export default {
       return specificationTerms.filter(term =>
         [...this.specificationRelateMap.keys()].includes(term.id)
       )
+    },
+    curSaleAttrs () {
+      return this.saleAttrs
     }
   },
   watch: {
-    'productAttrFill': {
-      handler () {
-        this.initAttrData()
-      },
-      immediate: true
-    },
     'categoryId': {
       handler (newValue) {
         if (newValue) {
@@ -250,63 +228,23 @@ export default {
       this.handleAttribute()
     },
     initAttrData () {
-      const mode = this.productParams.mode === 'create'
-      const useCategoryData = mode ? this.filterUableSaleAttrs : this.categoryData
-      // 销售属性排序
-      const saleLevel = {
-        'NZ012': { level: 1, label: '规格' },
-        'NZ010': { level: 2, label: '颜色' },
-        'NZ011': { level: 3, label: '尺码' }
-      }
-      this.curSaleAttrs = useCategoryData
-        .filter(cate => ['NZ010', 'NZ012', 'NZ011'].includes(cate.extendCode))
-        .map(sale => {
-          sale.level = saleLevel[sale.extendCode].level
-          sale.label = saleLevel[sale.extendCode].label
-          sale.attributeTermId = sale.id
-          return sale
-        })
-        .sort((a, b) => { return a.level - b.level })
-      // this.specificationData = this.curSaleAttrs.find(cur => cur.extendCode === 'NZ012')
-
-      useCategoryData.forEach(item => {
-        switch (item.extendCode) {
-          // 规格
-          case 'NZ012':
-            this.buildSaleData(this.showSaleLabel, item, 'specification')
-            break
-          // 颜色
-          case 'NZ010':
-            this.buildSaleData(this.showSaleLabel, item, 'color')
-            break
-          // 尺码
-          case 'NZ011':
-            this.buildSaleData(this.showSaleLabel, item, 'size')
-            this.$store.commit('product/SIZE_ATTR', {
-              name: item.name,
-              attributeId: item.id,
-              terms: item.terms,
-              usable: item.usable
-            })
-            break
-          default:
-          // 商品属性（其他属性）
-          // const customAttributesData = useCategoryData.filter(item => item.type.value === 4)
-          // this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
-          // this.$store.commit('product/SHOW_SALE_LABEL', { size: this.showSaleLabel.size })
-        }
-      })
-    },
-    buildSaleData (showSaleLabel, item, type) {
-      const { terms, extendCode } = item
-      this[`${type}Options`] = terms.map(term => {
-        term.extendCode = extendCode
-        if (!term.usable) {
-          term.name = `${term.name}(已禁用)`
-          term.disabled = true
-        }
-        return term
-      })
+      // const mode = this.productParams.mode === 'create'
+      // const useCategoryData = mode ? this.filterUableSaleAttrs : this.categoryData
+      // // 销售属性排序
+      // const saleLevel = {
+      //   'NZ012': { level: 1, label: '规格' },
+      //   'NZ010': { level: 2, label: '颜色' },
+      //   'NZ011': { level: 3, label: '尺码' }
+      // }
+      // this.curSaleAttrs = useCategoryData
+      //   .filter(cate => ['NZ010', 'NZ012', 'NZ011'].includes(cate.extendCode))
+      //   .map(sale => {
+      //     sale.level = saleLevel[sale.extendCode].level
+      //     sale.label = saleLevel[sale.extendCode].label
+      //     sale.attributeTermId = sale.id
+      //     return sale
+      //   })
+      //   .sort((a, b) => { return a.level - b.level })
     },
     selectChange (e, specificationTerm, item) {
       this.attributeChange(specificationTerm, item)
