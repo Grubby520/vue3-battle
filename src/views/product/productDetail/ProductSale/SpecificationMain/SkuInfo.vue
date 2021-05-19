@@ -1,26 +1,28 @@
 <template>
-  <el-card>
-    <div slot="header">
-      <span>详情描述</span>
-    </div>
-    <div class="sku-info-content" ref="sale">
-      <SaleAttribute
-        :table-data="tableData"
-        :cur-sale-attrs="curSaleAttrs"
-        @change="handleAttribute"
-        ref="saleAttribute"
-      ></SaleAttribute>
-      <SkuTable
-        v-model="tableData"
-        :cur-sale-attrs="curSaleAttrs"
-        :attribute-map="attributeMap"
-        :select-attr-id-list="selectAttrIdList"
-      ></SkuTable>
-    </div>
-    <!-- <div class="no-data" v-else>
+  <div class="skuInfo">
+    <el-card class="skuInfo-card">
+      <div slot="header">
+        <span>详情描述</span>
+      </div>
+      <div class="sku-info-content" ref="sale">
+        <SaleAttribute
+          :table-data="tableData"
+          :cur-sale-attrs="curSaleAttrs"
+          @change="handleAttribute"
+          ref="saleAttribute"
+        ></SaleAttribute>
+        <SkuTable
+          v-model="tableData"
+          :cur-sale-attrs="curSaleAttrs"
+          :attribute-map="attributeMap"
+          :select-attr-id-list="selectAttrIdList"
+        ></SkuTable>
+      </div>
+      <!-- <div class="no-data" v-else>
       <span class="no-data--tip">~暂无数据~</span>
-    </div>-->
-  </el-card>
+      </div>-->
+    </el-card>
+  </div>
 </template>
 
 <script>
@@ -102,11 +104,24 @@ export default {
             .filter(item => !!item)
         )
       ]
-      console.log('currentIds', currentIds)
-
       this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
-
-      this.tableData = productSalesAttributes
+      this.tableData = productSalesAttributes.map(attr => {
+        const { productCategorySalesAttributes, skuCode, supplyPrice, tagSize, weight } = attr
+        const salesAttributes = productCategorySalesAttributes.map(sale => {
+          const { attributeId, attributeTermId } = sale
+          return {
+            attributeId,
+            attributeTermId
+          }
+        })
+        return {
+          attributes: salesAttributes,
+          skuCode,
+          supplyPrice,
+          tagSize,
+          weight
+        }
+      })
     },
     genAvaliableSelectAttribute (attributeIds) {
       // 查找当前销售属性
@@ -115,9 +130,6 @@ export default {
           const el = this.curSaleAttrs.find(
             k => k.id === attributeId
           )
-          if (isEmpty(el)) return
-          console.log('111111', deepClone(el))
-          // let saleAttributeType = el.saleAttributeType
           return {
             attributeId: attributeId,
             saleAttributeType: el.saleAttributeType.value
@@ -162,12 +174,10 @@ export default {
       const specificationTermIds = []
       data.forEach(item => {
         specificationTermIds.push(item.mainAttributeTermId)
-        console.log('item.relatedAttributeAndTermList', item.relatedAttributeAndTermList)
         item.relatedAttributeAndTermList.forEach(relate => {
           const attributeId = relate.attributeId
           const attributeTermIds = this.attributeTerm(relate.attributeTermIds) || []
           const stashTermIds = attributeMap.get(attributeId) || []
-          console.log('88888888888', attributeTermIds)
           attributeMap.set(attributeId, [
             ...new Set([...attributeTermIds, ...stashTermIds])
           ])
@@ -314,26 +324,20 @@ export default {
     },
     genProductMainAttributeAndTerm (checkedAttrs) {
       // 提交关联关系数据结构
+      const productMainAttributeAndTerm = {}
       const relatedAttributeAndTermList = checkedAttrs.map(attr => {
-        const { relatedAttributeAndTermList, mainAttributeTermId, ...rest } = attr
-        const productMainAttributeTermRelationList = relatedAttributeAndTermList.map(term => {
-          const attributeTermIds = term.attributeTermIds.reduce((init, relate) => init.concat(relate.id), [])
-          const relatedAttributeAndTermList = []
-          relatedAttributeAndTermList.push({
-            attributeTermIds,
-            attributeId: term.attributeId
-          })
-          return {
-            relatedAttributeAndTermList,
-            mainAttributeTermId
-          }
+        const { relatedAttributeAndTermList, mainAttributeTermId, mainAttributeId } = attr
+        productMainAttributeAndTerm['mainAttributeId'] = mainAttributeId
+        const terms = { mainAttributeTermId, relatedAttributeAndTermList }
+        terms.relatedAttributeAndTermList.forEach(attr => {
+          attr.attributeTermIds = attr.attributeTermIds.reduce((init, term) => init.concat(term.id), [])
         })
         return {
-          productMainAttributeTermRelationList,
-          ...rest
+          ...terms
         }
       })
-      return relatedAttributeAndTermList[0]
+      productMainAttributeAndTerm['productMainAttributeTermRelationList'] = relatedAttributeAndTermList
+      return productMainAttributeAndTerm
     },
     genAttributeDetail (attributeMap) {
       return [...attributeMap.keys()].map(key => {
@@ -395,7 +399,6 @@ export default {
       return true
     },
     result () {
-      console.log('this.genSubmitData()', this.genSubmitData())
       return new Promise((resolve) => {
         if (this.validateData()) {
           resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
@@ -407,4 +410,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.skuInfo {
+  &-card {
+    padding: 0 12rem;
+  }
+  // .el-card {
+  //   overflow: unset !important;
+  // }
+}
 </style>

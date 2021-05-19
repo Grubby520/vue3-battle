@@ -1,7 +1,7 @@
 <template>
   <div class="sku-table">
     <el-form ref="form" :rules="rules">
-      <table v-if="tableData.length > 0">
+      <table v-if="tableData.length > 0" style="width:100%">
         <thead>
           <tr>
             <th v-for="item in selectAttrList" :key="item.attributeId">{{item.name}}</th>
@@ -51,6 +51,7 @@
 <script>
 import BatchAttributes from './batchAttributes'
 import { mapGetters } from 'vuex'
+import { deepClone } from '@shared/util'
 export default {
   model: {
     prop: 'tableData',
@@ -100,11 +101,6 @@ export default {
     },
     // 排序弹窗需要的数据结构
     curFormItem () {
-      // console.log(
-      //   'attributeMapToObj',
-      //   this.attributeMapToObj(this.attributeMap || new Map())
-      // )
-      // console.log('21212121212', this.attributeMap)
       return this.attributeMapToObj(this.attributeMap || new Map())
     },
     // 已经选中的属性list
@@ -198,7 +194,6 @@ export default {
         selectAttrList: this.selectAttrList,
         tableData: this.tableData
       }
-      // console.log('current', current, this.tableData)
       let dialog = null
       dialog = this.$refs.batchAttributes
       dialog.open(current)
@@ -225,7 +220,7 @@ export default {
           }
         )
       })
-      console.log('1111111111111', attributeObject)
+      console.log('attributeObject', deepClone(attributeObject))
       return attributeObject
     },
     handleBatchInput () { }

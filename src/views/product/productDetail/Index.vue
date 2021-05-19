@@ -11,9 +11,11 @@
       </div>
     </template>
     <div class="product-btn">
-      <el-button type="primary" @click="save(0)">保存</el-button>
-      <el-button type="primary" v-if="productStatus !== 3" @click="save(1)">提交</el-button>
-      <el-button type="primary" v-if="productStatus === 3">确定补充信息</el-button>
+      <div v-if="mode!=='view'">
+        <el-button type="primary" @click="create">保存</el-button>
+        <el-button type="primary" v-if="productStatus !== 3" @click="saveSubmit">提交</el-button>
+        <el-button type="primary" v-if="productStatus === 3" @click="replenish">确定补充信息</el-button>
+      </div>
       <el-button @click="cancel">返回列表</el-button>
     </div>
   </div>
@@ -27,7 +29,6 @@ import ProductSpecificationMain from './ProductSale/SpecificationMain/SkuInfo'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
-import { mapGetters } from 'vuex'
 // import { deepClone } from '@shared/util'
 export default {
   props: {
@@ -73,38 +74,40 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeStandard']),
     isStatus () {
       return this.mode === 'view'
-    },
-    // saveText () {
-    //   return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
-    // },
-    productComponents () {
-      let currentComponents = []
-      // 规格为是否为主属性
-      const mainAttr = this.specificationRelatedSizes.categoryAttributeRelatedSizes
-      if (this.productStatus >= 3) {
-        // 通过侵权审核
-        if (mainAttr) {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain', 'ProductSize', 'ProductAttr']
-        } else {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr']
-        }
-      } else {
-        if (mainAttr) {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
-        } else {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain']
-        }
-      }
-      return currentComponents
     },
     specificationRelatedSizes () {
       return this.categoryData
         .find(attr =>
           attr.saleAttributeType && attr.saleAttributeType.value === 3
         ) || {}
+    },
+    specificationMain () {
+      // 规格为是否为主属性
+      const {
+        categoryAttributeRelatedSizes,
+        mainAttribute
+      } = this.specificationRelatedSizes || {}
+      return categoryAttributeRelatedSizes && mainAttribute
+    },
+    productComponents () {
+      let currentComponents = []
+      if (this.productStatus >= 3) {
+        // 通过侵权审核
+        if (this.specificationMain) {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain', 'ProductSize', 'ProductAttr']
+        } else {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr']
+        }
+      } else {
+        if (this.specificationMain) {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
+        } else {
+          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain']
+        }
+      }
+      return currentComponents
     }
   },
   methods: {
@@ -164,21 +167,11 @@ export default {
           this.categoryAttrs(response)
         })
     },
-    save (status) {
-      if (this.mode === 'create') {
-        this.create(status)
-      }
-      if (this.mode === 'modify') {
-        this.modify()
-      }
-    },
-    create (status) {
+    create () {
       // 保存数据
       this.getResult()
         .then(res => {
-          // 0：productSave 确定 1：productSaveSubmit 提交
-          const interfaces = status === 0 ? 'productSave' : 'productSaveSubmit'
-          RecommondApi[interfaces](res)
+          RecommondApi.productSave(res)
             .then((res) => {
               if (res.success) {
                 this.cancel()
@@ -186,17 +179,23 @@ export default {
             })
         })
     },
-    modify () {
-      // 编辑数据
+    saveSubmit () {
+      // 保存提交数据
       this.getResult()
         .then(res => {
-          let interfacesStatus = {
-            0: 'productSave'
-          }
-          // productStatus 3:保存 非3：修改补充信息
-          interfacesStatus[1] = this.productStatus !== 3 ? 'productSaveSubmit' : 'replenish'
-          const interfaces = interfacesStatus[status]
-          RecommondApi[interfaces](res)
+          RecommondApi.productSaveSubmit(res)
+            .then((res) => {
+              if (res.success) {
+                this.cancel()
+              }
+            })
+        })
+    },
+    replenish () {
+      // 修改补充信息
+      this.getResult()
+        .then(res => {
+          RecommondApi.replenish(res)
             .then((res) => {
               if (res.success) {
                 this.cancel()

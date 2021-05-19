@@ -670,7 +670,12 @@ export default {
       return new Promise(resolve => {
         this.$refs.form.validate((valid) => {
           if (valid) {
-            resolve({ 'productSalesAttributes': this.form.productSalesAttributes || [] })
+            resolve({
+              'productSalesAttributes': {
+                productSalesAttributes: this.form.productSalesAttributes,
+                productMainAttributeAndTerm: { mainAttributeId: 1 }
+              } || []
+            })
           }
         })
       })

@@ -22,7 +22,7 @@
                     </el-tooltip>
                   </template>
                   <SlSelect
-                    :options="colorOptions"
+                    :options="item.terms"
                     v-model="item.values"
                     label="name"
                     value="id"
@@ -89,6 +89,7 @@
 import ProductSizeDialog from '../ProductSizeDialog'
 import { deepClone, isEmpty } from '@shared/util'
 import { mapGetters } from 'vuex'
+// import { genAttrOptions } from './utils.js'
 export default {
   components: { ProductSizeDialog },
   data () {
@@ -100,7 +101,6 @@ export default {
       colorOptions: [], // 颜色下拉框数据
       sizeOptions: [],
       specificationOptions: [],
-      // saleLabelSign: ['size', 'color', 'specification'],
       categoryDataStatus: false,
       stashTableData: new Map(), // 临时缓存表格数据
       showSaleLabel: { // 展示销售属性标识
@@ -134,7 +134,8 @@ export default {
       'categoryData',
       'categoryId',
       'productSalesAttributeDetail',
-      'productMainAttributeAndTerm'
+      'productMainAttributeAndTerm',
+      'extraAttrMap'
     ]),
     productAttrFill () {
       // 回显数据
@@ -207,13 +208,10 @@ export default {
       const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
         (attributeTerm, index) => {
-          // console.log('this.specificationTerms', this.specificationTerms)
-          // console.log('mainAttributeTermId', attributeTerm.mainAttributeTermId)
           const specificationTerm = deepClone(
             this.specificationTerms.find(
               term => {
-                // return term.id === attributeTerm.mainAttributeTermId
-                return term.id === 1240
+                return term.id === attributeTerm.mainAttributeTermId
               }
             ) || {
               code: `${attributeTerm.mainAttributeTermId}`,
@@ -233,13 +231,14 @@ export default {
               const saleAttribute = deepClone(
                 this.curSaleAttrs.find(
                   attr =>
-                    attr.attributeId ===
+                    attr.id ===
                     saleAttr.attributeId
                 ) || {}
               )
+              const terms = saleAttribute.terms.filter(term => saleAttr.attributeTermIds.includes(term.id))
               return {
                 ...saleAttribute,
-                values: saleAttr.attributeTermIds
+                values: terms
               }
             }
           )
@@ -344,9 +343,6 @@ export default {
       const { item, specificationItem } = currentChoose
       this.attributeChange(specificationItem, item)
     },
-    updateSizeData () {
-      this.$store.commit('product/CHECKED_SIZES', this.currentSizes())
-    },
     openDialog (ref, data, currentChoose) {
       let dialogData = {}
       let dialog = null
@@ -362,15 +358,9 @@ export default {
       dialog.open(dialogData)
       dialog = null
     },
-    result () {
-      return new Promise(resolve => {
-        resolve({ 'productSalesAttributes': this.form.productSalesAttributes || [] })
-      })
-    },
     // 新增规格
     handleAdd (specification) {
       const specificationItem = this.attachSaleAttribute(specification)
-      // console.log('specificationItem', specificationItem)
       this.chooseSpecificationTerms.push(specificationItem)
       this.activeName = specificationItem.code
       this.handleAttribute()
@@ -430,10 +420,9 @@ export default {
           return init
         }, [])
     },
-    // 销售属性变动
     attributeChange (specificationTerm, item) {
       /**
-       * 满足需求
+       * 满足需求-销售属性变动
        * 如果多个规格使用的是同一个属性，
        * 比如【颜色】，则第一个颜色选择值后默认带到其他规格下的【颜色】中，
        * 如果已经有值的【颜色】框不做填充更改；
@@ -442,7 +431,7 @@ export default {
         .filter(term => term.id !== specificationTerm.id)
         .forEach(term => {
           term.saleAttrs
-            .filter(attr => attr.attributeId === item.attributeId)
+            .filter(attr => attr.id === item.id)
             .forEach(attr => {
               if (isEmpty(attr.values)) {
                 attr.values = deepClone(item.values)
