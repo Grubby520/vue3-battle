@@ -165,7 +165,7 @@ export default {
         'product/SET_CHECKED_ATTRS',
         currentData
       )
-      this.$store.commit('product/SET_ATTRS_CHANGED')
+      this.$store.commit('product/SET_ATTRS_CHANGED', currentData)
     },
     genAttributeRecord (data) {
       // 用于记录用户选中哪些销售属性和其属性值

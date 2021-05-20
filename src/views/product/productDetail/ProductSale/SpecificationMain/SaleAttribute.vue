@@ -186,7 +186,7 @@ export default {
     // 初始化数据，只在编辑情况下执行
     initData () {
       const { productCategorySalesAttributeSelectedList = [] } = deepClone(this.productSalesAttributeDetail)
-      this.deleteAttr()
+      this.deleteAttrs(productCategorySalesAttributeSelectedList)
       const { productMainAttributeTermRelationList = [], mainAttributeId } = deepClone(this.productMainAttributeAndTerm)
       // if (isEmpty(productMainAttributeTermRelationList)) return
       const mainSales = this.productSales(productCategorySalesAttributeSelectedList, mainAttributeId)
@@ -232,31 +232,34 @@ export default {
       console.log('this.chooseSpecificationTerm', deepClone(this.chooseSpecificationTerms))
       this.handleAttribute()
     },
+    deleteAttrs (productCategorySalesAttributeSelectedList) {
+      // productCategorySalesAttributeSelectedList.
+    },
     /**
      * 判断属性是否被删除
      */
-    productSales (productCategorySalesAttributeSelectedList, id) {
-      // 查找属性是否被删除
-      let delteAttrs = []
-      // const categoryAttrs = this.saleAttrs.find(cate => cate.id === id)
-      if (isEmpty({})) {
-        // 销售属性被删除
-        delteAttrs = productCategorySalesAttributeSelectedList
-          .filter(sale => sale.attributeId === id)
-          .reduce((init, sale) => {
-            console.log('sale', deepClone(sale))
-            const { attributeTerms, attributeId } = sale
-            init = attributeTerms.map(attr => {
-              attr.name = `${attr.name}(已删除)`
-              attr.code = attr.id
-              attr.attributeId = attributeId
-              return attr
-            })
-            return init
-          }, [])
-      }
-      this.$store.commit(`product/DELETE_SALE_ATTR`, delteAttrs || [])
-      return delteAttrs
+    productSales () {
+      // // 查找属性是否被删除
+      // let delteAttrs = []
+      // // const categoryAttrs = this.saleAttrs.find(cate => cate.id === id)
+      // if (isEmpty({})) {
+      //   // 销售属性被删除
+      //   delteAttrs = productCategorySalesAttributeSelectedList
+      //     .filter(sale => sale.attributeId === id)
+      //     .reduce((init, sale) => {
+      //       console.log('sale', deepClone(sale))
+      //       const { attributeTerms, attributeId } = sale
+      //       init = attributeTerms.map(attr => {
+      //         attr.name = `${attr.name}(已删除)`
+      //         attr.code = attr.id
+      //         attr.attributeId = attributeId
+      //         return attr
+      //       })
+      //       return init
+      //     }, [])
+      // }
+      // this.$store.commit(`product/DELETE_SALE_ATTR`, delteAttrs || [])
+      // return delteAttrs
     },
     initAttrData () {
       // const mode = this.productParams.mode === 'create'
@@ -449,6 +452,7 @@ export default {
           }
         }
       )
+      console.log('currentData', deepClone(currentData))
       this.$emit('change', currentData, refreshTable)
     }
   }
