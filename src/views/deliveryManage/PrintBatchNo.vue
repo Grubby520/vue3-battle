@@ -29,13 +29,10 @@
             >Att:{{item.productVariantAttributes && item.productVariantAttributes.join('/') || ''}}</li>
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
-            >Loc:{{item.locationCode || ''}}</li>
+            >PO:{{item.purchaseOrderNumber || ''}}</li>
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
             >TNumber:{{ item.purchaseBatchNo || ''}}</li>
-            <li
-              style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
-            >PrintTime:{{item.printedAt || ''}}</li>
           </ul>
         </div>
       </div>
