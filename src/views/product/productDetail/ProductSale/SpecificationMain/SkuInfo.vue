@@ -268,47 +268,12 @@ export default {
     // 获取提交数据
     genSubmitData () {
       return {
-        // value: {
-        // attributes: this.genSubmitAttribute(),
         productSalesAttributes: this.genTableData(this.tableData),
-        // productAttributeList: this.genAttributeDetail(
-        //   this.attributeMap
-        // ),
         productMainAttributeAndTerm: this.genProductMainAttributeAndTerm(deepClone(
           this.checkedAttrs
         ))
-        // }
       }
     },
-    // 生成接口需要的格式的attribute
-    // genSubmitAttribute () {
-    //   const checkedAttrs = this.checkedAttrs
-    //   let attributes = []
-    //   const specificationTermIds = []
-    //   let specificationId = null
-    //   checkedAttrs.forEach(attribute => {
-    //     specificationId = attribute.mainAttributeId
-    //     specificationTermIds.push(attribute.mainAttributeTermId)
-    //     attributes = attributes.concat(
-    //       attribute.relatedAttributeAndTermList.map(term => {
-    //         const attributeId = term.attributeId
-    //         const attributeTermIds = term.attributeTermIds
-    //         return {
-    //           attributeId: attributeId,
-    //           attributeTermId: attributeTermIds,
-    //           mainAttribute: false
-    //         }
-    //       })
-    //     )
-    //   })
-    //   return [
-    //     {
-    //       attributeId: specificationId,
-    //       attributeTermId: specificationTermIds,
-    //       mainAttribute: true
-    //     }
-    //   ].concat(attributes)
-    // },
     genTableData (tableData) {
       // 提交表格数据数据结构
       const tables = tableData.map(table => {
@@ -338,64 +303,47 @@ export default {
       productMainAttributeAndTerm['productMainAttributeTermRelationList'] = relatedAttributeAndTermList
       return productMainAttributeAndTerm
     },
-    genAttributeDetail (attributeMap) {
-      return [...attributeMap.keys()].map(key => {
-        const el = this.curSaleAttrs.find(k => k.id === key)
-        const chooseTermIds = attributeMap.get(key) || []
-        return {
-          id: key,
-          name: el.name,
-          saleAttributeType: el.saleAttributeType,
-          mainAttribute: el.mainAttribute,
-          categoryAttributeRelatedSizes:
-            el.categoryAttributeRelatedSizes || null,
-          terms: chooseTermIds.map(termId => {
-            const term =
-              el.terms.find(term => term.id === termId) || {}
-            return {
-              attributeId: key,
-              id: term.id,
-              name: term.name
-            }
-          })
-        }
-      })
-    },
     // 校验数据
     validateData () {
-      // let err = false
-      // const checkedAttrs = this.checkedAttrs
-      // let hasEmptySaleAttribute = checkedAttrs.length === 0
-      // checkedAttrs.forEach(attribute => {
-      //   attribute.relatedAttributeAndTermList.forEach(
-      //     relatedAttribute => {
-      //       if (isEmpty(relatedAttribute.attributeTermIds)) {
-      //         hasEmptySaleAttribute = true
-      //       }
-      //     }
-      //   )
-      // })
-      // if (hasEmptySaleAttribute) {
-      //   this.$message.error('sku信息销售属性未选择完全')
-      //   err = true
-      //   return err
-      // }
+      let err = false
+      const checkedAttrs = this.checkedAttrs
 
-      // let supplyPrice = this.tableData.every(item => item.supplyPrice)
-      // if (!supplyPrice) {
-      //   this.$message.error('供货价格，不能为空')
-      //   err = true
-      //   return err
-      // }
+      let hasEmptySaleAttribute = checkedAttrs.length === 0
+      checkedAttrs.forEach(attribute => {
+        attribute.relatedAttributeAndTermList.forEach(
+          relatedAttribute => {
+            if (isEmpty(relatedAttribute.attributeTermIds)) {
+              hasEmptySaleAttribute = true
+            }
+          }
+        )
+      })
+      if (hasEmptySaleAttribute) {
+        this.$message.error('sku信息销售属性未选择完全')
+        err = true
+        return err
+      }
 
-      // let weight = this.tableData.every(item => item.weight)
-      // if (!weight) {
-      //   this.$message.error('带包装重量，不能为空')
-      //   err = true
-      //   return err
-      // }
-      // return err
-      return true
+      let supplyPrice = this.tableData.every(item => item.supplyPrice)
+      if (!supplyPrice) {
+        this.$message.error('供货价格，不能为空')
+        err = true
+        return err
+      }
+
+      let weight = this.tableData.every(item => item.weight)
+      if (!weight) {
+        this.$message.error('带包装重量，不能为空')
+        err = true
+        return err
+      }
+      let tagSize = this.tableData.every(item => item.tagSize)
+      if (!tagSize) {
+        this.$message.error('商家吊牌尺码，不能为空')
+        err = true
+        return err
+      }
+      return err
     },
     result () {
       return new Promise((resolve) => {

@@ -14,7 +14,7 @@
               <template v-if="item.extendCode ==='NZ010'">
                 <el-form-item
                   :prop="`${index}values`"
-                  :rules="{required: true, message: '域名不能为空', trigger: 'blur' }"
+                  :rules="{required: true, message: '颜色不能为空', trigger: 'blur' }"
                 >
                   <template slot="label">
                     <el-tooltip effect="dark" :content="item.name" placement="top">
@@ -36,7 +36,10 @@
                 </el-form-item>
               </template>
               <template v-if="item.extendCode ==='NZ011'">
-                <el-form-item :prop="`${index}values`" :rules="rules.sizes">
+                <el-form-item
+                  :prop="`${index}values`"
+                  :rules="{required: true, message: '尺寸不能为空', trigger: 'blur' }"
+                >
                   <template slot="label">
                     <el-tooltip effect="dark" :content="item.name" placement="top">
                       <span class="form-label pointer-enable">{{item.name}}</span>
