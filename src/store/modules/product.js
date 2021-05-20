@@ -27,7 +27,8 @@ export default {
     hasAttrsChanged: false, // 销售属性变动
     productMainAttributeAndTerm: {}, // 主属性
     categoryId: undefined, // 分类id
-    mainAttributeType: '' // 主属性类型
+    mainAttributeType: '', // 主属性类型
+    deleteSaleAttr: '' // 删除的属性
   },
   getters: {
     specificationMain: state => state.mainAttributeType === 'specification',
@@ -57,7 +58,8 @@ export default {
     productMainAttributeAndTerm: state => state.productMainAttributeAndTerm || {},
     categoryId: (state) => {
       return state.productBase.categoryId
-    }
+    },
+    deleteSaleAttr: state => state.deleteSaleAttr
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
@@ -124,6 +126,9 @@ export default {
     },
     PRODUCT_MAIN_ATTRIBUTE_AND_TERM (state, data) {
       state.productMainAttributeAndTerm = data
+    },
+    DELETE_SALE_ATTR (state, data) {
+      state.deleteSaleAttr = data
     }
   },
   actions: {}

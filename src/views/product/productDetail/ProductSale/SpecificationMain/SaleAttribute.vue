@@ -185,9 +185,11 @@ export default {
   methods: {
     // 初始化数据，只在编辑情况下执行
     initData () {
-      const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
+      const { productMainAttributeTermRelationList = [], productCategorySalesAttributeSelectedList = [] } = deepClone(this.productMainAttributeAndTerm)
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
         (attributeTerm, index) => {
+          const ddd = this.productSales(productCategorySalesAttributeSelectedList, attributeTerm.mainAttributeTermId)
+          console.log('ddd', ddd)
           const specificationTerm = deepClone(
             this.specificationTerms.find(
               term => {
@@ -201,6 +203,7 @@ export default {
               // )}(已删除)`
             }
           )
+          console.log('specificationTerm', specificationTerm)
           if (index === 0) {
             this.$nextTick(() => {
               this.activeName = specificationTerm.code
@@ -229,6 +232,31 @@ export default {
         }
       )
       this.handleAttribute()
+    },
+    /**
+     * 判断属性是否被删除
+     */
+    productSales (productCategorySalesAttributeSelectedList, id) {
+      // 查找属性是否被删除
+      let delteAttrs = []
+      console.log('this.saleAttrs', deepClone(this.saleAttrs))
+      const categoryAttrs = this.saleAttrs.find(cate => cate.id === id)
+      if (!isEmpty(categoryAttrs)) return categoryAttrs
+      if (isEmpty(categoryAttrs)) {
+        // 销售属性被删除
+        delteAttrs = productCategorySalesAttributeSelectedList
+          .filter(sale => sale.attributeId === id)
+          .map(sale => {
+            const { attribute, attributeTerms } = sale
+            attribute['terms'] = attributeTerms.map(attr => {
+              attr.name = `${attr.name}(已删除)`
+              attr.code = attr.id
+            })
+            return attribute
+          })
+      }
+      this.$store.commit(`product/DELETE_SALE_ATTR`, delteAttrs || [])
+      return delteAttrs
     },
     initAttrData () {
       // const mode = this.productParams.mode === 'create'
@@ -282,6 +310,27 @@ export default {
       })
       const { item, specificationItem } = currentChoose
       this.attributeChange(specificationItem, item)
+      this.productCheckedSize()
+    },
+    /**
+     * 销售属性选中的尺码
+     */
+    productCheckedSize () {
+      const checkdSizes = []
+      this.chooseSpecificationTerms.forEach(choose => {
+        const attributeId = choose.attributeId
+        choose.saleAttrs
+          .filter(sale => sale.saleAttributeType.value === 2)
+          .forEach(sale => {
+            const values = sale.values.map(value => {
+              value.attributeId = attributeId
+              value.attributeTermId = value.id
+              return value
+            })
+            checkdSizes.push(...values)
+          })
+      })
+      this.$store.commit(`product/CHECKED_SIZES`, checkdSizes || [])
     },
     openDialog (ref, data, currentChoose) {
       let dialogData = {}
