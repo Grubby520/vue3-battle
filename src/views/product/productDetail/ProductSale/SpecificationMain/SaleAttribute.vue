@@ -185,23 +185,21 @@ export default {
   methods: {
     // 初始化数据，只在编辑情况下执行
     initData () {
-      const { productMainAttributeTermRelationList = [], productCategorySalesAttributeSelectedList = [] } = deepClone(this.productMainAttributeAndTerm)
+      const { productCategorySalesAttributeSelectedList = [] } = deepClone(this.productSalesAttributeDetail)
+      this.deleteAttr()
+      const { productMainAttributeTermRelationList = [], mainAttributeId } = deepClone(this.productMainAttributeAndTerm)
+      // if (isEmpty(productMainAttributeTermRelationList)) return
+      const mainSales = this.productSales(productCategorySalesAttributeSelectedList, mainAttributeId)
+      console.log('mainSales', mainSales)
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
         (attributeTerm, index) => {
-          const ddd = this.productSales(productCategorySalesAttributeSelectedList, attributeTerm.mainAttributeTermId)
-          console.log('ddd', ddd)
           const specificationTerm = deepClone(
             this.specificationTerms.find(
               term => {
                 return term.id === attributeTerm.mainAttributeTermId
               }
-            ) || {
-              code: `${attributeTerm.mainAttributeTermId}`,
-              id: attributeTerm.mainAttributeTermId
-              // name: `${this.extraAttrMap.get(
-              //   attributeTerm.mainAttributeTermId
-              // )}(已删除)`
-            }
+            )
+            // || this.productSales(productCategorySalesAttributeSelectedList, mainAttributeTermId)
           )
           console.log('specificationTerm', specificationTerm)
           if (index === 0) {
@@ -231,6 +229,7 @@ export default {
           }
         }
       )
+      console.log('this.chooseSpecificationTerm', deepClone(this.chooseSpecificationTerms))
       this.handleAttribute()
     },
     /**
@@ -239,21 +238,22 @@ export default {
     productSales (productCategorySalesAttributeSelectedList, id) {
       // 查找属性是否被删除
       let delteAttrs = []
-      console.log('this.saleAttrs', deepClone(this.saleAttrs))
-      const categoryAttrs = this.saleAttrs.find(cate => cate.id === id)
-      if (!isEmpty(categoryAttrs)) return categoryAttrs
-      if (isEmpty(categoryAttrs)) {
+      // const categoryAttrs = this.saleAttrs.find(cate => cate.id === id)
+      if (isEmpty({})) {
         // 销售属性被删除
         delteAttrs = productCategorySalesAttributeSelectedList
           .filter(sale => sale.attributeId === id)
-          .map(sale => {
-            const { attribute, attributeTerms } = sale
-            attribute['terms'] = attributeTerms.map(attr => {
+          .reduce((init, sale) => {
+            console.log('sale', deepClone(sale))
+            const { attributeTerms, attributeId } = sale
+            init = attributeTerms.map(attr => {
               attr.name = `${attr.name}(已删除)`
               attr.code = attr.id
+              attr.attributeId = attributeId
+              return attr
             })
-            return attribute
-          })
+            return init
+          }, [])
       }
       this.$store.commit(`product/DELETE_SALE_ATTR`, delteAttrs || [])
       return delteAttrs
@@ -297,6 +297,7 @@ export default {
         }
       })
       this.attributeChange(specificationTerm, item)
+      this.productCheckedSize()
     },
     sizeSelectConfirm (val, currentChoose) {
       this.chooseSpecificationTerms.forEach(choose => {
@@ -436,6 +437,7 @@ export default {
           return {
             mainAttributeId: this.specification.id,
             mainAttributeTermId: specificationTerm.id,
+            mainAttributeTermName: specificationTerm.name,
             relatedAttributeAndTermList: specificationTerm.saleAttrs.map(
               saleAttr => {
                 return {
