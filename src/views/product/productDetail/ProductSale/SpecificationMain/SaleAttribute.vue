@@ -174,6 +174,7 @@ export default {
     },
     curSaleAttrs () {
       return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
+      // return this.saleAttrs
     }
   },
   watch: {

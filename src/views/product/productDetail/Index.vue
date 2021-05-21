@@ -242,10 +242,16 @@ export default {
    * 对比分类判断销售属性和和属性值是否在分类上
    */
     comparisonCateInfo (productCategorySalesAttributeSelectedList) {
-      const deletedRelatedermIds = this.changeMainAttributeAndTerm()
+      // const [deleteColorId = [], deletedRelatedSizeTerm = {}] = this.changeMainAttributeAndTerm()
+      const [deleteColorId = []] = this.changeMainAttributeAndTerm()
+      // console.log('deletedRelatedSizeTerm', deleteColorId)
+      // console.log('deletedRelatedSizeTerm', deleteColorId)
       const newCategoryData = []
       productCategorySalesAttributeSelectedList.forEach(sale => {
-        if (!deletedRelatedermIds.includes(sale.attributeId)) {
+        // const deletedRelateCondition = deletedRelatedSizeTerm[sale.attributeId] || false
+        const deletedColorCondition = deleteColorId.includes(sale.attributeId)
+        // console.log(sale.attributeId, deletedRelateCondition, deletedColorCondition)
+        if (!deletedColorCondition) {
           const cateSaleAttr = this.saleAttrs.find(attr => attr.id === sale.attributeId)
           // 判断销售属性分类上存在
           const { attributeTerms, attributeId } = sale
@@ -272,14 +278,15 @@ export default {
           newCategoryData.push(deleteSaleAttr)
         }
       })
+      // console.log('newCategoryData', deepClone(newCategoryData))
       this.productSizeData(productCategorySalesAttributeSelectedList)
-      this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData] || [])
+      this.$store.commit(`product/COMPARISON_SALE_INFO`, newCategoryData || [])
     },
     /**
      * 回显判断分类上的关联关系是否发生变化
      */
     changeMainAttributeAndTerm () {
-      const deletedRelatedSizeTerm = []
+      const deletedRelatedSizeTerm = {}
       const {
         productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] } = {},
         productCategorySalesAttributeSelectedList = []
@@ -301,8 +308,7 @@ export default {
             init.push(color.attributeId)
           }
           return init
-        }, [])
-      deletedRelatedSizeTerm.push(...deleteColorId)
+        }, []) || []
       // 查找删除的关联关系
       productMainAttributeTermRelationList.forEach(term => {
         const deletedrelateTerms = []
@@ -312,10 +318,10 @@ export default {
         deletedrelateTerms.push(relatedSizeTerm.attributeId)
         if (currentRelatedSizes.relatedSizeId !== relatedSizeTerm.attributeId) {
           // 当前的关联关系删除
-          deletedRelatedSizeTerm.push(relatedSizeTerm.attributeId)
+          deletedRelatedSizeTerm[relatedSizeTerm.attributeId] = mainAttributeTermId
         }
       })
-      return deletedRelatedSizeTerm
+      return [deleteColorId, deletedRelatedSizeTerm]
     },
     /**
      * 回显尺码表需要数据
