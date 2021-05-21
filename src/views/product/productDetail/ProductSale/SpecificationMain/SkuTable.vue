@@ -172,6 +172,7 @@ export default {
      * @param {Array} val 需要回填的数据
      */
     handleBatchInput (data) {
+      console.log('data', data)
       let {
         checkedIds = {}, // 选中的销售属性Id集合
         supplyPrice = '', // 供货价=

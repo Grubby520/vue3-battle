@@ -527,10 +527,11 @@ export default {
         // 选择尺寸弹框
         case 'size':
           dialog = this.$refs.ProductSizeDialog
-          const { sizes } = this.form
+          const { sizes, specifications } = this.form
           data = {
             'sizeOptions': this.sizeOptions || [],
             'formSizes': sizes || [],
+            'specifications': specifications || [],
             'usable': usable,
             'showSaleLabel': showSaleLabel
           }
@@ -589,24 +590,32 @@ export default {
      * @param {Array} val 需要回填的数据
      */
     hideDialog (val) {
-      const { skuList, supplyPrice, sizeList } = val
-      // 颜色和供货价格
-      let hasNeedSku = skuList.length > 0 && supplyPrice
-      let sizeMap = new Map()
-      sizeList.forEach((size) => {
-        // 尺码和重量
-        if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
-      })
-      this.form.productSalesAttributes.forEach(item => {
-        let saleAttrIds = []
-        item.productCategorySalesAttributes.forEach((attribute) => {
-          saleAttrIds.push(attribute.attributeTermId)
+      const { sizeList, skuList, specifications, supplyPrice, weight } = val
+      const checkedIds = [...sizeList, ...skuList, ...specifications]
+      if (checkedIds.length > 0 && (supplyPrice || weight)) {
+        this.form.productSalesAttributes.forEach((item, index) => {
+          console.log('checkedIds', deepClone(checkedIds))
+          const saleTermsRowIds = item.productCategorySalesAttributes
+            .reduce((init, attr) => init.concat(attr.attributeTermId), [])
+          console.log(saleTermsRowIds)
+          const isMatchCheck = checkedIds.some(id => saleTermsRowIds.includes(id))
+          console.log('isMatchCheck', isMatchCheck)
+          if (isMatchCheck) {
+            supplyPrice &&
+              this.$set(
+                this.form.productSalesAttributes[index],
+                'supplyPrice',
+                supplyPrice
+              )
+            weight &&
+              this.$set(
+                this.form.productSalesAttributes[index],
+                'weight',
+                weight
+              )
+          }
         })
-        const includeBatchColor = saleAttrIds.find(i => skuList.includes(i))
-        const includeBatchSize = saleAttrIds.find(i => sizeMap.get(i))
-        if (hasNeedSku && includeBatchColor) this.$set(item, 'supplyPrice', supplyPrice)
-        if (includeBatchSize) this.$set(item, 'weight', sizeMap.get(includeBatchSize))
-      })
+      }
     },
     /**
       * 暂存尺码销售属性之前的记录

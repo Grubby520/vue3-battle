@@ -3,23 +3,47 @@
   <el-dialog
     :visible.sync="show"
     :lock-scroll="false"
-    width="50%"
-    title="销售属性批量设置"
-    center
+    :close-on-click-modal="false"
+    width="30%"
+    title="批量录入"
     custom-class="batch-attributes"
     @close="hide"
   >
-    <el-form :model="form" ref="form" label-width="12rem" class="odmDetailBase-form-con">
-      <!-- sku -->
-      <el-form-item label="SKU" prop="skuList">
+    <el-form
+      :model="form"
+      ref="form"
+      label-position="left"
+      label-width="110px"
+      class="odmDetailBase-form-con"
+    >
+      <el-form-item>
         <el-checkbox :indeterminate="false" v-model="checkAll" @change="handleCheckAllSku">全选</el-checkbox>
-        <div style="margin: 1.5rem 0;"></div>
+      </el-form-item>
+      <el-form-item label="颜色" prop="skuList">
         <el-checkbox-group v-model="form.skuList" @change="handleCheckSku">
           <el-checkbox
-            v-for="(sku, index) in skuList"
-            :label="sku.attributeTermId"
+            v-for="(color, index) in skuList"
+            :label="color.attributeTermId"
             :key="index"
-          >{{sku.colorAttributeName}}</el-checkbox>
+          >{{color.colorAttributeName}}</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item label="规格" prop="specifications">
+        <el-checkbox-group v-model="form.specifications" @change="handleCheckSku">
+          <el-checkbox
+            v-for="(specification, index) in specifications"
+            :label="specification.attributeTermId"
+            :key="index"
+          >{{specification.specificationsAttributeName}}</el-checkbox>
+        </el-checkbox-group>
+      </el-form-item>
+      <el-form-item label="尺码" prop="sizeList">
+        <el-checkbox-group v-model="form.sizeList" @change="handleCheckSku">
+          <el-checkbox
+            v-for="(size, index) in sizeList"
+            :label="size.attributeTermId"
+            :key="index"
+          >{{size.sizeAttributeName}}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <!-- 供货价 -->
@@ -30,20 +54,13 @@
           v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
         />
       </el-form-item>
-      <hr class="separation" />
-      <!-- 带包装重量 -->
-      <el-form-item label="带包装重量" prop="sizeList">
-        <el-table :data="form.sizeList" border>
-          <el-table-column prop="sizeAttributeName" :label="saleName" align="center"></el-table-column>
-          <el-table-column prop="weight" label="带包装重量（G）" align="center">
-            <template v-slot="{row}">
-              <el-input
-                v-model="row.weight"
-                v-slFormatNumber="{ type: 'integer', max: 99999999, compareLength: true, includeZero: true }"
-              ></el-input>
-            </template>
-          </el-table-column>
-        </el-table>
+      <!-- 供货价 -->
+      <el-form-item label="带包装重量" prop="weight">
+        <el-input
+          clearable
+          v-model="form.weight"
+          v-slFormatNumber="{ type: 'integer', max: 99999999, compareLength: true, includeZero: true }"
+        />
       </el-form-item>
     </el-form>
 
@@ -69,13 +86,15 @@ export default {
       isCancel: true,
       // 待选的Sku集合
       skuList: [],
+      sizeList: [],
+      specifications: [],
       form: {
         // Sku
         skuList: [],
+        specifications: [],
+        sizeList: [],
         // 供货价
-        supplyPrice: undefined,
-        // 尺寸带包装重量
-        sizeList: []
+        supplyPrice: undefined
       },
       // 全选所有Sku
       checkAll: true,
@@ -96,28 +115,33 @@ export default {
     */
     open (data, type) {
       this.show = true
-      const { sizes, colors, colorAttrs, specificationAttrs } = data
-      const specifications = (specificationAttrs || []).map(specification => {
-        specification.id = specification.attributeTermId
-        return specification
-      })
+      const { sizes, colors, specifications } = data
+
       this.saleName = type ? '规格' : '尺码'
-      this.skuList = this.deduplication(colors || colorAttrs, 'id')
+      this.skuList = this.deduplication(colors, 'id')
         .map((sku) => {
           return {
             attributeTermId: sku.id,
             colorAttributeName: sku.name
           }
         })
-      this.form.sizeList = this.deduplication(sizes || specifications, 'id')
-        .map((sku) => {
+      this.sizeList = this.deduplication(sizes, 'id')
+        .map((size) => {
           return {
-            attributeTermId: sku.id,
-            sizeAttributeName: sku.name,
-            weight: ''
+            attributeTermId: size.id,
+            sizeAttributeName: size.name
+          }
+        })
+      this.specifications = this.deduplication(specifications, 'id')
+        .map((specification) => {
+          return {
+            attributeTermId: specification.id,
+            specificationsAttributeName: specification.name
           }
         })
       this.form.skuList = this.checkAll ? this.skuList.map((sku) => sku.attributeTermId) : []
+      this.form.sizeList = this.checkAll ? this.sizeList.map((size) => size.attributeTermId) : []
+      this.form.specifications = this.checkAll ? this.specifications.map((size) => size.attributeTermId) : []
     },
     /**
      * 对象数组去重
