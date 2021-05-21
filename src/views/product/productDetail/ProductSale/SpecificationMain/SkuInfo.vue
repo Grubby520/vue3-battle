@@ -4,7 +4,7 @@
       <div slot="header" class="title">
         <span>销售属性</span>
       </div>
-      <div class="sku-info-content" ref="sale">
+      <div class="sku-info-content">
         <SaleAttribute
           :table-data="tableData"
           :cur-sale-attrs="curSaleAttrs"
@@ -19,7 +19,7 @@
         ></SkuTable>
       </div>
       <!-- <div class="no-data" v-else>
-      <span class="no-data--tip">~暂无数据~</span>
+        <span class="no-data--tip">~暂无数据~</span>
       </div>-->
     </el-card>
   </div>
@@ -65,7 +65,6 @@ export default {
     specification () {
       return this.curSaleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     },
-    // 处理完整的销售属性
     curSaleAttrs () {
       return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
     }
@@ -122,7 +121,6 @@ export default {
           }
         })
         .reduce((prev, current) => {
-          // debugger
           const index = prev.findIndex(
             k => k.saleAttributeType === current.saleAttributeType
           )
@@ -344,6 +342,7 @@ export default {
 
 <style scoped lang="scss">
 .skuInfo {
+  margin-bottom: 2rem;
   .sku-info-content {
     padding: 0 12rem;
   }

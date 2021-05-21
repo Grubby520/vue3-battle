@@ -83,7 +83,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['specificationMain']),
+    ...mapGetters('product', ['specificationMain', 'saleAttrs']),
     isStatus () {
       return this.mode === 'view'
     },
@@ -146,6 +146,8 @@ export default {
         this.$store.commit(`product/${product}`, productData[product] || [])
       }
       this.productStatus = productBase.status
+      const { productCategorySalesAttributeSelectedList = [] } = deepClone(productSalesAttributeDetail)
+      this.comparisonCateInfo(productCategorySalesAttributeSelectedList)
     },
     setSkuType (productMainAttributeAndTerm) {
       const mainAttributeType = isEmpty(productMainAttributeAndTerm.productMainAttributeTermRelationList)
@@ -232,6 +234,100 @@ export default {
     cancel () {
       // 取消
       this.$router.push({ path: '/home/recommend-products/list' })
+    },
+    /**
+   * 对比分类判断销售属性和和属性值是否在分类上
+   */
+    comparisonCateInfo (productCategorySalesAttributeSelectedList) {
+      const newCategoryData = []
+      productCategorySalesAttributeSelectedList.forEach(sale => {
+        const cateSaleAttr = this.saleAttrs.find(attr => attr.id === sale.attributeId)
+        if (cateSaleAttr) {
+          // 判断销售属性分类上存在
+          const { attributeTerms, attributeId } = sale
+          const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
+          if (!cateSaleAttr.usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
+          // 判断属性值是否禁用
+          cateSaleAttr.terms.forEach(sale => {
+            if (!sale.usable) {
+              sale.name = `${sale.name}(已禁用)`
+            }
+          })
+          // 判断回填的销售属性值是否存在
+          attributeTerms.forEach(attrTerm => {
+            if (!cateTermIds.includes(attrTerm.id)) {
+              attrTerm.name = `${attrTerm.name}(已删除)`
+              attrTerm['attributeId'] = attributeId
+              cateSaleAttr.terms.push(attrTerm)
+            }
+          })
+          newCategoryData.push(cateSaleAttr)
+        } else {
+          // 构建删除的销售属性补充分类上的的数据
+          const deleteSaleAttr = this.buidDeletedSaleAttrs(sale)
+          newCategoryData.push(deleteSaleAttr)
+        }
+      })
+      this.productSizeData(productCategorySalesAttributeSelectedList)
+      this.$store.commit(`product/COMPARISON_SALE_INFO`, newCategoryData || [])
+    },
+    /**
+     * 回显尺码表需要数据
+     */
+    buidDeletedSaleAttrs (sale) {
+      const { attribute, attributeTerms, attributeId } = sale
+      attribute['name'] = `${attribute.name}(已删除)`
+      attribute['saleAttributeType'] = { 'value': attribute.saleAttributeType }
+      const deleteAttrs = { ...attribute }
+      deleteAttrs['terms'] = attributeTerms.map(attr => {
+        attr['name'] = `${attr.name}(已删除)`
+        attr['attributeId'] = attributeId
+        return attr
+      })
+      if (attribute.saleAttributeType.value === 3) {
+        // 删除的属性是规格属性需要处理关联关系
+        deleteAttrs['categoryAttributeRelatedSizes'] = this.categoryAttributeRelatedSizes(sale)
+      }
+      return deleteAttrs
+    },
+    /**
+    * 回显删除规格的关联关系
+    */
+    categoryAttributeRelatedSizes (sale) {
+      const {
+        productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] } = {},
+        productCategorySalesAttributeSelectedList = []
+      } = deepClone(this.productSalesAttributeDetail)
+      const saleSizeIds = productCategorySalesAttributeSelectedList
+        .filter(sale => sale.attribute.saleAttributeType === 2)
+        .reduce((init, size) => {
+          init.push(size.attribute.id)
+          return init
+        }, [])
+      const categoryAttributeRelatedSizes = productMainAttributeTermRelationList
+        .map(relation => {
+          const { relatedAttributeAndTermList, mainAttributeTermId } = relation
+          const relatedSizeId = relatedAttributeAndTermList
+            .find(term => saleSizeIds.includes(term.attributeId)).attributeId
+          const saleAttrRelation = {}
+          saleAttrRelation['termId'] = mainAttributeTermId
+          saleAttrRelation['relatedSizeId'] = relatedSizeId
+          return saleAttrRelation
+        })
+      return categoryAttributeRelatedSizes
+    },
+    /**
+     * 回显尺码需要的数据
+     */
+    productSizeData (productCategorySalesAttributeSelectedList) {
+      // 尺码表需要数据
+      const attributeTerms = productCategorySalesAttributeSelectedList
+        .filter(term => term.attribute.saleAttributeType === 2)
+        .reduce((init, term) => {
+          init.push(...term.attributeTerms)
+          return init
+        }, [])
+      this.$store.commit(`product/SET_CHECKED_ATTRS`, attributeTerms || [])
     },
     getResult () {
       // 获取需要保存/提交的数据

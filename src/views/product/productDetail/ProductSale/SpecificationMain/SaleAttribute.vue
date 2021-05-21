@@ -54,7 +54,7 @@
                     style="margin: 0 0 .5rem 1rem"
                     v-for="(tag, index) in item.values"
                     :key="index"
-                    closable
+                    :closable="productParams.mode!=='view'"
                     effect="dark"
                     :type="['success', 'info', 'danger', 'warning', ''][index%5]"
                     @close="removeSizeTag(tag,specificationItem, item)"
@@ -64,7 +64,7 @@
             </div>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane name="addBtn" disabled v-if="productParams.mode==='create'">
+        <el-tab-pane name="addBtn" disabled v-if="productParams.mode!=='view'">
           <div slot="label">
             <el-dropdown trigger="click" @command="handleAdd">
               <el-button type="text">
@@ -84,7 +84,6 @@
       <!-- 尺码弹框 -->
       <ProductSizeDialog ref="productSizeDialog" @confirm="sizeSelectConfirm" />
     </div>
-    <!-- </el-card> -->
   </div>
 </template>
 
@@ -102,12 +101,16 @@ export default {
       },
       activeName: undefined,
       chooseSpecificationTerms: [], // 选中的规格
-      // curSaleAttrs: [], // 所有的销售属性
       rules: {
         colors: [
           { required: true, message: '请添加尺码', trigger: 'blur' }
         ]
       }
+    }
+  },
+  created () {
+    if (this.productParams.mode !== 'create') {
+      this.activeName = `${this.productMainAttributeAndTerm.productMainAttributeTermRelationList[0].mainAttributeTermId}`
     }
   },
   computed: {
@@ -139,11 +142,11 @@ export default {
     },
     changeSpecificationOptions () {
       if (isEmpty(this.specification)) return
-      const checkedSpecification = this.chooseSpecificationTerms
+      const checkedSpecificationIds = this.chooseSpecificationTerms
         .reduce((init, tab) => init.concat(tab.id), [])
       return this.specification.terms
         .filter(specificationItem =>
-          !checkedSpecification.includes(specificationItem.id)
+          !checkedSpecificationIds.includes(specificationItem.id)
         )
     },
     specification () {
@@ -171,15 +174,12 @@ export default {
     },
     curSaleAttrs () {
       return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
-      // return this.saleAttrs
     }
   },
   watch: {
     'categoryId': {
       handler (newValue) {
         if (newValue) {
-          const { productCategorySalesAttributeSelectedList = [] } = deepClone(this.productSalesAttributeDetail)
-          this.comparisonCateInfo(productCategorySalesAttributeSelectedList)
           this.initData()
         }
       },
@@ -190,6 +190,7 @@ export default {
     // 初始化数据，只在编辑情况下执行
     initData () {
       const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
+      if (isEmpty(productMainAttributeTermRelationList)) return
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
         (attributeTerm, index) => {
           const specificationTerm = deepClone(
@@ -222,79 +223,7 @@ export default {
         }
       )
 
-      this.activeName = productMainAttributeTermRelationList[0].code
       this.handleAttribute()
-    },
-    /**
-     * 对比分类判断销售属性和和属性值是否在分类上
-     */
-    comparisonCateInfo (productCategorySalesAttributeSelectedList) {
-      productCategorySalesAttributeSelectedList.forEach(sale => {
-        const cateSaleAttr = this.saleAttrs.find(attr => attr.id === sale.attributeId)
-        if (cateSaleAttr) {
-          // 判断销售属性分类上存在
-          const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
-          if (sale.attribute.usable) sale.attribute.name = `${sale.attribute.name}(已禁用)`
-          sale.attributeTerms.forEach(attrTerm => {
-            if (!cateTermIds.includes(attrTerm.id)) {
-              attrTerm.name = `${attrTerm.name}(已删除)`
-            } else {
-              if (attrTerm.usable) attrTerm.name = `${attrTerm.name}(已禁用)`
-            }
-          })
-        } else {
-          sale.attribute.name = `${sale.attribute.name}(已删除)`
-        }
-      })
-      console.log('1111111111111', deepClone(productCategorySalesAttributeSelectedList))
-      this.buildSaveStructure(productCategorySalesAttributeSelectedList)
-    },
-    /**
-     * 回显数据构建和分类相同的数据结构
-     */
-    buildSaveStructure (productCategorySalesAttributeSelectedList) {
-      // 构建分类上规格主属性结构-categoryAttributeRelatedSizes
-      const {
-        productMainAttributeAndTerm = {}
-      } = deepClone(this.productSalesAttributeDetail)
-      const saleSizeIds = productCategorySalesAttributeSelectedList
-        .reduce((init, size) => {
-          const { saleAttributeType, id } = size.attribute
-          if (saleAttributeType === 2) {
-            init.push(id)
-          }
-          return init
-        }, [])
-      const productMainAttributeTermRelationList = productMainAttributeAndTerm.productMainAttributeTermRelationList
-      const categoryAttributeRelatedSizes = productMainAttributeTermRelationList.map(relation => {
-        const relatedSizeId = relation.relatedAttributeAndTermList.find(term => saleSizeIds.includes(term.attributeId)).attributeId
-        const saleAttrRelation = {}
-        saleAttrRelation['termId'] = relation.mainAttributeTermId
-        saleAttrRelation['relatedSizeId'] = relatedSizeId
-        return saleAttrRelation
-      })
-      // 尺码表需要数据
-      const attributeTerms = productCategorySalesAttributeSelectedList
-        .filter(term => term.attribute.saleAttributeType === 2)
-        .reduce((init, term) => {
-          init.push(...term.attributeTerms)
-          return init
-        }, [])
-      this.$store.commit(`product/SET_CHECKED_ATTRS`, attributeTerms || [])
-      // 构建分类销售属性结构
-      const productCategorySalesAttribute = productCategorySalesAttributeSelectedList.map(sale => {
-        const { attribute, attributeTerms } = sale
-        const saleTerms = { ...attribute }
-        if (attribute.saleAttributeType === 3) {
-          saleTerms['categoryAttributeRelatedSizes'] = categoryAttributeRelatedSizes
-        }
-        saleTerms['saleAttributeType'] = { 'value': attribute.saleAttributeType }
-        saleTerms['terms'] = attributeTerms
-        return saleTerms
-      })
-      console.log('productCategorySalesAttributeSelectedList', productCategorySalesAttributeSelectedList)
-      console.log('productCategorySalesAttribute', deepClone(productCategorySalesAttribute))
-      this.$store.commit(`product/COMPARISON_SALE_INFO`, productCategorySalesAttribute || [])
     },
     selectChange (e, specificationTerm, item) {
       this.attributeChange(specificationTerm, item)
