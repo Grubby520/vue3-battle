@@ -147,7 +147,6 @@ export default {
       this.setAttrsInfo(currentData)
     },
     setAttrsInfo (currentData) {
-      // todo 此处修改关联产品图片和尺码对照表
       this.$store.commit(
         'product/SET_CHECKED_ATTRS',
         currentData

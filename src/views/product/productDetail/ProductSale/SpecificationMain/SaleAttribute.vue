@@ -284,7 +284,7 @@ export default {
             const terms = {}
             terms['attributeId'] = attributeId
             terms['attributeTermId'] = term.id
-            terms['attributeTermName'] = term.name
+            terms['name'] = term.name
             return terms
           })
           console.log('attributeTerms', saleTerms)
