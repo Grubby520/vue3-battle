@@ -44,19 +44,25 @@
       >批量录入</el-button>
     </el-row>
     <!-- 批量设置弹窗 -->
-    <BatchAttributes @hide="hideDialog" ref="batchAttributes" />
+    <BatchTypingDialog
+      :visible.sync="batchTypingVisible"
+      :cur-form-item="curFormItem"
+      :select-attr-list="selectAttrList"
+      @batchInput="handleBatchInput"
+    ></BatchTypingDialog>
   </div>
 </template>
 
 <script>
-import BatchAttributes from '../../batchAttributes'
+import BatchTypingDialog from '../../batchTypingDialog.vue'
 import { mapGetters } from 'vuex'
+import { deepClone, isEmpty } from '@shared/util'
 export default {
   model: {
     prop: 'tableData',
     event: 'change'
   },
-  components: { BatchAttributes },
+  components: { BatchTypingDialog },
   props: {
     tableData: {
       type: Array,
@@ -86,7 +92,8 @@ export default {
   data () {
     return {
       form: {},
-      rules: {}
+      rules: {},
+      batchTypingVisible: false // 批量输入弹窗是否可见
     }
   },
   computed: {
@@ -103,21 +110,9 @@ export default {
       })
       return attrsMap
     },
-    // 排序弹窗需要的数据结构
+    // 批量录入需要的数据结构
     curFormItem () {
-      const attributeColorAndSize = this.attributeColorAndSize(this.attributeMap || new Map())
-      const [cololrs, specificationAttrs] = attributeColorAndSize
-      const colorKeys = {}
-      const colorAttrs = (cololrs || [])
-        .map(color => color.attributeTermId)
-        .reduce((init, color) => {
-          if (!colorKeys[color.id]) {
-            init.push(color)
-            colorKeys[color.id] = true
-          }
-          return init
-        }, [])
-      return { colorAttrs, specificationAttrs }
+      return this.attributeMapToObj(this.attributeMap || new Map())
     },
     // 已经选中的属性list
     selectAttrList () {
@@ -176,59 +171,94 @@ export default {
      * 批量录入回填
      * @param {Array} val 需要回填的数据
      */
-    hideDialog (val) {
-      const { skuList, supplyPrice, sizeList } = val
-      // 颜色和供货价格
-      let hasNeedSku = skuList.length > 0 && supplyPrice
-      let sizeMap = new Map()
-      sizeList.forEach((size) => {
-        // 尺码和重量
-        if (size.weight) sizeMap.set(size.attributeTermId, size.weight)
-      })
-      this.tableData.forEach(item => {
-        let saleAttrIds = []
-        item.attributes.forEach((attribute) => {
-          saleAttrIds.push(attribute.attributeTermId)
+    handleBatchInput (data) {
+      let {
+        checkedIds = {}, // 选中的销售属性Id集合
+        supplyPrice = '', // 供货价=
+        weight // 带包装重量
+      } = data
+      const hasCheckValue = Object.values(checkedIds).flat().length > 0
+      checkedIds = this.transComplexAttributeObject(checkedIds)
+      // 如果有选中销售属性值 且 采购价、销售价、预估重量中有录入的
+      if (hasCheckValue && (supplyPrice || weight)) {
+        this.tableData.forEach((item, index) => {
+          const isMatchCheck = item.attributes.every(
+            attribute =>
+              !checkedIds[attribute.attributeId] ||
+              checkedIds[attribute.attributeId].includes(
+                attribute.attributeTermId
+              )
+          )
+          if (isMatchCheck) {
+            supplyPrice &&
+              this.$set(
+                this.tableData[index],
+                'supplyPrice',
+                supplyPrice
+              )
+            weight &&
+              this.$set(
+                this.tableData[index],
+                'weight',
+                weight
+              )
+          }
         })
-        const includeBatchColor = saleAttrIds.find(i => skuList.includes(i))
-        const includeBatchSize = saleAttrIds.find(i => sizeMap.get(i))
-        if (hasNeedSku && includeBatchColor) this.$set(item, 'supplyPrice', supplyPrice)
-        if (includeBatchSize) this.$set(item, 'weight', sizeMap.get(includeBatchSize))
-      })
+      }
     },
-    openDialog (data = {}) {
-      let dialog = null
-      dialog = this.$refs.batchAttributes
-      dialog.open(this.curFormItem, 'mainSpecification')
-      dialog = null
+    /**
+         * 解构复杂的尺码Id
+         * eg: {5-8: [1, 2]} to {5: [1, 2], 8: [1: 2]}
+         */
+    transComplexAttributeObject (checkedIds) {
+      const complexSizeId = Object.keys(checkedIds).find(
+        attributeId => attributeId.indexOf('-') > -1
+      )
+      if (complexSizeId) {
+        const attributeIds = complexSizeId.split('-')
+        attributeIds.forEach(attributeId => {
+          checkedIds[attributeId] = deepClone(
+            checkedIds[complexSizeId]
+          )
+        })
+        delete checkedIds[complexSizeId]
+      }
+      return checkedIds
     },
-    attributeColorAndSize (map) {
-      // 批量录入需要的数据
-      var attributeAttrs = []
+    openDialog (type) {
+      switch (type) {
+        case 'batchAttributes':
+          this.batchTypingVisible = true
+          break
+      }
+    },
+    /**
+         * 销售属性 Map 转换成 Object
+         * eg [attributeId]: [{attributeId: '', attributeTermId: '', name: ''}]
+         * 尺码的 [attributeId] 为 多个尺码的[attributeId] 通过 `-` 拼接来的
+         */
+    attributeMapToObj (map) {
+      var attributeObject = {}
       this.selectAttrIdList.forEach(attribute => {
         const attributeIds = attribute.attributeIds
-        const saleAttributeType = attribute.saleAttributeType
-        if (saleAttributeType !== 2) {
-          const attributeTermIds = [
-            ...new Set(
-              attributeIds
-                .map(attributeId => map.get(attributeId))
-                .flat()
-            )
-          ]
-          const attributeTerm = attributeTermIds.map(
-            attributeTermId => {
-              return {
-                attributeId: attributeIds.join('-'),
-                attributeTermId,
-                name: this.curAttributeName(attributeTermId)
-              }
-            }
+        const attributeTermIds = [
+          ...new Set(
+            attributeIds
+              .map(attributeId => map.get(attributeId))
+              .flat()
           )
-          attributeAttrs.push(attributeTerm)
-        }
+        ].filter(item => !isEmpty(item))
+        attributeObject[attributeIds.join('-')] = attributeTermIds.map(
+          attributeTermId => {
+            return {
+              attributeId: attributeIds.join('-'),
+              attributeTermId: attributeTermId,
+              name: this.curAttributeName(attributeTermId)
+            }
+          }
+        )
       })
-      return attributeAttrs
+      return attributeObject
     }
   }
 }

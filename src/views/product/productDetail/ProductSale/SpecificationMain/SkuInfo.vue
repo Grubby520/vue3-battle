@@ -160,7 +160,7 @@ export default {
         specificationTermIds.push(item.mainAttributeTermId)
         item.relatedAttributeAndTermList.forEach(relate => {
           const attributeId = relate.attributeId
-          const attributeTermIds = this.attributeTerm(relate.attributeTermIds) || []
+          const attributeTermIds = relate.attributeTermIds.map(attributeTermId => attributeTermId.id) || []
           const stashTermIds = attributeMap.get(attributeId) || []
           attributeMap.set(attributeId, [
             ...new Set([...attributeTermIds, ...stashTermIds])
