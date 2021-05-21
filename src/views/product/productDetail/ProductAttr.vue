@@ -233,9 +233,9 @@ export default {
       return (!attribute.deleted && attribute.usable) || !isEmpty(attribute.value)
     },
     result () {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          return new Promise(resolve => {
+      return new Promise(resolve => {
+        this.$refs.form.validate((valid) => {
+          if (valid) {
             const data = this.form.attributesData.map((attribute) => {
               return {
                 attributeId: attribute.attributeId,
@@ -245,8 +245,8 @@ export default {
               }
             })
             resolve({ 'productCustomAttributes': data || [] })
-          })
-        }
+          }
+        })
       })
     }
   }
