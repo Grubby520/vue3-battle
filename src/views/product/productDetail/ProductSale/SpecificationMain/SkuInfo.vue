@@ -59,29 +59,15 @@ export default {
         'productSalesAttributeDetail',
         'saleAttrs',
         'checkedAttrs',
-        'categoryId'
+        'categoryId',
+        'comparisonSaleInfo'
       ]),
     specification () {
-      const specification =
-        this.curSaleAttrs.find(attr => attr.extendCode === 'NZ012') ||
-        {}
-      return specification
-    },
-    curSaleAttrs () {
-      // 所有销售属性
-      return this.saleAttrs
-    },
-    curSaleAttrsMap () {
-      const attrsMap = new Map()
-      this.curSaleAttrs.forEach(attribute => {
-        attrsMap.set(attribute.attributeId, attribute)
-      })
-      return attrsMap
+      return this.curSaleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     },
     // 处理完整的销售属性
-    completeSaleAttrs () {
-      // todo 此处需要考虑删除逻辑 借鉴旧的
-      return this.curSaleAttrs
+    curSaleAttrs () {
+      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleInfo
     }
   },
   watch: {
@@ -136,6 +122,7 @@ export default {
           }
         })
         .reduce((prev, current) => {
+          // debugger
           const index = prev.findIndex(
             k => k.saleAttributeType === current.saleAttributeType
           )
@@ -347,7 +334,7 @@ export default {
     },
     result () {
       return new Promise((resolve) => {
-        if (this.validateData()) {
+        if (!this.validateData()) {
           resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
         }
       })
@@ -361,8 +348,16 @@ export default {
   .sku-info-content {
     padding: 0 12rem;
   }
-  // .el-card {
-  //   overflow: unset !important;
-  // }
+  .no-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    .no-data--tip {
+      flex: 1;
+      text-align: center;
+      color: #909399;
+    }
+  }
 }
 </style>

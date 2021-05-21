@@ -22,13 +22,14 @@ export default {
     // 分类数据
     categoryData: [],
     specificationsAndSizes: [],
-    saleAttrsMap: {},
+    saleAttrsMap: {}, // 销售属性属性值Map
     checkedAttrs: {}, // 已经选中的销售属性
     hasAttrsChanged: false, // 销售属性变动
     productMainAttributeAndTerm: {}, // 主属性
     categoryId: undefined, // 分类id
     mainAttributeType: '', // 主属性类型
-    deleteSaleAttr: '' // 删除的属性
+    deleteSaleAttr: '', // 删除的属性
+    comparisonSaleInfo: [] // 回显对比过的销售属性(已经删除和未删除的数据)
   },
   getters: {
     specificationMain: state => state.mainAttributeType === 'specification',
@@ -45,7 +46,7 @@ export default {
     showSaleLabel: state => state.showSaleLabel || {},
     categoryData: state => state.categoryData || [],
     specificationsAndSizes: state => state.specificationsAndSizes || [],
-    saleAttrsMap: state => state.saleAttrsMap || {},
+    // saleAttrsMap: state => state.saleAttrsMap || {},
     saleAttrs: (state) => {
       // 所有销售属性
       return state.categoryData
@@ -53,28 +54,33 @@ export default {
           attr.saleAttributeType && [1, 2, 3].includes(attr.saleAttributeType.value)
         ) || []
     },
+    saleAttrsMap: (state, getters) => {
+      const curMap = new Map()
+      const mode = state.productParams.mode
+      let saleTerms = []
+      if (mode === 'create') {
+        saleTerms = getters.saleAttrs.map((item) => item.terms).flat()
+      } else {
+        // 回显处理好的销售属性值
+        saleTerms = state.comparisonSaleInfo.map((item) => item.terms).flat()
+      }
+      saleTerms.forEach(item => {
+        curMap.set(item.id, item.name)
+      })
+      return curMap
+    },
     checkedAttrs: state => state.checkedAttrs || {},
     hasAttrsChanged: state => state.hasAttrsChanged,
     productMainAttributeAndTerm: state => state.productMainAttributeAndTerm || {},
     categoryId: (state) => {
       return state.productBase.categoryId
     },
-    deleteSaleAttr: state => state.deleteSaleAttr
+    deleteSaleAttr: state => state.deleteSaleAttr,
+    comparisonSaleInfo: state => state.comparisonSaleInfo
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
       store.categoryData = data
-      const saleAttrs = data.filter(cate => {
-        if (cate.saleAttributeType) {
-          return [1, 2, 3].includes(cate.saleAttributeType.value)
-        }
-      })
-      const arr = saleAttrs.map((item) => item.terms).flat()
-      const curMap = new Map()
-      arr.forEach(item => {
-        curMap.set(item.id, item.name)
-      })
-      store.saleAttrsMap = curMap
     },
     SET_MAIN_ATTRIBUTE_TYPE (state, type) {
       state.mainAttributeType = type
@@ -129,6 +135,9 @@ export default {
     },
     DELETE_SALE_ATTR (state, data) {
       state.deleteSaleAttr = data
+    },
+    COMPARISON_SALE_INFO (state, data) {
+      state.comparisonSaleInfo = data
     }
   },
   actions: {}

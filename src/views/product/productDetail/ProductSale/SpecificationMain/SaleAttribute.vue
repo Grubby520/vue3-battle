@@ -118,7 +118,8 @@ export default {
       'productSalesAttributeDetail',
       'productMainAttributeAndTerm',
       'extraAttrMap',
-      'saleAttrs'
+      'saleAttrs',
+      'comparisonSaleInfo'
     ]),
     productAttrFill () {
       // 回显数据
@@ -169,13 +170,16 @@ export default {
       )
     },
     curSaleAttrs () {
-      return this.saleAttrs
+      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleInfo
+      // return this.saleAttrs
     }
   },
   watch: {
     'categoryId': {
       handler (newValue) {
         if (newValue) {
+          const { productCategorySalesAttributeSelectedList = [] } = deepClone(this.productSalesAttributeDetail)
+          this.comparisonCateInfo(productCategorySalesAttributeSelectedList)
           this.initData()
         }
       },
@@ -185,12 +189,7 @@ export default {
   methods: {
     // 初始化数据，只在编辑情况下执行
     initData () {
-      const { productCategorySalesAttributeSelectedList = [] } = deepClone(this.productSalesAttributeDetail)
-      this.deleteAttrs(productCategorySalesAttributeSelectedList)
-      const { productMainAttributeTermRelationList = [], mainAttributeId } = deepClone(this.productMainAttributeAndTerm)
-      // if (isEmpty(productMainAttributeTermRelationList)) return
-      const mainSales = this.productSales(productCategorySalesAttributeSelectedList, mainAttributeId)
-      console.log('mainSales', mainSales)
+      const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
         (attributeTerm, index) => {
           const specificationTerm = deepClone(
@@ -199,14 +198,7 @@ export default {
                 return term.id === attributeTerm.mainAttributeTermId
               }
             )
-            // || this.productSales(productCategorySalesAttributeSelectedList, mainAttributeTermId)
           )
-          console.log('specificationTerm', specificationTerm)
-          if (index === 0) {
-            this.$nextTick(() => {
-              this.activeName = specificationTerm.code
-            })
-          }
           const saleAttributes = attributeTerm.relatedAttributeAndTermList.map(
             saleAttr => {
               const saleAttribute = deepClone(
@@ -229,56 +221,75 @@ export default {
           }
         }
       )
-      console.log('this.chooseSpecificationTerm', deepClone(this.chooseSpecificationTerms))
+
+      this.activeName = productMainAttributeTermRelationList[0].code
       this.handleAttribute()
     },
-    deleteAttrs (productCategorySalesAttributeSelectedList) {
-      // productCategorySalesAttributeSelectedList.
+    /**
+     * 对比分类判断销售属性和和属性值是否在分类上
+     */
+    comparisonCateInfo (productCategorySalesAttributeSelectedList) {
+      productCategorySalesAttributeSelectedList.forEach(sale => {
+        const cateSaleAttr = this.saleAttrs.find(attr => attr.id === sale.attributeId)
+        if (cateSaleAttr) {
+          // 判断销售属性分类上存在
+          const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
+          if (sale.attribute.usable) sale.attribute.name = `${sale.attribute.name}(已禁用)`
+          sale.attributeTerms.forEach(attrTerm => {
+            if (!cateTermIds.includes(attrTerm.id)) {
+              attrTerm.name = `${attrTerm.name}(已删除)`
+            } else {
+              if (attrTerm.usable) attrTerm.name = `${attrTerm.name}(已禁用)`
+            }
+          })
+        } else {
+          sale.attribute.name = `${sale.attribute.name}(已删除)`
+        }
+      })
+      console.log('1111111111111', deepClone(productCategorySalesAttributeSelectedList))
+      this.buildSaveStructure(productCategorySalesAttributeSelectedList)
     },
     /**
-     * 判断属性是否被删除
+     * 回显数据构建和分类相同的数据结构
      */
-    productSales () {
-      // // 查找属性是否被删除
-      // let delteAttrs = []
-      // // const categoryAttrs = this.saleAttrs.find(cate => cate.id === id)
-      // if (isEmpty({})) {
-      //   // 销售属性被删除
-      //   delteAttrs = productCategorySalesAttributeSelectedList
-      //     .filter(sale => sale.attributeId === id)
-      //     .reduce((init, sale) => {
-      //       console.log('sale', deepClone(sale))
-      //       const { attributeTerms, attributeId } = sale
-      //       init = attributeTerms.map(attr => {
-      //         attr.name = `${attr.name}(已删除)`
-      //         attr.code = attr.id
-      //         attr.attributeId = attributeId
-      //         return attr
-      //       })
-      //       return init
-      //     }, [])
-      // }
-      // this.$store.commit(`product/DELETE_SALE_ATTR`, delteAttrs || [])
-      // return delteAttrs
-    },
-    initAttrData () {
-      // const mode = this.productParams.mode === 'create'
-      // const useCategoryData = mode ? this.filterUableSaleAttrs : this.categoryData
-      // // 销售属性排序
-      // const saleLevel = {
-      //   'NZ012': { level: 1, label: '规格' },
-      //   'NZ010': { level: 2, label: '颜色' },
-      //   'NZ011': { level: 3, label: '尺码' }
-      // }
-      // this.curSaleAttrs = useCategoryData
-      //   .filter(cate => ['NZ010', 'NZ012', 'NZ011'].includes(cate.extendCode))
-      //   .map(sale => {
-      //     sale.level = saleLevel[sale.extendCode].level
-      //     sale.label = saleLevel[sale.extendCode].label
-      //     sale.attributeTermId = sale.id
-      //     return sale
-      //   })
-      //   .sort((a, b) => { return a.level - b.level })
+    buildSaveStructure (productCategorySalesAttributeSelectedList) {
+      // 构建分类上规格主属性结构-categoryAttributeRelatedSizes
+      const {
+        productMainAttributeAndTerm = {}
+      } = deepClone(this.productSalesAttributeDetail)
+      const saleSizeIds = productCategorySalesAttributeSelectedList
+        .reduce((init, size) => {
+          const { saleAttributeType, id } = size.attribute
+          if (saleAttributeType === 2) {
+            init.push(id)
+          }
+          return init
+        }, [])
+      const productMainAttributeTermRelationList = productMainAttributeAndTerm.productMainAttributeTermRelationList
+      const categoryAttributeRelatedSizes = productMainAttributeTermRelationList.map(relation => {
+        const relatedSizeId = relation.relatedAttributeAndTermList.find(term => saleSizeIds.includes(term.attributeId)).attributeId
+        const saleAttrRelation = {}
+        saleAttrRelation['termId'] = relation.mainAttributeTermId
+        saleAttrRelation['relatedSizeId'] = relatedSizeId
+        return saleAttrRelation
+      })
+      // 构建分类销售属性结构
+      const productCategorySalesAttribute = productCategorySalesAttributeSelectedList.map(sale => {
+        const { attribute, attributeTerms } = sale
+        const saleTerms = { ...attribute }
+        // 尺码表需要数据
+        if (attribute.saleAttributeType === 2) {
+          this.$store.commit(`product/SET_CHECKED_ATTRS`, attributeTerms || [])
+        }
+        if (attribute.saleAttributeType === 3) {
+          saleTerms['categoryAttributeRelatedSizes'] = categoryAttributeRelatedSizes
+        }
+        saleTerms['saleAttributeType'] = { 'value': attribute.saleAttributeType }
+        saleTerms['terms'] = attributeTerms
+        return saleTerms
+      })
+      console.log('productCategorySalesAttribute', deepClone(productCategorySalesAttribute))
+      this.$store.commit(`product/COMPARISON_SALE_INFO`, productCategorySalesAttribute || [])
     },
     selectChange (e, specificationTerm, item) {
       this.attributeChange(specificationTerm, item)
@@ -452,7 +463,6 @@ export default {
           }
         }
       )
-      console.log('currentData', deepClone(currentData))
       this.$emit('change', currentData, refreshTable)
     }
   }

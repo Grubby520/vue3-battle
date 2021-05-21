@@ -149,14 +149,6 @@ export default {
   methods: {
     // 当前属性名
     curAttributeName (id) {
-      // return id
-      //   ? this.disabledAttrValIds.includes(id)
-      //     ? `${this.saleAttrsMap.get(id)}(已禁用)`
-      //     : this.saleAttrsMap.has(id)
-      //       ? this.saleAttrsMap.get(id)
-      //       : `${this.extraAttrMap.get(id)}(已删除)`
-      //   : ''
-      // console.log('id', id)
       return this.saleAttrsMap.get(id)
     },
     // sku列表属性排序
@@ -185,7 +177,6 @@ export default {
      * @param {Array} val 需要回填的数据
      */
     hideDialog (val) {
-      console.log('val', val)
       const { skuList, supplyPrice, sizeList } = val
       // 颜色和供货价格
       let hasNeedSku = skuList.length > 0 && supplyPrice
