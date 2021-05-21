@@ -60,14 +60,14 @@ export default {
         'saleAttrs',
         'checkedAttrs',
         'categoryId',
-        'comparisonSaleInfo'
+        'comparisonSaleAttrs'
       ]),
     specification () {
       return this.curSaleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     },
     // 处理完整的销售属性
     curSaleAttrs () {
-      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleInfo
+      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
     }
   },
   watch: {

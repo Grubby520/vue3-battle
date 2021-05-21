@@ -119,7 +119,7 @@ export default {
       'productMainAttributeAndTerm',
       'extraAttrMap',
       'saleAttrs',
-      'comparisonSaleInfo'
+      'comparisonSaleAttrs'
     ]),
     productAttrFill () {
       // 回显数据
@@ -170,7 +170,7 @@ export default {
       )
     },
     curSaleAttrs () {
-      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleInfo
+      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
       // return this.saleAttrs
     }
   },

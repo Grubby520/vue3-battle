@@ -29,7 +29,7 @@ export default {
     categoryId: undefined, // 分类id
     mainAttributeType: '', // 主属性类型
     deleteSaleAttr: '', // 删除的属性
-    comparisonSaleInfo: [] // 回显对比过的销售属性(已经删除和未删除的数据)
+    comparisonSaleAttrs: [] // 回显对比过的销售属性(已经删除和未删除的数据)
   },
   getters: {
     specificationMain: state => state.mainAttributeType === 'specification',
@@ -62,7 +62,7 @@ export default {
         saleTerms = getters.saleAttrs.map((item) => item.terms).flat()
       } else {
         // 回显处理好的销售属性值
-        saleTerms = state.comparisonSaleInfo.map((item) => item.terms).flat()
+        saleTerms = state.comparisonSaleAttrs.map((item) => item.terms).flat()
       }
       saleTerms.forEach(item => {
         curMap.set(item.id, item.name)
@@ -76,7 +76,7 @@ export default {
       return state.productBase.categoryId
     },
     deleteSaleAttr: state => state.deleteSaleAttr,
-    comparisonSaleInfo: state => state.comparisonSaleInfo
+    comparisonSaleAttrs: state => state.comparisonSaleAttrs
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
@@ -137,7 +137,7 @@ export default {
       state.deleteSaleAttr = data
     },
     COMPARISON_SALE_INFO (state, data) {
-      state.comparisonSaleInfo = data
+      state.comparisonSaleAttrs = data
     }
   },
   actions: {}
