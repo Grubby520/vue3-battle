@@ -273,23 +273,18 @@ export default {
         saleAttrRelation['relatedSizeId'] = relatedSizeId
         return saleAttrRelation
       })
+      // 尺码表需要数据
+      const attributeTerms = productCategorySalesAttributeSelectedList
+        .filter(term => term.attribute.saleAttributeType === 2)
+        .reduce((init, term) => {
+          init.push(...term.attributeTerms)
+          return init
+        }, [])
+      this.$store.commit(`product/SET_CHECKED_ATTRS`, attributeTerms || [])
       // 构建分类销售属性结构
       const productCategorySalesAttribute = productCategorySalesAttributeSelectedList.map(sale => {
-        // debugger
-        const { attribute, attributeTerms, attributeId } = sale
+        const { attribute, attributeTerms } = sale
         const saleTerms = { ...attribute }
-        // 尺码表需要数据
-        if (attribute.saleAttributeType === 2) {
-          const saleTerms = attributeTerms.map(term => {
-            const terms = {}
-            terms['attributeId'] = attributeId
-            terms['attributeTermId'] = term.id
-            terms['name'] = term.name
-            return terms
-          })
-          console.log('attributeTerms', saleTerms)
-          this.$store.commit(`product/SET_CHECKED_ATTRS`, saleTerms || [])
-        }
         if (attribute.saleAttributeType === 3) {
           saleTerms['categoryAttributeRelatedSizes'] = categoryAttributeRelatedSizes
         }
@@ -297,6 +292,7 @@ export default {
         saleTerms['terms'] = attributeTerms
         return saleTerms
       })
+      console.log('productCategorySalesAttributeSelectedList', productCategorySalesAttributeSelectedList)
       console.log('productCategorySalesAttribute', deepClone(productCategorySalesAttribute))
       this.$store.commit(`product/COMPARISON_SALE_INFO`, productCategorySalesAttribute || [])
     },
