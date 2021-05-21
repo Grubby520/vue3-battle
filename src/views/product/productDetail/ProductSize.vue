@@ -123,7 +123,7 @@ export default {
               })
             }
           })
-          return { ...checkSize, ...positonItems, specificationId: null }
+          return { ...checkSize, ...positonItems, specificationId: null, attributeTermId: checkSize.id }
         })
         this.addListItem(hasShowSizeInfo)
       },
@@ -133,36 +133,11 @@ export default {
     hasAttrsChanged: {
       handler () {
         if (this.specificationMain) {
-          const checkedAttrs = deepClone(this.checkedAttrs)
-          const sizeList = checkedAttrs.map(specificationTerm => {
-            const specificationTermId = specificationTerm.mainAttributeTermId
-            const sizeIds = this.saleAttrs.filter(attr => attr.saleAttributeType.value === 2).map(attr => attr.id)
-            return specificationTerm.relatedAttributeAndTermList.filter(relatedAttribute => sizeIds.includes(relatedAttribute.attributeId)).map(relatedAttribute => {
-              return relatedAttribute.attributeTermIds.map((attributeTerm) => {
-                return {
-                  ...attributeTerm,
-                  attributeId: relatedAttribute.attributeId,
-                  attributeTermId: attributeTerm.id,
-                  specificationId: specificationTermId,
-                  specificationTermName: specificationTerm.mainAttributeTermName
-                }
-              })
-            })
-          }).flat().flat()
           const sizeInfoList = this.productSize.sizeInfoList || []
-          // 选中尺寸(包含回填)
-          const hasShowSizeInfo = sizeList.map(checkSize => {
-            // 回填数据
-            let positonItems = {}
-            const sizeInfo = sizeInfoList.find(sInfo => checkSize.id === sInfo.attributeTermId && checkSize.specificationId === sInfo.specificationId)
-            if (sizeInfo) {
-              sizeInfo.sizePositions.forEach(sizeStandard => {
-                positonItems[sizeStandard.attributeTermId] = sizeStandard.value
-              })
-            }
-            return { ...checkSize, ...positonItems }
-          })
-          this.addListItem(hasShowSizeInfo)
+          const checkedAttrs = deepClone(this.checkedAttrs)
+          const sizeList = this.structureSizeList(checkedAttrs)
+          const showSizeInfo = this.structureShowSizeInfo(sizeList, sizeInfoList)
+          this.addListItem(showSizeInfo)
         }
       },
       immediate: true,
@@ -170,8 +145,38 @@ export default {
     }
   },
   methods: {
+    structureSizeList (checkedAttrs) {
+      return checkedAttrs.map(specificationTerm => {
+        const specificationTermId = specificationTerm.mainAttributeTermId
+        const sizeIds = this.saleAttrs.filter(attr => attr.saleAttributeType.value === 2).map(attr => attr.id)
+        return specificationTerm.relatedAttributeAndTermList.filter(relatedAttribute => sizeIds.includes(relatedAttribute.attributeId)).map(relatedAttribute => {
+          return relatedAttribute.attributeTermIds.map((attributeTerm) => {
+            return {
+              ...attributeTerm,
+              attributeId: relatedAttribute.attributeId,
+              attributeTermId: attributeTerm.id,
+              specificationId: specificationTermId,
+              specificationTermName: specificationTerm.mainAttributeTermName
+            }
+          })
+        })
+      }).flat().flat()
+    },
+    structureShowSizeInfo (sizeList, sizeInfoList) {
+      return sizeList.map(checkSize => {
+        // 回填数据
+        let positonItems = {}
+        const sizeInfo = sizeInfoList.find(sInfo => checkSize.attributeTermId === sInfo.attributeTermId && checkSize.specificationId === sInfo.specificationId)
+        if (sizeInfo) {
+          sizeInfo.sizePositions.forEach(sizeStandard => {
+            positonItems[sizeStandard.attributeTermId] = sizeStandard.value
+          })
+        }
+        return { ...checkSize, ...positonItems }
+      })
+    },
     getSizeInfoKey (sizeInfo) {
-      return this.specificationMain ? `${sizeInfo.specificationId}-${sizeInfo.attributeTermId}` : sizeInfo.id
+      return this.specificationMain ? `${sizeInfo.specificationId}-${sizeInfo.attributeTermId}` : sizeInfo.attributeTermId
     },
     addListItem (sizeInfoList) {
       const showLabels = {}
