@@ -289,7 +289,6 @@ export default {
         'sizeOptions': data || [],
         'formSizes': this.currentSizes() || [],
         'showSaleLabel': this.showSaleLabel || {},
-        'activeName': this.activeName,
         'currentChoose': currentChoose
       }
       dialogData = ref === 'productSizeDialog' ? sizeData : this.form

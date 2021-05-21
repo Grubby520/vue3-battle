@@ -543,7 +543,6 @@ export default {
      * 添加尺寸、颜色、规格添加表格数据
      */
     addTableItems (attrArr) {
-      console.log('attrArr', attrArr)
       let resultArry = []
       const tableLabel = {}
       if (attrArr.length > 0) {
@@ -594,12 +593,9 @@ export default {
       const checkedIds = [...sizeList, ...skuList, ...specifications]
       if (checkedIds.length > 0 && (supplyPrice || weight)) {
         this.form.productSalesAttributes.forEach((item, index) => {
-          console.log('checkedIds', deepClone(checkedIds))
           const saleTermsRowIds = item.productCategorySalesAttributes
             .reduce((init, attr) => init.concat(attr.attributeTermId), [])
-          console.log(saleTermsRowIds)
           const isMatchCheck = checkedIds.some(id => saleTermsRowIds.includes(id))
-          console.log('isMatchCheck', isMatchCheck)
           if (isMatchCheck) {
             supplyPrice &&
               this.$set(

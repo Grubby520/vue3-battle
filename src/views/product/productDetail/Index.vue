@@ -83,7 +83,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['specificationMain', 'saleAttrs', 'categoryData', 'productSalesAttributeDetail']),
+    ...mapGetters('product', ['specificationMain', 'saleAttrs']),
     isStatus () {
       return this.mode === 'view'
     },
@@ -104,10 +104,6 @@ export default {
         }
       }
       return currentComponents
-    },
-    specification () {
-      // 分类上的规格
-      return this.categoryData.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     }
   },
   methods: {
@@ -242,17 +238,11 @@ export default {
    * 对比分类判断销售属性和和属性值是否在分类上
    */
     comparisonCateInfo (productCategorySalesAttributeSelectedList) {
-      // const [deleteColorId = [], deletedRelatedSizeTerm = {}] = this.changeMainAttributeAndTerm()
-      const [deleteColorId = []] = this.changeMainAttributeAndTerm()
-      // console.log('deletedRelatedSizeTerm', deleteColorId)
-      // console.log('deletedRelatedSizeTerm', deleteColorId)
       const newCategoryData = []
+      if (isEmpty(productCategorySalesAttributeSelectedList)) return
       productCategorySalesAttributeSelectedList.forEach(sale => {
-        // const deletedRelateCondition = deletedRelatedSizeTerm[sale.attributeId] || false
-        const deletedColorCondition = deleteColorId.includes(sale.attributeId)
-        // console.log(sale.attributeId, deletedRelateCondition, deletedColorCondition)
-        if (!deletedColorCondition) {
-          const cateSaleAttr = this.saleAttrs.find(attr => attr.id === sale.attributeId)
+        const cateSaleAttr = !isEmpty(this.saleAttrs) && this.saleAttrs.find(attr => attr.id === sale.attributeId)
+        if (cateSaleAttr) {
           // 判断销售属性分类上存在
           const { attributeTerms, attributeId } = sale
           const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
@@ -278,50 +268,8 @@ export default {
           newCategoryData.push(deleteSaleAttr)
         }
       })
-      // console.log('newCategoryData', deepClone(newCategoryData))
       this.productSizeData(productCategorySalesAttributeSelectedList)
       this.$store.commit(`product/COMPARISON_SALE_INFO`, newCategoryData || [])
-    },
-    /**
-     * 回显判断分类上的关联关系是否发生变化
-     */
-    changeMainAttributeAndTerm () {
-      const deletedRelatedSizeTerm = {}
-      const {
-        productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] } = {},
-        productCategorySalesAttributeSelectedList = []
-      } = deepClone(this.productSalesAttributeDetail)
-      const categoryAttributeRelatedSizes = this.specification.categoryAttributeRelatedSizes
-      // 当前绑定关联关系的所有尺码ids
-      const saleSizeIds = productCategorySalesAttributeSelectedList
-        .filter(sale => sale.attribute.saleAttributeType === 2)
-        .reduce((init, size) => {
-          init.push(size.attribute.id)
-          return init
-        }, [])
-      // 分类上是否删除了销售属性-color
-      const deleteColorId = productCategorySalesAttributeSelectedList
-        .filter(color => color.attribute.saleAttributeType === 1)
-        .reduce((init, color) => {
-          const saleColor = this.categoryData.find(cate => cate.id === color.attributeId)
-          if (!saleColor) {
-            init.push(color.attributeId)
-          }
-          return init
-        }, []) || []
-      // 查找删除的关联关系
-      productMainAttributeTermRelationList.forEach(term => {
-        const deletedrelateTerms = []
-        const { mainAttributeTermId, relatedAttributeAndTermList } = term
-        const currentRelatedSizes = categoryAttributeRelatedSizes.find(size => size.termId === mainAttributeTermId)
-        const relatedSizeTerm = relatedAttributeAndTermList.find(term => saleSizeIds.includes(term.attributeId))
-        deletedrelateTerms.push(relatedSizeTerm.attributeId)
-        if (currentRelatedSizes.relatedSizeId !== relatedSizeTerm.attributeId) {
-          // 当前的关联关系删除
-          deletedRelatedSizeTerm[relatedSizeTerm.attributeId] = mainAttributeTermId
-        }
-      })
-      return [deleteColorId, deletedRelatedSizeTerm]
     },
     /**
      * 回显尺码表需要数据
@@ -345,7 +293,7 @@ export default {
     /**
     * 回显删除规格的关联关系
     */
-    categoryAttributeRelatedSizes () {
+    categoryAttributeRelatedSizes (sale) {
       const {
         productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] } = {},
         productCategorySalesAttributeSelectedList = []
