@@ -142,7 +142,7 @@ export default {
                 return {
                   ...attributeTerm,
                   attributeId: relatedAttribute.attributeId,
-                  attributeTermId: attributeTerm.id,
+                  attributeTermId: attributeTerm.attributeTermId,
                   specificationId: specificationTermId,
                   specificationTermName: specificationTerm.mainAttributeTermName
                 }
@@ -154,7 +154,7 @@ export default {
           const hasShowSizeInfo = sizeList.map(checkSize => {
             // 回填数据
             let positonItems = {}
-            const sizeInfo = sizeInfoList.find(sInfo => checkSize.id === sInfo.attributeTermId && checkSize.specificationId === sInfo.specificationId)
+            const sizeInfo = sizeInfoList.find(sInfo => checkSize.attributeTermId === sInfo.attributeTermId && checkSize.specificationId === sInfo.specificationId)
             if (sizeInfo) {
               sizeInfo.sizePositions.forEach(sizeStandard => {
                 positonItems[sizeStandard.attributeTermId] = sizeStandard.value
