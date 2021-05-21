@@ -73,7 +73,7 @@ export default {
         'specificationMain',
         'checkedAttrs',
         'hasAttrsChanged',
-        'saleAttrs']),
+        'comparisonSaleAttrs']),
     productStatus () {
       return this.productBase.status
     },
@@ -148,7 +148,7 @@ export default {
     structureSizeList (checkedAttrs) {
       return checkedAttrs.map(specificationTerm => {
         const specificationTermId = specificationTerm.mainAttributeTermId
-        const sizeIds = this.saleAttrs.filter(attr => attr.saleAttributeType.value === 2).map(attr => attr.id)
+        const sizeIds = this.comparisonSaleAttrs.filter(attr => attr.saleAttributeType.value === 2).map(attr => attr.id)
         return specificationTerm.relatedAttributeAndTermList.filter(relatedAttribute => sizeIds.includes(relatedAttribute.attributeId)).map(relatedAttribute => {
           return relatedAttribute.attributeTermIds.map((attributeTerm) => {
             return {
