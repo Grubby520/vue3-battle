@@ -278,6 +278,18 @@ export default {
         const { relatedAttributeAndTermList, mainAttributeTermId, mainAttributeId } = attr
         productMainAttributeAndTerm['mainAttributeId'] = mainAttributeId
         const terms = { mainAttributeTermId, relatedAttributeAndTermList }
+        if (this.productParams.mode === 'modify') {
+          relatedAttributeAndTermList.forEach(term => {
+            const { attributeTermIds } = term
+            const attributeIds = attributeTermIds.reduce((init, term) => {
+              if (term.extendCode === 'NZ011') {
+                init.push(term.id)
+              }
+              return init
+            }, [])
+            term.attributeTermIds = !isEmpty(attributeIds) ? attributeIds : term.attributeTermIds
+          })
+        }
         return {
           ...terms
         }

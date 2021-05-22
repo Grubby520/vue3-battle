@@ -235,7 +235,7 @@ export default {
     result () {
       return new Promise(resolve => {
         const productAttr = this.form.attributesData
-        if (!isEmpty(this.productAttr)) {
+        if (!isEmpty(productAttr)) {
           this.$refs.form.validate((valid) => {
             if (valid) {
               const data = productAttr.map((attribute) => {

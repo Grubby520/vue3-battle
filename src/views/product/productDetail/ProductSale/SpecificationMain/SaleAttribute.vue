@@ -169,6 +169,17 @@ export default {
       return {
         minHeight: `${this.panelMinHeight + attributeHeight}px`
       }
+    },
+    sizeMap () {
+      return this.curSaleAttrs
+        .filter(sale => sale.saleAttributeType && sale.saleAttributeType.value === 2)
+        .map(attr => {
+          const curMap = new Map()
+          attr.terms.forEach(term => {
+            curMap.set(term.id, term.name)
+          })
+          return curMap
+        })[0]
     }
   },
   watch: {
@@ -425,6 +436,9 @@ export default {
     },
     disableAttrSelect () {
 
+    },
+    tagName (id) {
+      return this.sizeMap.get(id)
     }
   }
 }
