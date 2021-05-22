@@ -278,9 +278,6 @@ export default {
         const { relatedAttributeAndTermList, mainAttributeTermId, mainAttributeId } = attr
         productMainAttributeAndTerm['mainAttributeId'] = mainAttributeId
         const terms = { mainAttributeTermId, relatedAttributeAndTermList }
-        terms.relatedAttributeAndTermList.forEach(attr => {
-          attr.attributeTermIds = attr.attributeTermIds.reduce((init, term) => init.concat(term.id), [])
-        })
         return {
           ...terms
         }

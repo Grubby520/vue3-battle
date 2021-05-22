@@ -215,10 +215,18 @@ export default {
                     saleAttr.attributeId
                 ) || {}
               )
-              const terms = saleAttribute.terms.filter(term => saleAttr.attributeTermIds.includes(term.id))
+              const terms = saleAttribute.terms
+                .filter(term => saleAttr.attributeTermIds.includes(term.id))
+              let termIds = []
+              const saleAttributeType = saleAttribute.saleAttributeType && saleAttribute.saleAttributeType.value
+              if (saleAttributeType === 1) {
+                termIds = terms.reduce((init, term) => init.concat(term.id), [])
+              } else {
+                termIds = terms
+              }
               return {
                 ...saleAttribute,
-                values: terms
+                values: termIds
               }
             }
           )
@@ -228,7 +236,6 @@ export default {
           }
         }
       )
-
       this.handleAttribute()
     },
     selectChange (specificationTerm, item) {
@@ -394,9 +401,17 @@ export default {
             mainAttributeTermName: specificationTerm.name,
             relatedAttributeAndTermList: specificationTerm.saleAttrs.map(
               saleAttr => {
+                let values = []
+                if (this.productParams.mode === 'create') {
+                  const saleAttributeType = saleAttr.saleAttributeType && saleAttr.saleAttributeType.value
+                  const sizeIds = saleAttr.values.reduce((init, sale) => init.concat(sale.id), [])
+                  values = saleAttributeType === 2 ? sizeIds : saleAttr.values
+                } else {
+                  values = saleAttr.values
+                }
                 return {
                   attributeId: saleAttr.id,
-                  attributeTermIds: saleAttr.values
+                  attributeTermIds: values
                 }
               }
             )
