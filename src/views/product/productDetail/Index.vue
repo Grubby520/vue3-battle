@@ -285,7 +285,6 @@ export default {
           newCategoryData.push(deleteSaleAttr)
         }
       })
-      this.productSizeData(productCategorySalesAttributeSelectedList)
       this.$store.commit(`product/COMPARISON_SALE_INFO`, newCategoryData || [])
     },
     /**
@@ -332,19 +331,6 @@ export default {
           return saleAttrRelation
         })
       return categoryAttributeRelatedSizes
-    },
-    /**
-     * 回显尺码需要的数据
-     */
-    productSizeData (productCategorySalesAttributeSelectedList) {
-      // 尺码表需要数据
-      const attributeTerms = productCategorySalesAttributeSelectedList
-        .filter(term => term.attribute.saleAttributeType === 2)
-        .reduce((init, term) => {
-          init.push(...term.attributeTerms)
-          return init
-        }, [])
-      this.$store.commit(`product/SET_CHECKED_ATTRS`, attributeTerms || [])
     },
     getResult () {
       // 获取需要保存/提交的数据
