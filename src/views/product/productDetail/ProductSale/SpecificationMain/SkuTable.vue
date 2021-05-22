@@ -1,14 +1,14 @@
 <template>
   <div class="sku-table">
     <el-form ref="form" :rules="rules">
-      <table v-if="tableData.length > 0" style="width:100%">
+      <table v-if="tableData.length > 0" style="width:100%;">
         <thead>
           <tr>
             <th v-for="item in selectAttrList" :key="item.attributeId">{{item.name}}</th>
-            <th>供货价格（RMB）</th>
+            <th class="required">供货价格（RMB）</th>
             <th>商家SKU编码</th>
-            <th>商家吊牌尺码</th>
-            <th>带包装重量（G）</th>
+            <th class="required">商家吊牌尺码</th>
+            <th class="required">带包装重量（G）</th>
           </tr>
         </thead>
         <tbody>
@@ -286,7 +286,7 @@ export default {
     tr {
       td {
         padding: 8px 15px;
-        min-width: 120px;
+        min-width: 150px;
         border: $borderStyle;
         text-align: center;
         /deep/ .el-input {
@@ -295,7 +295,7 @@ export default {
           margin: 3px;
 
           input {
-            width: 100px;
+            width: 200px;
             &::-webkit-input-placeholder {
               text-align: center;
             }

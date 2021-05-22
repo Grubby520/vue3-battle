@@ -56,14 +56,14 @@ export default {
     },
     saleAttrsMap: (state, getters) => {
       const curMap = new Map()
-      // const mode = state.productParams.mode
+      const mode = state.productParams.mode
       let saleTerms = []
-      // if (mode === 'create') {
-      saleTerms = getters.saleAttrs.map((item) => item.terms).flat()
-      // } else {
-      //   // 回显处理好的销售属性值
-      //   saleTerms = state.comparisonSaleAttrs.map((item) => item.terms).flat()
-      // }
+      if (mode === 'create') {
+        saleTerms = getters.saleAttrs.map((item) => item.terms).flat()
+      } else {
+        // 回显处理好的销售属性值
+        saleTerms = state.comparisonSaleAttrs.map((item) => item.terms).flat()
+      }
       saleTerms.forEach(item => {
         curMap.set(item.id, item.name)
       })

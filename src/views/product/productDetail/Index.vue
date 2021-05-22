@@ -168,7 +168,7 @@ export default {
           })
           return categoryItem
         })
-        this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
+        // this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
         resolve(categoryData)
       })
     },
@@ -189,6 +189,11 @@ export default {
                   } = specificationRelatedSizes
                   const mainAttributeType = mainAttribute ? 'specification' : 'color'
                   this.$store.commit('product/SET_MAIN_ATTRIBUTE_TYPE', mainAttributeType)
+                  // 创建过滤已经禁用的属性和属性值
+                  const filterCategory = this.filterUableSaleAttrs(cate)
+                  this.$store.commit(`product/CATEGORY_DATA`, filterCategory || [])
+                } else {
+                  this.$store.commit(`product/CATEGORY_DATA`, cate || [])
                 }
               })
           }
@@ -231,11 +236,23 @@ export default {
         })
     },
     cancel () {
-      // 取消
       this.$router.push({ path: '/home/recommend-products/list' })
     },
     /**
-   * 对比分类判断销售属性和和属性值是否在分类上
+     * 创建时过滤禁用的属性和属性值
+     */
+    filterUableSaleAttrs (categoryData) {
+      return categoryData
+        .filter(categoryItem => categoryItem.usable)
+        .reduce((init, categoryItem) => {
+          categoryItem.terms = categoryItem.terms
+            .filter(term => term.usable)
+          init.push(categoryItem)
+          return init
+        }, []) || []
+    },
+    /**
+   * 回显对比分类判断保存属性是否存在
    */
     comparisonCateInfo (productCategorySalesAttributeSelectedList) {
       const newCategoryData = []
@@ -256,7 +273,7 @@ export default {
           // 判断回填的销售属性值是否存在
           attributeTerms.forEach(attrTerm => {
             if (!cateTermIds.includes(attrTerm.id)) {
-              attrTerm.name = `${attrTerm.name}(已删除)`
+              attrTerm['name'] = `${attrTerm.name}(已删除)`
               attrTerm['attributeId'] = attributeId
               cateSaleAttr.terms.push(attrTerm)
             }
@@ -272,7 +289,7 @@ export default {
       this.$store.commit(`product/COMPARISON_SALE_INFO`, newCategoryData || [])
     },
     /**
-     * 回显尺码表需要数据
+     * 回显处理已经删除的销售属性
      */
     buidDeletedSaleAttrs (sale) {
       const { attribute, attributeTerms, attributeId } = sale

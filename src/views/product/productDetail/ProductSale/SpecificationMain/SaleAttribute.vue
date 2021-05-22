@@ -1,89 +1,89 @@
 <template>
   <div class="specification">
-    <div class="product-detail-content">
-      <el-tabs v-model="activeName" type="card" @tab-remove="handleRemove">
-        <el-tab-pane
-          v-for="(specificationItem ) in chooseSpecificationTerms"
-          :key="specificationItem.code"
-          :label="specificationItem.name"
-          :name="specificationItem.code"
-          closable
-        >
-          <el-form ref="form" label-width="12rem" :model="specificationItem">
-            <div v-for="(item, index) in specificationItem.saleAttrs" :key="index">
-              <template v-if="item.extendCode ==='NZ010'">
-                <el-form-item
-                  :prop="`${index}values`"
-                  :rules="{required: true, message: '颜色不能为空', trigger: 'blur' }"
-                >
-                  <template slot="label">
-                    <el-tooltip effect="dark" :content="item.name" placement="top">
-                      <span class="form-label pointer-enable">{{item.name}}</span>
-                    </el-tooltip>
-                  </template>
+    <el-tabs v-model="activeName" type="card" @tab-remove="handleRemove">
+      <el-tab-pane
+        v-for="(specificationItem ) in chooseSpecificationTerms"
+        :key="specificationItem.code"
+        :label="specificationItem.name"
+        :name="specificationItem.code"
+        closable
+      >
+        <el-form ref="form" label-width="12rem" :model="specificationItem">
+          <div v-for="(item, index) in specificationItem.saleAttrs" :key="index">
+            <template v-if="item.extendCode ==='NZ010'">
+              <el-form-item
+                :prop="`${index}values`"
+                :rules="{required: true, message: '颜色不能为空', trigger: 'blur' }"
+              >
+                <template slot="label">
+                  <el-tooltip effect="dark" :content="item.name" placement="top">
+                    <span class="form-label pointer-enable">{{item.name}}</span>
+                  </el-tooltip>
+                </template>
+                <div :style="skuConentHeight">
                   <SlSelect
-                    :options="item.terms"
                     v-model="item.values"
-                    label="name"
-                    value="id"
+                    :options="item.terms"
+                    :maxHeight="200"
                     filterable
+                    value="id"
+                    label="name"
+                    :disabled="disableAttrSelect(item)"
+                    :defaultValues="item.defaultValues || []"
                     multiple
-                    clearable
-                    isObj
-                    placeholder="请选择颜色"
-                    @change="selectChange($event, specificationItem, item)"
-                  />
-                </el-form-item>
-              </template>
-              <template v-if="item.extendCode ==='NZ011'">
-                <el-form-item
-                  :prop="`${index}values`"
-                  :rules="{required: true, message: '尺寸不能为空', trigger: 'blur' }"
-                >
-                  <template slot="label">
-                    <el-tooltip effect="dark" :content="item.name" placement="top">
-                      <span class="form-label pointer-enable">{{item.name}}</span>
-                    </el-tooltip>
-                  </template>
-                  <span
-                    class="ProductSale-sizes"
-                    v-if="productParams.mode!=='view'"
-                    @click="openDialog('productSizeDialog',item.terms,{specificationItem, item})"
-                  >添加尺码</span>
-                  <el-tag
-                    style="margin: 0 0 .5rem 1rem"
-                    v-for="(tag, index) in item.values"
-                    :key="index"
-                    :closable="productParams.mode!=='view'"
-                    effect="dark"
-                    :type="['success', 'info', 'danger', 'warning', ''][index%5]"
-                    @close="removeSizeTag(tag,specificationItem, item)"
-                  >{{tag.name}}</el-tag>
-                </el-form-item>
-              </template>
-            </div>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane name="addBtn" disabled v-if="productParams.mode!=='view'">
-          <div slot="label">
-            <el-dropdown trigger="click" @command="handleAdd">
-              <el-button type="text">
-                <i class="el-icon-plus el-icon--left"></i> 亲子装规格
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-for="item in changeSpecificationOptions"
-                  :key="`l${item.name}`"
-                  :command="item"
-                >{{item.name}}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+                    @change="selectChange(specificationTerm, item)"
+                    @toggleDrop="handleToggle"
+                  ></SlSelect>
+                </div>
+              </el-form-item>
+            </template>
+            <template v-if="item.extendCode ==='NZ011'">
+              <el-form-item
+                :prop="`${index}values`"
+                :rules="{required: true, message: '尺寸不能为空', trigger: 'blur' }"
+              >
+                <template slot="label">
+                  <el-tooltip effect="dark" :content="item.name" placement="top">
+                    <span class="form-label pointer-enable">{{item.name}}</span>
+                  </el-tooltip>
+                </template>
+                <span
+                  v-if="productParams.mode!=='view'"
+                  @click="openDialog('productSizeDialog',item.terms,{specificationItem, item})"
+                >添加尺码</span>
+                <el-tag
+                  style="margin: 0 0 .5rem 1rem"
+                  v-for="(tag, index) in item.values"
+                  :key="index"
+                  :closable="productParams.mode!=='view'"
+                  effect="dark"
+                  :type="['success', 'info', 'danger', 'warning', ''][index%5]"
+                  @close="removeSizeTag(tag,specificationItem, item)"
+                >{{tag.name}}</el-tag>
+              </el-form-item>
+            </template>
           </div>
-        </el-tab-pane>
-      </el-tabs>
-      <!-- 尺码弹框 -->
-      <ProductSizeDialog ref="productSizeDialog" @confirm="sizeSelectConfirm" />
-    </div>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane name="addBtn" disabled v-if="productParams.mode!=='view'">
+        <div slot="label">
+          <el-dropdown trigger="click" @command="handleAdd">
+            <el-button type="text">
+              <i class="el-icon-plus el-icon--left"></i> 亲子装规格
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item
+                v-for="item in changeSpecificationOptions"
+                :key="`l${item.name}`"
+                :command="item"
+              >{{item.name}}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+    <!-- 尺码弹框 -->
+    <ProductSizeDialog ref="productSizeDialog" @confirm="sizeSelectConfirm" />
   </div>
 </template>
 
@@ -101,11 +101,7 @@ export default {
       },
       activeName: undefined,
       chooseSpecificationTerms: [], // 选中的规格
-      rules: {
-        colors: [
-          { required: true, message: '请添加尺码', trigger: 'blur' }
-        ]
-      }
+      panelMinHeight: 0 // select容器最小高度
     }
   },
   created () {
@@ -174,7 +170,13 @@ export default {
     },
     curSaleAttrs () {
       return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
-      // return this.saleAttrs
+    },
+    skuConentHeight () {
+      let attributeHeight = this.curSaleAttrs.length * 30
+      attributeHeight = attributeHeight > 90 ? 90 : attributeHeight
+      return {
+        minHeight: `${this.panelMinHeight + attributeHeight}px`
+      }
     }
   },
   watch: {
@@ -226,7 +228,7 @@ export default {
 
       this.handleAttribute()
     },
-    selectChange (e, specificationTerm, item) {
+    selectChange (specificationTerm, item) {
       this.attributeChange(specificationTerm, item)
     },
     removeSizeTag (tag, specificationTerm, item) {
@@ -398,41 +400,16 @@ export default {
         }
       )
       this.$emit('change', currentData, refreshTable)
+    },
+    handleToggle (val) {
+      this.panelMinHeight = val
+    },
+    disableAttrSelect () {
+
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
-.ProductSale {
-  margin-bottom: 2rem;
-  &-from {
-    &__icon {
-      display: inline-block;
-      margin-right: 0.5rem;
-      color: red;
-    }
-    &__batch {
-      display: flex;
-      margin-top: 1rem;
-    }
-  }
-  &-table {
-    padding: 0 0 0 12rem;
-    /deep/.el-form-item__content {
-      margin-left: 0 !important;
-    }
-  }
-  &-sizes {
-    color: #409eff;
-    cursor: default;
-  }
-  .el-card {
-    overflow: unset !important;
-    height: 800px;
-  }
-  /deep/.el-input--small .el-input__inner {
-    text-align: center;
-  }
-}
 </style>
