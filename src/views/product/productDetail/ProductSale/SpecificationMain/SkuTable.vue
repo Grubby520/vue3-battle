@@ -154,6 +154,8 @@ export default {
         const suffixKey = isObject ? b.attributeId : b.attributeIds[0]
         const prev = this.curSaleAttrsMap.get(prevKey) || {}
         const suffix = this.curSaleAttrsMap.get(suffixKey) || {}
+        const preSaleAttributeType = prev.saleAttributeType && prev.saleAttributeType.value
+        const suffixSaleAttributeType = suffix.saleAttributeType && suffix.saleAttributeType.value
         const setType = type => {
           if (type === 3) {
             type = 0
@@ -161,8 +163,8 @@ export default {
           return type
         }
         return (
-          setType(prev.saleAttributeType || 1) -
-          setType(suffix.saleAttributeType || 1)
+          setType(preSaleAttributeType || 1) -
+          setType(suffixSaleAttributeType || 1)
         )
       })
     },

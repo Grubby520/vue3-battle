@@ -49,6 +49,7 @@
                 </template>
                 <span
                   v-if="productParams.mode!=='view'"
+                  class="specification-size"
                   @click="openDialog('productSizeDialog',item.terms,{specificationItem, item})"
                 >添加尺码</span>
                 <el-tag
@@ -324,6 +325,7 @@ export default {
             values: []
           }
         })
+        .sort((pre, suffix) => pre.saleAttributeType.value - suffix.saleAttributeType.value)
       return specificationItem
     },
     // 删除规格
@@ -412,4 +414,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.specification {
+  &-size {
+    color: #409eff;
+    cursor: default;
+  }
+}
 </style>
