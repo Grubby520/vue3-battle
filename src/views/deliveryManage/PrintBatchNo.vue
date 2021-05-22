@@ -6,7 +6,7 @@
           class="sku-info batch-no-print"
           v-for="(item, index) in skuArr"
           :key="index"
-          style="width: 59.5mm; height: 38mm; background: #fff; overflow: hidden; page-break-before: always; padding-top:1mm; padding-right: 0;
+          style="width: 59mm; height: 39mm; background: #fff; overflow: hidden; page-break-before: always; padding-top:1mm; padding-right: 1mm;
                         padding-left: 0; margin-top:0!important; position:relative;"
         >
           <ul
