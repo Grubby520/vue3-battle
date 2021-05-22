@@ -105,11 +105,6 @@ export default {
       panelMinHeight: 0 // select容器最小高度
     }
   },
-  created () {
-    if (this.productParams.mode !== 'create') {
-      this.activeName = `${this.productMainAttributeAndTerm.productMainAttributeTermRelationList[0].mainAttributeTermId}`
-    }
-  },
   computed: {
     ...mapGetters('product', [
       'productParams',
@@ -121,10 +116,6 @@ export default {
       'saleAttrs',
       'comparisonSaleAttrs'
     ]),
-    productAttrFill () {
-      // 回显数据
-      return [this.categoryData, this.productSalesAttributeDetail]
-    },
     filterUableSaleAttrs () {
       // 创建时过滤禁用的属性和属性值
       const categoryData = deepClone(this.categoryData)
@@ -185,6 +176,17 @@ export default {
       handler (newValue) {
         if (newValue) {
           this.initData()
+        }
+      },
+      immediate: true
+    },
+    'productMainAttributeAndTerm': {
+      handler (newValue) {
+        if (this.productParams.mode !== 'create' && newValue) {
+          const productMainAttributeAndTerm = this.productMainAttributeAndTerm.productMainAttributeTermRelationList
+          if (!isEmpty(productMainAttributeAndTerm)) {
+            this.activeName = `${productMainAttributeAndTerm[0].mainAttributeTermId}`
+          }
         }
       },
       immediate: true
