@@ -31,7 +31,7 @@
                     :disabled="disableAttrSelect(item)"
                     :defaultValues="item.defaultValues || []"
                     multiple
-                    @change="selectChange(specificationTerm, item)"
+                    @change="selectChange(specificationItem, item)"
                     @toggleDrop="handleToggle"
                   ></SlSelect>
                 </div>

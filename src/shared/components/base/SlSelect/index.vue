@@ -268,7 +268,6 @@ export default {
     initData () {
       if (this.isObj) {
         this.selectedItem = JSON.parse(JSON.stringify(this.modelVal))
-        return false
       } else {
         let val =
           typeof this.modelVal === 'object'

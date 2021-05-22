@@ -65,6 +65,7 @@ export default {
         saleTerms = state.comparisonSaleAttrs.map((item) => item.terms).flat()
       }
       saleTerms.forEach(item => {
+        console.log(item.id, item.name)
         curMap.set(item.id, item.name)
       })
       return curMap

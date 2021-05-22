@@ -161,7 +161,7 @@ export default {
         specificationTermIds.push(item.mainAttributeTermId)
         item.relatedAttributeAndTermList.forEach(relate => {
           const attributeId = relate.attributeId
-          const attributeTermIds = relate.attributeTermIds.map(attributeTermId => attributeTermId.id) || []
+          const attributeTermIds = relate.attributeTermIds.map(attributeTermId => attributeTermId.id || attributeTermId) || []
           const stashTermIds = attributeMap.get(attributeId) || []
           attributeMap.set(attributeId, [
             ...new Set([...attributeTermIds, ...stashTermIds])
@@ -240,7 +240,7 @@ export default {
             return attributeTermIds.map(attributeTermId => {
               return {
                 attributeId: attributeId,
-                attributeTermId: attributeTermId.id
+                attributeTermId: attributeTermId.id || attributeTermId
               }
             })
           })

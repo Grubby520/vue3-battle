@@ -149,7 +149,7 @@ export default {
     // sku列表属性排序
     sortedAttributes (data = [], isObject = false) {
       const curData = [...data]
-      const sss = curData.sort((a, b) => {
+      return curData.sort((a, b) => {
         const prevKey = isObject ? a.attributeId : a.attributeIds[0]
         const suffixKey = isObject ? b.attributeId : b.attributeIds[0]
         const prev = this.curSaleAttrsMap.get(prevKey) || {}
@@ -165,7 +165,6 @@ export default {
           setType(suffix.saleAttributeType || 1)
         )
       })
-      return sss
     },
     /**
      * 批量录入回填
