@@ -1,6 +1,17 @@
 <template>
   <div class="specification">
-    <el-tabs v-model="activeName" type="card" @tab-remove="handleRemove">
+    <el-alert
+      v-if="noneRelatedSize.length>0"
+      title="主属性为规格时，所有规格值必须关联尺码"
+      type="warning"
+      style="margin-bottom:1rem;"
+    />
+    <el-tabs
+      v-model="activeName"
+      type="card"
+      @tab-remove="handleRemove"
+      v-if="this.specificationTerms.length > 0"
+    >
       <el-tab-pane
         v-for="(specificationItem ) in chooseSpecificationTerms"
         :key="specificationItem.code"
@@ -83,6 +94,9 @@
         </div>
       </el-tab-pane>
     </el-tabs>
+    <div class="no-data" v-else>
+      <span class="no-data--tip">~暂无数据~</span>
+    </div>
     <!-- 尺码弹框 -->
     <ProductSizeDialog ref="productSizeDialog" @confirm="sizeSelectConfirm" />
   </div>
@@ -130,12 +144,16 @@ export default {
     },
     changeSpecificationOptions () {
       if (isEmpty(this.specification)) return
-      const checkedSpecificationIds = this.chooseSpecificationTerms
-        .reduce((init, tab) => init.concat(tab.id), [])
-      return this.specification.terms
+      const { terms } = this.specification
+      return terms
         .filter(specificationItem =>
-          !checkedSpecificationIds.includes(specificationItem.id)
+          specificationItem.id && !this.noneRelatedSize.includes(specificationItem.id)
         )
+    },
+    noneRelatedSize () {
+      return this.specification.categoryAttributeRelatedSizes
+        .filter(size => !size.relatedSizeId)
+        .reduce((init, size) => init.concat(size.termId), [])
     },
     specification () {
       // 分类上的规格
@@ -450,6 +468,17 @@ export default {
   &-size {
     color: #409eff;
     cursor: default;
+  }
+  .no-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    .no-data--tip {
+      flex: 1;
+      text-align: center;
+      color: #909399;
+    }
   }
 }
 </style>
