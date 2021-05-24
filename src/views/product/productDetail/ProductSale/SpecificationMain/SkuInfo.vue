@@ -339,6 +339,7 @@ export default {
     result () {
       return new Promise((resolve) => {
         if (!this.validateData()) {
+          console.log('1111111111')
           resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
         }
       })
