@@ -486,5 +486,8 @@ export default {
   /deep/.el-form-item--small.el-form-item {
     margin-bottom: -2rem;
   }
+  /deep/.stl-big-data-select .selected-tags[data-v-05976cfe] {
+    width: 95%;
+  }
 }
 </style>

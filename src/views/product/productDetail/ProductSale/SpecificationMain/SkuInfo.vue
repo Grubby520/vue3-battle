@@ -10,6 +10,7 @@
           :cur-sale-attrs="curSaleAttrs"
           @change="handleAttribute"
           ref="saleAttribute"
+          class="skuInfo-tab"
         ></SaleAttribute>
         <SkuTable
           v-model="tableData"
@@ -366,6 +367,9 @@ export default {
     }
   }
   &-table {
+    width: 100%;
+  }
+  &-tab {
     width: 100%;
   }
 }
