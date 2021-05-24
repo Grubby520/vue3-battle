@@ -37,11 +37,7 @@
     </el-form>
     <el-row class="sku-table__batch">
       <SlSpace />
-      <el-button
-        type="primary"
-        @click="openDialog('batchAttributes')"
-        v-if="productParams.mode!== 'view'"
-      >批量录入</el-button>
+      <el-button type="primary" @click="openDialog('batchAttributes')" v-if="showBatchBtn">批量录入</el-button>
     </el-row>
     <!-- 批量设置弹窗 -->
     <BatchTypingDialog
@@ -139,6 +135,9 @@ export default {
           }
         }
       )
+    },
+    showBatchBtn () {
+      return this.tableData.length > 0 && this.productParams.mode !== 'view'
     }
   },
   methods: {
