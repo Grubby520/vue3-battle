@@ -296,49 +296,49 @@ export default {
       })
       this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData] || [])
     },
-    //   /**
-    //  * 回显对比分类判断保存属性是否存在
-    //  */
-    //   comparisonCateInfo (productCategorySalesAttributeSelectedList) {
-    //     this.changeMainAttributeAndTerm()
-    //       .then(res => {
-    //         const relateCategoryDate = res
-    //         console.log('res', deepClone(res))
-    //         const newCategoryData = []
-    //         if (isEmpty(productCategorySalesAttributeSelectedList)) return
-    //         productCategorySalesAttributeSelectedList.forEach(sale => {
-    //           const cateSaleAttr = !isEmpty(this.saleAttrs) && this.saleAttrs.find(attr => attr.id === sale.attributeId)
-    //           if (cateSaleAttr) {
-    //             // 判断销售属性分类上存在
-    //             const { attributeTerms, attributeId } = sale
-    //             const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
-    //             if (!cateSaleAttr.usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
-    //             // 判断属性值是否禁用
-    //             cateSaleAttr.terms.forEach(sale => {
-    //               if (!sale.usable) {
-    //                 sale.name = `${sale.name}(已禁用)`
-    //               }
-    //             })
-    //             // 判断回填的销售属性值是否存在
-    //             attributeTerms.forEach(attrTerm => {
-    //               if (!cateTermIds.includes(attrTerm.id)) {
-    //                 attrTerm['name'] = `${attrTerm.name}(已删除)`
-    //                 attrTerm['attributeId'] = attributeId
-    //                 cateSaleAttr.terms.push(attrTerm)
-    //               }
-    //             })
-    //             newCategoryData.push(cateSaleAttr)
-    //           } else {
-    //             // 构建删除的销售属性补充分类上的的数据
-    //             const deleteSaleAttr = this.buidDeletedSaleAttrs(sale)
-    //             newCategoryData.push(deleteSaleAttr)
-    //           }
-    //         })
-    //         console.log('12121', [...newCategoryData, ...relateCategoryDate])
-    //         console.log('newCategoryData', deepClone(newCategoryData))
-    //         this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData, ...relateCategoryDate] || [])
+    /**
+   * 回显对比分类判断保存属性是否存在
+   */
+    // comparisonCateInfo (productCategorySalesAttributeSelectedList) {
+    //   this.changeMainAttributeAndTerm()
+    //     .then(res => {
+    //       const relateCategoryDate = res
+    //       console.log('res', deepClone(res))
+    //       const newCategoryData = []
+    //       if (isEmpty(productCategorySalesAttributeSelectedList)) return
+    //       productCategorySalesAttributeSelectedList.forEach(sale => {
+    //         const cateSaleAttr = !isEmpty(this.saleAttrs) && this.saleAttrs.find(attr => attr.id === sale.attributeId)
+    //         if (cateSaleAttr) {
+    //           // 判断销售属性分类上存在
+    //           const { attributeTerms, attributeId } = sale
+    //           const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
+    //           if (!cateSaleAttr.usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
+    //           // 判断属性值是否禁用
+    //           cateSaleAttr.terms.forEach(sale => {
+    //             if (!sale.usable) {
+    //               sale.name = `${sale.name}(已禁用)`
+    //             }
+    //           })
+    //           // 判断回填的销售属性值是否存在
+    //           attributeTerms.forEach(attrTerm => {
+    //             if (!cateTermIds.includes(attrTerm.id)) {
+    //               attrTerm['name'] = `${attrTerm.name}(已删除)`
+    //               attrTerm['attributeId'] = attributeId
+    //               cateSaleAttr.terms.push(attrTerm)
+    //             }
+    //           })
+    //           newCategoryData.push(cateSaleAttr)
+    //         } else {
+    //           // 构建删除的销售属性补充分类上的的数据
+    //           const deleteSaleAttr = this.buidDeletedSaleAttrs(sale)
+    //           newCategoryData.push(deleteSaleAttr)
+    //         }
     //       })
-    //   },
+    //       console.log('12121', deepClone([...newCategoryData, ...relateCategoryDate]))
+    //       console.log('newCategoryData', deepClone(newCategoryData))
+    //       this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData, ...relateCategoryDate] || [])
+    //     })
+    // },
 
     /**
      * 回显处理已经删除的销售属性

@@ -69,7 +69,7 @@
       <el-tab-pane name="addBtn" disabled v-if="productParams.mode!=='view'">
         <div slot="label">
           <el-dropdown trigger="click" @command="handleAdd">
-            <el-button type="text">
+            <el-button type="text" :disabled="productParams.mode !=='create'">
               <i class="el-icon-plus el-icon--left"></i> 亲子装规格
             </el-button>
             <el-dropdown-menu slot="dropdown">
