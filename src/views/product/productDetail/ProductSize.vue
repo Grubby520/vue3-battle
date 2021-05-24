@@ -22,7 +22,7 @@
               >
                 <template slot-scope="scope">
                   <el-form-item>
-                    <div v-if="item.status==='text'">{{showLabels[scope.row.attributeTermId+'']}}</div>
+                    <div v-if="item.status==='text'">{{showLabels[getSizeInfoKey(scope.row)]}}</div>
                     <el-input
                       v-else
                       v-model="scope.row[item.id]"
@@ -61,14 +61,26 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productBase', 'checkedSizes', 'productParams', 'categoryData', 'sizeAttr', 'sizeStandard', 'productSize', 'showSaleLabel']),
+    ...mapGetters('product',
+      ['productBase',
+        'checkedSizes',
+        'productParams',
+        'categoryData',
+        'sizeAttr',
+        'sizeStandard',
+        'productSize',
+        'showSaleLabel',
+        'specificationMain',
+        'checkedAttrs',
+        'hasAttrsChanged',
+        'comparisonSaleAttrs']),
     productStatus () {
       return this.productBase.status
     },
     tableHeadData () {
       const sizes = {
         id: 'size',
-        name: this.showSaleLabel.size,
+        name: this.specificationMain ? '尺码' : this.showSaleLabel.size,
         status: 'text'
       }
       return [sizes, ...this.sizeStandardHeadData]
@@ -85,7 +97,7 @@ export default {
     showTable () {
       const sizeStandardTerms = this.sizeStandard.terms
       const hasSizeStandard = !isEmpty(sizeStandardTerms) // 存在尺码标准属性值
-      const checkedSizes = !isEmpty(this.checkedSizes) // 存在选中的尺码
+      const checkedSizes = this.specificationMain ? !isEmpty(this.checkedAttrs) : !isEmpty(this.checkedSizes) // 存在选中的尺码
       return (hasSizeStandard && checkedSizes)
     },
     productAttributeTerms () {
@@ -96,50 +108,82 @@ export default {
   watch: {
     'checkedSizes': {
       handler (newValue) {
-        // 选中尺寸(包含回填)
-        let hasShowSizeInfo = []
-        const sizeInfoList = this.productSize.sizeInfoList || []
-        if (!isEmpty(sizeInfoList)) {
-          hasShowSizeInfo = newValue.map(checkSize => {
-            // 回填数据
-            let positonItems = {}
-            sizeInfoList.forEach(sizeInfo => {
-              if (checkSize.id === sizeInfo.attributeTermId) {
-                sizeInfo.sizePositions.forEach(sizeStandard => {
-                  positonItems[sizeStandard.attributeTermId] = sizeStandard.value
-                })
-              }
-            })
-            return { ...checkSize, ...positonItems }
-          })
+        if (this.specificationMain) {
+          return
         }
-        const addSizeInfo = !isEmpty(hasShowSizeInfo) ? hasShowSizeInfo : newValue
-        this.addListItem(addSizeInfo)
+        const sizeInfoList = this.productSize.sizeInfoList || []
+        // 选中尺寸(包含回填)
+        const hasShowSizeInfo = newValue.map(checkSize => {
+          // 回填数据
+          let positonItems = {}
+          sizeInfoList.forEach(sizeInfo => {
+            if (checkSize.id === sizeInfo.attributeTermId) {
+              sizeInfo.sizePositions.forEach(sizeStandard => {
+                positonItems[sizeStandard.attributeTermId] = sizeStandard.value
+              })
+            }
+          })
+          return { ...checkSize, ...positonItems, specificationId: null, attributeTermId: checkSize.id }
+        })
+        this.addListItem(hasShowSizeInfo)
+      },
+      immediate: true,
+      deep: true
+    },
+    hasAttrsChanged: {
+      handler () {
+        if (this.specificationMain) {
+          const sizeInfoList = this.productSize.sizeInfoList || []
+          const checkedAttrs = deepClone(this.checkedAttrs)
+          const sizeList = this.structureSizeList(checkedAttrs)
+          const showSizeInfo = this.structureShowSizeInfo(sizeList, sizeInfoList)
+          this.addListItem(showSizeInfo)
+        }
       },
       immediate: true,
       deep: true
     }
   },
   methods: {
-    addListItem (sizes) {
-      // 增加行
-      const sizeInfoList = []
-      const showLabels = {}
-      let attributeId = ''
-      if (!isEmpty(this.productSize.sizeInfoList)) {
-        attributeId = this.productSize.sizeInfoList[0].attributeId
-      }
-      sizes.forEach(size => {
-        const { attributeTermId, ...rest } = size
-        const sizeAttrAttributeId = this.sizeAttr.attributeId ? this.sizeAttr.attributeId : attributeId
-        const addItem = {
-          attributeId: sizeAttrAttributeId,
-          attributeTermId: size.id || attributeTermId,
-          ...rest
+    structureSizeList (checkedAttrs) {
+      return checkedAttrs.map(specificationTerm => {
+        const specificationTermId = specificationTerm.mainAttributeTermId
+        const sizeIds = this.comparisonSaleAttrs.filter(attr => attr.saleAttributeType.value === 2).map(attr => attr.id)
+        return specificationTerm.relatedAttributeAndTermList.filter(relatedAttribute => sizeIds.includes(relatedAttribute.attributeId)).map(relatedAttribute => {
+          return relatedAttribute.attributeTermIds.map((attributeTerm) => {
+            return {
+              ...attributeTerm,
+              attributeId: relatedAttribute.attributeId,
+              attributeTermId: attributeTerm.id,
+              specificationId: specificationTermId,
+              specificationTermName: specificationTerm.mainAttributeTermName
+            }
+          })
+        })
+      }).flat().flat()
+    },
+    structureShowSizeInfo (sizeList, sizeInfoList) {
+      return sizeList.map(checkSize => {
+        // 回填数据
+        let positonItems = {}
+        const sizeInfo = sizeInfoList.find(sInfo => checkSize.attributeTermId === sInfo.attributeTermId && checkSize.specificationId === sInfo.specificationId)
+        if (sizeInfo) {
+          sizeInfo.sizePositions.forEach(sizeStandard => {
+            positonItems[sizeStandard.attributeTermId] = sizeStandard.value
+          })
         }
-        const sizeTerms = this.sizeAttr.terms || []
-        size.id ? showLabels[size.id] = size.name : showLabels[size.attributeTermId] = sizeTerms.find(attr => attr.id === size.attributeTermId).name
-        sizeInfoList.push(addItem)
+        return { ...checkSize, ...positonItems }
+      })
+    },
+    getSizeInfoKey (sizeInfo) {
+      return this.specificationMain ? `${sizeInfo.specificationId}-${sizeInfo.attributeTermId}` : sizeInfo.attributeTermId
+    },
+    addListItem (sizeInfoList) {
+      const showLabels = {}
+      sizeInfoList.forEach(sizeInfo => {
+        const specificationName = this.specificationMain ? `${sizeInfo.specificationTermName}：` : ''
+        const showLabelId = this.getSizeInfoKey(sizeInfo)
+        showLabels[showLabelId] = `${specificationName}${sizeInfo.name}`
       })
       this.showLabels = showLabels
       this.form.sizeInfoList = this.stashTableInfo(sizeInfoList)
@@ -149,42 +193,46 @@ export default {
     */
     stashLastData () {
       const sizeInfoList = this.form.sizeInfoList || []
-      sizeInfoList.forEach((stashSize) => {
-        this.stashTableData.set(`${stashSize.attributeTermId}`, stashSize)
+      sizeInfoList.forEach((sizeInfo) => {
+        this.stashTableData.set(this.getSizeInfoKey(sizeInfo), sizeInfo)
       })
     },
     /**
-     * 销售属性变化根据暂存数据/编辑状态进行回显赋值
-     * * @param {Array} saleData 销售属性变化后的数据结构
-  */
+   * 销售属性变化根据暂存数据/编辑状态进行回显赋值
+   * * @param {Array} saleData 销售属性变化后的数据结构
+*/
     stashTableInfo (sizeInfoList) {
       this.stashLastData()
       if (sizeInfoList && sizeInfoList.length > 0) {
-        sizeInfoList.forEach((tableItem) => {
-          const value = this.stashTableData.get(`${tableItem.attributeTermId}`)
-          Object.assign(tableItem, value)
+        sizeInfoList.forEach((sizeInfo) => {
+          const value = this.stashTableData.get(this.getSizeInfoKey(sizeInfo))
+          Object.assign(sizeInfo, value)
         })
         return sizeInfoList
       }
     },
     result () {
       return new Promise(resolve => {
-        let productSize = {}
-        if (this.showTable) {
-          const sizelist = this.form.sizeInfoList || []
-          const sizeInfoList = sizelist.map((size) => {
-            const { attributeTermId, attributeId } = size
-            // 新增使用分类标准尺码
-            const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
-            const sizePositions = standardIds.map(key => {
-              return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
-            })
-            return { sizePositions, attributeTermId, attributeId }
-          })
-          productSize['sizeInfoList'] = sizeInfoList
-          productSize.id = this.productSize.id
-        }
-        resolve({ 'productSize': productSize })
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            let productSize = {}
+            if (this.showTable) {
+              const sizelist = this.form.sizeInfoList || []
+              const sizeInfoList = sizelist.map((size) => {
+                const { attributeTermId, specificationId, attributeId } = size
+                // 新增使用分类标准尺码
+                const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
+                const sizePositions = standardIds.map(key => {
+                  return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+                })
+                return { sizePositions, attributeTermId, specificationId, attributeId }
+              })
+              productSize['sizeInfoList'] = sizeInfoList
+              productSize.id = this.productSize.id
+            }
+            resolve({ 'productSize': productSize })
+          }
+        })
       })
     }
   }

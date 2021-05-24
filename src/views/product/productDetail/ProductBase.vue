@@ -120,8 +120,12 @@ export default {
   methods: {
     result () {
       return new Promise((resolve) => {
-        Object.assign(this.productBase, this.form)
-        resolve({ 'productBase': this.form || [] })
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            Object.assign(this.productBase, this.form)
+            resolve({ 'productBase': this.form || [] })
+          }
+        })
       })
     },
     productValidata () {

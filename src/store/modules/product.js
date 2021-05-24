@@ -20,9 +20,19 @@ export default {
     customAttributesData: [],
     showSaleLabel: {},
     // 分类数据
-    categoryData: []
+    categoryData: [],
+    specificationsAndSizes: [],
+    saleAttrsMap: {}, // 销售属性属性值Map
+    checkedAttrs: {}, // 已经选中的销售属性
+    hasAttrsChanged: false, // 销售属性变动
+    productMainAttributeAndTerm: {}, // 主属性
+    categoryId: undefined, // 分类id
+    mainAttributeType: '', // 主属性类型
+    deleteSaleAttr: '', // 删除的属性
+    comparisonSaleAttrs: [] // 回显对比过的销售属性(已经删除和未删除的数据)
   },
   getters: {
+    specificationMain: state => state.mainAttributeType === 'specification',
     productParams: state => state.productParams || {},
     checkedSizes: state => state.checkedSizes,
     productBase: state => state.productBase || [],
@@ -34,11 +44,46 @@ export default {
     sizeStandard: (state, getters) => getters.categoryData.find(categoryItem => categoryItem.extendCode === 'NZ013') || {},
     customAttributesData: state => state.customAttributesData || [],
     showSaleLabel: state => state.showSaleLabel || {},
-    categoryData: state => state.categoryData || []
+    categoryData: state => state.categoryData || [],
+    specificationsAndSizes: state => state.specificationsAndSizes || [],
+    // saleAttrsMap: state => state.saleAttrsMap || {},
+    saleAttrs: (state) => {
+      // 所有销售属性
+      return state.categoryData
+        .filter(attr =>
+          attr.saleAttributeType && [1, 2, 3].includes(attr.saleAttributeType.value)
+        ) || []
+    },
+    saleAttrsMap: (state, getters) => {
+      const curMap = new Map()
+      const mode = state.productParams.mode
+      let saleTerms = []
+      if (mode === 'create') {
+        saleTerms = getters.saleAttrs.map((item) => item.terms).flat()
+      } else {
+        // 回显处理好的销售属性值
+        saleTerms = state.comparisonSaleAttrs.map((item) => item.terms).flat()
+      }
+      saleTerms.forEach(item => {
+        curMap.set(item.id, item.name)
+      })
+      return curMap
+    },
+    checkedAttrs: state => state.checkedAttrs || {},
+    hasAttrsChanged: state => state.hasAttrsChanged,
+    productMainAttributeAndTerm: state => state.productMainAttributeAndTerm || {},
+    categoryId: (state) => {
+      return state.productBase.categoryId
+    },
+    deleteSaleAttr: state => state.deleteSaleAttr,
+    comparisonSaleAttrs: state => state.comparisonSaleAttrs
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
       store.categoryData = data
+    },
+    SET_MAIN_ATTRIBUTE_TYPE (state, type) {
+      state.mainAttributeType = type
     },
     PRODUCT_PARAMS: (store, data) => {
       store.productParams = data
@@ -75,6 +120,24 @@ export default {
       clearAttrs.forEach(attr => {
         store[attr] = data
       })
+    },
+    SPECIFICATIONS_AND_SIZES: (store, data) => {
+      store.specificationsAndSizes = data
+    },
+    SET_CHECKED_ATTRS (state, payload) {
+      state.checkedAttrs = payload
+    },
+    SET_ATTRS_CHANGED (state) {
+      state.hasAttrsChanged = !state.hasAttrsChanged
+    },
+    PRODUCT_MAIN_ATTRIBUTE_AND_TERM (state, data) {
+      state.productMainAttributeAndTerm = data
+    },
+    DELETE_SALE_ATTR (state, data) {
+      state.deleteSaleAttr = data
+    },
+    COMPARISON_SALE_INFO (state, data) {
+      state.comparisonSaleAttrs = data
     }
   },
   actions: {}
