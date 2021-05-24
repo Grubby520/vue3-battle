@@ -309,6 +309,7 @@ export default {
       deleteAttrs['terms'] = attributeTerms.map(attr => {
         attr['name'] = `${attr.name}(已删除)`
         attr['attributeId'] = attributeId
+        attr['extendCode'] = attribute.extendCode
         return attr
       })
       if (attribute.saleAttributeType.value === 3) {
