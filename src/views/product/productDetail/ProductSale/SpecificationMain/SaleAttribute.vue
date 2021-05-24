@@ -78,7 +78,7 @@
           </div>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane name="addBtn" disabled v-if="productParams.mode!=='view'">
+      <el-tab-pane name="addBtn" disabled v-if="changeSpecificationOptions.length>0">
         <div slot="label">
           <el-dropdown trigger="click" @command="handleAdd">
             <el-button type="text">
