@@ -7,6 +7,7 @@
       style="margin-bottom:1rem;"
     />
     <el-tabs
+      class="pointer-enable"
       v-model="activeName"
       type="card"
       @tab-remove="handleRemove"
@@ -17,7 +18,7 @@
         :key="specificationItem.code"
         :label="specificationItem.name"
         :name="specificationItem.code"
-        closable
+        :closable="productParams.mode!=='view'"
       >
         <el-form ref="form" label-width="12rem" :model="specificationItem">
           <div v-for="(item, index) in specificationItem.saleAttrs" :key="index">

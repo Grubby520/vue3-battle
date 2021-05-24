@@ -89,7 +89,7 @@ export default {
       ]
       this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
       this.tableData = productSalesAttributes.map(attr => {
-        const { productCategorySalesAttributes, skuCode, supplyPrice, tagSize, weight } = attr
+        const { productCategorySalesAttributes, skuCode, supplyPrice, tagSize, weight, id } = attr
         const salesAttributes = productCategorySalesAttributes.map(sale => {
           const { attributeId, attributeTermId } = sale
           return {
@@ -102,7 +102,8 @@ export default {
           skuCode,
           supplyPrice,
           tagSize,
-          weight
+          weight,
+          id
         }
       })
     },
@@ -336,9 +337,11 @@ export default {
       return err
     },
     result () {
+      this.genSubmitData()
       return new Promise((resolve) => {
         if (!this.validateData()) {
-          resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
+          resolve()
+          // resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
         }
       })
     }
