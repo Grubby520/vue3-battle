@@ -15,6 +15,35 @@
       <div class="form" v-else>
         <el-form :model="form" ref="form" label-width="12rem" class="ProductSale-form">
           <el-form-item
+            :label="showSaleLabel.color"
+            v-if="showSaleCondition('color')"
+            prop="colors"
+            :rules="[{required: true, message: '请选择颜色', trigger:'change' }]"
+          >
+            <template slot="label">
+              <el-tooltip effect="dark" :content="showSaleLabel.color" placement="top">
+                <span class="form-label pointer-enable">{{showSaleLabel.color}}</span>
+              </el-tooltip>
+              <span
+                class="form-label--tag"
+                v-if="showSaleLabel.colordeleted || !showSaleLabel.colorUsable"
+              >({{showSaleLabel.colordeleted ? '已删除' : !showSaleLabel.colorUsable ? '已禁用' : ''}})</span>
+            </template>
+            <SlSelect
+              :options="colorOptions"
+              v-model="form.colors"
+              label="name"
+              value="id"
+              filterable
+              multiple
+              clearable
+              isObj
+              :disabled="disabledSaleAttr('color')"
+              placeholder="请选择颜色"
+              @change="selectChange($event, 'colors')"
+            />
+          </el-form-item>
+          <el-form-item
             :label="showSaleLabel.size"
             v-if="showSaleCondition('size')"
             prop="sizes"
@@ -43,35 +72,6 @@
               :type="['success', 'info', 'danger', 'warning', ''][index%5]"
               @close="removeSizeTag(tag)"
             >{{tag.name}}</el-tag>
-          </el-form-item>
-          <el-form-item
-            :label="showSaleLabel.color"
-            v-if="showSaleCondition('color')"
-            prop="colors"
-            :rules="[{required: true, message: '请选择颜色', trigger:'change' }]"
-          >
-            <template slot="label">
-              <el-tooltip effect="dark" :content="showSaleLabel.color" placement="top">
-                <span class="form-label pointer-enable">{{showSaleLabel.color}}</span>
-              </el-tooltip>
-              <span
-                class="form-label--tag"
-                v-if="showSaleLabel.colordeleted || !showSaleLabel.colorUsable"
-              >({{showSaleLabel.colordeleted ? '已删除' : !showSaleLabel.colorUsable ? '已禁用' : ''}})</span>
-            </template>
-            <SlSelect
-              :options="colorOptions"
-              v-model="form.colors"
-              label="name"
-              value="id"
-              filterable
-              multiple
-              clearable
-              isObj
-              :disabled="disabledSaleAttr('color')"
-              placeholder="请选择颜色"
-              @change="selectChange($event, 'colors')"
-            />
           </el-form-item>
           <el-form-item
             :label="showSaleLabel['specification']"
@@ -373,25 +373,30 @@ export default {
       */
       const mode = this.productParams.mode === 'create'
       const useCategoryData = mode ? this.filterUableSaleAttrs : this.categoryData
+      const sortHead = []
+      let head = {}
       useCategoryData.forEach(item => {
         switch (item.extendCode) {
           // 规格
           case 'NZ012':
-            this.buildSaleData(this.showSaleLabel, item, 'specification')
+            head = this.buildSaleData(this.showSaleLabel, item, 'specification')
+            sortHead.push(head)
             break
           // 颜色
           case 'NZ010':
-            this.buildSaleData(this.showSaleLabel, item, 'color')
+            head = this.buildSaleData(this.showSaleLabel, item, 'color')
+            sortHead.push(head)
             break
           // 尺码
           case 'NZ011':
-            this.buildSaleData(this.showSaleLabel, item, 'size')
+            head = this.buildSaleData(this.showSaleLabel, item, 'size')
             this.$store.commit('product/SIZE_ATTR', {
               name: item.name,
               attributeId: item.id,
               terms: item.terms,
               usable: item.usable
             })
+            sortHead.push(head)
             break
           default:
             // 商品属性（其他属性）
@@ -400,6 +405,8 @@ export default {
             this.$store.commit('product/SHOW_SALE_LABEL', { size: this.showSaleLabel.size })
         }
       })
+      const tableSort = sortHead.sort((a, b) => { return a.level - b.level })
+      this.tableHeadData.unshift(...tableSort)
     },
     /**
     * 构建销售属性表头/销售属性展示label/下拉赋值
@@ -417,16 +424,25 @@ export default {
         showSaleLabel[type] = name
         showSaleLabel[`${type}Usable`] = usable
       }
-      this.tableHeadData.unshift({
+      // 列表颜色/尺码/规格排序
+      const sortSale = {
+        'NZ010': 1,
+        'NZ011': 2,
+        'NZ012': 3
+      }
+      const level = sortSale[extendCode]
+      return {
         id: id,
         name: type,
         usable: usable,
         label: name,
-        extendCode: extendCode
-      })
-    }, /**
-   * 判断销售属性值是删除还是禁用
-   */
+        extendCode: extendCode,
+        level: level
+      }
+    },
+    /**
+    * 判断销售属性值是删除还是禁用
+    */
     isSaleTermsStatus (attributeId, termId) {
       const attribute = this.categoryData
         .find(cateTerm => cateTerm.id === attributeId) || {}
