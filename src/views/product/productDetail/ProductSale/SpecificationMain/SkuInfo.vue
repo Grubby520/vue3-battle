@@ -16,6 +16,7 @@
           :cur-sale-attrs="curSaleAttrs"
           :attribute-map="attributeMap"
           :select-attr-id-list="selectAttrIdList"
+          class="pointer-enable skuInfo-table"
         ></SkuTable>
       </div>
     </el-card>
@@ -339,7 +340,6 @@ export default {
     result () {
       return new Promise((resolve) => {
         if (!this.validateData()) {
-          console.log('1111111111')
           resolve({ 'productSalesAttributes': this.genSubmitData() || [] })
         }
       })
@@ -364,6 +364,9 @@ export default {
       text-align: center;
       color: #909399;
     }
+  }
+  &-table {
+    width: 100%;
   }
 }
 </style>

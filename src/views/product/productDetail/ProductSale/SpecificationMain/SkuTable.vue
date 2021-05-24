@@ -1,7 +1,7 @@
 <template>
   <div class="sku-table">
     <el-form ref="form" :rules="rules">
-      <table v-if="tableData.length > 0" style="width:100%;">
+      <table v-if="tableData.length > 0">
         <thead>
           <tr>
             <th v-for="item in selectAttrList" :key="item.attributeId">{{item.name}}</th>
@@ -266,16 +266,17 @@ export default {
 
 <style scoped lang="scss">
 .sku-table {
+  width: 100%;
   $borderStyle: 1px solid #ebeef5;
   overflow-x: auto;
   table {
-    margin-top: 10px;
+    margin-top: 1rem;
     max-width: 100%;
     thead {
       th {
         font-weight: normal;
         text-align: center;
-        padding: 8px 15px;
+        padding: 0.8rem 1.5rem;
         border: $borderStyle;
         color: #303133;
         span {
@@ -285,17 +286,17 @@ export default {
     }
     tr {
       td {
-        padding: 8px 15px;
-        min-width: 150px;
+        padding: 0.8rem 1.5rem;
+        min-width: 15rem;
         border: $borderStyle;
         text-align: center;
         /deep/ .el-input {
           float: left;
           width: auto;
-          margin: 3px;
+          margin: 0.3rem;
 
           input {
-            width: 200px;
+            width: 150;
             &::-webkit-input-placeholder {
               text-align: center;
             }
@@ -323,7 +324,7 @@ export default {
   .required:before {
     content: '*';
     color: #f56c6c;
-    margin-right: 4px;
+    margin-right: 0.4rem;
     vertical-align: middle;
   }
   &__batch {
