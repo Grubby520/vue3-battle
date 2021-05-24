@@ -1,7 +1,7 @@
 <template>
   <div class="specification">
     <el-alert
-      v-if="noneRelatedSize.length>0"
+      v-if="noRelatedSize.length>0"
       title="主属性为规格时，所有规格值必须关联尺码"
       type="warning"
       style="margin-bottom:1rem;"
@@ -80,7 +80,7 @@
       <el-tab-pane name="addBtn" disabled v-if="productParams.mode!=='view'">
         <div slot="label">
           <el-dropdown trigger="click" @command="handleAdd">
-            <el-button type="text" :disabled="productParams.mode !=='create'">
+            <el-button type="text">
               <i class="el-icon-plus el-icon--left"></i> 亲子装规格
             </el-button>
             <el-dropdown-menu slot="dropdown">
@@ -144,14 +144,16 @@ export default {
     },
     changeSpecificationOptions () {
       if (isEmpty(this.specification)) return
-      const { terms } = this.specification
+      const terms = this.specification.terms
+      // 回显选中的规格属性值
+      const checkedSpecificationIds = this.chooseSpecificationTerms
+        .reduce((init, specification) => init.concat(specification.id), [])
       return terms
-        .filter(specificationItem =>
-          specificationItem.id && !this.noneRelatedSize.includes(specificationItem.id)
-        )
+        .filter(term => !checkedSpecificationIds.includes(term.id))
+        .filter(term => !this.noRelatedSize.includes(term.id))
     },
-    noneRelatedSize () {
-      return this.specification.categoryAttributeRelatedSizes
+    noRelatedSize () {
+      return (this.specification.categoryAttributeRelatedSizes || [])
         .filter(size => !size.relatedSizeId)
         .reduce((init, size) => init.concat(size.termId), [])
     },
@@ -178,9 +180,6 @@ export default {
         [...this.specificationRelateMap.keys()].includes(term.id)
       )
     },
-    curSaleAttrs () {
-      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
-    },
     skuConentHeight () {
       let attributeHeight = this.curSaleAttrs.length * 30
       attributeHeight = attributeHeight > 90 ? 90 : attributeHeight
@@ -198,6 +197,9 @@ export default {
           })
           return curMap
         })[0]
+    },
+    curSaleAttrs () {
+      return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
     }
   },
   watch: {

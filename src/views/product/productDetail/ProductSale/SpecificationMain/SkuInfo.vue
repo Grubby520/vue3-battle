@@ -18,9 +18,6 @@
           :select-attr-id-list="selectAttrIdList"
         ></SkuTable>
       </div>
-      <!-- <div class="no-data" v-else>
-        <span class="no-data--tip">~暂无数据~</span>
-      </div>-->
     </el-card>
   </div>
 </template>
@@ -139,10 +136,7 @@ export default {
     // 销售属性变动
     handleAttribute (currentData, refreshTable) {
       const standardAttributeIds = this.genAttributeRecord(currentData)
-      // * 如果是表格点删除导致的销售属性变动，则不会进行刷新表格
-      if (refreshTable) {
-        this.genSkuTable(currentData, standardAttributeIds)
-      }
+      this.genSkuTable(currentData, standardAttributeIds)
       this.setAttrsInfo(currentData)
     },
     setAttrsInfo (currentData) {
@@ -284,10 +278,12 @@ export default {
             const attributeIds = attributeTermIds.reduce((init, term) => {
               if (term.extendCode === 'NZ011') {
                 init.push(term.id)
+              } else {
+                init.push(term)
               }
               return init
             }, [])
-            term.attributeTermIds = !isEmpty(attributeIds) ? attributeIds : term.attributeTermIds
+            term.attributeTermIds = attributeIds
           })
         }
         return {
