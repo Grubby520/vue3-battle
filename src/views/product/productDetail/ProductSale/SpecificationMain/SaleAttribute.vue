@@ -226,6 +226,7 @@ export default {
                     saleAttr.attributeId
                 ) || {}
               )
+              if (isEmpty(saleAttribute)) return
               const terms = saleAttribute.terms
                 .filter(term => saleAttr.attributeTermIds.includes(term.id))
               let termIds = []

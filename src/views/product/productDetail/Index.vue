@@ -83,7 +83,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['specificationMain', 'saleAttrs']),
+    ...mapGetters('product', [
+      'specificationMain',
+      'saleAttrs',
+      'productMainAttributeAndTerm',
+      'productSalesAttributeDetail',
+      'categoryData'
+    ]),
     isStatus () {
       return this.mode === 'view'
     },
@@ -104,6 +110,9 @@ export default {
         }
       }
       return currentComponents
+    },
+    specification () {
+      return this.saleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     }
   },
   methods: {
@@ -252,8 +261,8 @@ export default {
         }, []) || []
     },
     /**
-   * 回显对比分类判断保存属性是否存在
-   */
+  * 回显对比分类判断保存属性是否存在
+  */
     comparisonCateInfo (productCategorySalesAttributeSelectedList) {
       const newCategoryData = []
       if (isEmpty(productCategorySalesAttributeSelectedList)) return
@@ -285,8 +294,52 @@ export default {
           newCategoryData.push(deleteSaleAttr)
         }
       })
-      this.$store.commit(`product/COMPARISON_SALE_INFO`, newCategoryData || [])
+      this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData] || [])
     },
+    //   /**
+    //  * 回显对比分类判断保存属性是否存在
+    //  */
+    //   comparisonCateInfo (productCategorySalesAttributeSelectedList) {
+    //     this.changeMainAttributeAndTerm()
+    //       .then(res => {
+    //         const relateCategoryDate = res
+    //         console.log('res', deepClone(res))
+    //         const newCategoryData = []
+    //         if (isEmpty(productCategorySalesAttributeSelectedList)) return
+    //         productCategorySalesAttributeSelectedList.forEach(sale => {
+    //           const cateSaleAttr = !isEmpty(this.saleAttrs) && this.saleAttrs.find(attr => attr.id === sale.attributeId)
+    //           if (cateSaleAttr) {
+    //             // 判断销售属性分类上存在
+    //             const { attributeTerms, attributeId } = sale
+    //             const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
+    //             if (!cateSaleAttr.usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
+    //             // 判断属性值是否禁用
+    //             cateSaleAttr.terms.forEach(sale => {
+    //               if (!sale.usable) {
+    //                 sale.name = `${sale.name}(已禁用)`
+    //               }
+    //             })
+    //             // 判断回填的销售属性值是否存在
+    //             attributeTerms.forEach(attrTerm => {
+    //               if (!cateTermIds.includes(attrTerm.id)) {
+    //                 attrTerm['name'] = `${attrTerm.name}(已删除)`
+    //                 attrTerm['attributeId'] = attributeId
+    //                 cateSaleAttr.terms.push(attrTerm)
+    //               }
+    //             })
+    //             newCategoryData.push(cateSaleAttr)
+    //           } else {
+    //             // 构建删除的销售属性补充分类上的的数据
+    //             const deleteSaleAttr = this.buidDeletedSaleAttrs(sale)
+    //             newCategoryData.push(deleteSaleAttr)
+    //           }
+    //         })
+    //         console.log('12121', [...newCategoryData, ...relateCategoryDate])
+    //         console.log('newCategoryData', deepClone(newCategoryData))
+    //         this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData, ...relateCategoryDate] || [])
+    //       })
+    //   },
+
     /**
      * 回显处理已经删除的销售属性
      */
@@ -331,6 +384,42 @@ export default {
           return saleAttrRelation
         })
       return categoryAttributeRelatedSizes
+    },
+    /**
+    * 回显判断分类上的关联关系是否发生变化
+    */
+    changeMainAttributeAndTerm () {
+      return new Promise(resolve => {
+        const {
+          mainAttributeId
+        } = deepClone(this.productMainAttributeAndTerm)
+        const {
+          productCategorySalesAttributeSelectedList = []
+        } = deepClone(this.productSalesAttributeDetail)
+
+        // let relateCategoryDate = []
+        // 回显数据关联关系的所有尺码ids
+        const saleSizeIds = productCategorySalesAttributeSelectedList
+          .filter(sale => sale.attribute.saleAttributeType === 2)
+          .reduce((init, size) => {
+            init.push(size.attribute.id)
+            return init
+          }, [])
+        // 当前分类上所有关联关系
+        const categoryAttributeRelatedSizes = this.specification.categoryAttributeRelatedSizes
+        const { id, mainAttribute } = this.specification
+        // 当前关联规格主属性没有变
+        if (id === mainAttributeId && mainAttribute) {
+          const relateCategoryDataIds = categoryAttributeRelatedSizes
+            .filter(cate => !saleSizeIds.includes(cate.relatedSizeId))
+            .reduce((init, cate) => init.concat(cate.relatedSizeId), [])
+          const relateCategoryData = this.categoryData
+            .filter(cate => relateCategoryDataIds.includes(cate.id))
+          resolve(relateCategoryData)
+        } else {
+          resolve([])
+        }
+      })
     },
     getResult () {
       // 获取需要保存/提交的数据
