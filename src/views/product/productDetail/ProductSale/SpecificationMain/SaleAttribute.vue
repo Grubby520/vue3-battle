@@ -483,5 +483,8 @@ export default {
       color: #909399;
     }
   }
+  /deep/.el-form-item--small.el-form-item {
+    margin-bottom: -2rem;
+  }
 }
 </style>

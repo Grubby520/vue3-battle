@@ -19,7 +19,7 @@
       <el-form-item>
         <el-checkbox :indeterminate="false" v-model="checkAll" @change="handleCheckAllSku">全选</el-checkbox>
       </el-form-item>
-      <el-form-item label="颜色" prop="skuList">
+      <el-form-item label="颜色" prop="skuList" v-if="skuList.length>0">
         <el-checkbox-group v-model="form.skuList" @change="handleCheckSku">
           <el-checkbox
             v-for="(color, index) in skuList"
@@ -28,7 +28,7 @@
           >{{color.colorAttributeName}}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="规格" prop="specifications">
+      <el-form-item label="规格" prop="specifications" v-if="specifications.length>0">
         <el-checkbox-group v-model="form.specifications" @change="handleCheckSku">
           <el-checkbox
             v-for="(specification, index) in specifications"
@@ -37,7 +37,7 @@
           >{{specification.specificationsAttributeName}}</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="尺码" prop="sizeList">
+      <el-form-item label="尺码" prop="sizeList" v-if="sizeList.length>0">
         <el-checkbox-group v-model="form.sizeList" @change="handleCheckSku">
           <el-checkbox
             v-for="(size, index) in sizeList"
@@ -107,6 +107,8 @@ export default {
     },
     handleCheckAllSku (isChecked) {
       this.form.skuList = isChecked ? this.skuList.map((sku) => sku.attributeTermId) : []
+      this.form.sizeList = isChecked ? this.sizeList.map((sku) => sku.attributeTermId) : []
+      this.form.specifications = isChecked ? this.specifications.map((sku) => sku.attributeTermId) : []
     },
     /**
     * 打开弹窗
