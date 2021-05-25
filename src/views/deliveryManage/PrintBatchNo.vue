@@ -6,7 +6,7 @@
           class="sku-info batch-no-print"
           v-for="(item, index) in skuArr"
           :key="index"
-          style="width: 59mm; height: 38mm; background: #fff; overflow: hidden; page-break-before: always; padding-top:1mm; padding-right: 0mm;
+          style="width: 59mm; height: 38mm; background: #fff; overflow: hidden; page-break-after: always; padding-top:1mm; padding-right: 0mm;
                         padding-left: 0; margin-top:0!important; position:relative;"
         >
           <ul
@@ -14,7 +14,7 @@
             style="list-style-type: none; padding:0; margin: 0; text-align:center;"
           >
             <li
-              style="padding-bottom:1mm;font-size: 18px!important;word-break: break-all;"
+              style="padding-bottom:1mm;font-size: 16px!important;word-break: break-all;"
             >{{item.skuCode}}</li>
             <li>
               <div class="barcode">
@@ -24,7 +24,7 @@
           </ul>
           <ul
             class="bill-number"
-            style="font-size: 7.5pt!important; list-style-type: none; margin: 0.1mm 2mm 0 0; padding:0;"
+            style="font-size: 6.5pt!important; list-style-type: none; margin: 0.1mm 2mm 0 0; padding:0;"
           >
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.1mm; word-break:break-all;"
@@ -35,9 +35,7 @@
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
             >TNumber:{{ item.purchaseBatchNo || ''}}</li>
-            <li
-              style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
-            >Loc:{{item.locationCode || ''}}</li>
+            <li style="text-align: right; line-height: 1.1;">Loc:{{item.locationCode || ''}}</li>
           </ul>
         </div>
       </div>
@@ -119,7 +117,7 @@ export default {
           margin: 0 auto;
         }
         .bill-number {
-          font-size: 7.5pt;
+          font-size: 6.5pt;
         }
         ul {
           padding: 0;
