@@ -230,23 +230,17 @@ export default {
       const { productMainAttributeTermRelationList = [] } = deepClone(this.productMainAttributeAndTerm)
       if (isEmpty(productMainAttributeTermRelationList)) return
       this.chooseSpecificationTerms = productMainAttributeTermRelationList.map(
-        (attributeTerm, index) => {
+        (attributeTerm) => {
           const specificationTerm = deepClone(
             this.specificationTerms.find(
-              term => {
-                return term.id === attributeTerm.mainAttributeTermId
-              }
+              term => term.id === attributeTerm.mainAttributeTermId
             )
           )
           const saleAttributes = attributeTerm.relatedAttributeAndTermList
             .map(
               saleAttr => {
                 const saleAttribute = deepClone(
-                  this.curSaleAttrs.find(
-                    attr =>
-                      attr.id ===
-                      saleAttr.attributeId
-                  ) || {}
+                  this.curSaleAttrs.find(attr => attr.id === saleAttr.attributeId) || {}
                 )
                 if (isEmpty(saleAttribute)) return
                 const terms = saleAttribute.terms
@@ -271,7 +265,6 @@ export default {
           }
         }
       )
-      console.log('this.chooseSpecificationTerms', deepClone(this.chooseSpecificationTerms))
       this.handleAttribute()
     },
     selectChange (specificationTerm, item) {
@@ -390,7 +383,10 @@ export default {
           }
 
           if (this.activeName === specificationCode) {
-            this.activeName = this.chooseSpecificationTerms[0].code
+            const specificationTerms = this.chooseSpecificationTerms[0]
+            if (!isEmpty(specificationTerms)) {
+              this.activeName = specificationTerms.code
+            }
           }
           this.handleAttribute()
         })
@@ -428,33 +424,37 @@ export default {
       this.handleAttribute()
     },
     // 将数据进行加工并且执行回调
-    handleAttribute (refreshTable = true) {
-      const currentData = this.chooseSpecificationTerms.map(
-        specificationTerm => {
-          return {
-            mainAttributeId: this.specification.id,
-            mainAttributeTermId: specificationTerm.id,
-            mainAttributeTermName: specificationTerm.name,
-            relatedAttributeAndTermList: specificationTerm.saleAttrs.map(
-              saleAttr => {
-                let values = []
-                if (this.productParams.mode === 'create') {
-                  const saleAttributeType = saleAttr.saleAttributeType && saleAttr.saleAttributeType.value
-                  const sizeIds = saleAttr.values.reduce((init, sale) => init.concat(sale.id), [])
-                  values = saleAttributeType === 2 ? sizeIds : saleAttr.values
-                } else {
-                  values = saleAttr.values
+    handleAttribute () {
+      const currentData = this.chooseSpecificationTerms
+        .map(
+          specificationTerm => {
+            const { saleAttrs, id, name } = specificationTerm
+            const relatedAttributeAndTermList = saleAttrs
+              .map(
+                saleAttr => {
+                  let values = []
+                  if (this.productParams.mode === 'create') {
+                    const saleAttributeType = saleAttr.saleAttributeType && saleAttr.saleAttributeType.value
+                    const sizeIds = saleAttr.values.reduce((init, sale) => init.concat(sale.id), [])
+                    values = saleAttributeType === 2 ? sizeIds : saleAttr.values
+                  } else {
+                    values = saleAttr.values
+                  }
+                  return {
+                    attributeId: saleAttr.id,
+                    attributeTermIds: values
+                  }
                 }
-                return {
-                  attributeId: saleAttr.id,
-                  attributeTermIds: values
-                }
-              }
-            )
+              )
+            return {
+              mainAttributeId: this.specification.id,
+              mainAttributeTermId: id,
+              mainAttributeTermName: name,
+              relatedAttributeAndTermList: relatedAttributeAndTermList
+            }
           }
-        }
-      )
-      this.$emit('change', currentData, refreshTable)
+        )
+      this.$emit('change', currentData || [])
     },
     handleToggle (val) {
       this.panelMinHeight = val

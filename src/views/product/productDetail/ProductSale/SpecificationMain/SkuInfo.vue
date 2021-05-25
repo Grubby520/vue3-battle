@@ -136,7 +136,7 @@ export default {
         }, [])
     },
     // 销售属性变动
-    handleAttribute (currentData, refreshTable) {
+    handleAttribute (currentData) {
       const standardAttributeIds = this.genAttributeRecord(currentData)
       this.genSkuTable(currentData, standardAttributeIds)
       this.setAttrsInfo(currentData)
