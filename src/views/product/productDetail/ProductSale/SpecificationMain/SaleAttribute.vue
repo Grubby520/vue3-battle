@@ -238,37 +238,40 @@ export default {
               }
             )
           )
-          const saleAttributes = attributeTerm.relatedAttributeAndTermList.map(
-            saleAttr => {
-              const saleAttribute = deepClone(
-                this.curSaleAttrs.find(
-                  attr =>
-                    attr.id ===
-                    saleAttr.attributeId
-                ) || {}
-              )
-              if (isEmpty(saleAttribute)) return
-              const terms = saleAttribute.terms
-                .filter(term => saleAttr.attributeTermIds.includes(term.id))
-              let termIds = []
-              const saleAttributeType = saleAttribute.saleAttributeType && saleAttribute.saleAttributeType.value
-              if (saleAttributeType === 1) {
-                termIds = terms.reduce((init, term) => init.concat(term.id), [])
-              } else {
-                termIds = terms
+          const saleAttributes = attributeTerm.relatedAttributeAndTermList
+            .map(
+              saleAttr => {
+                const saleAttribute = deepClone(
+                  this.curSaleAttrs.find(
+                    attr =>
+                      attr.id ===
+                      saleAttr.attributeId
+                  ) || {}
+                )
+                if (isEmpty(saleAttribute)) return
+                const terms = saleAttribute.terms
+                  .filter(term => saleAttr.attributeTermIds.includes(term.id))
+                let termIds = []
+                const saleAttributeType = saleAttribute.saleAttributeType && saleAttribute.saleAttributeType.value
+                if (saleAttributeType === 1) {
+                  termIds = terms.reduce((init, term) => init.concat(term.id), [])
+                } else {
+                  termIds = terms
+                }
+                return {
+                  ...saleAttribute,
+                  values: termIds
+                }
               }
-              return {
-                ...saleAttribute,
-                values: termIds
-              }
-            }
-          )
+            )
+            .sort((pre, suffix) => pre.saleAttributeType.value - suffix.saleAttributeType.value)
           return {
             ...specificationTerm,
             saleAttrs: saleAttributes
           }
         }
       )
+      console.log('this.chooseSpecificationTerms', deepClone(this.chooseSpecificationTerms))
       this.handleAttribute()
     },
     selectChange (specificationTerm, item) {
