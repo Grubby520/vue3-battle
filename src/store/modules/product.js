@@ -23,7 +23,7 @@ export default {
     categoryData: [],
     specificationsAndSizes: [],
     saleAttrsMap: {}, // 销售属性属性值Map
-    checkedAttrs: {}, // 已经选中的销售属性
+    checkedAttrs: [], // 已经选中的销售属性
     hasAttrsChanged: false, // 销售属性变动
     productMainAttributeAndTerm: {}, // 主属性
     categoryId: undefined, // 分类id
@@ -69,7 +69,7 @@ export default {
 
       return curMap
     },
-    checkedAttrs: state => state.checkedAttrs || {},
+    checkedAttrs: state => state.checkedAttrs || [],
     hasAttrsChanged: state => state.hasAttrsChanged,
     productMainAttributeAndTerm: state => state.productMainAttributeAndTerm || {},
     categoryId: (state) => {
