@@ -136,7 +136,6 @@ export default {
       this.formSizes = formSizes
       this.dialogVisible = true
       this.currentChoose = currentChoose
-      console.log('currentChoose', currentChoose)
       this.usable = (usable && !showSaleLabel['sizedeleted']) || (!isEmpty(currentChoose) && !currentChoose.item.usable)
       this.getSizeTable()
     },
