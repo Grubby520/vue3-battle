@@ -273,24 +273,12 @@ export default {
     },
     showAttrHint () {
       // 判断是否有销售属性
-      const hasSaleAttributes = this.filterUableSaleAttrs.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode)).length === 0
+      const hasSaleAttributes = this.categoryData.filter(attr => ['NZ012', 'NZ010', 'NZ011'].includes(attr.extendCode)).length === 0
       return hasSaleAttributes && this.productParams.mode === 'create'
     },
     productAttrFill () {
       // 回显数据
       return [this.categoryData, this.productSalesAttributeDetail]
-    },
-    filterUableSaleAttrs () {
-      // 创建时过滤禁用的属性和属性值
-      const categoryData = deepClone(this.categoryData)
-        .filter(categoryItem => categoryItem.usable)
-        .reduce((init, categoryItem) => {
-          categoryItem.terms = categoryItem.terms
-            .filter(term => term.usable)
-          init.push(categoryItem)
-          return init
-        }, [])
-      return categoryData || []
     },
     coloerRelatedSizes () {
       return this.categoryData
@@ -368,14 +356,9 @@ export default {
   },
   methods: {
     initAttrData () {
-      /**
-      * 创建时过滤禁用的销售属性和属性值，编辑使用请求数据处理
-      */
-      const mode = this.productParams.mode === 'create'
-      const useCategoryData = mode ? this.filterUableSaleAttrs : this.categoryData
       const sortHead = []
       let head = {}
-      useCategoryData.forEach(item => {
+      this.categoryData.forEach(item => {
         switch (item.extendCode) {
           // 规格
           case 'NZ012':
@@ -400,7 +383,7 @@ export default {
             break
           default:
             // 商品属性（其他属性）
-            const customAttributesData = useCategoryData.filter(item => item.type.value === 4)
+            const customAttributesData = this.categoryData.filter(item => item.type.value === 4)
             this.$store.commit('product/CUSTOM_ATTRIBUTES_DATA', customAttributesData)
             this.$store.commit('product/SHOW_SALE_LABEL', { size: this.showSaleLabel.size })
         }

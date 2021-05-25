@@ -68,7 +68,7 @@
                   style="margin: 0 0 .5rem 1rem"
                   v-for="(tag, index) in item.values"
                   :key="index"
-                  :closable="productParams.mode!=='view'"
+                  :closable="productParams.mode!=='view' && item.usable"
                   effect="dark"
                   :type="['success', 'info', 'danger', 'warning', ''][index%5]"
                   @close="removeSizeTag(tag,specificationItem, item)"
