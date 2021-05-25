@@ -65,7 +65,6 @@ export default {
       return this.curSaleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
     },
     curSaleAttrs () {
-      // return this.saleAttrs
       return this.productParams.mode === 'create' ? this.saleAttrs : this.comparisonSaleAttrs
     }
   },

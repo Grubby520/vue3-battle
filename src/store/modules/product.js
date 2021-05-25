@@ -66,6 +66,7 @@ export default {
       saleTerms.forEach(item => {
         curMap.set(item.id, item.name)
       })
+
       return curMap
     },
     checkedAttrs: state => state.checkedAttrs || {},

@@ -113,6 +113,20 @@ export default {
     },
     specification () {
       return this.saleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
+    },
+    /**
+    * 当前关联关系的sizeids
+    */
+    relationIds () {
+      const {
+        productCategorySalesAttributeSelectedList = []
+      } = deepClone(this.productSalesAttributeDetail)
+      return productCategorySalesAttributeSelectedList
+        .filter(sale => sale.attribute.saleAttributeType === 2)
+        .reduce((init, size) => {
+          init.push(size.attribute.id)
+          return init
+        }, [])
     }
   },
   methods: {
@@ -177,7 +191,6 @@ export default {
           })
           return categoryItem
         })
-        // this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
         resolve(categoryData)
       })
     },
@@ -272,19 +285,28 @@ export default {
           // 判断销售属性分类上存在
           const { attributeTerms, attributeId } = sale
           const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
-          if (!cateSaleAttr.usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
+          const { usable, terms, categoryAttributeRelatedSizes, saleAttributeType } = cateSaleAttr
+          if (!usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
           // 判断属性值是否禁用
-          cateSaleAttr.terms.forEach(sale => {
+          terms.forEach(sale => {
             if (!sale.usable) {
               sale.name = `${sale.name}(已禁用)`
             }
           })
           // 判断回填的销售属性值是否存在
+          let delteRelation = []
           attributeTerms.forEach(attrTerm => {
             if (!cateTermIds.includes(attrTerm.id)) {
               attrTerm['name'] = `${attrTerm.name}(已删除)`
               attrTerm['attributeId'] = attributeId
-              cateSaleAttr.terms.push(attrTerm)
+              attrTerm['extendCode'] = sale.attribute.extendCode
+              attrTerm['code'] = `${attrTerm.id}`
+              terms.push(attrTerm)
+              if (saleAttributeType.value === 3) {
+                // 删除属性值为规格重新处理关联关系
+                delteRelation.push(this.categoryAttributeRelatedTermSizes(attrTerm))
+                categoryAttributeRelatedSizes.push(...delteRelation)
+              }
             }
           })
           newCategoryData.push(cateSaleAttr)
@@ -310,6 +332,7 @@ export default {
         attr['name'] = `${attr.name}(已删除)`
         attr['attributeId'] = attributeId
         attr['extendCode'] = attribute.extendCode
+        attr['code'] = `${attr.id}`
         return attr
       })
       if (attribute.saleAttributeType.value === 3) {
@@ -319,24 +342,41 @@ export default {
       return deleteAttrs
     },
     /**
+     * 删除属性值关联关系
+     */
+    categoryAttributeRelatedTermSizes (term) {
+      const {
+        productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] },
+        productCategorySalesAttributeSelectedList = []
+      } = deepClone(this.productSalesAttributeDetail)
+      return productMainAttributeTermRelationList
+        .filter(relationTerm => relationTerm.mainAttributeTermId === term.id)
+        .reduce((init, relationTerm) => {
+          const { relatedAttributeAndTermList, mainAttributeTermId } = relationTerm
+          const relationTerms = relatedAttributeAndTermList
+            .find(term => this.relationIds.includes(term.attributeId))
+          const saleAttr = productCategorySalesAttributeSelectedList.find(attr => relationTerms.attributeId === attr.attributeId)
+          init = {
+            termId: mainAttributeTermId,
+            relatedSizeId: relationTerms.attributeId,
+            termName: term.name,
+            relatedSizeName: saleAttr.attribute.name
+          }
+          return init
+        }, {})
+    },
+    /**
     * 回显删除规格的关联关系
     */
     categoryAttributeRelatedSizes (sale) {
       const {
-        productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] } = {},
-        productCategorySalesAttributeSelectedList = []
+        productMainAttributeAndTerm: { productMainAttributeTermRelationList = [] } = {}
       } = deepClone(this.productSalesAttributeDetail)
-      const saleSizeIds = productCategorySalesAttributeSelectedList
-        .filter(sale => sale.attribute.saleAttributeType === 2)
-        .reduce((init, size) => {
-          init.push(size.attribute.id)
-          return init
-        }, [])
       const categoryAttributeRelatedSizes = productMainAttributeTermRelationList
         .map(relation => {
           const { relatedAttributeAndTermList, mainAttributeTermId } = relation
           const relatedSizeId = relatedAttributeAndTermList
-            .find(term => saleSizeIds.includes(term.attributeId)).attributeId
+            .find(term => this.relationIds.includes(term.attributeId)).attributeId
           const saleAttrRelation = {}
           saleAttrRelation['termId'] = mainAttributeTermId
           saleAttrRelation['relatedSizeId'] = relatedSizeId
