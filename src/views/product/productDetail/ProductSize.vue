@@ -80,7 +80,7 @@ export default {
     tableHeadData () {
       const sizes = {
         id: 'size',
-        name: this.specificationMain ? '尺码' : this.showSaleLabel.size,
+        name: '尺码',
         status: 'text'
       }
       return [sizes, ...this.sizeStandardHeadData]
