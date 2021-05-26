@@ -78,7 +78,11 @@
           </div>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane name="addBtn" disabled v-if="changeSpecificationOptions.length>0">
+      <el-tab-pane
+        name="addBtn"
+        disabled
+        v-if="changeSpecificationOptions.length>0 || productBase.status===5"
+      >
         <div slot="label">
           <el-dropdown trigger="click" @command="handleAdd">
             <el-button type="text">
@@ -129,7 +133,8 @@ export default {
       'productMainAttributeAndTerm',
       'extraAttrMap',
       'saleAttrs',
-      'comparisonSaleAttrs'
+      'comparisonSaleAttrs',
+      'productBase'
     ]),
     filterUableSaleAttrs () {
       // 创建时过滤禁用的属性和属性值
@@ -275,12 +280,7 @@ export default {
         if (sale.code === this.activeName) {
           sale.saleAttrs.forEach((choose) => {
             if (choose.extendCode === 'NZ011') {
-              let currentIndex = ''
-              choose.values.forEach((value, index) => {
-                if (value.id === tag.id) {
-                  currentIndex = index
-                }
-              })
+              let currentIndex = choose.values.findIndex(value => value.id === tag.id)
               choose.values.splice(currentIndex, 1)
             }
           })
