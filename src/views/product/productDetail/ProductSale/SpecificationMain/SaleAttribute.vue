@@ -79,26 +79,26 @@
           </div>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane
-        name="addBtn"
-        disabled
-        v-if="changeSpecificationOptions.length>0 || productBase.status===5"
+      <template
+        v-if="(changeSpecificationOptions.length>0 && productParams.mode!=='view' && productBase.status!==5 )"
       >
-        <div slot="label">
-          <el-dropdown trigger="click" @command="handleAdd">
-            <el-button type="text">
-              <i class="el-icon-plus el-icon--left"></i> 亲子装规格
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
-                v-for="item in changeSpecificationOptions"
-                :key="`l${item.name}`"
-                :command="item"
-              >{{item.name}}</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-      </el-tab-pane>
+        <el-tab-pane name="addBtn" disabled>
+          <div slot="label">
+            <el-dropdown trigger="click" @command="handleAdd">
+              <el-button type="text">
+                <i class="el-icon-plus el-icon--left"></i> 亲子装规格
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="item in changeSpecificationOptions"
+                  :key="`l${item.name}`"
+                  :command="item"
+                >{{item.name}}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+        </el-tab-pane>
+      </template>
     </el-tabs>
     <div class="no-data" v-else>
       <span class="no-data--tip">~暂无数据~</span>
