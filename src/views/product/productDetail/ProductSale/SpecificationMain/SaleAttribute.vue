@@ -1,7 +1,7 @@
 <template>
   <div class="specification">
     <el-alert
-      v-if="noRelatedSize.length>0"
+      v-if="showAlart"
       title="主属性为规格时，所有规格值必须关联尺码"
       type="warning"
       style="margin-bottom:1rem;"
@@ -160,9 +160,12 @@ export default {
         .filter(term => !this.noRelatedSize.includes(term.id))
     },
     noRelatedSize () {
-      return (this.specification.categoryAttributeRelatedSizes || [])
+      return this.specification.categoryAttributeRelatedSizes
         .filter(size => !size.relatedSizeId)
         .reduce((init, size) => init.concat(size.termId), [])
+    },
+    showAlart () {
+      return isEmpty(this.specification.categoryAttributeRelatedSizes) || this.noRelatedSize.length > 0
     },
     specification () {
       // 分类上的规格
