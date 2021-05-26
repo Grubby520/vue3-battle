@@ -44,8 +44,8 @@
                     :disabled="disableAttrSelect(item)"
                     :defaultValues="item.defaultValues || []"
                     multiple
-                    @change="selectChange(specificationItem, item)"
-                    @toggleDrop="handleToggle"
+                    @change="handleAttribute"
+                    @toggleDrop="handleToggle(specificationItem, item, arguments)"
                   ></SlSelect>
                 </div>
               </el-form-item>
@@ -460,8 +460,12 @@ export default {
         )
       this.$emit('change', currentData || [])
     },
-    handleToggle (val) {
-      this.panelMinHeight = val
+    handleToggle (specificationTerm, item, args) {
+      const panelHeight = args[0]
+      this.panelMinHeight = panelHeight
+      if (panelHeight === 0 && !isEmpty(item.values)) {
+        this.attributeChange(specificationTerm, item)
+      }
     },
     disableAttrSelect () {
 
