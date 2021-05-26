@@ -34,6 +34,7 @@
                 </template>
                 <div :style="skuConentHeight">
                   <SlSelect
+                    class="pointer-disable"
                     v-model="item.values"
                     :options="item.terms"
                     :maxHeight="200"

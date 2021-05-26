@@ -114,7 +114,7 @@
                 <template slot="header">
                   <span
                     class="ProductSale-from__icon"
-                    v-if="['supplyPrice','weight'].includes(item.name)"
+                    v-if="['supplyPrice','weight','tagSize'].includes(item.name)"
                   >*</span>
                   <span>{{item.label}}</span>
                 </template>
@@ -226,13 +226,16 @@ export default {
         {
           name: 'tagSize',
           label: '商家吊牌尺码',
-          maxlength: 30
+          maxlength: 30,
+          required: true,
+          message: '请输入商家吊牌尺码'
         },
         {
           name: 'weight',
           label: '带包装重量（G）',
           required: true,
-          message: '请输入带包装重量'
+          message: '请输入带包装重量',
+          maxlength: 30
         }
       ],
       numberRule: {
