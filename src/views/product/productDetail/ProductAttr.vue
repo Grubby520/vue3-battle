@@ -72,13 +72,16 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters('product', ['productBase', 'customAttributesData', 'productParams', 'productCustomAttributes']),
+    ...mapGetters('product', ['productBase', 'categoryData', 'productParams', 'productCustomAttributes']),
     productStatus () {
       return this.productBase.status
     },
     customAttributes () {
-      const { customAttributesData, productCustomAttributes } = this
-      return { customAttributesData, productCustomAttributes }
+      const { productCustomAttributes } = this
+      return { customAttributesData: this.customAttributesData, productCustomAttributes }
+    },
+    customAttributesData () {
+      return this.categoryData.filter(item => item.type.value === 4)
     }
   },
   watch: {

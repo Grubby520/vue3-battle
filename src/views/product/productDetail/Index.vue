@@ -361,15 +361,20 @@ export default {
         }
       })
       const relateCategoryDate = this.changeMainAttributeAndTerm()
-      this.$store.commit(`product/COMPARISON_SALE_INFO`, [...newCategoryData, ...relateCategoryDate] || [])
+      const relateColorCategoryDate = this.changeMainColorAttributeAndTerm()
+      let relateCategory = this.specificationMain ? [...newCategoryData, ...relateCategoryDate] : [...newCategoryData, ...relateColorCategoryDate]
+      this.$store.commit(`product/COMPARISON_SALE_INFO`, relateCategory || [])
     },
     /**
      * 回显处理已经删除的销售属性
      */
     buidDeletedSaleAttrs (sale) {
       const { attribute, attributeTerms, attributeId } = sale
-      attribute['name'] = `${attribute.name}(已删除)`
-      attribute['saleAttributeType'] = { 'value': attribute.saleAttributeType }
+      Object.assign(attribute, {
+        name: `${attribute.name}(已删除)`,
+        saleAttributeType: { 'value': attribute.saleAttributeType },
+        deleteSale: true
+      })
       const deleteAttrs = { ...attribute }
       deleteAttrs['terms'] = attributeTerms
         .map(attr => {
@@ -403,6 +408,23 @@ export default {
           .filter(cate => relateCategoryDataIds.includes(cate.id))
       }
       return relateCategoryData
+    },
+    /**
+     * 颜色为主属性
+     */
+    changeMainColorAttributeAndTerm () {
+      const { productCategorySalesAttributeSelectedList,
+        productMainAttributeAndTerm: { mainAttributeId }
+      } = this.productSalesAttributeDetail
+      const { id, mainAttribute } = this.specification
+      if (mainAttribute && (id !== mainAttributeId)) {
+        // 变更了主属性
+        return []
+      } else {
+        const productAttrIds = productCategorySalesAttributeSelectedList
+          .reduce((init, attr) => init.concat(attr.attributeId), [])
+        return this.saleAttrs.filter(sale => !productAttrIds.includes(sale.id))
+      }
     },
     getResult () {
       // 获取需要保存/提交的数据
