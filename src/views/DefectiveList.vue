@@ -123,6 +123,18 @@ export default {
           label: '处理方式'
         },
         {
+          prop: 'supplierItemNo',
+          label: '供方货号'
+        },
+        {
+          prop: 'supplierSkuCode',
+          label: '商家SKU编码'
+        },
+        {
+          prop: 'merchantTagSize',
+          label: '商家吊牌尺码'
+        },
+        {
           prop: 'remark',
           label: '详情'
         },
