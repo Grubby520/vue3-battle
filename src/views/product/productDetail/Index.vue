@@ -1,6 +1,10 @@
 <template>
   <div class="product">
-    <el-alert v-if="productStatus===6" :title="`侵权审核不通过 原因：${auditRejectReason}`" type="error"></el-alert>
+    <el-alert
+      v-if="productStatus===6&&auditRejectReason"
+      :title="`侵权审核不通过 原因：${auditRejectReason}`"
+      type="error"
+    ></el-alert>
     <template>
       <div
         v-loading="loading"

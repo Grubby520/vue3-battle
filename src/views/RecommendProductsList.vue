@@ -45,7 +45,7 @@
           </div>
         </template>
         <template #statusName="{row}">
-          <div v-if="row.status.value===6">
+          <div v-if="row.status.value===6 && row.auditRejectReason">
             <el-popover
               placement="top"
               width="200"
