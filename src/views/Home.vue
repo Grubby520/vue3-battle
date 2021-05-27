@@ -36,7 +36,6 @@ import SystemInfo from '@/views/components/layout/SystemInfo.vue'
 import UserInfo from '@/views/components/layout/UserInfo.vue'
 import UserOperations from '@/views/components/layout/UserOperations.vue'
 import MenuBar from '@/views/components/layout/MenuBar.vue'
-import { homeRoutes } from '@/router/homeRoutes.js'
 const { mapState: userMapState, mapActions: userMapActions } = createNamespacedHelpers('user')
 
 export default {
@@ -53,20 +52,20 @@ export default {
     }
   },
   watch: {
-    permissions (val) {
-      this.menus = this.getMenus(val || [])
+    permissions () {
+      this.setMenus()
     }
   },
   computed: {
     ...mapState(['breadcrumbs', 'activePath', 'menuCollapse']),
-    ...userMapState(['permissions'])
+    ...userMapState(['permissions', 'routes'])
   },
   methods: {
     ...userMapActions(['GET_USER_INFO']),
-    getMenus (permissions) {
+    setMenus () {
       let menus = []
-      this.routesToMenus(homeRoutes, menus, permissions)
-      return menus
+      this.routesToMenus(this.routes || [], menus, this.permissions || [])
+      this.menus = menus
     },
     routesToMenus (routes = [], menus = [], permissions, prevPath = '/home') {
       routes.forEach(route => {
@@ -94,7 +93,7 @@ export default {
     this.GET_USER_INFO()
   },
   mounted () {
-    this.menus = this.getMenus(this.permissions || [])
+    this.setMenus()
   }
 }
 </script>

@@ -57,7 +57,9 @@ export default {
       this.GET_USER_INFO().then(data => {
         if (data) {
           if (this.enterMainPage) {
-            this.$router.push('home/recommend-products/list')
+            this.UPDATE_ROUTES().then(() => {
+              this.$router.push('home/recommend-products/list')
+            })
             return
           }
           if (this.enterRegisterPage) {
@@ -68,7 +70,7 @@ export default {
     }
   },
   methods: {
-    ...userMapActions(['GET_USER_INFO']),
+    ...userMapActions(['GET_USER_INFO', 'UPDATE_ROUTES']),
     toRegister () {
       this.$router.push({
         path: '/register',

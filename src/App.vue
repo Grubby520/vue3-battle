@@ -22,12 +22,24 @@ export default {
     RemoteJs,
     VersionUpdatePrompt
   },
+  data () {
+    return {
+      showRouterView: true
+    }
+  },
+
   mounted () {
     if (process.env.NODE_ENV === 'production') {
       setInterval(() => {
         this.getVersion()
       }, 1000 * 60 * 5)
     }
+    // 解决刷新页面后路由数据丢失的问题【动态路由问题】
+    this.$store.dispatch('user/UPDATE_ROUTES').then(() => {
+      if (window.location.href.indexOf('/home') !== -1) {
+        this.$router.push(getLocalStorageItem('activePath'))
+      }
+    })
   },
   methods: {
     getVersion () {

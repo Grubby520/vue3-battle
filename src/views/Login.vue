@@ -38,7 +38,7 @@
 
 import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
-import { valueToMd5 } from '@shared/util'
+import { valueToMd5, getSessionItem } from '@shared/util'
 const { mapActions: userMapActions, mapState: userMapState, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 const { mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
@@ -72,7 +72,7 @@ export default {
     this.RESET_USER_DATA()
   },
   methods: {
-    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO', 'RESET_USER_DATA']),
+    ...userMapActions(['AUTH_LOGIN', 'GET_USER_INFO', 'RESET_USER_DATA', 'GET_ROUTES', 'UPDATE_ROUTES']),
     ...registerMapMutations(['RESET_REGISTER_DATA']),
     login () {
       this.$refs.loginForm.validate((valid) => {
@@ -86,7 +86,9 @@ export default {
               this.GET_USER_INFO().then(data => {
                 if (data) {
                   if (this.enterMainPage) {
-                    this.$router.push('home/recommend-products/list')
+                    this.UPDATE_ROUTES().then(() => {
+                      this.gotoEntryRoute()
+                    })
                     return
                   }
                   if (this.enterRegisterPage) {
@@ -111,6 +113,13 @@ export default {
           from: 'loginPage'
         }
       })
+    },
+    gotoEntryRoute () {
+      if (getSessionItem('supplierType') === 'OEM') {
+        this.$router.push('home/delivery-manage/stay-orders-list')
+        return
+      }
+      this.$router.push('home/recommend-products/list')
     }
   }
 }
