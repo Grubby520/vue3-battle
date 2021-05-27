@@ -24,23 +24,52 @@
         <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
-      <SlTable
+      <SlTableInfo
         ref="table"
         :tableData="tableData"
         :columns="columns"
         v-model="selections"
+        :multiple="true"
         :disabledKeys="disabledKeys"
-        :tooltip="false"
       >
-        <div slot="operation" slot-scope="{row}" class="operate">
+        <template #prodctInfo="{row}">
+          <div class="prodctInfo">
+            <SlImage :src="row.productImageUrlList[0]" :size="'10rem'"></SlImage>
+            <div class="prodctInfo-supplier">
+              <template>
+                <p v-if="row.title">商品名称: {{row.title}}</p>
+                <p v-if="row.supplierItemNo">供方货号: {{row.supplierItemNo}}</p>
+                <p v-if="row.erpSpuCode">SPU:{{row.erpSpuCode}}</p>
+              </template>
+            </div>
+          </div>
+        </template>
+        <template #statusName="{row}">
+          <div v-if="row.status.value===6">
+            <el-popover
+              placement="top"
+              width="200"
+              trigger="hover"
+              :content="`原因：${row.auditRejectReason}`"
+            >
+              <span slot="reference">{{row.status.name}}</span>
+            </el-popover>
+          </div>
+          <div v-else>{{row.status.name}}</div>
+        </template>
+        <template #times="{row}">
+          <p>创建:{{row.createTime}}</p>
+          <p>更新:{{row.updateTime}}</p>
+        </template>
+        <template #operation="{row}" class="operate">
           <el-button @click="productDetail('modify',row)" v-if="row.status.value===0" type="text">编辑</el-button>
           <el-button @click="productDetail('view',row)" type="text">查看</el-button>
           <el-button @click="productDetail('modify',row)" v-if="row.status.value===3" type="text">修改</el-button>
           <el-button @click="commit(row)" v-if="row.status.value===0" type="text">提交</el-button>
           <el-button @click="cancel(row)" v-if="row.status.value===1" type="text">撤回</el-button>
           <el-button @click="deleteProduct(row)" v-if="row.status.value===0" type="text">删除</el-button>
-        </div>
-      </SlTable>
+        </template>
+      </SlTableInfo>
     </SlListView>
   </div>
 </template>
@@ -49,7 +78,11 @@ import { successNotify, errorNotify, confirmBox } from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import CommonApi from '@api/api.js'
+import SlImage from '@shared/components/base/SlImage'
 export default {
+  comments: {
+    SlImage
+  },
   data () {
     return {
       tableData: [],
@@ -89,7 +122,7 @@ export default {
       ],
       columns: [
         {
-          prop: '',
+          name: 'prodctInfo',
           label: '商品信息',
           width: '300',
           isInImg: 'src',
@@ -100,24 +133,28 @@ export default {
           }
         },
         {
-          prop: 'categoryName',
+          name: 'categoryName',
           label: '品类'
         },
         {
-          prop: 'description',
-          label: '商品描述'
+          name: 'description',
+          label: '商品描述',
+          align: 'center'
         },
         {
-          prop: 'statusName',
-          label: '状态'
+          name: 'statusName',
+          label: '状态',
+          align: 'center'
         },
         {
-          prop: '',
+          name: 'times',
           label: '创建时间/更新时间',
-          pre: {
-            createTime: '创建',
-            updateTime: '更新'
-          }
+          align: 'center'
+        },
+        {
+          name: 'operation',
+          label: '操作',
+          align: 'center'
         }
       ],
       // 搜索条件是否可以开始加载
@@ -171,8 +208,8 @@ export default {
             if (item.description.length > 30) {
               item.description = item.description.substring(0, 30) + '...'
             }
-            item.src = item.productImageUrlList[0]
-            if (item.status) item.statusName = item.status.name
+            // item.src = item.productImageUrlList[0]
+            // if (item.status) item.statusName = item.status.name
           })
           this.tableData = list
           this.$refs.listView.loading = false
@@ -245,3 +282,16 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.recommond {
+  .prodctInfo {
+    display: flex;
+    justify-content: flex-start;
+    &-supplier {
+      margin-left: 1rem;
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+</style>
