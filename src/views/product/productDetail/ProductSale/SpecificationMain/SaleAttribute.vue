@@ -135,7 +135,8 @@ export default {
       'extraAttrMap',
       'saleAttrs',
       'comparisonSaleAttrs',
-      'productBase'
+      'productBase',
+      'disabledCategory'
     ]),
     filterUableSaleAttrs () {
       // 创建时过滤禁用的属性和属性值
@@ -151,13 +152,22 @@ export default {
     },
     changeSpecificationOptions () {
       if (isEmpty(this.specification)) return
-      const terms = this.specification.terms
+      const { terms, categoryAttributeRelatedSizes } = this.specification
       // 回显选中的规格属性值
       const checkedSpecificationIds = this.chooseSpecificationTerms
         .reduce((init, specification) => init.concat(specification.id), [])
-      return terms
+      const ddd = terms
         .filter(term => !checkedSpecificationIds.includes(term.id))
         .filter(term => !this.noRelatedSize.includes(term.id))
+        .filter(term => {
+          const categoryRelation = categoryAttributeRelatedSizes
+            .find(cate => cate.termId === term.id)
+          const disableRelationSize = this.disabledCategory
+            .find(cate => cate.id === categoryRelation.relatedSizeId)
+          const usable = disableRelationSize || { usable: true }
+          return usable.usable
+        })
+      return ddd
     },
     noRelatedSize () {
       return this.specification.categoryAttributeRelatedSizes

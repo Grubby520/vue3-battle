@@ -28,7 +28,8 @@ export default {
     productMainAttributeAndTerm: {}, // 主属性
     categoryId: undefined, // 分类id
     mainAttributeType: '', // 主属性类型
-    comparisonSaleAttrs: [] // 回显对比过的销售属性(已经删除和未删除的数据)
+    comparisonSaleAttrs: [], // 回显对比过的销售属性(已经删除和未删除的数据)
+    disabledCategory: [] // 禁用的分类属性
   },
   getters: {
     specificationMain: state => state.mainAttributeType === 'specification',
@@ -75,7 +76,8 @@ export default {
     categoryId: (state) => {
       return state.productBase.categoryId
     },
-    comparisonSaleAttrs: state => state.comparisonSaleAttrs
+    comparisonSaleAttrs: state => state.comparisonSaleAttrs,
+    disabledCategory: state => state.disabledCategory
   },
   mutations: {
     CATEGORY_DATA: (store, data) => {
@@ -143,6 +145,9 @@ export default {
     },
     COMPARISON_SALE_INFO (state, data) {
       state.comparisonSaleAttrs = data
+    },
+    DISABLED_CATEGORY (state, data) {
+      state.disabledCategory = data
     }
   },
   actions: {}

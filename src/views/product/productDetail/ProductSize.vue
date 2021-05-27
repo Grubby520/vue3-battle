@@ -213,26 +213,30 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        this.$refs.form.validate((valid) => {
-          if (valid) {
-            let productSize = {}
-            if (this.showTable) {
-              const sizelist = this.form.sizeInfoList || []
-              const sizeInfoList = sizelist.map((size) => {
-                const { attributeTermId, specificationId, attributeId } = size
-                // 新增使用分类标准尺码
-                const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
-                const sizePositions = standardIds.map(key => {
-                  return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+        if (!isEmpty(this.form.sizeInfoList)) {
+          this.$refs.form.validate((valid) => {
+            if (valid) {
+              let productSize = {}
+              if (this.showTable) {
+                const sizelist = this.form.sizeInfoList || []
+                const sizeInfoList = sizelist.map((size) => {
+                  const { attributeTermId, specificationId, attributeId } = size
+                  // 新增使用分类标准尺码
+                  const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
+                  const sizePositions = standardIds.map(key => {
+                    return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
+                  })
+                  return { sizePositions, attributeTermId, specificationId, attributeId }
                 })
-                return { sizePositions, attributeTermId, specificationId, attributeId }
-              })
-              productSize['sizeInfoList'] = sizeInfoList
-              productSize.id = this.productSize.id
+                productSize['sizeInfoList'] = sizeInfoList
+                productSize.id = this.productSize.id
+              }
+              resolve({ 'productSize': productSize })
             }
-            resolve({ 'productSize': productSize })
-          }
-        })
+          })
+        } else {
+          resolve({ 'productSize': {} })
+        }
       })
     }
   }

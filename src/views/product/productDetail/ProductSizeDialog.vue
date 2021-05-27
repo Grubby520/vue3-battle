@@ -70,7 +70,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
+    ...mapGetters('product', [
+      'productParams',
+      'sizeAttr',
+      'sizeStandard',
+      'specificationMain'
+    ]),
     tableHeadData () {
       // 表头数据信息
       const sizeHeader = {
@@ -121,7 +126,7 @@ export default {
     // 是否隐藏尺码对照表
     showSizeContrast () {
       deepClone(this.sizeTableData)
-      return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard)
+      return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard) && !this.specificationMain
     }
   },
   watch: {

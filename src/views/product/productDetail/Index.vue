@@ -262,6 +262,8 @@ export default {
                 } else {
                   this.$store.commit(`product/CATEGORY_DATA`, cate || [])
                 }
+                const disabledCategory = this.disabledCategory(cate)
+                this.$store.commit(`product/DISABLED_CATEGORY`, disabledCategory || [])
               })
           }
         })
@@ -317,6 +319,10 @@ export default {
           init.push(categoryItem)
           return init
         }, []) || []
+    },
+    disabledCategory (categoryData) {
+      return categoryData
+        .filter(cate => !cate.usable && cate.saleAttributeType && [1, 2, 3].includes(cate.saleAttributeType.value))
     },
     /**
    * 回显对比分类判断保存属性是否存在
