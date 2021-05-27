@@ -23,13 +23,17 @@
               <el-input v-model="item.supplyPrice" clearable v-number="{ maxlength: 8 }"></el-input>
             </td>
             <td>
-              <el-input v-model="item.skuCode" clearable v-number="{ maxlength: 30 }"></el-input>
+              <el-input v-model="item.skuCode" clearable maxlength="30"></el-input>
             </td>
             <td>
-              <el-input v-model="item.tagSize" clearable v-number="{ maxlength: 30 }"></el-input>
+              <el-input v-model="item.tagSize" clearable maxlength="30"></el-input>
             </td>
             <td>
-              <el-input v-model="item.weight" clearable v-number="{ maxlength: 8 }"></el-input>
+              <el-input
+                v-model="item.weight"
+                clearable
+                v-number="{ maxlength: 8, decimalsPlace: 0 }"
+              ></el-input>
             </td>
           </tr>
         </tbody>

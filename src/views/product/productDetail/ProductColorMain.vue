@@ -210,7 +210,7 @@ export default {
           label: '带包装重量（G）',
           required: true,
           message: '请输入带包装重量',
-          maxlength: 30
+          maxlength: 8
         }
       ],
       numberRule: {
