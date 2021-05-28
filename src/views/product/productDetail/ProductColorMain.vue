@@ -511,7 +511,6 @@ export default {
             productCategorySalesAttributes: item
           }
         })
-        this.form.productSalesAttributes = this.productSalesAttributeDetail.productSalesAttributes || []
         return this.stashTableInfo(result)
       }
     },
