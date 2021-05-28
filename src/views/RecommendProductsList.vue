@@ -36,11 +36,9 @@
           <div class="prodctInfo">
             <SlImage :src="row.productImageUrlList[0]" :size="'10rem'"></SlImage>
             <div class="prodctInfo-supplier">
-              <template>
-                <p v-if="row.title">商品名称: {{row.title}}</p>
-                <p v-if="row.supplierItemNo">供方货号: {{row.supplierItemNo}}</p>
-                <p v-if="row.erpSpuCode">SPU:{{row.erpSpuCode}}</p>
-              </template>
+              <p v-if="row.title">商品名称: {{row.title}}</p>
+              <p v-if="row.supplierItemNo">供方货号: {{row.supplierItemNo}}</p>
+              <p v-if="row.erpSpuCode">SPU:{{row.erpSpuCode}}</p>
             </div>
           </div>
         </template>
@@ -124,13 +122,7 @@ export default {
         {
           name: 'prodctInfo',
           label: '商品信息',
-          width: '300',
-          isInImg: 'src',
-          pre: {
-            title: '商品名称',
-            supplierItemNo: '供方货号',
-            erpSpuCode: 'SPU'
-          }
+          width: '300'
         },
         {
           name: 'categoryName',
@@ -289,9 +281,10 @@ export default {
     display: flex;
     justify-content: flex-start;
     &-supplier {
-      margin-left: 1rem;
       display: flex;
-      align-items: center;
+      flex-flow: column;
+      justify-content: center;
+      margin-left: 1rem;
     }
   }
 }
