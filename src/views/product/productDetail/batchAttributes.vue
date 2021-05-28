@@ -28,18 +28,10 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="供货价" prop="supplyPrice">
-        <el-input
-          clearable
-          v-model="form.supplyPrice"
-          v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
-        />
+        <el-input clearable v-model="form.supplyPrice" v-number="{ maxlength: 8 }" />
       </el-form-item>
       <el-form-item label="带包装重量" prop="weight">
-        <el-input
-          clearable
-          v-model="form.weight"
-          v-slFormatNumber="{ type: 'integer', max: 99999999, compareLength: true, includeZero: true }"
-        />
+        <el-input clearable v-model="form.weight" v-number="{ maxlength: 8, decimalsPlace: 0 }" />
       </el-form-item>
     </el-form>
 

@@ -24,20 +24,12 @@
       </el-form-item>
 
       <el-form-item label="供货价">
-        <el-input
-          v-model="form.supplyPrice"
-          clearable
-          v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
-        ></el-input>
+        <el-input v-model="form.supplyPrice" clearable v-number="{ maxlength: 8 }"></el-input>
       </el-form-item>
 
       <el-form-item label="带包装重量">
         <div class="packaged-weight">
-          <el-input
-            v-model="form.weight"
-            clearable
-            v-slFormatNumber="{ type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 }"
-          ></el-input>
+          <el-input v-model="form.weight" clearable v-number="{ maxlength: 8, decimalsPlace: 0 }"></el-input>
         </div>
       </el-form-item>
     </el-form>

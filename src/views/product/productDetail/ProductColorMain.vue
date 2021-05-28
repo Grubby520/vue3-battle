@@ -128,7 +128,7 @@
                       v-else
                       v-model.trim="scope.row[item.name]"
                       :maxlength="item.maxlength"
-                      v-slFormatNumber="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
+                      v-number="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
                     />
                   </el-form-item>
                 </template>
@@ -214,8 +214,8 @@ export default {
         }
       ],
       numberRule: {
-        'supplyPrice': { type: 'gold', max: 99999999, compareLength: true, decimalPlaces: 2 },
-        'weight': { type: 'integer', max: 99999999, compareLength: true, includeZero: true }
+        'supplyPrice': { maxlength: 8 },
+        'weight': { maxlength: 8, decimalsPlace: 0 }
       }
     }
   },
