@@ -6,14 +6,16 @@
           class="sku-info batch-no-print"
           v-for="(item, index) in skuArr"
           :key="index"
-          style="width: 59.5mm; height: 38mm; background: #fff; overflow: hidden; page-break-before: always; padding-top:1mm; padding-right: 1mm;
-                        padding-left: 1mm; margin-top:0!important; position:relative;"
+          style="width: 59mm; height: 38mm; background: #fff; overflow: hidden; page-break-after: always; padding-top:1mm; padding-right: 0mm;
+                        padding-left: 0; margin-top:0!important; position:relative;"
         >
           <ul
             class="batch-cnt"
             style="list-style-type: none; padding:0; margin: 0; text-align:center;"
           >
-            <li style="font-size: 18px!important;">{{item.skuCode}}</li>
+            <li
+              style="padding-bottom:1mm;font-size: 16px!important;word-break: break-all;"
+            >{{item.skuCode}}</li>
             <li>
               <div class="barcode">
                 <svg :class="'barcodeSvg'+index" />
@@ -22,20 +24,18 @@
           </ul>
           <ul
             class="bill-number"
-            style="font-size: 7.5pt!important; list-style-type: none; margin: 0.1mm 5mm 0 0; padding:0;"
+            style="font-size: 6.5pt!important; list-style-type: none; margin: 0.1mm 2mm 0 0; padding:0;"
           >
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.1mm; word-break:break-all;"
             >Att:{{item.productVariantAttributes && item.productVariantAttributes.join('/') || ''}}</li>
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
-            >Loc:{{item.locationCode || ''}}</li>
+            >PO:{{item.purchaseOrderNumber || ''}}</li>
             <li
               style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
             >TNumber:{{ item.purchaseBatchNo || ''}}</li>
-            <li
-              style="text-align: right; line-height: 1.1; margin-bottom:0.5mm;"
-            >PrintTime:{{item.printedAt || ''}}</li>
+            <li style="text-align: right; line-height: 1.1;">Loc:{{item.locationCode || ''}}</li>
           </ul>
         </div>
       </div>
@@ -117,7 +117,7 @@ export default {
           margin: 0 auto;
         }
         .bill-number {
-          font-size: 7.5pt;
+          font-size: 6.5pt;
         }
         ul {
           padding: 0;

@@ -11,7 +11,7 @@
             name="username"
             type="text"
             v-model="loginForm.username"
-            placeholder="用户名"
+            placeholder="邮箱"
             maxlength="100"
           />
         </el-form-item>
@@ -52,8 +52,8 @@ export default {
       },
       loginRules: {
         username: [
-          emptyValidator('账户不能为空'),
-          charLimitValidator('用户名不正确', 1, 100)
+          emptyValidator('邮箱不能为空'),
+          charLimitValidator('邮箱不正确', 1, 100)
         ],
         password: [
           emptyValidator('密码不能为空'),

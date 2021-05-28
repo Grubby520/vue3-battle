@@ -40,6 +40,15 @@ export const homeRoutes = [
     component: ParentMenuRoute,
     children: [
       {
+        path: 'goods-statistics',
+        name: '商品数据',
+        meta: {
+          icon: 'el-icon-paperclip',
+          code: 'menu_odm_upload_list'
+        },
+        component: () => import('@/views/GoodsStatistics.vue')
+      },
+      {
         path: 'list',
         name: '商品列表',
         meta: {
