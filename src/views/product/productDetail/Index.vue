@@ -100,21 +100,12 @@ export default {
       return this.mode === 'view'
     },
     productComponents () {
-      let currentComponents = []
-      if (this.productStatus >= 3) {
-        // 通过侵权审核
-        if (this.specificationMain) {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain', 'ProductSize', 'ProductAttr']
-        } else {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain', 'ProductSize', 'ProductAttr']
-        }
-      } else {
-        if (this.specificationMain) {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductSpecificationMain']
-        } else {
-          currentComponents = ['ProductBase', 'ProductImages', 'ProductColorMain']
-        }
-      }
+      const unapproveComponents = ['ProductBase', 'ProductImages']
+      // 通过侵权审核展示尺码表和商品属性
+      const passComponents = ['ProductBase', 'ProductImages', 'ProductSize', 'ProductAttr']
+      const currentComponents = this.productStatus >= 3 ? passComponents : unapproveComponents
+      const addComponents = this.specificationMain ? 'ProductSpecificationMain' : 'ProductColorMain'
+      currentComponents.splice(2, 0, addComponents)
       return currentComponents
     },
     specification () {

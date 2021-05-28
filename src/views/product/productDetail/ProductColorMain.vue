@@ -228,7 +228,6 @@ export default {
       'saleAttrs',
       'comparisonSaleAttrs',
       'specificationMain'
-
     ]),
     changeForm () {
       const saleAttrArr = []
