@@ -134,7 +134,8 @@ export default {
         },
         {
           name: 'categoryName',
-          label: '品类'
+          label: '品类',
+          align: 'center'
         },
         {
           name: 'description',

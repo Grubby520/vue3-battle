@@ -183,6 +183,7 @@ export default {
       } = data
       const hasCheckValue = Object.values(checkedIds).flat().length > 0
       checkedIds = this.transComplexAttributeObject(checkedIds)
+      console.log('21212121', deepClone(checkedIds))
       // 如果有选中销售属性值 且 采购价、销售价、预估重量中有录入的
       if (hasCheckValue && (supplyPrice || weight)) {
         this.tableData.forEach((item, index) => {

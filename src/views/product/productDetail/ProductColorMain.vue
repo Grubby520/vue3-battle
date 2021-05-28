@@ -519,14 +519,30 @@ export default {
      * 批量录入回填
      * @param {Array} val 需要回填的数据
      */
-    hideDialog (val) {
-      const { sizeList, skuList, specifications, supplyPrice, weight } = val
-      const checkedIds = [...sizeList, ...skuList, ...specifications]
-      if (checkedIds.length > 0 && (supplyPrice || weight)) {
+    hideDialog (data) {
+      let {
+        checkedIds = {}, // 选中的销售属性Id集合
+        supplyPrice = '', // 供货价=
+        weight // 带包装重量
+      } = data
+      const hasCheckValue = Object.values(checkedIds).flat().length > 0
+      // 如果有选中销售属性值 且 采购价、销售价、预估重量中有录入的
+      const checkedIdsInfo = {}
+      Object.keys(checkedIds).forEach(id => {
+        if (!isEmpty(checkedIds[id])) {
+          checkedIdsInfo[id] = checkedIds[id]
+        }
+      })
+      if (hasCheckValue && (supplyPrice || weight)) {
         this.form.productSalesAttributes.forEach((item, index) => {
-          const saleTermsRowIds = item.productCategorySalesAttributes
-            .reduce((init, attr) => init.concat(attr.attributeTermId), [])
-          const isMatchCheck = checkedIds.some(id => saleTermsRowIds.includes(id))
+          const isMatchCheck = item.productCategorySalesAttributes.every(
+            attribute => {
+              return !checkedIdsInfo[attribute.attributeId] ||
+                checkedIdsInfo[attribute.attributeId].includes(
+                  attribute.attributeTermId
+                )
+            }
+          )
           if (isMatchCheck) {
             supplyPrice &&
               this.$set(
