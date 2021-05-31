@@ -29,14 +29,13 @@
 <script>
 import ProductBase from './ProductBase'
 import ProductAttr from './ProductAttr'
-import ProductColorMain from './ProductColorMain'
+import ProductColorMain from './ColorMain/Index'
 import ProductSpecificationMain from './SpecificationMain/SkuInfo'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
 import { isEmpty, deepClone } from '@shared/util'
-// import { deepClone } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },

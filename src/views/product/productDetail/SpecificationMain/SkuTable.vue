@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import BatchTypingDialog from '../batchTypingDialog.vue'
+import BatchTypingDialog from './batchTypingDialog.vue'
 import { mapGetters } from 'vuex'
 import { deepClone, isEmpty } from '@shared/util'
 export default {

@@ -12,7 +12,7 @@
       :model="form"
       ref="form"
       label-position="left"
-      label-width="110px"
+      label-width="11rem   "
       class="odmDetailBase-form-con"
     >
       <el-form-item>
