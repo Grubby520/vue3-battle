@@ -1,5 +1,10 @@
 <template>
   <div class="product">
+    <el-alert
+      v-if="productStatus===6&&auditRejectReason"
+      :title="`侵权审核不通过 原因：${auditRejectReason}`"
+      type="error"
+    ></el-alert>
     <template>
       <div
         v-loading="loading"
@@ -52,6 +57,7 @@ export default {
   components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
   data () {
     return {
+      auditRejectReason: '',
       productStatus: undefined,
       loading: false
     }
@@ -119,7 +125,9 @@ export default {
       for (let product in productData) {
         this.$store.commit(`product/${product}`, productData[product] || [])
       }
-      this.productStatus = productBase.status
+      const { auditRejectReason, status } = productBase
+      this.productStatus = status
+      this.auditRejectReason = auditRejectReason
     },
     categoryAttrs (response) {
       const categoryData = response.data.map(categoryItem => {
