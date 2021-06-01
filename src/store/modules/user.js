@@ -106,7 +106,7 @@ export default {
         const { success, data } = res
         if (success) {
           commit('SET_USER_INFO', data)
-          setSessionItem('supplierType', data.supplierType || 'ODM')
+          setSessionItem('supplierType', data.supplierCategory === 1 ? 'OEM' : 'ODM')
           return res
         }
       })
