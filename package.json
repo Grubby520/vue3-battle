@@ -8,7 +8,8 @@
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
-    "analyze": "cross-env config_report=true vue-cli-service build"
+    "analyze": "cross-env config_report=true vue-cli-service build",
+    "protocolToHtml":"mammoth public/protocol.docx dist/protocol.html"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "^0.4.0",
@@ -25,7 +26,7 @@
     "jsbarcode": "^3.11.3",
     "json2csv": "^5.0.5",
     "jsplumb": "^2.12.8",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "nprogress": "^0.2.0",
     "qs": "^6.9.6",
     "vue": "^2.6.10",
@@ -51,6 +52,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "lint-staged": "^10.5.1",
+    "mammoth": "^1.4.17",
     "mockjs": "^1.1.0",
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.0",
