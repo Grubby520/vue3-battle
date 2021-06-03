@@ -364,9 +364,9 @@ export default {
           newCategoryData.push(deleteSaleAttr)
         }
       })
-      const relateCategoryDate = this.changeMainAttributeAndTerm()
-      const relateColorCategoryDate = this.changeMainColorAttributeAndTerm()
-      let relateCategory = this.specificationMain ? [...newCategoryData, ...relateCategoryDate] : [...newCategoryData, ...relateColorCategoryDate]
+      const relateCategoryData = this.changeMainSpecificationAttributeAndTerm()
+      const relateColorCategoryData = this.changeMainColorAttributeAndTerm()
+      let relateCategory = this.specificationMain ? [...newCategoryData, ...relateCategoryData] : [...newCategoryData, ...relateColorCategoryData]
       this.$store.commit(`product/COMPARISON_SALE_INFO`, relateCategory || [])
     },
     /**
@@ -395,7 +395,7 @@ export default {
     /**
     * 回显判断分类上的关联关系是否发生变化
     */
-    changeMainAttributeAndTerm () {
+    changeMainSpecificationAttributeAndTerm () {
       const {
         mainAttributeId
       } = deepClone(this.productMainAttributeAndTerm)
@@ -427,7 +427,9 @@ export default {
       } else {
         const productAttrIds = productCategorySalesAttributeSelectedList
           .reduce((init, attr) => init.concat(attr.attributeId), [])
-        return this.saleAttrs.filter(sale => !productAttrIds.includes(sale.id))
+        const categorySale = this.saleAttrs.filter(sale => !productAttrIds.includes(sale.id))
+        // 已经发布的产品不可添加新的分类数据
+        return this.productStatus < 5 ? categorySale : []
       }
     },
     getResult () {
