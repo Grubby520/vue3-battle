@@ -33,11 +33,12 @@
             </template>
             <!-- 供货价格/sku/吊牌/带包装 -->
             <el-input
-              v-else
+              v-else-if="!item.input"
               v-model.trim="scope.row[item.name]"
               :maxlength="item.maxlength"
               v-number="['supplyPrice','weight'].includes(item.name) ? numberRule[item.name] :''"
             />
+            <span v-else>{{scope.row[item.name]}}</span>
           </el-form-item>
         </template>
       </el-table-column>

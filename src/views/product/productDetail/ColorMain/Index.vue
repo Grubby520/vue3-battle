@@ -168,8 +168,20 @@ export default {
           required: true,
           message: '请输入带包装重量',
           maxlength: 8
+        },
+        {
+          name: 'statusName',
+          label: '状态',
+          input: true,
+          required: false
         }
+
       ],
+      skuStatus: {
+        1: '待审核',
+        2: '已发布',
+        3: '认领失败'
+      },
       numberRule: {
         'supplyPrice': { maxlength: 8 },
         'weight': { maxlength: 8, decimalsPlace: 0 }
@@ -230,7 +242,7 @@ export default {
     'productAttrFill': {
       handler (newValue) {
         const [curSaleAttrs, productSalesAttributeDetail] = deepClone(newValue)
-        if (this.tableHeadData.length === 4) this.initAttrData()
+        if (this.tableHeadData.length === 5) this.initAttrData()
         if (isEmpty(curSaleAttrs)) return
         if (!isEmpty(productSalesAttributeDetail)) {
           const saleTypes = {
@@ -239,7 +251,11 @@ export default {
             'NZ012': ['specification', 'specifications']
           }
           const { productSalesAttributes, productCategorySalesAttributeSelectedList } = productSalesAttributeDetail
-          this.form.productSalesAttributes = productSalesAttributes
+          this.form.productSalesAttributes = productSalesAttributes.map(sale => {
+            sale.status = 1
+            sale.statusName = this.skuStatus[sale.status]
+            return sale
+          })
           const productCategoryList = productCategorySalesAttributeSelectedList.map(productItem => {
             productItem.attributeTerms.forEach(term => {
               Object.assign(term, {
