@@ -6,6 +6,7 @@
       @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
+      :searchLoading="searchLoading"
       class="recommonPar"
     >
       <div slot="search">
@@ -30,17 +31,16 @@
         :columns="columns"
         v-model="selections"
         :multiple="true"
+        v-loading="loading"
         :disabledKeys="disabledKeys"
       >
         <template #prodctInfo="{row}">
           <div class="prodctInfo">
             <SlImage :src="row.productImageUrlList[0]" :size="'10rem'"></SlImage>
             <div class="prodctInfo-supplier">
-              <template>
-                <p v-if="row.title">商品名称: {{row.title}}</p>
-                <p v-if="row.supplierItemNo">供方货号: {{row.supplierItemNo}}</p>
-                <p v-if="row.erpSpuCode">SPU:{{row.erpSpuCode}}</p>
-              </template>
+              <p v-if="row.title">商品名称: {{row.title}}</p>
+              <p v-if="row.supplierItemNo">供方货号: {{row.supplierItemNo}}</p>
+              <p v-if="row.erpSpuCode">SPU:{{row.erpSpuCode}}</p>
             </div>
           </div>
         </template>
@@ -88,6 +88,8 @@ export default {
       tableData: [],
       selections: [], // 复选框数据
       disabledKeys: [],
+      loading: false,
+      searchLoading: false,
       page: {
         pageIndex: 1,
         total: 0
@@ -124,17 +126,12 @@ export default {
         {
           name: 'prodctInfo',
           label: '商品信息',
-          width: '300',
-          isInImg: 'src',
-          pre: {
-            title: '商品名称',
-            supplierItemNo: '供方货号',
-            erpSpuCode: 'SPU'
-          }
+          width: '300'
         },
         {
           name: 'categoryName',
-          label: '品类'
+          label: '品类',
+          align: 'center'
         },
         {
           name: 'description',
@@ -194,28 +191,33 @@ export default {
       })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
+      this.loading = true
+      this.searchLoading = true
       let requestParams = { ...this.query }
       // 将分类过滤取值赋给[categoryIdLevel]，[categoryId]取level的最后一级
       const path = requestParams.categoryId || ''
       requestParams.categoryIdLevel = path
       requestParams.categoryId = path.split(',').reverse()[0]
-      const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
+      const recommondpar = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
-      RecommondApi.getList({ ...RECOMMONDPAR })
+      RecommondApi.getList({ ...recommondpar })
         .then((res) => {
           const { list, total } = res.data
           list.forEach(item => {
             if (item.description.length > 30) {
               item.description = item.description.substring(0, 30) + '...'
             }
-            // item.src = item.productImageUrlList[0]
-            // if (item.status) item.statusName = item.status.name
           })
           this.tableData = list
-          this.$refs.listView.loading = false
           // 待推品复选框置灰数据
-          this.disabledKeys = list.filter(item => item.status.value !== 0).map(item => item.id)
+          this.disabledKeys = list
+            .filter(item => item.status.value !== 0)
+            .map(item => item.id)
           this.page.total = total
+        })
+        .finally(() => {
+          this.loading = false
+          this.searchLoading = false
         })
     },
     reset () {
@@ -288,9 +290,10 @@ export default {
     display: flex;
     justify-content: flex-start;
     &-supplier {
-      margin-left: 1rem;
       display: flex;
-      align-items: center;
+      flex-flow: column;
+      justify-content: center;
+      margin-left: 1rem;
     }
   }
 }

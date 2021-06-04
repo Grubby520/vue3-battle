@@ -79,9 +79,13 @@ export default {
   methods: {
     result () {
       return new Promise((resolve, reject) => {
-        if (this.productImages.length > 0) {
-          resolve({ 'productImages': this.productImages || [] })
-        }
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            if (this.productImages.length > 0) {
+              resolve({ 'productImages': this.productImages || [] })
+            }
+          }
+        })
       })
     }
   }
