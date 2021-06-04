@@ -315,7 +315,6 @@ export default {
         err = true
         return err
       }
-      console.log('this.tableData', deepClone(this.tableData))
       let supplyPrice = this.tableData.every(item => item.supplyPrice)
       if (!supplyPrice) {
         this.$message.error('供货价格，不能为空')
