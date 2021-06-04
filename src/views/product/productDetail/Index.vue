@@ -16,18 +16,12 @@
       </div>
     </template>
     <div class="product-btn">
-      <SlDetails
-        ref="control"
-        :references="$refs"
-        form="form"
-        :mode="mode"
-        :create="create"
-        :load="load"
-        :modify="modify"
-        :cancel="cancel"
-        :saveText="saveText"
-        cancelText="返回列表"
-      />
+      <div v-if="mode!=='view'">
+        <el-button type="primary" @click="create">保存</el-button>
+        <el-button type="primary" v-if="productStatus !== 3" @click="saveSubmit">提交</el-button>
+        <el-button type="primary" v-if="productStatus === 3" @click="replenish">确定补充信息</el-button>
+      </div>
+      <el-button @click="cancel" style="margin-left:1rem;">返回列表</el-button>
     </div>
   </div>
 </template>
@@ -35,12 +29,13 @@
 <script>
 import ProductBase from './ProductBase'
 import ProductAttr from './ProductAttr'
-import ProductSale from './ProductSale'
+import ProductColorMain from './ColorMain/Index'
+import ProductSpecificationMain from './SpecificationMain/SkuInfo'
 import ProductSize from './ProductSize'
 import ProductImages from './ProductImages'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import { mapGetters } from 'vuex'
-// import { deepClone } from '@shared/util'
+import { isEmpty, deepClone } from '@shared/util'
 export default {
   props: {
     mode: { type: String, required: false, default: '' },
@@ -54,12 +49,20 @@ export default {
     cateLabels: { type: String, required: false, default: '' },
     supplierItemNo: { type: String, required: false, default: '' }
   },
-  components: { ProductSize, ProductSale, ProductAttr, ProductBase, ProductImages },
+  components: {
+    ProductSize,
+    ProductColorMain,
+    ProductAttr,
+    ProductBase,
+    ProductImages,
+    ProductSpecificationMain
+  },
   data () {
     return {
       auditRejectReason: '',
       productStatus: undefined,
-      loading: false
+      loading: false,
+      mainAttributeType: ''
     }
   },
   watch: {
@@ -70,23 +73,101 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    'categoryId': {
+      handler (newValue) {
+        if (newValue) {
+          this.getCategoryAttr()
+          if (this.mode !== 'create') {
+            this.load()
+          }
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
   computed: {
-    ...mapGetters('product', ['sizeStandard']),
+    ...mapGetters('product', [
+      'specificationMain',
+      'saleAttrs',
+      'productMainAttributeAndTerm',
+      'productSalesAttributeDetail',
+      'categoryData'
+    ]),
     isStatus () {
       return this.mode === 'view'
     },
-    saveText () {
-      return this.isStatus ? [] : this.productStatus !== 3 ? [{ 0: '保存' }, { 1: '提交' }] : [{ 0: '保存' }, { 1: '确定补充信息' }]
-    },
     productComponents () {
-      return this.productStatus >= 3 ? ['ProductBase', 'ProductImages', 'ProductSale', 'ProductSize', 'ProductAttr'] : ['ProductBase', 'ProductImages', 'ProductSale']
-    }
-  },
-  mounted () {
-    if (this.mode === 'create') {
-      this.getCategoryAttr()
+      const unapproveComponents = ['ProductBase', 'ProductImages']
+      // 通过侵权审核展示尺码表和商品属性
+      const passComponents = ['ProductBase', 'ProductImages', 'ProductSize', 'ProductAttr']
+      const currentComponents = this.productStatus >= 3 ? passComponents : unapproveComponents
+      const addComponents = this.specificationMain ? 'ProductSpecificationMain' : 'ProductColorMain'
+      currentComponents.splice(2, 0, addComponents)
+      return currentComponents
+    },
+    specification () {
+      return this.saleAttrs.find(attr => attr.saleAttributeType && attr.saleAttributeType.value === 3) || {}
+    },
+    /**
+    * 当前关联关系的sizeids
+    */
+    relationIds () {
+      const {
+        productCategorySalesAttributeSelectedList = []
+      } = deepClone(this.productSalesAttributeDetail)
+      return productCategorySalesAttributeSelectedList
+        .filter(sale => sale.attribute.saleAttributeType === 2)
+        .reduce((init, size) => {
+          init.push(size.attribute.id)
+          return init
+        }, [])
+    },
+    /**
+     * 回显数据的关联关系
+     */
+    categoryAttributeRelatedSizesInfo () {
+      const {
+        productMainAttributeAndTerm: { mainAttributeId, productMainAttributeTermRelationList = [] } = {},
+        productCategorySalesAttributeSelectedList = []
+      } = deepClone(this.productSalesAttributeDetail)
+      return productMainAttributeTermRelationList.map(relation => {
+        const { mainAttributeTermId, relatedAttributeAndTermList } = relation
+        const relationSize = relatedAttributeAndTermList
+          .find(term => this.relationIds.includes(term.attributeId))
+        const saleSizeAttr = productCategorySalesAttributeSelectedList
+          .find(attr => relationSize.attributeId === attr.attributeId)
+        const saleSpecificationAttr = productCategorySalesAttributeSelectedList
+          .filter(attr => mainAttributeId === attr.attributeId)
+          .map(attr => {
+            return attr.attributeTerms.find(term => term.id === mainAttributeTermId)
+          })
+        return {
+          termId: mainAttributeTermId,
+          relatedSizeId: relationSize.attributeId,
+          termName: saleSpecificationAttr[0].name,
+          relatedSizeName: saleSizeAttr.attribute.name
+        }
+      })
+    },
+    /**
+     * 对比分类和回显数据，主属性没有变更的情况下，获取分类新添加的关联关系
+     */
+    categorySalesAttributeSelectedList () {
+      const {
+        productMainAttributeAndTerm: { mainAttributeId, productMainAttributeTermRelationList = [] } = {}
+      } = deepClone(this.productSalesAttributeDetail)
+      const { categoryAttributeRelatedSizes, mainAttribute, id } = this.specification
+      let restCategoryRelated = []
+      if (mainAttributeId === id && mainAttribute) {
+        // 当前规格主属性没有变更
+        const productMainAttributeTermRelationIds = productMainAttributeTermRelationList
+          .reduce((init, term) => init.concat(term.mainAttributeTermId), [])
+        restCategoryRelated = categoryAttributeRelatedSizes
+          .filter(cate => !productMainAttributeTermRelationIds.includes(cate.termId))
+      }
+      return restCategoryRelated
     }
   },
   methods: {
@@ -113,45 +194,83 @@ export default {
         productCustomAttributes,
         productImages,
         productSalesAttributeDetail,
-        productSize
+        productSize,
+        productMainAttributeAndTerm
       } = response.data
       const productData = {
         'PRODUCT_BASE': productBase, // 基础属性
         'PRODUCT_CUSTOM_ATTRIBUTES': productCustomAttributes, // 商品属性
         'PRODUCT_IMAGES': productImages, // 图片属性
         'PRODUCT_SALES_ATTRIBUTE_DETAIL': productSalesAttributeDetail, // 销售属性
-        'PRODUCT_SIZE': productSize // 尺码表
+        'PRODUCT_SIZE': productSize, // 尺码表
+        'PRODUCT_MAIN_ATTRIBUTE_AND_TERM': productMainAttributeAndTerm
       }
+      this.setSkuType(productMainAttributeAndTerm)
       for (let product in productData) {
         this.$store.commit(`product/${product}`, productData[product] || [])
       }
       const { auditRejectReason, status } = productBase
       this.productStatus = status
       this.auditRejectReason = auditRejectReason
+      const { productCategorySalesAttributeSelectedList = [] } = deepClone(productSalesAttributeDetail)
+      this.comparisonCateInfo(productCategorySalesAttributeSelectedList)
+    },
+    setSkuType (productMainAttributeAndTerm) {
+      const mainAttributeType = isEmpty(productMainAttributeAndTerm.productMainAttributeTermRelationList)
+        ? 'color'
+        : 'specification'
+
+      this.$store.commit(
+        'product/SET_MAIN_ATTRIBUTE_TYPE',
+        mainAttributeType
+      )
     },
     categoryAttrs (response) {
-      const categoryData = response.data.map(categoryItem => {
-        categoryItem.terms.forEach(term => {
-          term.extendCode = categoryItem.extendCode
-          term.attributeId = categoryItem.id
+      return new Promise(resolve => {
+        const categoryData = response.data.map(categoryItem => {
+          categoryItem.terms.forEach(term => {
+            term.extendCode = categoryItem.extendCode
+            term.attributeId = categoryItem.id
+          })
+          return categoryItem
         })
-        return categoryItem
+        resolve(categoryData)
       })
-      this.$store.commit(`product/CATEGORY_DATA`, categoryData || [])
     },
     getCategoryAttr () {
       RecommondApi.plmCategoryAttrs(this.categoryId, { system: 2 })
         .then(response => {
-          this.categoryAttrs(response)
+          if (response.success) {
+            this.categoryAttrs(response)
+              .then(cate => {
+                if (this.mode === 'create') {
+                  const specificationRelatedSizes = cate
+                    .find(attr =>
+                      attr.saleAttributeType && attr.saleAttributeType.value === 3
+                    ) || {}
+                  // 规格为是否为主属性
+                  const {
+                    mainAttribute
+                  } = specificationRelatedSizes
+                  const mainAttributeType = mainAttribute ? 'specification' : 'color'
+                  this.$store.commit('product/SET_MAIN_ATTRIBUTE_TYPE', mainAttributeType)
+                  // 创建过滤已经禁用的属性和属性值
+                  const filterCategory = this.filterUableSaleAttrs(cate)
+                  this.$store.commit(`product/CATEGORY_DATA`, filterCategory || [])
+                } else {
+                  this.$store.commit(`product/CATEGORY_DATA`, cate || [])
+                }
+                const disabledCategory = this.disabledCategory(cate)
+                this.$store.commit(`product/DISABLED_CATEGORY`, disabledCategory || [])
+              })
+          }
         })
     },
     create () {
       // 保存数据
       this.getResult()
         .then(res => {
-          // 0：productSave 确定 1：productSaveSubmit 提交
-          const interfaces = this.$refs.control.someBtnParams === 0 ? 'productSave' : 'productSaveSubmit'
-          RecommondApi[interfaces](res)
+          RecommondApi.productSave(res)
             .then((res) => {
               if (res.success) {
                 this.cancel()
@@ -159,17 +278,23 @@ export default {
             })
         })
     },
-    modify () {
-      // 编辑数据
+    saveSubmit () {
+      // 保存提交数据
       this.getResult()
         .then(res => {
-          let interfacesStatus = {
-            0: 'productSave'
-          }
-          // productStatus 3:保存 非3：修改补充信息
-          interfacesStatus[1] = this.productStatus !== 3 ? 'productSaveSubmit' : 'replenish'
-          const interfaces = interfacesStatus[this.$refs.control.someBtnParams]
-          RecommondApi[interfaces](res)
+          RecommondApi.productSaveSubmit(res)
+            .then((res) => {
+              if (res.success) {
+                this.cancel()
+              }
+            })
+        })
+    },
+    replenish () {
+      // 修改补充信息
+      this.getResult()
+        .then(res => {
+          RecommondApi.replenish(res)
             .then((res) => {
               if (res.success) {
                 this.cancel()
@@ -178,22 +303,149 @@ export default {
         })
     },
     cancel () {
-      // 取消
       this.$router.push({ path: '/home/recommend-products/list' })
+    },
+    /**
+     * 创建时过滤禁用的属性和属性值
+     */
+    filterUableSaleAttrs (categoryData) {
+      return categoryData
+        .filter(categoryItem => categoryItem.usable)
+        .reduce((init, categoryItem) => {
+          categoryItem.terms = categoryItem.terms
+            .filter(term => term.usable)
+          init.push(categoryItem)
+          return init
+        }, []) || []
+    },
+    disabledCategory (categoryData) {
+      return categoryData
+        .filter(cate => !cate.usable && cate.saleAttributeType && [1, 2, 3].includes(cate.saleAttributeType.value))
+    },
+    /**
+   * 回显对比分类判断保存属性是否存在
+   */
+    comparisonCateInfo (productCategorySalesAttributeSelectedList) {
+      if (isEmpty(productCategorySalesAttributeSelectedList)) return
+      const newCategoryData = []
+      productCategorySalesAttributeSelectedList.forEach(sale => {
+        const cateSaleAttr = !isEmpty(this.saleAttrs) && this.saleAttrs.find(attr => attr.id === sale.attributeId)
+        if (cateSaleAttr) {
+          // 判断销售属性分类上存在
+          const { attributeTerms, attributeId } = sale
+          const cateTermIds = cateSaleAttr.terms.reduce((init, a) => init.concat(a.id), [])
+          const { usable, terms, saleAttributeType } = cateSaleAttr
+          if (!usable) cateSaleAttr.name = `${cateSaleAttr.name}(已禁用)`
+          // 判断属性值是否禁用
+          terms.forEach(sale => {
+            if (!sale.usable) {
+              sale.name = `${sale.name}(已禁用)`
+            }
+          })
+          if (saleAttributeType.value === 3) {
+            // 规格需要处理关联关系
+            cateSaleAttr.categoryAttributeRelatedSizes = [...this.categoryAttributeRelatedSizesInfo, ...this.categorySalesAttributeSelectedList]
+          }
+          // 判断回填的销售属性值是否存在
+          attributeTerms.forEach(attrTerm => {
+            if (!cateTermIds.includes(attrTerm.id)) {
+              Object.assign(attrTerm, {
+                name: `${attrTerm.name}(已删除)`,
+                attributeId,
+                extendCode: sale.attribute.extendCode,
+                code: `${attrTerm.id}`
+              })
+              terms.push(attrTerm)
+            }
+          })
+          newCategoryData.push(cateSaleAttr)
+        } else {
+          const deleteSaleAttr = this.buidDeletedSaleAttrs(sale)
+          newCategoryData.push(deleteSaleAttr)
+        }
+      })
+      const relateCategoryData = this.changeMainSpecificationAttributeAndTerm()
+      const relateColorCategoryData = this.changeMainColorAttributeAndTerm()
+      let relateCategory = this.specificationMain ? [...newCategoryData, ...relateCategoryData] : [...newCategoryData, ...relateColorCategoryData]
+      this.$store.commit(`product/COMPARISON_SALE_INFO`, relateCategory || [])
+    },
+    /**
+     * 回显处理已经删除的销售属性
+     */
+    buidDeletedSaleAttrs (sale) {
+      const { attribute, attributeTerms, attributeId } = sale
+      Object.assign(attribute, {
+        name: `${attribute.name}(已删除)`,
+        saleAttributeType: { 'value': attribute.saleAttributeType },
+        deleteSale: true
+      })
+      const deleteAttrs = { ...attribute }
+      deleteAttrs['terms'] = attributeTerms
+        .map(attr => {
+          Object.assign(attr, {
+            name: `${attr.name}(已删除)`,
+            attributeId,
+            extendCode: attribute.extendCode,
+            code: `${attr.id}`
+          })
+          return attr
+        })
+      return deleteAttrs
+    },
+    /**
+    * 回显判断分类上的关联关系是否发生变化
+    */
+    changeMainSpecificationAttributeAndTerm () {
+      const {
+        mainAttributeId
+      } = deepClone(this.productMainAttributeAndTerm)
+      let relateCategoryData = []
+      // 当前分类上所有关联关系
+      const { id, mainAttribute } = this.specification
+      // 当前关联规格主属性没有变
+      if ((id === mainAttributeId && mainAttribute)) {
+        const categoryRelatedSizes = this.specification.categoryAttributeRelatedSizes
+        const relateCategoryDataIds = categoryRelatedSizes
+          .filter(cate => !this.relationIds.includes(cate.relatedSizeId))
+          .reduce((init, cate) => init.concat(cate.relatedSizeId), [])
+        relateCategoryData = this.categoryData
+          .filter(cate => relateCategoryDataIds.includes(cate.id))
+      }
+      return relateCategoryData
+    },
+    /**
+     * 颜色为主属性
+     */
+    changeMainColorAttributeAndTerm () {
+      const { productCategorySalesAttributeSelectedList,
+        productMainAttributeAndTerm: { mainAttributeId }
+      } = this.productSalesAttributeDetail
+      const { id, mainAttribute } = this.specification
+      if (mainAttribute && (id !== mainAttributeId)) {
+        // 变更了主属性
+        return []
+      } else {
+        const productAttrIds = productCategorySalesAttributeSelectedList
+          .reduce((init, attr) => init.concat(attr.attributeId), [])
+        const categorySale = this.saleAttrs.filter(sale => !productAttrIds.includes(sale.id))
+        // 已经发布的产品不可添加新的分类数据
+        return this.productStatus < 5 ? categorySale : []
+      }
     },
     getResult () {
       // 获取需要保存/提交的数据
       const result = []
-      for (const ref in this.$refs) {
-        const currentRef = this.$refs[ref][0]
-        currentRef && result.push(currentRef.result())
-      }
+      const refs = this.productComponents
+      refs.forEach(res => {
+        const resultPromises = this.$refs[res][0].result()
+        result.push(resultPromises)
+      })
       return Promise.all(result)
         .then((res) => {
           const [
             { productBase },
             { productImages },
-            { productSalesAttributes },
+            { productSalesAttributes } = {},
             { productSize } = {},
             { productCustomAttributes } = {}
           ] = res
@@ -205,9 +457,9 @@ export default {
           return {
             productBase,
             productImages,
-            productSalesAttributes,
             productSize,
-            productCustomAttributes
+            productCustomAttributes,
+            ...productSalesAttributes
           }
         })
     }
@@ -259,6 +511,11 @@ export default {
         line-height: 20px;
       }
     }
+  }
+  &-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
   }
 }
 </style>

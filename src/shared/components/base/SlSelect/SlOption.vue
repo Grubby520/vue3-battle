@@ -6,7 +6,10 @@
     @click="itemClick(item)"
   >
     <span>{{item[label]}}</span>
-    <span v-if="showRight" style="float:right;margin-right:20px">{{item[rightItem]}}</span>
+    <span
+      v-if="showRight"
+      style="float:right; margin-right:20px; color: #8492a6; "
+    >{{item[rightItem]}}</span>
   </li>
 </template>
 

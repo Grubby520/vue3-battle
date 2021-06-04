@@ -9,13 +9,32 @@
         v-if="(!selectedItem || !selectedItem.length) && !keyName"
         class="placeholder"
       >{{placeholder}}</span>
-      <span v-for="item in selectedItem" :key="item[value]" :class="{'multiple': multiple}">
-        {{item[label]}}
-        <i
-          @click.stop="delItem(item[value])"
-          v-if="!curDefaultValues.includes(item[value]) && multiple && !disabled"
-        ></i>
+      <span v-if="collapseTags && selectedItem.length > this.collapseLimit">
+        <span
+          v-for="item in selectedItem.slice(0,this.collapseLimit)"
+          :key="item[value]"
+          class="multiple"
+        >
+          {{item[label]}}
+          <i
+            @click.stop="delItem(item[value])"
+            v-if="!curDefaultValues.includes(item[value]) && multiple && !disabled"
+          ></i>
+        </span>
+        <span
+          class="multiple"
+          v-if="selectedItem.length > this.collapseLimit"
+        >+ {{ selectedItem.length - this.collapseLimit }}</span>
       </span>
+      <template v-else>
+        <span v-for="item in selectedItem" :key="item[value]" :class="{'multiple': multiple}" style>
+          {{item[label]}}
+          <i
+            @click.stop="delItem(item[value])"
+            v-if="!curDefaultValues.includes(item[value]) && multiple && !disabled"
+          ></i>
+        </span>
+      </template>
       <input
         v-if="filterable && !disabled"
         @input="handlerFilter"
@@ -110,7 +129,7 @@ export default {
     },
     modelVal: {
       type: [String, Array, Number],
-      required: true
+      required: false
     },
     // 默认值-默认值不可删除
     defaultValues: {
@@ -157,6 +176,11 @@ export default {
     rightItem: {
       type: String,
       default: 'channelType'
+    },
+    collapseTags: Boolean,
+    collapseLimit: {
+      type: Number,
+      default: 2
     }
   },
   methods: {
@@ -208,7 +232,6 @@ export default {
       )
       if (index > -1) this.selectedItem.splice(index, 1)
       this.emitValue()
-      this.$emit('removeTag', val)
     },
     // 搜索
     handlerFilter (e) {
@@ -245,16 +268,17 @@ export default {
     initData () {
       if (this.isObj) {
         this.selectedItem = JSON.parse(JSON.stringify(this.modelVal))
-        return null
       } else {
         let val =
           typeof this.modelVal === 'object'
             ? this.modelVal
             : [this.modelVal]
         this.selectedItem = val.map((item) => {
-          return this.options.find(
+          let currentItem = this.options.find(
             (zItem) => zItem[this.value] === item
           )
+          if (!currentItem) this.emitValue()
+          return currentItem || []
         })
       }
     },
@@ -274,15 +298,23 @@ export default {
       }
       return this.options
         .filter((item) => {
-          return item[findDataKey].indexOf(keyWords) > -1
+          return (
+            item[findDataKey]
+              .toLowerCase()
+              .indexOf(keyWords.toLowerCase()) > -1
+          )
         })
         .sort((a, b) => {
           return a[findDataKey].length - b[findDataKey].length
         })
         .sort((a, b) => {
           return (
-            a[findDataKey].indexOf(keyWords) -
-            b[findDataKey].indexOf(keyWords)
+            a[findDataKey]
+              .toLowerCase()
+              .indexOf(keyWords.toLowerCase()) -
+            b[findDataKey]
+              .toLowerCase()
+              .indexOf(keyWords.toLowerCase())
           )
         })
         .sort((a, b) => {
@@ -326,6 +358,20 @@ export default {
     },
     selectedItem () {
       this.keyName = ''
+    },
+    showDropdown: {
+      handler (val) {
+        if (!val) {
+          this.$emit('toggleDrop', 0)
+        } else {
+          const height =
+            this.curOptions.length * 34 > this.maxHeight
+              ? this.maxHeight
+              : this.curOptions.length * 34
+          this.$emit('toggleDrop', height)
+        }
+      },
+      immediate: true
     }
   }
 }
@@ -351,8 +397,7 @@ export default {
     border-radius: 3px;
     transition: all 0.3s ease;
     position: relative;
-    box-sizing: border-box;
-
+    white-space: nowrap;
     &.active {
       border-color: #409eff;
     }
@@ -381,11 +426,12 @@ export default {
         &::before {
           width: 100%;
           height: 100%;
-          line-height: 1;
+          line-height: 11px;
           text-align: center;
           display: block;
           content: '\00D7';
           font-style: normal;
+          transform: translateY(-1px);
         }
 
         &:hover {

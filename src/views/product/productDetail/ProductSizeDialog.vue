@@ -65,11 +65,17 @@ export default {
       formSizes: [],
       usable: {}, // 属性禁用
       sizeContrastTableList: [],
+      currentChoose: [],
       hints: ['注意事项：', '1、查看下方尺码对照表，根据适用身高、体重匹配对应商品尺码；', '2、商品尺码偏大或偏小，请务必调整尺码号，按照合适尺码发货；']
     }
   },
   computed: {
-    ...mapGetters('product', ['productParams', 'sizeAttr', 'sizeStandard']),
+    ...mapGetters('product', [
+      'productParams',
+      'sizeAttr',
+      'sizeStandard',
+      'specificationMain'
+    ]),
     tableHeadData () {
       // 表头数据信息
       const sizeHeader = {
@@ -120,7 +126,7 @@ export default {
     // 是否隐藏尺码对照表
     showSizeContrast () {
       deepClone(this.sizeTableData)
-      return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard)
+      return this.sizeTableData.length > 0 && !isEmpty(this.sizeStandard) && !this.specificationMain
     }
   },
   watch: {
@@ -130,11 +136,12 @@ export default {
   },
   methods: {
     open (data) {
-      const { sizeOptions, formSizes, usable, showSaleLabel } = data
+      const { sizeOptions, formSizes, usable, showSaleLabel, currentChoose } = data
       this.sizeOptions = sizeOptions
       this.formSizes = formSizes
       this.dialogVisible = true
-      this.usable = usable && !showSaleLabel['sizedeleted']
+      this.currentChoose = currentChoose
+      this.usable = (usable && !showSaleLabel['sizedeleted']) || (!isEmpty(currentChoose) && !currentChoose.item.usable)
       this.getSizeTable()
     },
     getSizeTable () {
@@ -173,7 +180,7 @@ export default {
     },
     handleConfirm () {
       let formSizes = this.sizeOptions.filter(item => this.checkedSizes.includes(item.id))
-      this.$emit('confirm', formSizes)
+      this.$emit('confirm', formSizes, this.currentChoose)
       this.handleClose()
     },
     handleClose () {
