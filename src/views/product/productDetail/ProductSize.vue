@@ -213,24 +213,23 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        if (!isEmpty(this.form.sizeInfoList)) {
+        console.log('showTable', this.showTable)
+        if (this.showTable) {
           this.$refs.form.validate((valid) => {
             if (valid) {
               let productSize = {}
-              if (this.showTable) {
-                const sizelist = this.form.sizeInfoList || []
-                const sizeInfoList = sizelist.map((size) => {
-                  const { attributeTermId, specificationId, attributeId } = size
-                  // 新增使用分类标准尺码
-                  const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
-                  const sizePositions = standardIds.map(key => {
-                    return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
-                  })
-                  return { sizePositions, attributeTermId, specificationId, attributeId }
+              const sizelist = this.form.sizeInfoList || []
+              const sizeInfoList = sizelist.map((size) => {
+                const { attributeTermId, specificationId, attributeId } = size
+                // 新增使用分类标准尺码
+                const standardIds = this.sizeStandardHeadData.map(standard => standard.id)
+                const sizePositions = standardIds.map(key => {
+                  return size[key] ? { 'attributeTermId': key, value: size[key] } : { 'attributeTermId': key, value: '' }
                 })
-                productSize['sizeInfoList'] = sizeInfoList
-                productSize.id = this.productSize.id
-              }
+                return { sizePositions, attributeTermId, specificationId, attributeId }
+              })
+              productSize['sizeInfoList'] = sizeInfoList
+              productSize.id = this.productSize.id
               resolve({ 'productSize': productSize })
             }
           })
