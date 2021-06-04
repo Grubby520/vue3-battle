@@ -86,7 +86,8 @@
           <div slot="label">
             <el-dropdown trigger="click" @command="handleAdd">
               <el-button type="text">
-                <i class="el-icon-plus el-icon--left"></i> 亲子装规格
+                <i class="el-icon-plus el-icon--left"></i>
+                {{specification.name}}
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item

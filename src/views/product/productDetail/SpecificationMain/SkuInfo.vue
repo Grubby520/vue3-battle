@@ -315,7 +315,6 @@ export default {
         err = true
         return err
       }
-
       let supplyPrice = this.tableData.every(item => item.supplyPrice)
       if (!supplyPrice) {
         this.$message.error('供货价格，不能为空')
