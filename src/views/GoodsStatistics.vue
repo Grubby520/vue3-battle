@@ -3,14 +3,20 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
       :pageSizes="pageSizes"
     >
       <div slot="search">
-        <SlSearchForm ref="searchForm" v-model="searchQuery" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="searchQuery"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="reset"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
       <el-divider />
       <el-table
@@ -141,6 +147,7 @@ export default {
   name: 'GoodsStatistics',
   data () {
     return {
+      tableLoading: false,
       colorFilterDialogVisible: false,
       filterColorValue: null,
       pageSizes: [10],
@@ -192,6 +199,7 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       let params = this.getParams(pageSize, pageIndex)
+      this.tableLoading = true
       GoodsApi.getProductDashboardList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -201,7 +209,7 @@ export default {
           this.page.pageSize = pageSize
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
       })
     },
     reset () {
@@ -211,9 +219,7 @@ export default {
         orderDirect: null
       }
       this.$refs.table.clearSort()
-      this.$refs.searchForm.reset()
-
-      this.$refs.listView.refresh()
+      this.gotoPage(this.page.pageSize)
     },
     sortChange (sortParams) {
       let orderBy = null

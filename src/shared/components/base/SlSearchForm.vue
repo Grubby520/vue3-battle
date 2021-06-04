@@ -39,7 +39,7 @@
           </el-input>
           <el-form-item
             v-else-if="item.type === 'input'"
-            :label="item.isLabel? '':item.label"
+            :label="item.hideLabel? '':item.label"
             :prop="item.name"
           >
             <el-input
@@ -51,12 +51,12 @@
           </el-form-item>
           <template v-else-if="item.type === 'single-select'">
             <el-form-item
-              :label="item.isLabel? '':item.label"
+              :label="item.hideLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
               <SlSingleSelect
-                :label="item.isLabel?item.label:'请选择'"
+                :label="item.hideLabel?item.label:'请选择'"
                 v-model="form[item.name]"
                 :remoteUrl="item.data.remoteUrl"
                 :reqParams="item.data.params"
@@ -67,20 +67,20 @@
           <!-- 树型下拉 -->
           <template v-else-if="item.type === 'tree-select'">
             <el-form-item
-              :label="item.isLabel? '':item.label"
+              :label="item.hideLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
               <SlTreeSelect
                 v-model="form[item.name]"
                 :options="options[item.name]"
-                :label="item.isLabel?item.label:'请选择'"
+                :label="item.hideLabel?item.label:'请选择'"
               ></SlTreeSelect>
             </el-form-item>
           </template>
           <template v-else-if="item.type === 'date'">
             <el-form-item
-              :label="item.isLabel? '':item.label"
+              :label="item.hideLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
@@ -98,6 +98,10 @@
               ></el-date-picker>
             </el-form-item>
           </template>
+        </el-col>
+        <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="6">
+          <el-button type="primary" :loading="loading" @click="search">搜索</el-button>
+          <el-button :loading="loading" @click="reset">重置</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -125,6 +129,10 @@ export default {
     labelWidth: {
       type: Number,
       default: 100
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -135,11 +143,21 @@ export default {
       getDatePickerOptions: getDatePickerOptions
     }
   },
+  computed: {
+
+  },
   methods: {
     formChange () {
       this.$emit('valChange', this.form)
     },
+    search () {
+      this.$emit('search')
+    },
     reset () {
+      this.resetFormData()
+      this.$emit('reset')
+    },
+    resetFormData () {
       this.form = JSON.parse(JSON.stringify(this.resetForm))
       this.$emit('valChange', this.form)
     }

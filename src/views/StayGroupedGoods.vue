@@ -4,7 +4,6 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
@@ -12,7 +11,14 @@
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="formQuery" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="formQuery"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -96,6 +102,7 @@ export default {
   },
   data () {
     return {
+      tableLoading: false,
       loading: false,
       activeIndex: '-1',
       showSplitOrderDialog: false,
@@ -321,6 +328,7 @@ export default {
   methods: {
     gotoPage (pageSize = 50, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      this.tableLoading = true
       GoodsApi.getGroupList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -331,13 +339,9 @@ export default {
           this.disabledKeys = this.tableData.filter(item => item.canDeliveryOrder === false).map(item => item.id)
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
         this.getSwitchNavs()
       })
-    },
-    reset () {
-      this.$refs.searchForm.reset()
-      this.$refs.listView.refresh()
     },
     getSwitchNavs () {
       GoodsApi.getGroupTabs({}).then(data => {

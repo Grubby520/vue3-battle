@@ -129,7 +129,7 @@ export default {
           this.page.pageSize = pageSize
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+
       })
     },
     generateParams (pageSize, pageIndex) {

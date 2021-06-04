@@ -3,14 +3,20 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="query"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -59,6 +65,7 @@ export default {
   name: 'SettlementOrderList',
   data () {
     return {
+      tableLoading: false,
       loading: false,
       tableData: [],
       selections: [],
@@ -174,6 +181,7 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      this.tableLoading = true
       GoodsApi.getSettlementOrderList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -184,15 +192,8 @@ export default {
           this.disabledKeys = data.list.filter(item => item.status !== 1).map(item => item.id)
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
       })
-    },
-    reset () {
-      this.resetParams()
-      this.$refs.listView.refresh()
-    },
-    resetParams () {
-      this.$refs.searchForm.reset()
     },
     generateParams (pageSize, pageIndex) {
       let { paymentAts = [], ...orther } = this.query

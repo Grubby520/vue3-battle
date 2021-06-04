@@ -10,14 +10,20 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="query"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
       <el-divider />
       <SlTableToolbar>
@@ -92,6 +98,7 @@ export default {
   data () {
     return {
       loading: false,
+      tableLoading: false,
       reimbursementId: null,
       attachmentsManageDialogTitle: '上传附件',
       attachmentsManageDialogShow: false,
@@ -266,6 +273,7 @@ export default {
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      this.tableLoading = true
       GoodsApi.getReimbursementList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -275,15 +283,8 @@ export default {
           this.page.pageSize = pageSize
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
       })
-    },
-    reset () {
-      this.resetParams()
-      this.$refs.listView.refresh()
-    },
-    resetParams () {
-      this.$refs.searchForm.reset()
     },
     generateParams (pageSize, pageIndex) {
       let { createAts = [], ...orther } = this.query

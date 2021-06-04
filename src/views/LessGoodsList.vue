@@ -3,14 +3,20 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="query"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
       <el-divider />
       <!-- 表格区域包含分页 -->
@@ -35,6 +41,7 @@ export default {
   name: 'LessGoodsList',
   data () {
     return {
+      tableLoading: false,
       tableData: [],
       page: {
         pageIndex: 1,
@@ -185,7 +192,7 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-
+      this.tableLoading = true
       GoodsApi.getStockOutList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -195,7 +202,7 @@ export default {
           this.page.pageSize = pageSize
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
       })
     },
     generateParams (pageSize, pageIndex) {
@@ -210,10 +217,6 @@ export default {
         createdStartAt: createdAts && createdAts[0] ? createdAts[0] : '',
         createdEndAt: createdAts && createdAts[1] ? createdAts[1] : ''
       }
-    },
-    reset () {
-      this.$refs.searchForm.reset()
-      this.$refs.listView.refresh()
     }
   }
 }

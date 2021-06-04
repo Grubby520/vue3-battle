@@ -16,13 +16,19 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
     >
       <div slot="search">
-        <SlSearchForm ref="searchForm" v-model="searchQuery" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="searchQuery"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
       <el-button type="primary" @click="batchPrintNo">批量导出批次号</el-button>
       <div class="switch-nav">
@@ -173,6 +179,7 @@ export default {
   components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo, PrintInvoice },
   data () {
     return {
+      tableLoading: false,
       remarksForm: {
         remarks: ''
       },
@@ -274,13 +281,9 @@ export default {
       return row.orderStatus !== 5
     },
 
-    reset () {
-      this.$refs.searchForm.reset()
-      this.$refs.listView.refresh()
-    },
-
     gotoPage (pageSize = 10, pageIndex = 1) {
       let params = this.getParams(pageSize, pageIndex)
+      this.tableLoading = true
       if (this.activeIndex > 0) {
         delete params.status
         params.type = this.activeIndex
@@ -301,7 +304,7 @@ export default {
           })
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
       })
     },
 

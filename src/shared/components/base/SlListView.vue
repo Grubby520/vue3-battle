@@ -2,10 +2,6 @@
   <div class="bases">
     <div v-if="$slots.search">
       <slot name="search"></slot>
-      <div class="bases-search">
-        <el-button type="primary" @click="searchPage" :loading="loading">搜索</el-button>
-        <el-button v-if="isReset" @click="reset">重置</el-button>
-      </div>
     </div>
     <template>
       <slot></slot>
@@ -28,7 +24,6 @@ export default {
     total: { type: Number, required: false, default: undefined },
     pageIndex: { type: Number, required: false, default: undefined },
     pageSize: { type: Number, required: false, default: 10 },
-    isReset: { type: Boolean, required: false, default: true },
     isPagination: { type: Boolean, required: false, default: true },
     pageSizes: {
       type: Array,
@@ -37,7 +32,7 @@ export default {
   },
   data () {
     return {
-      loading: false
+
     }
   },
   mounted () {
@@ -47,15 +42,8 @@ export default {
     pageChange (item) {
       this.$emit('gotoPage', item.pageSize, item.pageIndex)
     },
-    searchPage () {
-      this.loading = true
-      this.$emit('gotoPage', this.pageSize, 1)
-    },
     refresh () {
       this.$emit('gotoPage', this.pageSize, 1)
-    },
-    reset () {
-      this.$emit('reset')
     }
   }
 }

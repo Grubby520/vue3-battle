@@ -3,7 +3,6 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       class="recommonPar"
@@ -14,6 +13,9 @@
           v-model="query"
           :items="searchItems"
           :labelWidth="20"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
           ref="searchForm"
           v-if="filterIsLoad"
         />
@@ -85,6 +87,7 @@ export default {
   },
   data () {
     return {
+      tableLoading: false,
       tableData: [],
       selections: [], // 复选框数据
       disabledKeys: [],
@@ -102,17 +105,17 @@ export default {
           default: null,
           type: 'tree-select',
           label: '品类',
-          isLabel: true,
+          hideLabel: true,
           name: 'categoryId',
           data: {
             options: []
           }
         },
-        { type: 'input', label: '供方货号', name: 'supplierItemNo', isLabel: true },
+        { type: 'input', label: '供方货号', name: 'supplierItemNo', hideLabel: true },
         {
           type: 'single-select',
           label: '状态',
-          isLabel: true,
+          hideLabel: true,
           name: 'status',
           data: {
             remoteUrl: RecommondUrl.recommendStatus,
@@ -201,9 +204,11 @@ export default {
       requestParams.categoryId = path.split(',').reverse()[0]
       const RECOMMONDPAR = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
+      this.tableLoading = true
       RecommondApi.getList({ ...RECOMMONDPAR })
         .then((res) => {
           const { list, total } = res.data
+
           list.forEach(item => {
             if (item.description.length > 30) {
               item.description = item.description.substring(0, 30) + '...'
@@ -212,16 +217,15 @@ export default {
             // if (item.status) item.statusName = item.status.name
           })
           this.tableData = list
-          this.$refs.listView.loading = false
+
           // 待推品复选框置灰数据
           this.disabledKeys = list.filter(item => item.status.value !== 0).map(item => item.id)
+          this.page.pageIndex = pageIndex
+          this.page.pageSize = pageSize
           this.page.total = total
+        }).finally(() => {
+          this.tableLoading = false
         })
-    },
-    reset () {
-      this.$refs.searchForm.reset()
-      // 更新列表
-      this.$refs.listView.refresh()
     },
     commit (row) {
       // 批量推品

@@ -3,14 +3,20 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="query" :items="searchItems">
+        <SlSearchForm
+          ref="searchForm"
+          v-model="query"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="reset"
+          @search="gotoPage(page.pageSize)"
+        >
           <template v-slot:before>
             <div class="table-search-statistics">
               <SlCheckedList
@@ -89,6 +95,7 @@ export default {
   data () {
     return {
       activeIndex: '-1',
+      tableLoading: false,
       ungroupedStatistics: [], // 未组单统计
       notShippedStatistics: [], // 已组单未发货
       notArrivedStatistics: [], // 已发货未到货
@@ -298,6 +305,7 @@ export default {
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      this.tableLoading = true
       GoodsApi.getPurchaseTableList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -307,14 +315,18 @@ export default {
           this.page.pageSize = pageSize
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
         this.getSwitchNavs()
       })
     },
     reset () {
-      this.resetParams()
+      this.statistics = {
+        0: undefined,
+        1: undefined,
+        2: undefined
+      }
       this.query.tabType = this.activeIndex
-      this.$refs.listView.refresh()
+      this.gotoPage(this.page.pageSize)
     },
     switchNav (index) {
       this.resetParams()
@@ -338,7 +350,7 @@ export default {
       this.gotoPage()
     },
     resetParams () {
-      this.$refs.searchForm.reset()
+      this.$refs.searchForm.resetFormData()
       this.statistics = {
         0: undefined,
         1: undefined,
