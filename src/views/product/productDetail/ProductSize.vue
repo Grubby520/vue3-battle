@@ -213,7 +213,6 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        console.log('showTable', this.showTable)
         if (this.showTable) {
           this.$refs.form.validate((valid) => {
             if (valid) {
