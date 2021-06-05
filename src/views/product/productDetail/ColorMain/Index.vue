@@ -429,7 +429,7 @@ export default {
 .ProductSale {
   margin-bottom: 2rem;
   &-sizes {
-    color: #409eff;
+    color: #1890ff;
     cursor: default;
   }
   .el-card {

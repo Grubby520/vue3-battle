@@ -69,7 +69,7 @@ export default {
     top: -1px;
     width: 3px;
     height: 100%;
-    background: #409eff;
+    background: #1890ff;
   }
   .content-title-text {
     position: relative;

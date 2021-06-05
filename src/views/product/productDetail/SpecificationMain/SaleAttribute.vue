@@ -491,7 +491,7 @@ export default {
 <style scoped lang="scss">
 .specification {
   &-size {
-    color: #409eff;
+    color: #1890ff;
     cursor: default;
   }
   .no-data {
