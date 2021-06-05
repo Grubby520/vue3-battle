@@ -178,9 +178,9 @@ export default {
 
       ],
       skuStatus: {
-        1: '待审核',
-        2: '已发布',
-        3: '认领失败'
+        0: '待审核',
+        1: '认领失败',
+        2: '已发布'
       },
       numberRule: {
         'supplyPrice': { maxlength: 8 },
@@ -252,7 +252,6 @@ export default {
           }
           const { productSalesAttributes, productCategorySalesAttributeSelectedList } = productSalesAttributeDetail
           this.form.productSalesAttributes = productSalesAttributes.map(sale => {
-            sale.status = 1
             sale.statusName = this.skuStatus[sale.status]
             return sale
           })
