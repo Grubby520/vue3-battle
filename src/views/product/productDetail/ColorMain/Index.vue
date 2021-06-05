@@ -132,7 +132,8 @@ export default {
       specificationOptions: [],
       categoryDataStatus: false,
       tableLabel: {}, // 表头展示的销售属性name
-      tableHeadData: [ // 表头字段
+      tableHeadData: [],
+      defalutHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
           label: '供货价格（RMB）',
@@ -234,10 +235,9 @@ export default {
   watch: {
     'productAttrFill': {
       handler (newValue) {
+        this.initAttrData()
         const [curSaleAttrs, productSalesAttributeDetail] = deepClone(newValue)
-        if (this.tableHeadData.length >= 4) this.initAttrData()
-        if (isEmpty(curSaleAttrs)) return
-        if (!isEmpty(productSalesAttributeDetail)) {
+        if (!isEmpty(productSalesAttributeDetail) && !isEmpty(curSaleAttrs)) {
           const saleTypes = {
             'NZ011': ['size', 'sizes'],
             'NZ010': ['color', 'colors'],
@@ -312,15 +312,13 @@ export default {
         }
       })
       const tableSort = sortHead.sort((a, b) => { return a.saleAttributeType - b.saleAttributeType })
-      this.tableHeadData.unshift(...tableSort)
-      if (this.productParams.mode !== 'create') {
-        this.tableHeadData.push({
-          name: 'statusName',
-          label: '状态',
-          input: true,
-          required: false
-        })
+      let tableStatus = {
+        name: 'statusName',
+        label: '状态',
+        input: true,
+        required: false
       }
+      this.tableHeadData = this.productParams.mode !== 'create' ? [...tableSort, ...this.defalutHeadData, tableStatus] : [...tableSort, ...this.defalutHeadData]
     },
     /**
     * 构建销售属性表头/销售属性展示label/下拉赋值
