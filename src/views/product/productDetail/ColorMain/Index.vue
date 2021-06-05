@@ -168,14 +168,7 @@ export default {
           required: true,
           message: '请输入带包装重量',
           maxlength: 8
-        },
-        {
-          name: 'statusName',
-          label: '状态',
-          input: true,
-          required: false
         }
-
       ],
       skuStatus: {
         0: '待审核',
@@ -242,7 +235,7 @@ export default {
     'productAttrFill': {
       handler (newValue) {
         const [curSaleAttrs, productSalesAttributeDetail] = deepClone(newValue)
-        if (this.tableHeadData.length === 5) this.initAttrData()
+        if (this.tableHeadData.length >= 4) this.initAttrData()
         if (isEmpty(curSaleAttrs)) return
         if (!isEmpty(productSalesAttributeDetail)) {
           const saleTypes = {
@@ -320,6 +313,14 @@ export default {
       })
       const tableSort = sortHead.sort((a, b) => { return a.saleAttributeType - b.saleAttributeType })
       this.tableHeadData.unshift(...tableSort)
+      if (this.productParams.mode !== 'create') {
+        this.tableHeadData.push({
+          name: 'statusName',
+          label: '状态',
+          input: true,
+          required: false
+        })
+      }
     },
     /**
     * 构建销售属性表头/销售属性展示label/下拉赋值

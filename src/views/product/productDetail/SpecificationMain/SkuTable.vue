@@ -9,6 +9,7 @@
             <th>商家SKU编码</th>
             <th class="required">商家吊牌尺码</th>
             <th class="required">带包装重量（G）</th>
+            <th v-if="productParams.mode !=='create'">状态</th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +35,9 @@
                 clearable
                 v-number="{ maxlength: 8, decimalsPlace: 0 }"
               ></el-input>
+            </td>
+            <td v-if="productParams.mode !=='create'">
+              <span>{{skuStatus[item.status]}}</span>
             </td>
           </tr>
         </tbody>
@@ -93,7 +97,12 @@ export default {
     return {
       form: {},
       rules: {},
-      batchTypingVisible: false // 批量输入弹窗是否可见
+      batchTypingVisible: false, // 批量输入弹窗是否可见
+      skuStatus: {
+        0: '待审核',
+        1: '认领失败',
+        2: '已发布'
+      }
     }
   },
   computed: {
