@@ -72,13 +72,16 @@ export default {
   mounted () {
   },
   computed: {
-    ...mapGetters('product', ['productBase', 'customAttributesData', 'productParams', 'productCustomAttributes']),
+    ...mapGetters('product', ['productBase', 'categoryData', 'productParams', 'productCustomAttributes']),
     productStatus () {
       return this.productBase.status
     },
     customAttributes () {
-      const { customAttributesData, productCustomAttributes } = this
-      return { customAttributesData, productCustomAttributes }
+      const { productCustomAttributes } = this
+      return { customAttributesData: this.customAttributesData, productCustomAttributes }
+    },
+    customAttributesData () {
+      return this.categoryData.filter(item => item.type.value === 4)
     }
   },
   watch: {
@@ -234,15 +237,24 @@ export default {
     },
     result () {
       return new Promise(resolve => {
-        const data = this.form.attributesData.map((attribute) => {
-          return {
-            attributeId: attribute.attributeId,
-            attributeValues: attribute.checkbox ? attribute.value : (attribute.value ? [attribute.value] : []),
-            attributeTermType: attribute.termValueType,
-            id: attribute.id
-          }
-        })
-        resolve({ 'productCustomAttributes': data || [] })
+        const productAttr = this.form.attributesData
+        if (!isEmpty(productAttr)) {
+          this.$refs.form.validate((valid) => {
+            if (valid) {
+              const data = productAttr.map((attribute) => {
+                return {
+                  attributeId: attribute.attributeId,
+                  attributeValues: attribute.checkbox ? attribute.value : (attribute.value ? [attribute.value] : []),
+                  attributeTermType: attribute.termValueType,
+                  id: attribute.id
+                }
+              })
+              resolve({ 'productCustomAttributes': data || [] })
+            }
+          })
+        } else {
+          resolve({ 'productCustomAttributes': [] })
+        }
       })
     }
   }
