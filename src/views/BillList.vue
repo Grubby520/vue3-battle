@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-alert class="mb-2rem" type="warning" :closable="false">
+    <el-alert class="mb-16px" type="warning" :closable="false">
       注意！请打印发票和供货清单，每页加盖公司公章后扫描文件并上传每一页图片完成结算。
       <span>
         参照范本
@@ -25,7 +25,6 @@
           @search="gotoPage(page.pageSize)"
         ></SlSearchForm>
       </div>
-      <el-divider />
       <SlTableToolbar>
         <el-button type="primary" :loading="loading" :disabled="!canExport" @click="exportList">导出</el-button>
       </SlTableToolbar>

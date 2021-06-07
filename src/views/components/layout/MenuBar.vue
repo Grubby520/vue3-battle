@@ -34,7 +34,7 @@ export default {
     },
     backgroundColor: {
       type: String,
-      default: '#222d32'
+      default: '#1a233b'
     },
     textColor: {
       type: String,

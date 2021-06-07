@@ -16,7 +16,7 @@ export default {
       type: String,
       required: true
     },
-    className: {// 自定义样式类名
+    extendClassName: {// 自定义样式类名
       type: String
     }
   },
@@ -25,8 +25,8 @@ export default {
       return `#${this.iconPrefix}${this.iconClass}`
     },
     svgClass () {
-      if (this.className) {
-        return 'svg-icon ' + this.className
+      if (this.extendClassName) {
+        return 'svg-icon ' + this.extendClassName
       } else {
         return 'svg-icon'
       }

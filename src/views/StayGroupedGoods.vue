@@ -20,7 +20,6 @@
           @search="gotoPage(page.pageSize)"
         ></SlSearchForm>
       </div>
-      <el-divider />
       <SlTableToolbar>
         <el-button
           type="primary"

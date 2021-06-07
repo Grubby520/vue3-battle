@@ -30,7 +30,9 @@
           @search="gotoPage(page.pageSize)"
         ></SlSearchForm>
       </div>
-      <el-button type="primary" @click="batchPrintNo">批量导出批次号</el-button>
+      <SlTableToolbar>
+        <el-button type="primary" @click="batchPrintNo">批量导出批次号</el-button>
+      </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
           :default-active="activeIndex"
@@ -45,93 +47,95 @@
           <el-menu-item index="4">3日未发货({{navInfo.totalWaitThreeDay}})</el-menu-item>
         </el-menu>
       </div>
-      <el-table
-        :data="tableData"
-        border
-        size="mini"
-        ref="multipleTable"
-        class="tableData"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" :selectable="checkSelectable"></el-table-column>
-        <el-table-column prop="date" label="发货单号" width="150px" align="center">
-          <template slot-scope="scope">
-            <el-button @click="odmDetail(scope.row,'see')" type="text">{{scope.row.orderNumber}}</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column prop="orderRequireNum" label="订单需求数量" width="120px" align="center"></el-table-column>
-        <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center"></el-table-column>
-        <el-table-column prop="totalPrice" label="总金额（￥）" width="100px" align="center"></el-table-column>
-        <el-table-column label="状态" width="80px" align="center">
-          <template slot-scope="scope">{{orderStatusList[scope.row.orderStatus]}}</template>
-        </el-table-column>
-        <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
-        <el-table-column label="最晚交货时间" width="180px" align="center">
-          <template slot-scope="scope">
-            <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd')}}</p>
-            <p
-              style="color:red"
-              v-if="Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24) > 0"
-            >还剩下：{{Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
-          </template>
-        </el-table-column>
-        <el-table-column label="进度时间" width="200px" align="center">
-          <template slot-scope="scope">
-            <p v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</p>
-            <p v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</p>
-            <p v-if="scope.row.submissionTime">签收时间：{{scope.row.submissionTime}}</p>
-            <p v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</p>
-          </template>
-        </el-table-column>
-        <el-table-column prop="settleOrderNumber" label="结算单号" width="100px" align="center"></el-table-column>
-        <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
-          <template slot-scope="scope">
-            <p v-if="scope.row.logisticsNumber">
-              物流单号：
+      <div class="sl-table-wrap">
+        <el-table
+          :data="tableData"
+          border
+          size="mini"
+          ref="multipleTable"
+          class="tableData"
+          style="width: 100%"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" :selectable="checkSelectable"></el-table-column>
+          <el-table-column prop="date" label="发货单号" width="150px" align="center">
+            <template slot-scope="scope">
+              <el-button @click="odmDetail(scope.row,'see')" type="text">{{scope.row.orderNumber}}</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="orderRequireNum" label="订单需求数量" width="120px" align="center"></el-table-column>
+          <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center"></el-table-column>
+          <el-table-column prop="totalPrice" label="总金额（￥）" width="100px" align="center"></el-table-column>
+          <el-table-column label="状态" width="80px" align="center">
+            <template slot-scope="scope">{{orderStatusList[scope.row.orderStatus]}}</template>
+          </el-table-column>
+          <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
+          <el-table-column label="最晚交货时间" width="180px" align="center">
+            <template slot-scope="scope">
+              <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd')}}</p>
+              <p
+                style="color:red"
+                v-if="Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24) > 0"
+              >还剩下：{{Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
+            </template>
+          </el-table-column>
+          <el-table-column label="进度时间" width="200px" align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</p>
+              <p v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</p>
+              <p v-if="scope.row.submissionTime">签收时间：{{scope.row.submissionTime}}</p>
+              <p v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</p>
+            </template>
+          </el-table-column>
+          <el-table-column prop="settleOrderNumber" label="结算单号" width="100px" align="center"></el-table-column>
+          <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.logisticsNumber">
+                物流单号：
+                <el-button
+                  @click="openLogistisInfoDialog(scope.row)"
+                  type="text"
+                >{{scope.row.logisticsNumber}}</el-button>
+              </p>
               <el-button
-                @click="openLogistisInfoDialog(scope.row)"
-                type="text"
-              >{{scope.row.logisticsNumber}}</el-button>
-            </p>
-            <el-button
-              type="primary"
-              @click="modifyLogistNo(scope.row)"
-              v-if="[0,1].includes(Number(scope.row.orderStatus))"
-            >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
-          </template>
-        </el-table-column>
-        <el-table-column prop="remarks" label="备注" width="200px" align="center"></el-table-column>
-        <el-table-column label="操作" width="180px" align="center" fixed="right">
-          <template slot-scope="scope">
-            <!-- <el-button
+                type="primary"
+                @click="modifyLogistNo(scope.row)"
+                v-if="[0,1].includes(Number(scope.row.orderStatus))"
+              >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="remarks" label="备注" width="200px" align="center"></el-table-column>
+          <el-table-column label="操作" width="180px" align="center" fixed="right">
+            <template slot-scope="scope">
+              <!-- <el-button
               @click="odmDetail(scope.row,'modify')"
               type="text"
               v-if="[0,1].includes(Number(scope.row.orderStatus))"
-            >修改</el-button>-->
-            <el-button class="operate-btn" @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
-            <el-button
-              class="operate-btn"
-              @click="exportExcle(scope.row)"
-              type="text"
-              v-if="scope.row.orderStatus != 5"
-            >导出表格</el-button>
-            <el-button
-              class="operate-btn"
-              @click="printOrder(scope.row)"
-              type="text"
-              v-if="scope.row.orderStatus != 5"
-            >打印发货单</el-button>
-            <el-button
-              class="operate-btn"
-              @click="printBatch(scope.row)"
-              type="text"
-              v-if="scope.row.orderStatus != 5"
-            >打印批次号</el-button>
-            <el-button class="operate-btn" type="text" @click="handleRemark(scope.row)">备注</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+              >修改</el-button>-->
+              <el-button class="operate-btn" @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
+              <el-button
+                class="operate-btn"
+                @click="exportExcle(scope.row)"
+                type="text"
+                v-if="scope.row.orderStatus != 5"
+              >导出表格</el-button>
+              <el-button
+                class="operate-btn"
+                @click="printOrder(scope.row)"
+                type="text"
+                v-if="scope.row.orderStatus != 5"
+              >打印发货单</el-button>
+              <el-button
+                class="operate-btn"
+                @click="printBatch(scope.row)"
+                type="text"
+                v-if="scope.row.orderStatus != 5"
+              >打印批次号</el-button>
+              <el-button class="operate-btn" type="text" @click="handleRemark(scope.row)">备注</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </SlListView>
     <!-- 物流信息dialog -->
     <logistics-info ref="logisticsInfo"></logistics-info>

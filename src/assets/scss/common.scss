@@ -17,12 +17,31 @@
   vertical-align: middle!important;
 }
 
+.align-middle--in-transform {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+.color-text--primary {
+  color:$color-text-primary
+}
+
+.color-text--minor {
+  color:$color-text-minor
+}
+
 .color-text--white {
   color: $color-white;
 }
 
 .color-text--gray {
   color: $color-gray;
+}
+
+.color-text--weak {
+  color: $color-text-weak;
 }
 
 .color-text--gray-mid {
@@ -49,6 +68,14 @@
   background-color: $color-white;
 }
 
+.ml-8px {
+  margin-left: $length-8px !important;
+}
+
+.ml-16px {
+  margin-left: $length-16px !important;
+}
+
 .mr-1rem {
   margin-right: 1rem !important;
 }
@@ -67,6 +94,10 @@
 
 .mb-1rem {
   margin-bottom: 1rem !important;
+}
+
+.mb-16px {
+  margin-bottom: $length-16px !important;
 }
 
 .mb-2rem {
@@ -232,16 +263,21 @@
 
 .switch-nav {
   position: relative;
-  margin-bottom: 2em;
+  margin-bottom: 0.2rem;
   .switch-nav-status {
     vertical-align: top;
   }
 }
 
+.sl-table-wrap {
+  @extend .color-bg--white;
+  padding: 1.6rem 2.4rem 1.6rem;
+}
+
 .table-search-statistics {
   padding:0 0.5em;
   margin-bottom: 2em;
-  background-color: $color-breadcrumb-bg;
+  background-color: #ecf0f5;
   & /deep/ {
     .sl-checked-list {
       border-bottom: 1px solid $color-gray;

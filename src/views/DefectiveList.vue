@@ -18,7 +18,6 @@
           @search="gotoPage(page.pageSize)"
         ></SlSearchForm>
       </div>
-      <el-divider />
       <!-- 表格区域包含分页 -->
       <SlTable
         ref="table"

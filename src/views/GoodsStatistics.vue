@@ -18,98 +18,100 @@
           @search="gotoPage(page.pageSize)"
         ></SlSearchForm>
       </div>
-      <el-divider />
-      <el-table
-        ref="table"
-        :data="tableData"
-        border
-        size="mini"
-        sortable="custom"
-        default-expand-all
-        @sort-change="sortChange"
-      >
-        <el-table-column type="expand" width="25px">
-          <template slot-scope="props">
-            <div class="expand-table">
-              <table style="width:100%">
-                <tbody>
-                  <tr
-                    class="border-bottom--gray"
-                    v-for="(item,index) in props.row.productDashboardSkuInfos"
-                    :key="'sku_'+index"
-                  >
-                    <td width="425px">
-                      <div class="flex-center">
-                        <div class="flex2 align-left mr-1rem">
-                          <p>SKU：{{item.skuCode}}</p>
-                          <p>商家商品编码:{{item.supplierSkuCode}}</p>
+
+      <div class="sl-table-wrap">
+        <el-table
+          ref="table"
+          :data="tableData"
+          border
+          size="mini"
+          sortable="custom"
+          default-expand-all
+          @sort-change="sortChange"
+        >
+          <el-table-column type="expand" width="25px">
+            <template slot-scope="props">
+              <div class="expand-table">
+                <table style="width:100%">
+                  <tbody>
+                    <tr
+                      class="border-bottom--gray"
+                      v-for="(item,index) in props.row.productDashboardSkuInfos"
+                      :key="'sku_'+index"
+                    >
+                      <td width="425px">
+                        <div class="flex-center">
+                          <div class="flex2 align-left mr-1rem">
+                            <p>SKU：{{item.skuCode}}</p>
+                            <p>商家商品编码:{{item.supplierSkuCode}}</p>
+                          </div>
+                          <div class="flex1 align-left">
+                            <p>商家吊牌尺码：{{item.tagSize}}</p>
+                            <p>销售尺码：{{item.saleSize}}</p>
+                          </div>
                         </div>
-                        <div class="flex1 align-left">
-                          <p>商家吊牌尺码：{{item.tagSize}}</p>
-                          <p>销售尺码：{{item.saleSize}}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-center">{{item.total7days}}</td>
-                    <td class="align-center" width="200px">{{item.total15days}}</td>
-                    <td class="align-center" width="200px">{{item.total30days}}</td>
-                    <td class="align-center" width="200px">{{item.inventoryQuantity}}</td>
-                    <td class="align-center" width="200px">{{item.intransitQuantity}}</td>
-                    <td class="align-center" width="200px">{{item.orderedUndeliveredQuantity}}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop label="商品信息" width="400px" align="center">
-          <template slot="header" slot-scope="scope">
-            {{scope.column.label}}
-            <el-tag
-              v-show="headerSearchQuery.color"
-              class="mr-1rem"
-              size="mini"
-              closable
-              @close="clearChoosedColor"
-            >{{choosedColor}}</el-tag>
-            <el-button type="text">
-              <span
-                class="el-icon-search align-middle cursor-pointer font-wight-600 ml"
-                @click="openColorFilterDialog"
-              ></span>
-            </el-button>
-          </template>
-          <template slot-scope="scope">
-            <div class="flex-center">
-              <div class="flex1">
-                <SlImage size="8rem" :src="scope.row.productImage" />
+                      </td>
+                      <td class="align-center">{{item.total7days}}</td>
+                      <td class="align-center" width="200px">{{item.total15days}}</td>
+                      <td class="align-center" width="200px">{{item.total30days}}</td>
+                      <td class="align-center" width="200px">{{item.inventoryQuantity}}</td>
+                      <td class="align-center" width="200px">{{item.intransitQuantity}}</td>
+                      <td class="align-center" width="200px">{{item.orderedUndeliveredQuantity}}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div class="flex1 align-left">
-                <p>SPU：{{scope.row.spuCode}}</p>
-                <p>颜色：{{scope.row.color?scope.row.color:'无'}}</p>
-                <p>产品名称：{{scope.row.productName}}</p>
+            </template>
+          </el-table-column>
+          <el-table-column prop label="商品信息" width="400px" align="center">
+            <template slot="header" slot-scope="scope">
+              {{scope.column.label}}
+              <el-tag
+                v-show="headerSearchQuery.color"
+                class="mr-1rem"
+                size="mini"
+                closable
+                @close="clearChoosedColor"
+              >{{choosedColor}}</el-tag>
+              <el-button type="text">
+                <span
+                  class="el-icon-search align-middle cursor-pointer font-wight-600 ml"
+                  @click="openColorFilterDialog"
+                ></span>
+              </el-button>
+            </template>
+            <template slot-scope="scope">
+              <div class="flex-center">
+                <div class="flex1">
+                  <SlImage size="8rem" :src="scope.row.productImage" />
+                </div>
+                <div class="flex1 align-left">
+                  <p>SPU：{{scope.row.spuCode}}</p>
+                  <p>颜色：{{scope.row.color?scope.row.color:'无'}}</p>
+                  <p>产品名称：{{scope.row.productName}}</p>
+                </div>
               </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="total7days" label="近7天销量" align="center" sortable></el-table-column>
-        <el-table-column prop="total15days" label="近15天销量" width="200px" align="center" sortable></el-table-column>
-        <el-table-column prop="total30days" label="近30天销量" width="200px" align="center" sortable></el-table-column>
-        <el-table-column
-          prop="inventoryQuantity"
-          label="库存数量"
-          width="200px"
-          align="center"
-          sortable
-        ></el-table-column>
-        <el-table-column prop="intransitQuantity" label="在途数量" width="200px" align="center"></el-table-column>
-        <el-table-column
-          prop="orderedUndeliveredQuantity"
-          label="已下单未发货数量"
-          width="200px"
-          align="center"
-        ></el-table-column>
-      </el-table>
+            </template>
+          </el-table-column>
+          <el-table-column prop="total7days" label="近7天销量" align="center" sortable></el-table-column>
+          <el-table-column prop="total15days" label="近15天销量" width="200px" align="center" sortable></el-table-column>
+          <el-table-column prop="total30days" label="近30天销量" width="200px" align="center" sortable></el-table-column>
+          <el-table-column
+            prop="inventoryQuantity"
+            label="库存数量"
+            width="200px"
+            align="center"
+            sortable
+          ></el-table-column>
+          <el-table-column prop="intransitQuantity" label="在途数量" width="200px" align="center"></el-table-column>
+          <el-table-column
+            prop="orderedUndeliveredQuantity"
+            label="已下单未发货数量"
+            width="200px"
+            align="center"
+          ></el-table-column>
+        </el-table>
+      </div>
     </SlListView>
     <!-- 按颜色筛选对话框 -->
     <el-dialog

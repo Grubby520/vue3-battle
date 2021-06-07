@@ -4,7 +4,7 @@
       <router-view />
     </transition>
     <!-- icon-font symbol图标 -->
-    <remote-js src="//at.alicdn.com/t/font_2214107_2k17pux9lvn.js"></remote-js>
+    <remote-js src="//at.alicdn.com/t/font_2214107_mrw8aefchm.js"></remote-js>
     <!-- 版本更新提示 -->
     <VersionUpdatePrompt></VersionUpdatePrompt>
   </div>
@@ -73,10 +73,10 @@ body {
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif, 'PingFang SC';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #212b36; // 主要文字色
   font-size: 14px; // 设计稿主字体大小
   height: 100%;
 }

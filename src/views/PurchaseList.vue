@@ -56,7 +56,6 @@
           </template>
         </SlSearchForm>
       </div>
-      <el-divider />
       <div class="switch-nav">
         <el-menu
           :default-active="activeIndex"

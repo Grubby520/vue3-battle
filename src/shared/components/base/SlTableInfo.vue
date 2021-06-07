@@ -1,52 +1,54 @@
 <template>
-  <el-table
-    :data="tableData"
-    v-bind="$attrs"
-    v-on="$listeners"
-    style="width: 100%"
-    border
-    ref="tableInfo"
-  >
-    <el-table-column type="index" align="center" width="50" v-if="showIndex"></el-table-column>
-    <el-table-column
-      type="selection"
-      align="center"
-      width="55"
-      v-if="multiple"
-      :selectable="checkSelectable"
-    ></el-table-column>
-    <el-table-column type="expand" v-if="expand">
-      <template v-slot="{row}">
-        <slot name="expand" :row="row"></slot>
-      </template>
-    </el-table-column>
-    <template v-for="col in columns">
+  <div class="sl-table-wrap">
+    <el-table
+      :data="tableData"
+      v-bind="$attrs"
+      v-on="$listeners"
+      style="width: 100%"
+      border
+      ref="tableInfo"
+    >
+      <el-table-column type="index" align="center" width="50" v-if="showIndex"></el-table-column>
       <el-table-column
-        :label="col.label"
-        :key="col.name"
-        :align="col.align ?col.align :align "
-        :header-align="headerAlign"
-        :width="col.width"
-        :class-name="col.className"
-      >
-        <template slot="header">
-          <slot :name="col.name + `-header`"></slot>
-        </template>
-        <template slot-scope="scope">
-          <slot :name="col.name" :row="scope.row">
-            <ShowImage :src="scope.row[col.name]" v-if="col.isImage" :params="col.imagesParams" />
-            <a
-              :href="scope.row[col.linkUrl]"
-              v-else-if="col.isLink"
-              target="_blank"
-              class="link"
-            >{{scope.row[col.name]}}</a>
-            <span v-else>{{ showNormalInfo(scope.row[col.name]) }}</span>
-          </slot>
+        type="selection"
+        align="center"
+        width="55"
+        v-if="multiple"
+        :selectable="checkSelectable"
+      ></el-table-column>
+      <el-table-column type="expand" v-if="expand">
+        <template v-slot="{row}">
+          <slot name="expand" :row="row"></slot>
         </template>
       </el-table-column>
-    </template>
-  </el-table>
+      <template v-for="col in columns">
+        <el-table-column
+          :label="col.label"
+          :key="col.name"
+          :align="col.align ?col.align :align "
+          :header-align="headerAlign"
+          :width="col.width"
+          :class-name="col.className"
+        >
+          <template slot="header">
+            <slot :name="col.name + `-header`"></slot>
+          </template>
+          <template slot-scope="scope">
+            <slot :name="col.name" :row="scope.row">
+              <ShowImage :src="scope.row[col.name]" v-if="col.isImage" :params="col.imagesParams" />
+              <a
+                :href="scope.row[col.linkUrl]"
+                v-else-if="col.isLink"
+                target="_blank"
+                class="link"
+              >{{scope.row[col.name]}}</a>
+              <span v-else>{{ showNormalInfo(scope.row[col.name]) }}</span>
+            </slot>
+          </template>
+        </el-table-column>
+      </template>
+    </el-table>
+  </div>
 </template>
 
 <script>
