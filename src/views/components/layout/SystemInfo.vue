@@ -1,6 +1,11 @@
 <template>
   <h1 class="system-info" :class="{'collapse':menuCollapse}">
-    <img class="system-logo" src="@/assets/logo.svg" alt="logo" @click="triggerMenuCollapse" />
+    <img
+      class="system-logo cursor-pointer"
+      src="@/assets/logo.svg"
+      alt="logo"
+      @click="triggerMenuCollapse"
+    />
     <template v-if="!menuCollapse">
       <span class="display-inline-block ml-8px font-size-18">{{systemName}}</span>
       <span class="float-right mr-1rem cursor-pointer" @click="triggerMenuCollapse">

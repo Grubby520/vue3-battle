@@ -1,11 +1,13 @@
 <template>
   <div class="sl-table-wrap">
     <el-table
+      class="sl-table-theme"
       :data="tableData"
       v-bind="$attrs"
       v-on="$listeners"
       style="width: 100%"
-      border
+      header-row-class-name="table-header--custom"
+      row-class-name="table-row--custom"
       ref="tableInfo"
     >
       <el-table-column type="index" align="center" width="50" v-if="showIndex"></el-table-column>

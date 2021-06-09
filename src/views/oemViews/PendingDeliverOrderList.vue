@@ -27,23 +27,35 @@
           childName="purchaseOrderItemVoList"
           :loading="loading"
           :disabled="selections.length === 0"
-          @click="openConfirmDialog"
-        >接单</SlButton>
+          @click="openDeliverDialog"
+        >发货</SlButton>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlCardTable
         ref="cardTable"
         :data="tableData"
-        :childColumns="childColumns"
         :columns="columns"
-        :selections.sync="selections"
-        selectable
         childName="purchaseOrderItemVoList"
-      ></SlCardTable>
+      >
+        <template #body="{row:cardRow}">
+          <SlTable
+            ref="table"
+            v-model="selections"
+            align="left"
+            :border="false"
+            :tableData="cardRow['purchaseOrderItemVoList']"
+            :columns="childColumns"
+            :operate="false"
+            :tooltip="false"
+            :isEmbedTable="true"
+            rowKey="id"
+          ></SlTable>
+        </template>
+      </SlCardTable>
     </SlListView>
     <SlDialog
-      title="确认接单"
-      :visible.sync="confirmDialogVisible"
+      title="发货明细"
+      :visible.sync="deliverDialogVisible"
       :loading="loading"
       @submit="receiveOrder"
     >请确认商品信息、单价、订单数量后接单</SlDialog>
@@ -59,11 +71,11 @@ export default {
   data () {
     return {
       loading: false,
-      confirmDialogVisible: false,
+      deliverDialogVisible: false,
       tableData: [],
       selections: [],
       extraQuery: {
-        status: 0
+        status: 0// 1
       },
       formQuery: {},
       page: {
@@ -152,8 +164,7 @@ export default {
       ]
     }
   },
-  computed: {
-  },
+  computed: {},
   mounted () { },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
@@ -180,7 +191,6 @@ export default {
         if (success) {
           this.$message.success(`接单成功`)
           this.selections = []
-          this.confirmDialogVisible = false
           this.gotoPage()
         } else {
           errorMessageTip(error.message)
@@ -200,8 +210,8 @@ export default {
         orderTimeEnd: orderTimes && orderTimes[1] ? orderTimes[1] : ''
       }
     },
-    openConfirmDialog () {
-      this.confirmDialogVisible = true
+    openDeliverDialog () {
+      this.deliverDialogVisible = true
     }
   }
 }

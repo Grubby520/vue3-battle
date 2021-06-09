@@ -1,15 +1,17 @@
 <template>
-  <div class="sl-table-wrap">
+  <div :class="{'sl-table-wrap':!isEmbedTable}">
     <el-table
+      class="tableData sl-table-theme"
+      ref="multipleTable"
+      size="mini"
       v-loading="loading"
+      header-row-class-name="table-header--custom"
+      row-class-name="table-row--custom"
       :data="tableData"
-      class="tableData"
-      @selection-change="handleSelectionChange"
       :border="border"
       :row-key="rowKey"
       :height="height"
-      size="mini"
-      ref="multipleTable"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
         v-if="selection"
@@ -21,7 +23,7 @@
       <template v-for="item in columns">
         <el-table-column
           v-if="item.isImg"
-          align="center"
+          :align="align"
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
@@ -29,12 +31,12 @@
           :fixed="item.fixed"
         >
           <template slot-scope="scope">
-            <SlImage size="10rem" :src="scope.row[item.prop]" />
+            <SlImage :size="item.data && item.data.imgSize || '10rem'" :src="scope.row[item.prop]" />
           </template>
         </el-table-column>
         <el-table-column
           v-else
-          align="center"
+          :align="align"
           :prop="item.prop"
           :label="item.label"
           :width="item.width"
@@ -98,7 +100,7 @@
           </template>
         </el-table-column>
       </template>
-      <el-table-column width="180px" align="center" label="操作" v-if="operate" fixed="right">
+      <el-table-column width="180px" :align="align" label="操作" v-if="operate" fixed="right">
         <template slot-scope="scope">
           <slot name="operation" :row="scope.row"></slot>
         </template>
@@ -133,14 +135,22 @@ export default {
         return []
       }
     },
+    align: {
+      type: String,
+      default: 'center'
+    },
     rowKey: { type: String, required: false, default: 'id' },
-    border: { type: Boolean, required: false, default: true },
+    border: { type: Boolean, required: false, default: false },
     selection: { type: Boolean, required: false, default: true },
     operate: { type: Boolean, required: false, default: true },
     tooltip: { type: Boolean, required: false, default: true },
     disabledKeys: { type: Array, required: false, default: () => { return [] } }, // 禁址选中的行标识数据
     loading: { type: Boolean, required: false, default: false },
-    height: { type: [String, Number], required: false, default: undefined }
+    height: { type: [String, Number], required: false, default: undefined },
+    isEmbedTable: { // 是否是被嵌入在其他表格中,根据此属性决定是否使用包装类：'sl-table-wrap'
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     handleSelectionChange (val) {
@@ -153,6 +163,7 @@ export default {
 }
 </script>
 <style lang="scss">
+@import '@assets/scss/_var.scss';
 .tableData {
   &-col {
     &-con {

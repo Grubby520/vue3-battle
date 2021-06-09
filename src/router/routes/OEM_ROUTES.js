@@ -27,7 +27,7 @@ const ROUTES = [
           icon: '',
           code: 'menu_goods_management'
         },
-        component: () => import('@/views/oemViews/PendingOrderList.vue')
+        component: () => import('@/views/oemViews/PendingDeliverOrderList.vue')
       }
     ]
   }

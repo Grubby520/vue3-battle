@@ -1,5 +1,6 @@
 @import "@assets/scss/_reset.scss";
 @import "@assets/scss/_mixin.scss";
+@import "@assets/scss/components/sl-table.scss";
 
 .align-center {
   text-align: center!important;
@@ -86,6 +87,10 @@
 
 .mr-1rem {
   margin-right: 1rem !important;
+}
+
+.mr-16px {
+  margin-right: $length-16px !important;
 }
 
 .mr-2rem {

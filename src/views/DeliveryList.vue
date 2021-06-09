@@ -53,8 +53,10 @@
           border
           size="mini"
           ref="multipleTable"
-          class="tableData"
+          class="tableData sl-table-theme"
           style="width: 100%"
+          header-row-class-name="table-header--custom"
+          row-class-name="table-row--custom"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55" :selectable="checkSelectable"></el-table-column>

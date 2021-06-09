@@ -22,11 +22,13 @@
       <div class="sl-table-wrap">
         <el-table
           ref="table"
+          class="sl-table-theme"
           :data="tableData"
-          border
           size="mini"
           sortable="custom"
           default-expand-all
+          header-row-class-name="table-header--custom"
+          row-class-name="table-row--custom"
           @sort-change="sortChange"
         >
           <el-table-column type="expand" width="25px">

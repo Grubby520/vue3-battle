@@ -8,7 +8,7 @@
         :key="menu.path"
       >
         <template slot="title">
-          <SlSvgIcon v-if="isSvgIcon" :iconClass="menu.icon" class="mr-1rem"></SlSvgIcon>
+          <SlSvgIcon v-if="isSvgIcon(menu.icon)" :iconClass="menu.icon" class="mr-1rem"></SlSvgIcon>
           <i v-else :class="[menu.icon]"></i>
           <span slot="title">{{menu.name}}</span>
         </template>

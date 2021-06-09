@@ -1,15 +1,20 @@
 <template>
   <div class="sl-card-table">
-    <div class="table-content sl-table-wrap" v-for="item in tableData" :key="item[primaryKey]">
+    <div
+      class="table-content sl-table-wrap"
+      v-for="(item,index) in tableData"
+      :key="item[primaryKey]+index"
+    >
       <div class="table-content-header color-bg--white">
         <el-checkbox
           v-if="selectable"
+          class="mr-16px"
           :true-label="'add_'+item[primaryKey]"
           :false-label="'delete_'+item[primaryKey]"
           @change="selectHandler"
         ></el-checkbox>
         <slot name="header" :row="item">
-          <ul v-if="columns.length > 0" class="default-header-content ml-16px">
+          <ul v-if="columns.length > 0" class="default-header-content">
             <li class="mr-24px" v-for="propItem in columns" :key="propItem.prop">
               <span class="header-prop-label mr-8px">{{propItem.label}}:</span>
               <span class="header-prop-value">{{item[propItem.prop]}}</span>
@@ -19,7 +24,12 @@
       </div>
       <div class="table-content-body">
         <slot name="body" :row="item">
-          <el-table :data="item[childName]" header-row-class-name="table-header--custom">
+          <el-table
+            class="sl-table-theme"
+            :data="item[childName]"
+            header-row-class-name="table-header--custom"
+            row-class-name="table-row--custom"
+          >
             <template v-for="(col,index) in childColumns">
               <el-table-column
                 align="left"
@@ -162,19 +172,7 @@ export default {
     line-height: 5.6rem;
     text-align: center;
     color: $color-text-minor;
-    background-color: $color-table-header-bg;
-  }
-}
-
-// el表格样式自定义
-.table-header--custom {
-  th {
-    height: 4rem;
-    color: $color-text-minor;
-    font-size: 14px;
-    font-weight: normal;
-    border: none !important;
-    background-color: $color-table-header-bg;
+    background-color: $color-white;
   }
 }
 </style>
