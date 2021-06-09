@@ -168,6 +168,7 @@ $iconDefaultColor: #7c818d;
   }
 
   .el-input {
+    border-radius: 0.2rem;
     background-color: $color-white;
   }
 
