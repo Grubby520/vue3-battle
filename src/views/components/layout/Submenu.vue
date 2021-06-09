@@ -8,7 +8,8 @@
         :key="menu.path"
       >
         <template slot="title">
-          <i :class="[menu.icon]"></i>
+          <SlSvgIcon v-if="isSvgIcon" :iconClass="menu.icon" class="mr-1rem"></SlSvgIcon>
+          <i v-else :class="[menu.icon]"></i>
           <span slot="title">{{menu.name}}</span>
         </template>
         <Submenu :submenus="menu.children"></Submenu>
@@ -30,6 +31,13 @@ export default {
   },
   components: {
     MenuItem
+  },
+  computed: {
+    isSvgIcon () {
+      return function (iconClass) {
+        return iconClass.includes('icon-sl-')
+      }
+    }
   },
   data () {
     return {

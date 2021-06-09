@@ -1,6 +1,6 @@
 <template>
   <svg :class="svgClass" aria-hidden="true">
-    <use :xlink:href="fullSymbolId" />
+    <use :xlink:href="symbolId" />
   </svg>
 </template>
 
@@ -8,10 +8,6 @@
 export default {
   name: 'SlSvgIcon',
   props: {
-    iconPrefix: {// 在iconfont上配置,阿里的字体服务
-      type: String,
-      default: 'icon-sl-'
-    },
     iconClass: {
       type: String,
       required: true
@@ -21,8 +17,8 @@ export default {
     }
   },
   computed: {
-    fullSymbolId () {
-      return `#${this.iconPrefix}${this.iconClass}`
+    symbolId () {
+      return `#${this.iconClass}`
     },
     svgClass () {
       if (this.extendClassName) {

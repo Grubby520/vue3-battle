@@ -98,6 +98,15 @@
               ></el-date-picker>
             </el-form-item>
           </template>
+          <template v-else-if="item.type === 'batch-input'">
+            <el-form-item :label="item.hideLabel? '':item.label" :prop="item.name">
+              <SlBatchInput
+                v-model.trim="form[item.name]"
+                :maxLen="item.data && item.data.maxLen?item.data.maxLen:200"
+                :label="item.label"
+              ></SlBatchInput>
+            </el-form-item>
+          </template>
         </el-col>
         <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="6">
           <el-button type="primary" :loading="loading" @click="search">搜索</el-button>

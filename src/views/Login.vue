@@ -116,7 +116,7 @@ export default {
     },
     gotoEntryRoute () {
       if (getSessionItem('supplierType') === 'OEM') {
-        this.$router.push('home/delivery-manage/stay-orders-list')
+        this.$router.push('home/oem-delivery-manage/pending-order-list')
         return
       }
       this.$router.push('home/recommend-products/list')

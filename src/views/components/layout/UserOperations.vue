@@ -47,8 +47,15 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+@import '@assets/scss/_var.scss';
+
 .user-operations {
   display: inline-block;
   cursor: pointer;
+  &:hover {
+    .el-icon-caret-bottom {
+      color: $color-primary;
+    }
+  }
 }
 </style>

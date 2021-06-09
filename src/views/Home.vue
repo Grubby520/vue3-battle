@@ -9,7 +9,14 @@
       <header class="page-header clearfix">
         <div class="page-breadcrumb">
           <el-breadcrumb>
-            <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">{{item.label}}</el-breadcrumb-item>
+            <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">
+              <SlSvgIcon
+                v-if="index === 0"
+                :iconClass="pathIconMap[item.path]+'-active'"
+                class="mr-8px"
+              ></SlSvgIcon>
+              {{item.label}}
+            </el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <div class="float-right mr-1rem align-middle--in-transform">
@@ -40,7 +47,8 @@ export default {
   },
   data () {
     return {
-      menus: []
+      menus: [],
+      pathIconMap: {}
     }
   },
   watch: {
@@ -56,6 +64,7 @@ export default {
     ...userMapActions(['GET_USER_INFO']),
     setMenus () {
       let menus = []
+      this.pathIconMap = {}
       this.routesToMenus(this.routes || [], menus, this.permissions || [])
       this.menus = menus
     },
@@ -69,6 +78,7 @@ export default {
             name,
             icon
           }
+          this.pathIconMap[menu.path] = menu.icon // 存储路由path和对应icon图标的映射
           menus.push(menu)
           if (children && children.length > 0) {
             menu.children = []
@@ -146,6 +156,9 @@ $asideMinW: pxToRem(240px);
       display: inline-block;
       padding-left: 4rem;
       box-sizing: border-box;
+      .el-breadcrumb {
+        font-size: 1.8rem;
+      }
     }
   }
 }
