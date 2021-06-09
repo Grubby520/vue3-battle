@@ -2,11 +2,14 @@
   <div class="sl-login-container">
     <div class="sl-login">
       <h3 class="sl-login-title">
-        <img src="@/assets/login-logo.png" alt="logo" />
+        <img src="@/assets/logo.svg" alt="logo" />
+        <p>马上发商家系统</p>
       </h3>
       <el-form ref="loginForm" class="sl-login-form" :model="loginForm" :rules="loginRules">
         <el-form-item prop="username">
-          <span class="el-icon-s-custom form-item-icon"></span>
+          <span class="form-item-icon" style="top:47%">
+            <SlSvgIcon iconClass="icon-sl-user"></SlSvgIcon>
+          </span>
           <el-input
             name="username"
             type="text"
@@ -16,7 +19,9 @@
           />
         </el-form-item>
         <el-form-item prop="password">
-          <span class="el-icon-lock form-item-icon"></span>
+          <span class="form-item-icon">
+            <SlSvgIcon iconClass="icon-sl-lock"></SlSvgIcon>
+          </span>
           <el-input
             name="password"
             type="password"
@@ -25,9 +30,18 @@
             @keyup.enter.native="login"
           />
         </el-form-item>
-        <div class="align-center">
-          <el-button type="primary" class="mr-2rem" @click="register">{{$t('button.registerText')}}</el-button>
-          <el-button type="primary" @click="login" :loading="isLoading">{{$t('button.loginText')}}</el-button>
+        <div class="align-center" style="margin-top:7.5rem">
+          <el-button
+            class="login-button"
+            type="primary"
+            :loading="isLoading"
+            @click="login"
+          >{{$t('button.loginText')}}</el-button>
+          <p>
+            <el-link class="mt-24px" type="primary" @click="register">
+              <span class="mr-8px" style="color:#b1b5c1">暂无账号,</span>立即注册
+            </el-link>
+          </p>
         </div>
       </el-form>
     </div>
@@ -128,11 +142,11 @@ export default {
 <style scoped lang="scss">
 @import '@assets/scss/_var.scss';
 @import '@assets/scss/_mixin.scss';
-$inputBgColor: #454545;
-$boxShadowColor: rgba(0, 0, 0, 0.7);
+$iconDefaultColor: #7c818d;
 
 .sl-login-container {
   height: 100%;
+  background-image: url('~@/assets/images/login-bg.png');
   background-color: $color-login-bg;
   background-position: center;
   background-size: cover;
@@ -140,30 +154,42 @@ $boxShadowColor: rgba(0, 0, 0, 0.7);
 }
 
 .sl-login-container /deep/ {
+  .el-form-item {
+    margin-bottom: 3.2rem;
+    &.is-error {
+      .el-input__inner {
+        border: none !important;
+      }
+
+      .el-form-item__error {
+        margin-top: 0.8rem;
+      }
+    }
+  }
+
   .el-input {
-    background-color: $inputBgColor;
+    background-color: $color-white;
   }
 
   .el-input__inner {
     display: inline-block;
-    height: 4.5rem;
-    line-height: 4.5rem;
-    padding: 0 0.3em 0 2em;
-    color: $color-white;
-    border-radius: 0;
-    border: none !important;
+    height: 4.8rem;
+    line-height: 4.8rem;
+    padding: 0 0.3rem 0 4rem;
+    border-radius: 0.2rem;
+    color: $color-text-primary;
     background: transparent;
     &:-webkit-autofill {
-      -webkit-box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
-      box-shadow: 0 0 0px 1000px $boxShadowColor inset !important;
-      -webkit-text-fill-color: #fff !important;
+      -webkit-box-shadow: 0 0 0px 1000px $color-white inset !important;
+      box-shadow: 0 0 0px 1000px $color-white inset !important;
+      -webkit-text-fill-color: $color-text-primary !important;
     }
   }
 }
 
 .sl-login-title {
-  margin-bottom: 1em;
-  font-size: 2.5rem;
+  margin-bottom: 4.8rem;
+  font-size: 3.2rem;
   color: $color-white;
   letter-spacing: 0.2em;
   text-align: center;
@@ -177,18 +203,27 @@ $boxShadowColor: rgba(0, 0, 0, 0.7);
   position: absolute;
   width: 25%;
   left: 50%;
-  top: 40%;
+  top: 50%;
   padding: 1em;
   transform: translate(-50%, -50%);
 }
 
 .form-item-icon {
   position: absolute;
-  left: 0.5em;
+  left: 1.4rem;
   top: 50%;
-  color: $color-white;
+  color: $iconDefaultColor;
   transform: translateY(-50%);
   z-index: 10;
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.login-button {
+  width: 100%;
+  height: 4.8rem;
+  box-shadow: 0px 4px 10px rgba(25, 121, 254, 0.45);
 }
 
 .sl-login {
