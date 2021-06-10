@@ -38,6 +38,7 @@
               :maxlength="item.maxlength"
               v-number="numberRule[item.name]"
             />
+            <span v-else-if="item.isText">{{scope.row[item.name]}}</span>
             <el-input v-else v-model.trim="scope.row[item.name]" :maxlength="item.maxlength" />
           </el-form-item>
         </template>
