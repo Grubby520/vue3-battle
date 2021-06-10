@@ -90,7 +90,7 @@ export default {
       ]
       this.selectAttrIdList = this.genAvaliableSelectAttribute(currentIds)
       this.tableData = productSalesAttributes.map(attr => {
-        const { productCategorySalesAttributes, skuCode, supplyPrice, tagSize, weight, id } = attr
+        const { productCategorySalesAttributes, skuCode, supplyPrice, tagSize, weight, id, status } = attr
         const salesAttributes = productCategorySalesAttributes.map(sale => {
           const { attributeId, attributeTermId } = sale
           return {
@@ -104,7 +104,8 @@ export default {
           supplyPrice,
           tagSize,
           weight,
-          id
+          id,
+          status
         }
       })
     },

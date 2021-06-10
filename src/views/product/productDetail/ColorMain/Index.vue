@@ -132,7 +132,8 @@ export default {
       specificationOptions: [],
       categoryDataStatus: false,
       tableLabel: {}, // 表头展示的销售属性name
-      tableHeadData: [ // 表头字段
+      tableHeadData: [],
+      defalutHeadData: [ // 表头字段
         {
           name: 'supplyPrice',
           label: '供货价格（RMB）',
@@ -170,6 +171,11 @@ export default {
           maxlength: 8
         }
       ],
+      skuStatus: {
+        0: '待审核',
+        1: '认领失败',
+        2: '已发布'
+      },
       numberRule: {
         'supplyPrice': { maxlength: 8 },
         'weight': { maxlength: 8, decimalsPlace: 0 }
@@ -229,17 +235,19 @@ export default {
   watch: {
     'productAttrFill': {
       handler (newValue) {
+        this.initAttrData()
         const [curSaleAttrs, productSalesAttributeDetail] = deepClone(newValue)
-        if (this.tableHeadData.length === 4) this.initAttrData()
-        if (isEmpty(curSaleAttrs)) return
-        if (!isEmpty(productSalesAttributeDetail)) {
+        if (!isEmpty(productSalesAttributeDetail) && !isEmpty(curSaleAttrs)) {
           const saleTypes = {
             'NZ011': ['size', 'sizes'],
             'NZ010': ['color', 'colors'],
             'NZ012': ['specification', 'specifications']
           }
           const { productSalesAttributes, productCategorySalesAttributeSelectedList } = productSalesAttributeDetail
-          this.form.productSalesAttributes = productSalesAttributes
+          this.form.productSalesAttributes = productSalesAttributes.map(sale => {
+            sale.statusName = this.skuStatus[sale.status]
+            return sale
+          })
           const productCategoryList = productCategorySalesAttributeSelectedList.map(productItem => {
             productItem.attributeTerms.forEach(term => {
               Object.assign(term, {
@@ -304,7 +312,13 @@ export default {
         }
       })
       const tableSort = sortHead.sort((a, b) => { return a.saleAttributeType - b.saleAttributeType })
-      this.tableHeadData.unshift(...tableSort)
+      let tableStatus = {
+        name: 'statusName',
+        label: '状态',
+        input: true,
+        required: false
+      }
+      this.tableHeadData = this.productParams.mode !== 'create' ? [...tableSort, ...this.defalutHeadData, tableStatus] : [...tableSort, ...this.defalutHeadData]
     },
     /**
     * 构建销售属性表头/销售属性展示label/下拉赋值
