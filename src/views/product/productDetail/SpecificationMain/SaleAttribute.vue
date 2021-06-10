@@ -262,8 +262,12 @@ export default {
                   this.curSaleAttrs.find(attr => attr.id === saleAttr.attributeId) || {}
                 )
                 if (isEmpty(saleAttribute)) return
-                const terms = saleAttribute.terms
-                  .filter(term => saleAttr.attributeTermIds.includes(term.id))
+                const attributeTermIds = saleAttr.attributeTermIds
+                const terms = attributeTermIds.reduce((init, termId) => {
+                  const term = saleAttribute.terms.find(term => term.id === termId)
+                  init.push(term)
+                  return init
+                }, [])
                 let termIds = []
                 const saleAttributeType = saleAttribute.saleAttributeType && saleAttribute.saleAttributeType.value
                 if (saleAttributeType === 1) {
