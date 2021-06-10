@@ -24,7 +24,6 @@
           v-if="tableData.length > 0"
           type="primary"
           boxShadow="primary"
-          childName="purchaseOrderItemVoList"
           :loading="loading"
           :disabled="selections.length === 0"
           @click="openConfirmDialog"

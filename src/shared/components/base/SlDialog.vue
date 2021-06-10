@@ -36,6 +36,7 @@ export default {
   methods: {
     cancel () {
       this.$emit('update:visible', false)
+      this.$emit('cancel')
     },
     submit () {
       this.$emit('submit')

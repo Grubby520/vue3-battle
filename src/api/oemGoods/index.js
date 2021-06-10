@@ -11,6 +11,12 @@ const OEM_GOODS_API = {
   },
   getPendingDeliverStatic (params) {
     return post(URL.pendingDeliverStaticUrl, params)
+  },
+  getDeliveryConfirmList (params) {
+    return post(URL.deliveryConfirmListUrl, params)
+  },
+  doDelivery (params) {
+    return post(URL.deliveryUrl, params)
   }
 
 }

@@ -15,21 +15,31 @@
           v-model="formQuery"
           :items="searchItems"
           :loading="loading"
-          @reset="gotoPage(page.pageSize)"
+          @reset="reset"
           @search="gotoPage(page.pageSize)"
         ></SlSearchForm>
       </div>
-      <SlTableToolbar>
-        <SlButton
-          v-if="tableData.length > 0"
-          type="primary"
-          boxShadow="primary"
-          childName="purchaseOrderItemVoList"
-          :loading="loading"
-          :disabled="selections.length === 0"
-          @click="openDeliverDialog"
-        >发货</SlButton>
-      </SlTableToolbar>
+      <!-- tab切换 -->
+      <SlSwitchNav
+        align="right"
+        :navs="switchNavs"
+        :default-active="switchActiveIndex"
+        @select="switchNav"
+      >
+        <template v-slot:left>
+          <span class="pdl-2rem">
+            <SlButton
+              v-if="tableData.length > 0"
+              type="primary"
+              boxShadow="primary"
+              :loading="loading"
+              :disabled="!canDelivery"
+              @click="openDeliverDialog"
+            >发货</SlButton>
+          </span>
+        </template>
+        <template v-slot:custom="{tab}">{{tab.tabName}}({{tab.count}})</template>
+      </SlSwitchNav>
       <!-- 表格区域包含分页 -->
       <SlCardTable
         ref="cardTable"
@@ -40,7 +50,7 @@
         <template #body="{row:cardRow}">
           <SlTable
             ref="table"
-            v-model="selections"
+            v-model="selectionsTree[cardRow.id]"
             align="left"
             :border="false"
             :tableData="cardRow['purchaseOrderItemVoList']"
@@ -53,29 +63,29 @@
         </template>
       </SlCardTable>
     </SlListView>
-    <SlDialog
-      title="发货明细"
-      :visible.sync="deliverDialogVisible"
-      :loading="loading"
-      @submit="receiveOrder"
-    >请确认商品信息、单价、订单数量后接单</SlDialog>
+    <!-- 发货对话框 -->
+    <DeliveryDialog ref="deliveryDialog" @submit="gotoPage"></DeliveryDialog>
   </div>
 </template>
 
 <script>
-import { errorMessageTip } from '@shared/util'
 import OemGoodsAPI from '@api/oemGoods'
+import DeliveryDialog from './pendingDeliverOrderList/DeliveryDialog.vue'
 
 export default {
   name: 'PendingOrderList',
+  components: {
+    DeliveryDialog
+  },
   data () {
     return {
       loading: false,
-      deliverDialogVisible: false,
       tableData: [],
-      selections: [],
+      selectionsTree: {},
+      switchNavs: [],
+      switchActiveIndex: '0',
       extraQuery: {
-        status: 0// 1
+        status: 1
       },
       formQuery: {},
       page: {
@@ -164,7 +174,12 @@ export default {
       ]
     }
   },
-  computed: {},
+  computed: {
+    canDelivery () {
+      return Object.values(this.selectionsTree).some(selections => selections.length)
+    }
+
+  },
   mounted () { },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
@@ -177,41 +192,62 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.selectionsTree = {}
+          this.getSwitchNavs()
+          this.tableData.forEach(row => {
+            this.$set(this.selectionsTree, row.id, [])
+          })
         }
       }).finally(() => {
         this.loading = false
       })
     },
-
-    receiveOrder () {
-      const ids = this.selections.map(item => item.id)
-      this.loading = true
-      OemGoodsAPI.receiveOrder(ids).then(res => {
-        let { success, error = {} } = res
-        if (success) {
-          this.$message.success(`接单成功`)
-          this.selections = []
-          this.gotoPage()
-        } else {
-          errorMessageTip(error.message)
-        }
-      }).finally(() => {
-        this.loading = false
+    reset () {
+      this.switchActiveIndex = '0'
+      this.gotoPage(this.page.pageSize)
+    },
+    getSwitchNavs () {
+      OemGoodsAPI.getPendingDeliverStatic(this.getQureyParams()).then(res => {
+        let { data = [] } = res
+        this.switchNavs = data || []
       })
+    },
+    switchNav (index) {
+      this.switchActiveIndex = index
+      this.gotoPage()
+    },
+    openDeliverDialog () {
+      let params = Object.keys(this.selectionsTree).reduce((prev, cur) => {
+        let curSelections = this.selectionsTree[cur]
+        if (curSelections.length > 0) {
+          let arr = curSelections.map(item => {
+            return {
+              purchaseOrderId: cur,
+              purchaseOrderItemId: item.id
+            }
+          })
+          prev = prev.concat(arr)
+        }
+        return prev
+      }, [])
+      this.$refs.deliveryDialog.openDialog({ params })
     },
     generateParams (pageSize, pageIndex) {
+      return {
+        ...this.getQureyParams(),
+        overdueDays: this.switchActiveIndex,
+        pageIndex,
+        pageSize
+      }
+    },
+    getQureyParams () {
       let { orderTimes = [], ...orther } = this.formQuery
       return {
         ...orther,
         ...this.extraQuery,
-        pageIndex,
-        pageSize,
         orderTimeStart: orderTimes && orderTimes[0] ? orderTimes[0] : '',
         orderTimeEnd: orderTimes && orderTimes[1] ? orderTimes[1] : ''
       }
-    },
-    openDeliverDialog () {
-      this.deliverDialogVisible = true
     }
   }
 }

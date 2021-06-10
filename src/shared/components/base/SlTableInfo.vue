@@ -37,7 +37,7 @@
           </template>
           <template slot-scope="scope">
             <slot :name="col.name" :row="scope.row">
-              <ShowImage :src="scope.row[col.name]" v-if="col.isImage" :params="col.imagesParams" />
+              <ShowImage :src="scope.row[col.name]" v-if="col.isImage" />
               <a
                 :href="scope.row[col.linkUrl]"
                 v-else-if="col.isLink"

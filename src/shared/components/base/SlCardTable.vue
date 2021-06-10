@@ -114,6 +114,9 @@ export default {
         }
         return temp
       })
+    },
+    selections (val) {
+      this.selectedRows = JSON.parse(JSON.stringify(val))
     }
   },
   mounted () {
