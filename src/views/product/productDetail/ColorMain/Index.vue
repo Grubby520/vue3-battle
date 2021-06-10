@@ -316,7 +316,8 @@ export default {
         name: 'statusName',
         label: '状态',
         input: true,
-        required: false
+        required: false,
+        isText: true
       }
       this.tableHeadData = this.productParams.mode !== 'create' ? [...tableSort, ...this.defalutHeadData, tableStatus] : [...tableSort, ...this.defalutHeadData]
     },
