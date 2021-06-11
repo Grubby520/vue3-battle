@@ -28,6 +28,24 @@ const ROUTES = [
           code: 'menu_goods_management'
         },
         component: () => import('@/views/oemViews/PendingDeliverOrderList.vue')
+      },
+      {
+        path: 'delivery-list',
+        name: '发货单列表',
+        meta: {
+          icon: '',
+          code: 'menu_goods_management'
+        },
+        component: () => import('@/views/oemViews/OemDeliveryList.vue')
+      },
+      {
+        path: 'boxing-list',
+        name: '装箱单列表',
+        meta: {
+          icon: '',
+          code: 'menu_goods_management'
+        },
+        component: () => import('@/views/oemViews/BoxingList.vue')
       }
     ]
   }

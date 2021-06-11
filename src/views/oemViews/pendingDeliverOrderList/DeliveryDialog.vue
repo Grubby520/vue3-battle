@@ -44,7 +44,7 @@
             placeholder="物流单号"
             maxlength="50"
             clearable
-            :disabled="!form.logisticsCompanyId"
+            :disabled="!form.logisticsCompanyId && form.logisticsCompanyId !== 0"
           ></el-input>
         </el-form-item>
         <SlTableInfo
@@ -76,10 +76,9 @@
 import { errorMessageTip } from '@shared/util'
 import { emptyValidator } from '@shared/validate'
 import OemGoodsAPI from '@api/oemGoods'
-import GoodsAPI from '@api/goods'
 
 export default {
-  name: 'SlCardTable',
+  name: 'DeliveryDialog',
   props: {},
   data () {
     return {
@@ -179,7 +178,7 @@ export default {
       this.getCompanyOPtions()
     },
     getCompanyOPtions () {
-      GoodsAPI.logisticsCompany().then(res => {
+      OemGoodsAPI.getLogisticsCompany().then(res => {
         let { data = [] } = res
         this.companyOptions = data.map(item => {
           return {
@@ -231,7 +230,6 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@assets/scss/_var.scss';
 .delivery-form {
   .el-form-item {
     margin-bottom: 0;

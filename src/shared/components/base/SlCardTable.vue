@@ -1,8 +1,9 @@
 <template>
   <div class="sl-card-table">
     <div
-      class="table-content sl-table-wrap"
+      class="table-content"
       v-for="(item,index) in tableData"
+      :class="{'sl-table-wrap':addWrapClass}"
       :key="item[primaryKey]+index"
     >
       <div class="table-content-header color-bg--white">
@@ -66,6 +67,10 @@ import { isEmpty } from '@shared/util'
 export default {
   name: 'SlCardTable',
   props: {
+    addWrapClass: {
+      type: Boolean,
+      default: true
+    },
     childName: {
       type: String,
       default: ''

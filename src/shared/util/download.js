@@ -52,6 +52,7 @@ export function exportFileFromRemote ({
       return Qs.stringify(params)
     }
   }).then(res => {
+    console.log(res)
     if (res.type === 'application/json') {
       errorFn()
       return

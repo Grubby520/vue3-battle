@@ -1,5 +1,5 @@
 
-import { post, put } from '@shared/http'
+import { get, post, put } from '@shared/http'
 import URL from './oemGoodsUrl'
 
 const OEM_GOODS_API = {
@@ -15,9 +15,27 @@ const OEM_GOODS_API = {
   getDeliveryConfirmList (params) {
     return post(URL.deliveryConfirmListUrl, params)
   },
+  getLogisticsCompany (params) {
+    return get(URL.logisticsCompanyUrl, params)
+  },
   doDelivery (params) {
     return post(URL.deliveryUrl, params)
+  },
+  getDeliveryList (params) {
+    return post(URL.deliveryListUrl, params)
+  },
+  // 获取单个批次号
+  genPreInvoiceBatchNo (id) {
+    return get(URL.genPreInvoiceBatchNoUrl + `/${id}`, {})
+  },
+  genDeliverDetailInfo (id) {
+    return get(URL.deliverDetailUrl + `/${id}`, {})
+  },
+  genDeliverPrintInfo (id) {
+    return get(URL.deliverPrintUrl + `/${id}`, {})
+  },
+  genLogisticsInfo (params) {
+    return get(URL.logisticsInformationUrl, params)
   }
-
 }
 export default OEM_GOODS_API

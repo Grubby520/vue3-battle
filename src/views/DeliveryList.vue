@@ -50,7 +50,6 @@
       <div class="sl-table-wrap">
         <el-table
           :data="tableData"
-          border
           size="mini"
           ref="multipleTable"
           class="tableData sl-table-theme"
