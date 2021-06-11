@@ -18,6 +18,11 @@
             <el-input v-model="form.baseInfo.userName" disabled class="form-item"></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="供应商ID" prop="baseInfo.erpSupplierId">
+            <el-input v-model="form.baseInfo.erpSupplierId" disabled class="form-item"></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-card>
     <el-card class="module">
