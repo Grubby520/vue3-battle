@@ -11,5 +11,8 @@ export default {
   genPreInvoiceBatchNoUrl: baseURL + 'delivery/gen-pre-invoice-batch-no', // 批量导出批次号、打印批次号
   deliverDetailUrl: baseURL + 'delivery/detail', // 发货详情
   deliverPrintUrl: baseURL + 'delivery/print', // 打印发货单
-  logisticsInformationUrl: baseURL + 'delivery/logistics-information' // 获取物流信息
+  logisticsInformationUrl: baseURL + 'delivery/logistics-information', // 获取物流信息
+  deliveryPackageListUrl: baseURL + 'delivery-package/list', // 装箱单列表
+  deliveryPackageItemUrl: baseURL + 'delivery-package/package-item', // 装箱单明细
+  deliveryPackagePrintUrl: baseURL + 'delivery-package/package-print' // 装箱单打印信息
 }

@@ -36,6 +36,15 @@ const OEM_GOODS_API = {
   },
   genLogisticsInfo (params) {
     return get(URL.logisticsInformationUrl, params)
+  },
+  getDeliveryPackageList (params) {
+    return post(URL.deliveryPackageListUrl, params)
+  },
+  getDeliveryPackageItem (params) {
+    return post(URL.deliveryPackageItemUrl, params)
+  },
+  getDeliveryPackagePrintInfo (params) {
+    return post(URL.deliveryPackagePrintUrl, params)
   }
 }
 export default OEM_GOODS_API

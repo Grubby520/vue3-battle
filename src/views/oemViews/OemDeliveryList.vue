@@ -36,7 +36,6 @@
             >批量导出批次号</SlButton>
           </span>
         </template>
-        <template v-slot:custom="{tab}">{{tab.tabName}}</template>
       </SlSwitchNav>
       <!-- 表格区域包含分页 -->
       <SlTable

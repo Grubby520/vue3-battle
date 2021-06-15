@@ -6,7 +6,6 @@
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
-      :pageSizes="pageSizes"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
@@ -20,183 +19,142 @@
         ></SlSearchForm>
       </div>
       <!-- tab切换 -->
-      <SlSwitchNav
-        align="right"
-        :navs="switchNavs"
-        :default-active="switchActiveIndex"
-        @select="switchNav"
-      >
-        <template v-slot:left>
-          <span class="pdl-2rem">
-            <SlButton
-              v-if="tableData.length > 0"
-              type="primary"
-              boxShadow="primary"
-              :loading="loading"
-              :disabled="!canDelivery"
-              @click="openDeliverDialog"
-            >发货</SlButton>
-          </span>
-        </template>
-        <template v-slot:custom="{tab}">{{tab.tabName}}({{tab.count}})</template>
-      </SlSwitchNav>
+      <SlSwitchNav :navs="switchNavs" :default-active="switchActiveIndex" @select="switchNav"></SlSwitchNav>
       <!-- 表格区域包含分页 -->
-      <SlCardTable
-        ref="cardTable"
-        :data="tableData"
+      <SlTable
+        ref="table"
+        align="left"
+        :selection="false"
+        :border="false"
+        :tableData="tableData"
         :columns="columns"
-        childName="purchaseOrderItemVoList"
+        :operate="true"
+        :tooltip="false"
+        rowKey="id"
       >
-        <template #body="{row:cardRow}">
-          <SlTable
-            ref="table"
-            v-model="selectionsTree[cardRow.id]"
-            align="left"
-            :border="false"
-            :tableData="cardRow['purchaseOrderItemVoList']"
-            :columns="childColumns"
-            :operate="false"
-            :tooltip="false"
-            :isEmbedTable="true"
-            rowKey="id"
-          ></SlTable>
-        </template>
-      </SlCardTable>
+        <div slot="operation" slot-scope="{row}">
+          <el-button type="text" @click="viewDetail(row)">查看</el-button>
+          <el-button type="text" @click="printBoxingInvoice(row)">打印装箱单</el-button>
+        </div>
+      </SlTable>
     </SlListView>
-    <!-- 发货对话框 -->
-    <DeliveryDialog ref="deliveryDialog" @submit="gotoPage"></DeliveryDialog>
+    <!-- 装箱单详情 -->
+    <BoxingInvoiceDetailDialog ref="boxingInvoiceDetailDialog"></BoxingInvoiceDetailDialog>
+    <!-- 打印批次号 -->
+    <BoxingInvoicePrint ref="boxingInvoicePrint"></BoxingInvoicePrint>
   </div>
 </template>
 
 <script>
+import { errorMessageTip } from '@shared/util'
+import BoxingInvoiceDetailDialog from './boxingList/BoxingInvoiceDetailDialog.vue'
+import BoxingInvoicePrint from './boxingList/BoxingInvoicePrint.vue'
+import CommonApi from '@api/api.js'
 import OemGoodsAPI from '@api/oemGoods'
-import DeliveryDialog from './pendingDeliverOrderList/DeliveryDialog.vue'
 
 export default {
   name: 'BoxingList',
   components: {
-    DeliveryDialog
+    BoxingInvoiceDetailDialog,
+    BoxingInvoicePrint
   },
   data () {
     return {
       loading: false,
       tableData: [],
-      selectionsTree: {},
       switchNavs: [],
       switchActiveIndex: '0',
-      extraQuery: {
-        status: 1
-      },
       formQuery: {},
       page: {
         pageIndex: 1,
         pageSize: 10,
         total: 0
       },
-      pageSizes: [10],
       searchItems: [
         {
-          type: 'batch-input',
+          type: 'input',
+          label: '装箱单号',
+          name: 'orderNumber'
+        },
+        {
+          type: 'input',
           label: '生产订单号',
           name: 'purchaseOrderNumber'
         },
         {
           type: 'input',
-          label: 'SKU编码',
-          name: 'sku'
-        },
-        {
-          type: 'input',
-          label: '商品名称',
-          name: 'commodityName'
-        },
-        {
-          type: 'date',
-          label: '下单时间',
-          name: 'orderTimes',
-          data: {
-            datetype: 'daterange',
-            isBlock: true
-          }
+          label: '物流单号',
+          name: 'logisticsNumber'
         }
       ],
       columns: [
         {
-          prop: 'orderId',
-          label: '生产订单号'
+          prop: 'orderNumber',
+          label: '装箱单号'
         },
         {
-          prop: 'orderTime',
-          label: '下单时间'
-        }
-      ],
-      childColumns: [
-        {
-          prop: 'skuCode',
-          label: 'SKU编码'
-        },
-        {
-          prop: 'skuImage',
-          label: '商品图片',
-          isImg: true,
-          data: {
-            imgSize: '8rem'
-          }
-        },
-        {
-          prop: 'name',
-          label: '商品名称'
-        },
-        {
-          prop: 'attributesName',
-          label: '销售属性'
-        },
-        {
-          prop: 'orderTypeName',
-          label: '订单类型'
-        },
-        {
-          prop: 'realPrice',
-          label: '单价'
-        },
-        {
-          prop: 'requireQuantity',
-          label: '订单数量'
+          prop: 'skuQuantity',
+          label: 'SKU数'
         },
         {
           prop: 'deliveryQuantity',
-          label: '实际发货量'
+          label: '发货总件数'
         },
         {
-          prop: 'estimatedArrivalDate',
-          label: '应交货时间'
+          prop: 'statusName',
+          label: '状态'
+        },
+        {
+          prop: 'logisticsCompanyName',
+          label: '物流商'
+        },
+        {
+          prop: 'logisticsNumber',
+          label: '物流单号'
+        },
+        {
+          prop: '',
+          label: '操作时间',
+          width: '200px',
+          render: (h, data) => {
+            let { row = {} } = data
+            let map = {
+              0: {
+                label: '发货时间',
+                prop: 'deliveryAt'
+              },
+              1: {
+                label: '签收时间',
+                prop: 'signInAt'
+              }
+            }
+            if (map[row.status] && row[map[row.status].prop]) {
+              return <p>{map[row.status].label}：{row[map[row.status].prop]}</p>
+            } else {
+              return <span>-</span>
+            }
+          }
         }
       ]
     }
   },
   computed: {
-    canDelivery () {
-      return Object.values(this.selectionsTree).some(selections => selections.length)
-    }
-
+  },
+  created () {
+    this.getSwitchNavs()
   },
   mounted () { },
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
       this.loading = true
-      OemGoodsAPI.getPurchaseOrderList(params).then(res => {
+      OemGoodsAPI.getDeliveryPackageList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
-          this.selectionsTree = {}
-          this.getSwitchNavs()
-          this.tableData.forEach(row => {
-            this.$set(this.selectionsTree, row.id, [])
-          })
         }
       }).finally(() => {
         this.loading = false
@@ -207,46 +165,41 @@ export default {
       this.gotoPage(this.page.pageSize)
     },
     getSwitchNavs () {
-      OemGoodsAPI.getPendingDeliverStatic(this.getQureyParams()).then(res => {
-        let { data = [] } = res
-        this.switchNavs = data || []
+      CommonApi.getDict({ dataCode: 'OEM_DELIVERY_PACKAGE_STATUS_ENUM' }).then(data => {
+        this.switchNavs = data.map(item => {
+          return {
+            tabName: item.label,
+            tabType: item.value
+          }
+        })
       })
     },
     switchNav (index) {
       this.switchActiveIndex = index
       this.gotoPage()
     },
-    openDeliverDialog () {
-      let params = Object.keys(this.selectionsTree).reduce((prev, cur) => {
-        let curSelections = this.selectionsTree[cur]
-        if (curSelections.length > 0) {
-          let arr = curSelections.map(item => {
-            return {
-              purchaseOrderId: cur,
-              purchaseOrderItemId: item.id
-            }
-          })
-          prev = prev.concat(arr)
+    viewDetail ({ orderNumber }) {
+      this.$refs.boxingInvoiceDetailDialog.openDialog(orderNumber)
+    },
+    printBoxingInvoice ({ orderNumber }) {
+      this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '获取数据中' })
+      OemGoodsAPI.getDeliveryPackagePrintInfo({ orderNumber }).then(res => {
+        let { success, error, data = {} } = res
+        if (success) {
+          this.$refs.boxingInvoicePrint.show([data])
+        } else {
+          errorMessageTip(error && error.message)
         }
-        return prev
-      }, [])
-      this.$refs.deliveryDialog.openDialog({ params })
+      }).finally(() => {
+        this.$store.dispatch('CLOSE_LOADING')
+      })
     },
     generateParams (pageSize, pageIndex) {
       return {
-        ...this.getQureyParams(),
-        overdueDays: this.switchActiveIndex,
+        ...this.formQuery,
+        status: parseInt(this.switchActiveIndex),
         pageIndex,
         pageSize
-      }
-    },
-    getQureyParams () {
-      let { orderTimes = [], ...orther } = this.formQuery
-      return {
-        ...orther,
-        ...this.extraQuery,
-        orderTimeStart: orderTimes && orderTimes[0] ? orderTimes[0] : '',
-        orderTimeEnd: orderTimes && orderTimes[1] ? orderTimes[1] : ''
       }
     }
   }
