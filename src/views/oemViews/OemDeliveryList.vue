@@ -52,6 +52,8 @@
       >
         <div slot="operation" slot-scope="{row}">
           <el-button type="text" @click="viewDetail(row.id)">查看</el-button>
+          <el-button type="text" @click="printInvoice(row.id)">打印发货单</el-button>
+          <el-button type="text" @click="printBatchNo(row.id)">打印批次号</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -59,6 +61,10 @@
     <DeliveryDetailDialog ref="deliveryDetailDialog"></DeliveryDetailDialog>
     <!-- 物流信息 -->
     <OemLogisticsInfoDialog ref="logisticsInfoDialog"></OemLogisticsInfoDialog>
+    <!-- 打印发货单 -->
+    <OemInvoicePrint ref="oemInvoicePrint"></OemInvoicePrint>
+    <!-- 打印批次号 -->
+    <print-batch-no ref="printBatchNo"></print-batch-no>
   </div>
 </template>
 
@@ -66,6 +72,8 @@
 import { exportFileFromRemote, errorMessageTip } from '@shared/util'
 import DeliveryDetailDialog from './oemDeliveryList/DeliveryDetailDialog.vue'
 import OemLogisticsInfoDialog from './oemDeliveryList/OemLogisticsInfoDialog.vue'
+import OemInvoicePrint from './oemDeliveryList/OemInvoicePrint.vue'
+import PrintBatchNo from '../components/PrintBatchNo'
 import CommonApi from '@api/api.js'
 import OemGoodsUrl from '@api/oemGoods/oemGoodsUrl.js'
 import OemGoodsAPI from '@api/oemGoods'
@@ -74,7 +82,9 @@ export default {
   name: 'OemDeliveryList',
   components: {
     DeliveryDetailDialog,
-    OemLogisticsInfoDialog
+    OemLogisticsInfoDialog,
+    OemInvoicePrint,
+    PrintBatchNo
   },
   data () {
     return {
@@ -259,6 +269,32 @@ export default {
     },
     viewLogisticsInfo (row) {
       this.$refs.logisticsInfoDialog.openDialog(row)
+    },
+    printInvoice (id) {
+      this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '获取数据中' })
+      OemGoodsAPI.genDeliverPrintInfo(id).then(res => {
+        let { success, error, data = [] } = res
+        if (success) {
+          this.$refs.oemInvoicePrint.show(data)
+        } else {
+          errorMessageTip(error && error.message)
+        }
+      }).finally(() => {
+        this.$store.dispatch('CLOSE_LOADING')
+      })
+    },
+    printBatchNo (id) {
+      this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '获取数据中' })
+      OemGoodsAPI.genPreInvoiceBatchNo(id).then(res => {
+        let { success, error, data = [] } = res
+        if (success) {
+          this.$refs.printBatchNo.show(data)
+        } else {
+          errorMessageTip(error && error.message)
+        }
+      }).finally(() => {
+        this.$store.dispatch('CLOSE_LOADING')
+      })
     },
     generateParams (pageSize, pageIndex) {
       return {

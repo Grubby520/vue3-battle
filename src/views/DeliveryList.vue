@@ -169,7 +169,7 @@
 
 <script>
 import logisticsInfo from './deliveryManage/LogisticsInfoDialog'
-import PrintBatchNo from './deliveryManage/PrintBatchNo'
+import PrintBatchNo from './components/PrintBatchNo'
 import PrintInvoice from './deliveryManage/PrintInvoice'
 import ModifyLogisticsNo from './deliveryManage/ModifyLogisticsNoDialog'
 import ShippingDetails from './deliveryManage/ShippingDetailsDiaolog'
