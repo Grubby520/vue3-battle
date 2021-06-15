@@ -156,7 +156,8 @@ export default {
           contactName: null,
           contactNumber: null,
           contactQq: null,
-          contactWebChat: null // 微信号
+          contactWebChat: null, // 微信号
+          erpSupplierId: null // 供应商ID
         },
         shippingAddress: {
           address: null, // 详细地址
@@ -228,7 +229,8 @@ export default {
             contactName: baseInfo.contactName,
             contactNumber: baseInfo.contactNumber,
             contactQq: baseInfo.contactQq,
-            contactWebChat: baseInfo.contactWebChat
+            contactWebChat: baseInfo.contactWebChat,
+            erpSupplierId: baseInfo.erpSupplierId
           }
 
           this.form.shippingAddress = {
