@@ -9,7 +9,10 @@
         {{isAdmin?'管理员':supplierName}}
       </span>
       <el-divider direction="vertical"></el-divider>
-      <span v-if="!isAdmin" class="display-inline-block color-text--primary">{{supplierStatus}}</span>
+      <span
+        v-if="!isAdmin"
+        class="display-inline-block align-middle color-primary"
+      >{{supplierStatus}}</span>
     </div>
     <UserOperations></UserOperations>
   </div>

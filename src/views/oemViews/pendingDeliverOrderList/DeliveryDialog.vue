@@ -93,12 +93,6 @@ export default {
         logisticsNumber: null
       },
       emptyValidator,
-      rules: {
-        logisticsCompanyId: [
-          emptyValidator('请选择物流商', ['blur', 'change'])
-        ],
-        logisticsNumber: [emptyValidator('请填写物流单号')]
-      },
       columns: [
         {
           name: 'purchaseOrderNumber',
@@ -142,6 +136,19 @@ export default {
     }
   },
   computed: {
+    rules () {
+      let rules = {
+        logisticsCompanyId: [
+          emptyValidator('请选择物流商', ['blur', 'change'])
+        ],
+        logisticsNumber: [emptyValidator('请填写物流单号')]
+      }
+      if (parseInt(this.form.logisticsCompanyId) === 0) { // 自发的情况可以不校验物流单号
+        delete rules.logisticsNumber
+      }
+
+      return rules
+    },
     numberFormat () {
       return { type: 'integer', max: 999999, compareLength: false, includeZero: false }
     }

@@ -166,8 +166,14 @@ export default {
       this.switchActiveIndex = index
       this.gotoPage()
     },
-    viewDetailInfo ({ purchaseOrderId }) {
-
+    viewDetailInfo ({ id }) {
+      this.$router.push({
+        path: '/home/oem-order-manage/production-order-detail',
+        query: {
+          purchaseOrderId: id,
+          status: this.switchActiveIndex
+        }
+      })
     },
     generateParams (pageSize, pageIndex) {
       return {

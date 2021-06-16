@@ -66,6 +66,15 @@ const ROUTES = [
           code: 'menu_goods_management'
         },
         component: () => import('@/views/oemViews/ProductionOrderList.vue')
+      },
+      {
+        path: 'production-order-detail',
+        name: '生产订单详情',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        component: () => import('@/views/oemViews/productionOrderList/ProductionOrderDetail.vue')
       }
     ]
   }

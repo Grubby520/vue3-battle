@@ -1,5 +1,5 @@
 <template>
-  <div class="sl-content-title" :class="{'column-icon':columnIcon}">
+  <div class="sl-content-title" :class="{'column-icon':columnIcon}" :style="titleStyle">
     <span class="content-title-text" :style="{fontSize,color,...textStyle}">{{text}}</span>
     <hr v-if="line" class="content-title-line" :style="lineStyle" />
   </div>
@@ -24,6 +24,10 @@ export default {
     color: {
       type: String,
       default: '#999'
+    },
+    titleStyle: {
+      type: Object,
+      default: () => ({})
     },
     lineStyle: {
       type: Object,
@@ -66,9 +70,10 @@ export default {
     content: '';
     position: absolute;
     left: -8px;
-    top: -1px;
+    top: 50%;
     width: 3px;
     height: 100%;
+    transform: translateY(-50%);
     background: #1890ff;
   }
   .content-title-text {
