@@ -29,7 +29,6 @@
         <template v-slot:left>
           <span class="pdl-2rem">
             <SlButton
-              v-if="tableData.length > 0"
               type="primary"
               boxShadow="primary"
               :loading="loading"

@@ -62,7 +62,7 @@
             >
               <el-input
                 v-model="form['count_'+row.purchaseOrderItemId]"
-                v-slFormatNumber="numberFormat(row.curDeliveryQuantityLimit)"
+                v-slFormatNumber="numberFormat"
                 :placeholder="'<='+row.curDeliveryQuantityLimit"
               ></el-input>
             </el-form-item>
@@ -101,7 +101,7 @@ export default {
       },
       columns: [
         {
-          name: 'purchaseOrderId',
+          name: 'purchaseOrderNumber',
           label: '生产订单号'
         },
         {
@@ -127,7 +127,7 @@ export default {
           label: '单价'
         },
         {
-          name: 'purchaseOrderNumber',
+          name: 'requireQuantity',
           label: '订单数量'
         },
         {
@@ -143,9 +143,7 @@ export default {
   },
   computed: {
     numberFormat () {
-      return function (limit) {
-        return { type: 'integer', max: limit ? parseInt(limit) : 999999, compareLength: false, includeZero: false }
-      }
+      return { type: 'integer', max: 999999, compareLength: false, includeZero: false }
     }
   },
   mounted () {

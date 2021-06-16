@@ -109,8 +109,14 @@
           </template>
         </el-col>
         <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="6">
-          <el-button type="primary" :loading="loading" @click="search">搜索</el-button>
-          <el-button :loading="loading" @click="reset">重置</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            :loading="loading"
+            @click="search"
+            plain
+          >搜索</el-button>
+          <el-button icon="el-icon-refresh-right" :loading="loading" @click="reset">重置</el-button>
         </el-col>
       </el-row>
     </el-form>

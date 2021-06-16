@@ -48,6 +48,26 @@ const ROUTES = [
         component: () => import('@/views/oemViews/BoxingList.vue')
       }
     ]
+  },
+  {
+    path: 'oem-order-manage',
+    name: '订单管理',
+    meta: {
+      icon: 'icon-sl-order-manage',
+      code: 'menu_goods_management'
+    },
+    component: ParentMenuRoute,
+    children: [
+      {
+        path: 'production-order-list',
+        name: '生产订单',
+        meta: {
+          icon: '',
+          code: 'menu_goods_management'
+        },
+        component: () => import('@/views/oemViews/ProductionOrderList.vue')
+      }
+    ]
   }
 ]
 

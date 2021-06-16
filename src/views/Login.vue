@@ -204,7 +204,7 @@ $iconDefaultColor: #7c818d;
   position: absolute;
   width: 25%;
   left: 50%;
-  top: 50%;
+  top: 45%;
   padding: 1em;
   transform: translate(-50%, -50%);
 }

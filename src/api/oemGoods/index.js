@@ -45,6 +45,18 @@ const OEM_GOODS_API = {
   },
   getDeliveryPackagePrintInfo (params) {
     return post(URL.deliveryPackagePrintUrl, params)
+  },
+  // 生产订单列表
+  getProductionOrderList (params) {
+    return post(URL.productionOrderListUrl, params)
+  },
+  // 生产订单列表统计
+  getProductionOrderStatic (params) {
+    return post(URL.productionOrderStaticUrl, params)
+  },
+  // 生产订单详情
+  getProductionOrderDetail (params) {
+    return post(URL.purchaseOrderDetailUrl, params)
   }
 }
 export default OEM_GOODS_API
