@@ -178,7 +178,7 @@ export default {
     generateParams (pageSize, pageIndex) {
       return {
         ...this.getQureyParams(),
-        status: this.switchActiveIndex,
+        status: parseInt(this.switchActiveIndex),
         pageIndex,
         pageSize
       }

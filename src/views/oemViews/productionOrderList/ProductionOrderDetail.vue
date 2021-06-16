@@ -9,11 +9,12 @@
           :titleStyle="titleStyle"
           columnIcon
         ></SlContentTitle>
+        <el-button type="text" size="medium" @click="$router.go(-1)">返回</el-button>
       </div>
       <el-row>
         <el-col :span="4" v-for="prop in productionOrderComputedProps" :key="prop.value">
           <div style="line-height:2">
-            <span class="color-text--primary">{{prop.label}}：</span>
+            <span class="color-text--primary mr-8px">{{prop.label}}:</span>
             <span class="color-text--minor">{{productionOrderData[prop.value]}}</span>
           </div>
         </el-col>
@@ -39,7 +40,7 @@
         :operate="false"
         :tooltip="false"
         :isEmbedTable="true"
-        height="480px"
+        height="400px"
         rowKey="id"
       ></SlTable>
     </el-card>
@@ -57,10 +58,36 @@
         ref="cardTable"
         :data="deliveryDetailList"
         :childColumns="deliveryDetailListColumns"
-        :columns="deliveryDetailColumns"
         :addWrapClass="false"
         childName="detailListVoList"
-      ></SlCardTable>
+      >
+        <template v-slot:header="{row}">
+          <ul class="display-inline-block">
+            <li class="display-inline-block mr-24px">
+              <span class="color-text--primary mr-8px">发货单号:</span>
+              <span class="color-text--minor">{{row.deliveryOrderNumber}}</span>
+            </li>
+            <li class="display-inline-block mr-24px">
+              <span class="color-text--primary mr-8px">装箱单号:</span>
+              <span class="color-text--minor">{{row.deliveryOrderPackageNumber}}</span>
+            </li>
+            <li class="display-inline-block">
+              <span class="color-text--primary">物流单号:</span>
+              <span class="color-text--minor">{{row.logisticsBillNumber}}</span>
+            </li>
+          </ul>
+          <ul class="float-right">
+            <li class="display-inline-block mr-24px">
+              <span class="color-text--primary mr-8px">发货时间:</span>
+              <span class="color-text--minor">{{row.createdAt}}</span>
+            </li>
+            <li class="display-inline-block">
+              <span class="color-text--primary mr-8px">状态:</span>
+              <el-tag>{{row.statusName}}</el-tag>
+            </li>
+          </ul>
+        </template>
+      </SlCardTable>
     </el-card>
   </div>
 </template>
@@ -75,7 +102,7 @@ export default {
     return {
       loading: false,
       titleFontSize: '1.4rem',
-      titleStyle: { marginBottom: '0px' },
+      titleStyle: { marginBottom: '0px', display: 'inline-block' },
       purchaseOrderList: [],
       productionOrderData: {},
       productionOrderProps: [
@@ -129,8 +156,40 @@ export default {
         }
       ],
       deliveryDetailList: [],
-      deliveryDetailColumns: [],
-      deliveryDetailListColumns: []
+      deliveryDetailListColumns: [
+        {
+          prop: 'skuCode',
+          label: 'SKU编码'
+        },
+        {
+          prop: 'productName',
+          label: '商品名称'
+        },
+        {
+          prop: 'attributesName',
+          label: '销售属性'
+        },
+        {
+          prop: 'supplierSkuAttr',
+          label: '采购属性'
+        },
+        {
+          prop: 'deliveryQuantity',
+          label: '实际发货数量'
+        },
+        {
+          prop: 'unpackQuantity',
+          label: '拆包数量'
+        },
+        {
+          prop: 'inInventoryQuantity',
+          label: '入库数量'
+        },
+        {
+          prop: 'lessStockQuantity',
+          label: '少货数量'
+        }
+      ]
     }
   },
   computed: {
@@ -213,15 +272,16 @@ export default {
   methods: {
     getDetailInfo () {
       this.loading = true
-      OemGoodsAPI.getProductionOrderDetail(this.$route.query).then(res => {
-        let { success, data = {}, data: { deliveryOrderDetailList = [], purchaseOrderItemVoList = [] } } = res
+      OemGoodsAPI.getProductionOrderDetail({
+        ...this.$route.query,
+        status: parseInt(this.$route.query.status)
+      }).then(res => {
+        let { data = {}, data: { deliveryOrderDetailList = [], purchaseOrderItemVoList = [] } } = res
         this.purchaseOrderList = purchaseOrderItemVoList
         this.deliveryDetailList = deliveryOrderDetailList
         this.productionOrderProps.forEach(item => {
           this.productionOrderData[item.value] = data[item.value]
         })
-
-        console.log(success, deliveryOrderDetailList)
       }).finally(() => {
         this.loading = false
       })
