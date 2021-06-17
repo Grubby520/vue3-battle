@@ -99,7 +99,7 @@ export default {
       ],
       columns: [
         {
-          prop: 'orderId',
+          prop: 'purchaseOrderNumber',
           label: '生产订单号'
         },
         {
