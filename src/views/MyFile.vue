@@ -18,6 +18,11 @@
             <el-input v-model="form.baseInfo.userName" disabled class="form-item"></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="供应商ID" prop="baseInfo.erpSupplierId">
+            <el-input v-model="form.baseInfo.erpSupplierId" disabled class="form-item"></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-card>
     <el-card class="module">
@@ -151,7 +156,8 @@ export default {
           contactName: null,
           contactNumber: null,
           contactQq: null,
-          contactWebChat: null // 微信号
+          contactWebChat: null, // 微信号
+          erpSupplierId: null // 供应商ID
         },
         shippingAddress: {
           address: null, // 详细地址
@@ -223,7 +229,8 @@ export default {
             contactName: baseInfo.contactName,
             contactNumber: baseInfo.contactNumber,
             contactQq: baseInfo.contactQq,
-            contactWebChat: baseInfo.contactWebChat
+            contactWebChat: baseInfo.contactWebChat,
+            erpSupplierId: baseInfo.erpSupplierId
           }
 
           this.form.shippingAddress = {
