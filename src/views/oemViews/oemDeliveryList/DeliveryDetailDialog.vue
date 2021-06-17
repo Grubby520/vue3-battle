@@ -16,7 +16,7 @@
   </SlDialog>
 </template>
 <script>
-import { isEmpty } from '@shared/util'
+import { isEmpty, errorMessageTip } from '@shared/util'
 import OemGoodsAPI from '@api/oemGoods'
 
 export default {
@@ -84,7 +84,12 @@ export default {
       this.deliverDialogVisible = true
       this.loading = true
       OemGoodsAPI.genDeliverDetailInfo(id).then(res => {
-        let { data = {} } = res
+        let { data = {}, error } = res
+        if (error && error.code === '500005') {
+          errorMessageTip(error.message)
+          this.tableData = []
+          return
+        }
         if (isEmpty(data)) {
           this.tableData = []
         } else {
