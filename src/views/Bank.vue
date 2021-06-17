@@ -239,6 +239,9 @@
             </el-row>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="结算方式:">{{form.bankInfo.settlementWayName}}</el-form-item>
+        </el-col>
       </el-row>
     </el-card>
   </el-form>

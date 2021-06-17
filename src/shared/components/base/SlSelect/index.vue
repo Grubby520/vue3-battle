@@ -387,7 +387,7 @@ export default {
     position: absolute;
   }
   .selected-tags {
-    width: 100%;
+    // width: 100%;
     min-height: 28px;
     display: flex;
     border: 1px solid #c3c5c9;
