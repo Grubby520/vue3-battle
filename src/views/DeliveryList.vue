@@ -12,6 +12,21 @@
         <p>仓库地址：广东省佛山市三水区云东海街道广州军区干休所创亚物流园A仓</p>
         <p>收货人员：18667186841</p>
       </div>
+      <div class="update-package delivery-introduce-bg">
+        <p>更换包装须知：</p>
+        <p>1、2021年6月25日收货的商品必须使用我司的包装并且贴条码标签，如果到货的产品没有更换包装，仓库将收取费用进行重新包装，相应费用会在后续货款中进行扣除。</p>
+        <p>2、购买包装耗材下单时需备注自己的供应商ID和供应商名称，可在商家后台【基础资料】页面查看。</p>
+        <p>3、如果发现商家还在使用带有shein的包装袋或标签我司仓库将进行退货处理。</p>
+        <p>
+          4、
+          <el-link
+            type="primary"
+            style="font-size: 12px;"
+            target="_blank"
+            href="https://detail.1688.com/offer/647643367713.html?spm=a26286.8251493.description.2.221425b2S6qTRa"
+          >包装购买链接</el-link>
+        </p>
+      </div>
     </div>
     <SlListView
       ref="listView"
@@ -518,13 +533,17 @@ export default {
     font-size: 12px;
     line-height: 20px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 20px;
     .delivery-introduce-bg {
       background: #fdf6ec;
       border-radius: 4px;
+      width: 50%;
+      margin-bottom: 15px;
     }
-    .deliver-info {
+    .deliver-info,
+    .update-package {
       width: 60%;
       padding: 20px;
     }

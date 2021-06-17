@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :visible.sync="showDiaolog" width="50%" center>
+  <el-dialog :visible.sync="showDiaolog" width="50%" center @closed="reset">
     <h4 slot="title">{{isEdit?'修改':'添加'}}物流</h4>
     <el-alert
       title="注意！"
@@ -41,15 +41,17 @@
               :value="item.id"
             ></el-option>
           </el-select>-->
-          <sl-select
-            v-model="form.id"
-            :options="companyList"
-            :maxHeight="200"
-            clearable
-            filterable
-            label="logisticsCompanyName"
-            value="id"
-          ></sl-select>
+          <div style="width:100%;">
+            <sl-select
+              v-model="form.id"
+              :options="companyList"
+              :maxHeight="200"
+              clearable
+              filterable
+              label="logisticsCompanyName"
+              value="id"
+            ></sl-select>
+          </div>
         </el-form-item>
         <el-form-item label="快递单号" prop="logisticsNumber">
           <el-input v-model="form.logisticsNumber"></el-input>
@@ -75,10 +77,10 @@ export default {
       logisticsInfo: {},
       rules: {
         id: [
-          { required: true, message: '请选择物流商', trigger: 'change' }
+          { required: true, message: '请选择物流商' }
         ],
         logisticsNumber: [
-          { required: true, message: '请输入物流号', trigger: 'blur' }
+          { required: true, message: '请输入物流号' }
         ]
       },
       companyList: [],
@@ -144,6 +146,9 @@ export default {
           })
         }
       })
+    },
+    reset () {
+      this.$refs.form.resetFields()
     }
   }
 }
