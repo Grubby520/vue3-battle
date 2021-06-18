@@ -30,7 +30,7 @@
         :operate="false"
         :tooltip="false"
         :isEmbedTable="true"
-        height="320px"
+        maxHeight="320px"
       ></SlTable>
     </div>
     <template v-slot:bottom>

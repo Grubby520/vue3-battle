@@ -11,6 +11,7 @@
       :border="border"
       :row-key="rowKey"
       :height="height"
+      :max-height="maxHeight"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -147,6 +148,7 @@ export default {
     disabledKeys: { type: Array, required: false, default: () => { return [] } }, // 禁址选中的行标识数据
     loading: { type: Boolean, required: false, default: false },
     height: { type: [String, Number], required: false, default: undefined },
+    maxHeight: { type: [String, Number], required: false, default: undefined },
     isEmbedTable: { // 是否是被嵌入在其他表格中,根据此属性决定是否使用包装类：'sl-table-wrap'
       type: Boolean,
       default: false

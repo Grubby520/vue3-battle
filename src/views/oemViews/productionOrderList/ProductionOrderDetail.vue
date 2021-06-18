@@ -40,7 +40,7 @@
         :operate="false"
         :tooltip="false"
         :isEmbedTable="true"
-        height="400px"
+        maxHeight="400px"
         rowKey="id"
       ></SlTable>
     </el-card>
