@@ -20,6 +20,7 @@
         ref="deliveryForm"
         :model="form"
         :rules="rules"
+        :validate-on-rule-change="false"
         label-width="100px"
         inline
       >
