@@ -72,7 +72,7 @@
               <span class="color-text--minor">{{row.deliveryOrderPackageNumber}}</span>
             </li>
             <li class="display-inline-block">
-              <span class="color-text--primary">物流单号:</span>
+              <span class="color-text--primary mr-8px">物流单号:</span>
               <span class="color-text--minor">{{row.logisticsBillNumber}}</span>
             </li>
           </ul>
