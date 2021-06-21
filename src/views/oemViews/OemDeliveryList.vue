@@ -127,7 +127,7 @@ export default {
         {
           type: 'date',
           label: '发货日期',
-          name: 'deliveryTimes',
+          name: 'orderTimes',
           data: {
             datetype: 'daterange',
             isBlock: true
