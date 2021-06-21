@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 编辑SKU -->
-    <el-dialog
+    <SlDialog
       :lock-scroll="false"
       :title="'批量查询'+label"
       :visible.sync="visible"
@@ -23,12 +23,12 @@
         <el-form-item>
           <div style="font-size:14px;color:#666;">备注：一行一个，或英文逗号分隔，最多支持{{maxLen}}个批量搜索</div>
         </el-form-item>
-        <el-form-item style="text-align:right;">
-          <el-button type="primary" @click="onSubmitBtn">{{$t('button.submitText')}}</el-button>
-          <el-button @click="visible = false">{{$t('button.cancelText')}}</el-button>
-        </el-form-item>
       </el-form>
-    </el-dialog>
+      <template v-slot:bottom>
+        <el-button type="primary" @click="onSubmitBtn">{{$t('button.submitText')}}</el-button>
+        <el-button @click="visible = false">{{$t('button.cancelText')}}</el-button>
+      </template>
+    </SlDialog>
   </div>
 </template>
 <script>
