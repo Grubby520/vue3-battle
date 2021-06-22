@@ -64,7 +64,7 @@
               <el-input
                 v-model="form['count_'+row.purchaseOrderItemId]"
                 v-slFormatNumber="numberFormat"
-                :placeholder="'<='+row.curDeliveryQuantityLimit"
+                placeholder=">0"
               ></el-input>
             </el-form-item>
           </template>
@@ -217,11 +217,13 @@ export default {
           }).then(res => {
             let { success, error = {} } = res
             if (success) {
-              this.$message.success(`发货成功`)
               this.deliverDialogVisible = false
+              this.$message.success(`发货成功`)
               this.$emit('submit')
             } else {
-              errorMessageTip(error.message)
+              if (!this.$store.state.uniformlyCapturedErrorCodes.includes(error.code)) {
+                errorMessageTip(error.message)
+              }
             }
           }).finally(() => {
             this.handleLoading = false
