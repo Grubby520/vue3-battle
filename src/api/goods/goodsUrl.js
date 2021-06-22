@@ -1,3 +1,10 @@
+/*
+ * @Author: 张建
+ * @Date: 2021-06-22 09:10:31
+ * @LastEditors: 张建
+ * @LastEditTime: 2021-06-22 14:56:37
+ * @Description: file content
+ */
 const baseURL = '/srm-goods-service/'// 与后端微服务名对应
 
 export default {
@@ -41,5 +48,6 @@ export default {
   stockOutList: baseURL + 'stock-out/page-srm-list', // 缺货列表
   stockOutApply: baseURL + 'stock-out', // 申请缺货
   productDashboardList: baseURL + 'product-dashboard/page', // 商品看板列表查询
-  productColor: baseURL + 'product-dashboard/query-color' // 商品颜色列表
+  productColor: baseURL + 'product-dashboard/query-color', // 商品颜色列表
+  selfDistributionLogistics: baseURL + 'sequence-generator/generate-by-date' // 自配送物流
 }

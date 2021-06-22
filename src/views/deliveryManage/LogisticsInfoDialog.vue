@@ -7,6 +7,14 @@
     class="logistics-dialog"
   >
     <div class="content">
+      <div style="margin-bottom:10px;"><el-link type="primary" @click="print" v-if="orderStatus<5">物流条码打印</el-link></div>
+      <div class="bar-code-wrap">
+        <div class="print" id="printMe">
+        <div class="tit">物流单号</div>
+        <div><svg class="barcodeSvg"/></div>
+        <div class="logisticsNumber">{{logisticsInfo.logisticsNumber}}</div>
+      </div>
+      </div>
       <h3>物流信息</h3>
       <div class="logistics-info">
         <div class="line-hight32">
@@ -26,20 +34,47 @@
   </el-dialog>
 </template>
 <script>
+import JsBarcode from 'jsbarcode'
+import SlPrint from '@/shared/util/printarea.js'
 export default {
   name: 'LogisticsInfo',
   data () {
     return {
       isShowLogistics: false,
       logisticsInfo: {},
-      tableData: []
+      tableData: [],
+      orderStatus: -1
     }
   },
   methods: {
-    show (data) {
+    show (data, orderStatus) {
+      this.orderStatus = orderStatus
       this.logisticsInfo = data.row
       this.isShowLogistics = data.isShowLogistics
       this.tableData = data.info ? data.info.trackingInfoDetailList : []
+
+      this.$nextTick(() => {
+        JsBarcode(`.barcodeSvg`, this.logisticsInfo.logisticsNumber, {
+          height: 70,
+          width: 1,
+          fontSize: 0,
+          margin: 0
+        })
+      })
+    },
+    print () {
+      const vm = this
+      let sl = new SlPrint({
+        ids: '#printMe',
+        endCallback () {
+          vm.$emit('printed')
+        }
+      })
+      setTimeout(function () {
+        vm.$nextTick(() => {
+          sl.init()
+        })
+      }, 1000)
     }
   }
 }
@@ -59,6 +94,26 @@ export default {
   justify-content: space-between;
   .line-hight32 {
     line-height: 20px;
+  }
+}
+.bar-code-wrap {
+    overflow: hidden;
+    clip-path: polygon(0px 0px, 0px 0px, 0px 0px, 0px 0px);
+    display: none;
+}
+.print{
+  width: 58mm;
+  height: 38mm;
+  padding: 1mm;
+  text-align: center;
+  .tit{
+    font-size: 18px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+  }
+  .logisticsNumber{
+    font-size: 14px;
+    line-height: 30px;
   }
 }
 </style>

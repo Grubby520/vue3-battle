@@ -390,16 +390,25 @@ export default {
         logisticsCompanyName: row.logisticsCompanyName,
         logisticsCompanyCode: row.courierCode
       }
+
+      let loding = this.$loading({
+        lock: true,
+        text: '加载中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+
       let res = await GOODS_API.getLogisticsInfo(params)
       if (res.success) {
         let data = { isShowLogistics: true, info: res.data[0], row: row }
-        this.$refs.logisticsInfo.show(data)
+        this.$refs.logisticsInfo.show(data, row.orderStatus)
       } else {
         Message({
           message: res.error.message,
           type: 'error'
         })
       }
+      loding.close()
     },
 
     async odmDetail (row, type) {

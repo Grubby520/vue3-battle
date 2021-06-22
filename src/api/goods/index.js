@@ -213,7 +213,10 @@ const GOODS_API = {
       }
       return result
     })
+  },
+  // 自配送物流
+  selfDistributionLogistics (params) {
+    return post(URL.selfDistributionLogistics, params)
   }
-
 }
 export default GOODS_API

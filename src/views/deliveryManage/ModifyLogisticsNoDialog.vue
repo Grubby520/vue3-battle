@@ -31,31 +31,35 @@
       description="请务必确保此发货单对应的物流单号填写正确，物流单号填写错误或者未填写则仓库无法签收此包裹！"
     ></el-alert>
     <div class="logistics-no">
-      <el-form ref="form" :model="form" label-width="80px" class="logistics-form" :rules="rules">
-        <el-form-item label="物流商" prop="id">
-          <!-- <el-select v-model="form.id" placeholder="物流商" filterable>
-            <el-option
-              v-for="item in companyList"
-              :key="item.id"
-              :label="item.logisticsCompanyName"
-              :value="item.id"
-            ></el-option>
-          </el-select>-->
-          <div style="width:100%;">
-            <sl-select
-              v-model="form.id"
-              :options="companyList"
-              :maxHeight="200"
-              clearable
-              filterable
-              label="logisticsCompanyName"
-              value="id"
-            ></sl-select>
-          </div>
-        </el-form-item>
-        <el-form-item label="快递单号" prop="logisticsNumber">
-          <el-input v-model="form.logisticsNumber"></el-input>
-        </el-form-item>
+      <el-form ref="form" :model="form" label-width="150px" class="logistics-form" :rules="rules">
+        <el-row>
+          <el-col :span="16">
+            <el-form-item label="物流商" prop="id">
+              <div style="width:100%;">
+                <sl-select
+                  v-model="form.id"
+                  :options="companyList"
+                  :maxHeight="200"
+                  clearable
+                  filterable
+                  label="logisticsCompanyName"
+                  value="id"
+                  @change="companyListChange"
+                ></sl-select>
+              </div>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8" style="text-align:left;line-height: 33px;padding-left:10px;">
+            <el-link type="primary" @click="selfLogistics">自配送物流</el-link>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="16">
+            <el-form-item label="快递单号" prop="logisticsNumber">
+              <el-input v-model="form.logisticsNumber" :disabled="isSelf"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </div>
     <div slot="footer">
@@ -88,10 +92,53 @@ export default {
         id: '',
         logisticsNumber: ''
       },
+      selfDistributionLogisticsCode: 'self-delivery',
+      isSelf: false,
       onClick: () => { }
     }
   },
   methods: {
+    companyListChange () {
+      let logistcs = this.companyList.find(e => e.id === this.form.id)
+      if (logistcs.courierCode === this.selfDistributionLogisticsCode) { // 自配送
+        this.isSelf = true
+        this.selfLogistics()
+      } else {
+        this.isSelf = false
+      }
+    },
+    selfLogistics () {
+      let zs = this.companyList.find(e => e.courierCode === this.selfDistributionLogisticsCode)// 定位自配送
+      if (zs) {
+        this.form.id = zs.id
+      }
+      this.isSelf = true
+      if (this.selfLogisticsNumber) {
+        this.form.logisticsNumber = this.selfLogisticsNumber
+        return
+      }
+      let loding = this.$loading({
+        lock: true,
+        text: '加载中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+      this.form.logisticsNumber = ''
+      GOODS_API.selfDistributionLogistics({
+        prefix: 'ZS', // 前缀
+        dateFormat: 'yyMMdd', // 年月日（6位）
+        sequenceType: 'SELF_DELIVERY_LOGISTICS_NUM',
+        randomCodeLength: 3
+      }).then(d => {
+        loding.close()
+        if (d.data) {
+          this.selfLogisticsNumber = d.data
+          this.form.logisticsNumber = d.data
+        }
+      }).catch(() => {
+        loding.close()
+      })
+    },
     show (data) {
       this.logisticsInfo = _cloneDeep(data.row)
       this.isEdit = !!data.row.logisticsNumber
@@ -101,6 +148,15 @@ export default {
       }
 
       this.companyList = _cloneDeep(data.companyList)
+      let zs = this.companyList.find(e => e.id === this.form.id)// 定位自配送
+      if (zs && zs.courierCode === this.selfDistributionLogisticsCode) { // 自配送
+        this.selfLogisticsNumber = this.form.logisticsNumber
+        this.isSelf = true
+      } else {
+        this.selfLogisticsNumber = ''
+        this.isSelf = false
+      }
+
       this.showDiaolog = data.showDiaolog
       this.onClick = data.onClick
     },
@@ -186,7 +242,7 @@ p {
   .logistics-form {
     margin-top: 8px;
     display: inline-block;
-    width: 50%;
+    width: 80%;
     .el-select--small {
       width: 100%;
     }
