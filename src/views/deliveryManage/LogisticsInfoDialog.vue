@@ -9,7 +9,7 @@
     <div class="content">
       <div style="margin-bottom:10px;"><el-link type="primary" @click="print" v-if="orderStatus<5">物流条码打印</el-link></div>
       <div class="bar-code-wrap">
-        <div class="print" id="printMe">
+        <div class="print" id="printMe_logisticsNumber">
         <div class="tit">物流单号</div>
         <div><svg class="barcodeSvg"/></div>
         <div class="logisticsNumber">{{logisticsInfo.logisticsNumber}}</div>
@@ -65,7 +65,7 @@ export default {
     print () {
       const vm = this
       let sl = new SlPrint({
-        ids: '#printMe',
+        ids: '#printMe_logisticsNumber',
         endCallback () {
           vm.$emit('printed')
         }
