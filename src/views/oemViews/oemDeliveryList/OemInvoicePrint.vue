@@ -10,7 +10,7 @@
       </div>
       <div class="info">
         <div>
-          <p>发货单号{{info.deliveryOrderNum}}</p>
+          <p>发货单号：{{info.deliveryOrderNum}}</p>
           <p v-if="info.packageOrderNum">装箱单号：{{info.packageOrderNum}}</p>
           <p>SKU总数：{{info.skuTotal}}</p>
           <p>采购员：{{info.operateName}}</p>
