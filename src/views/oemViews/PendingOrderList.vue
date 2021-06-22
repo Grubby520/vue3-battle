@@ -145,7 +145,7 @@ export default {
           label: '实际发货量'
         },
         {
-          prop: 'estimatedArrivalDate',
+          prop: 'claimArrivalDate',
           label: '应交货时间'
         }
       ]
