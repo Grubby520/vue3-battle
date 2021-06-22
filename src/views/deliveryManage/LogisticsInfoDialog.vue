@@ -8,7 +8,7 @@
     >
         <div class="content">
             <div style="margin-bottom:10px;">
-                <el-link type="primary" @click="print" v-if="orderStatus<5">物流条码打印</el-link>
+                <el-link type="primary" @click="print" v-if="orderStatus<5&&courierCode==='self-delivery'">物流条码打印</el-link>
             </div>
             <div class="bar-code-wrap">
                 <div class="print" id="printMe_logisticsNumber">
@@ -47,12 +47,14 @@ export default {
       isShowLogistics: false,
       logisticsInfo: {},
       tableData: [],
-      orderStatus: -1
+      orderStatus: -1,
+      courierCode: ''
     }
   },
   methods: {
-    show (data, orderStatus) {
-      this.orderStatus = orderStatus
+    show (data) {
+      this.orderStatus = data.row.orderStatus
+      this.courierCode = data.row.courierCode
       this.logisticsInfo = data.row
       this.isShowLogistics = data.isShowLogistics
       this.tableData = data.info ? data.info.trackingInfoDetailList : []
