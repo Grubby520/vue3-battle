@@ -109,7 +109,7 @@ export default {
 }
 .print {
     width: 58mm;
-    height: 38mm;
+    height: 37mm;
     padding: 1mm;
     text-align: center;
     .tit {
