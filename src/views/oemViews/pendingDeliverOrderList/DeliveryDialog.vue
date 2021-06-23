@@ -45,7 +45,7 @@
             placeholder="物流单号"
             maxlength="50"
             clearable
-            :disabled="!form.logisticsCompanyId && form.logisticsCompanyId !== 0"
+            :disabled="!form.logisticsCompanyId || isSelfSend"
           ></el-input>
         </el-form-item>
         <SlTableInfo
@@ -137,6 +137,9 @@ export default {
     }
   },
   computed: {
+    isSelfSend () {
+      return parseInt(this.form.logisticsCompanyId) === 0
+    },
     rules () {
       let rules = {
         logisticsCompanyId: [
@@ -144,7 +147,7 @@ export default {
         ],
         logisticsNumber: [emptyValidator('请填写物流单号')]
       }
-      if (parseInt(this.form.logisticsCompanyId) === 0) { // 自发的情况可以不校验物流单号
+      if (this.isSelfSend) { // '自发'的情况可以不校验物流单号
         delete rules.logisticsNumber
       }
 
