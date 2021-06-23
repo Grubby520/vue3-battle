@@ -115,6 +115,7 @@ export default {
       } else {
         this.form.logisticsNumber = ''
         this.isSelf = false
+        this.$refs.form.clearValidate()
       }
     },
     selfLogistics () {
