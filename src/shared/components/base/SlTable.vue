@@ -2,7 +2,7 @@
   <div :class="{'sl-table-wrap':!isEmbedTable}">
     <el-table
       class="tableData sl-table-theme"
-      ref="multipleTable"
+      ref="slTable"
       size="mini"
       v-loading="loading"
       header-row-class-name="table-header--custom"
@@ -12,6 +12,8 @@
       :row-key="rowKey"
       :height="height"
       :max-height="maxHeight"
+      :show-summary="showSummary"
+      :summary-method="summaryMethod"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -149,6 +151,13 @@ export default {
     loading: { type: Boolean, required: false, default: false },
     height: { type: [String, Number], required: false, default: undefined },
     maxHeight: { type: [String, Number], required: false, default: undefined },
+    showSummary: { type: Boolean, required: false, default: false },
+    summaryMethod: {
+      type: Function,
+      default: () => {
+        return function () { }
+      }
+    },
     isEmbedTable: { // 是否是被嵌入在其他表格中,根据此属性决定是否使用包装类：'sl-table-wrap'
       type: Boolean,
       default: false
@@ -160,6 +169,12 @@ export default {
     },
     checkSelectable (row) {
       return this.disabledKeys.indexOf(row[this.rowKey]) === -1
+    },
+    clearSelection () {
+      this.$refs.slTable && this.$refs.slTable.clearSelection()
+    },
+    toggleRowSelection (row, selected) {
+      this.$refs.slTable && this.$refs.slTable.toggleRowSelection(row, selected)
     }
   }
 }

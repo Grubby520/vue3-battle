@@ -4,7 +4,7 @@
       <router-view />
     </transition>
     <!-- icon-font symbol图标 -->
-    <remote-js src="//at.alicdn.com/t/font_2214107_eyds8d0oihk.js"></remote-js>
+    <remote-js src="//at.alicdn.com/t/font_2214107_7olpj3m9zjs.js"></remote-js>
     <!-- 版本更新提示 -->
     <VersionUpdatePrompt></VersionUpdatePrompt>
   </div>

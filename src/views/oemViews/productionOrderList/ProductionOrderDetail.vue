@@ -9,7 +9,7 @@
           :titleStyle="titleStyle"
           columnIcon
         ></SlContentTitle>
-        <el-button type="text" size="medium" @click="$router.go(-1)">返回</el-button>
+        <el-button type="text" size="medium" @click="$router.go(-1)" style="padding:0">返回</el-button>
       </div>
       <el-row>
         <el-col :span="4" v-for="prop in productionOrderComputedProps" :key="prop.value">

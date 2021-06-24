@@ -77,6 +77,35 @@ const ROUTES = [
         component: () => import('@/views/oemViews/productionOrderList/ProductionOrderDetail.vue')
       }
     ]
+  },
+  {
+    path: 'oem-finance-manage',
+    name: '财务管理',
+    meta: {
+      icon: 'icon-sl-finance-manage',
+      code: 'menu_goods_management'
+    },
+    component: ParentMenuRoute,
+    children: [
+      {
+        path: 'settlement-order-list',
+        name: '结算单列表',
+        meta: {
+          icon: '',
+          code: 'menu_goods_management'
+        },
+        component: () => import('@/views/commonViews/SettlementOrderList.vue')
+      },
+      {
+        path: 'settlement-order-detail',
+        name: '结算单详情',
+        meta: {
+          icon: '',
+          notMenu: true
+        },
+        component: () => import('@/views/commonViews/settlementOrderList/SettlementOrderDetail.vue')
+      }
+    ]
   }
 ]
 

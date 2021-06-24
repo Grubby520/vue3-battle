@@ -4,7 +4,7 @@
       class="table-content"
       v-for="(item,index) in tableData"
       :class="{'sl-table-wrap':addWrapClass}"
-      :key="item[primaryKey]+index"
+      :key="item[primaryKey]+'&'+index"
     >
       <div class="table-content-header color-bg--white">
         <el-checkbox
