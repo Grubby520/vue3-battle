@@ -14,6 +14,7 @@
       :selection="false"
       :operate="false"
       :tooltip="false"
+      :isEmbedTable="true"
     ></SlTable>
   </SlListView>
 </template>
