@@ -55,6 +55,7 @@ export default {
 }
 </script>
 <style lang="scss">
+@import '@assets/scss/_var.scss';
 $theme-main: #f2f3f5;
 
 .sl-panel {
@@ -79,6 +80,7 @@ $theme-main: #f2f3f5;
 .sl-panel-content {
   padding: 1em;
   height: auto;
+  background-color: $color-white;
   overflow: hidden;
   transition: all 0.15s linear;
   &.close {
