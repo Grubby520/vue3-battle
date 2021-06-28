@@ -138,7 +138,7 @@ export default {
   },
   computed: {
     isSelfSend () {
-      return parseInt(this.form.logisticsCompanyId) === 0
+      return parseInt(this.form.logisticsCompanyId) === 'self-delivery'
     },
     rules () {
       let rules = {
