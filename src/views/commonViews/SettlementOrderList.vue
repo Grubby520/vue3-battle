@@ -46,6 +46,7 @@
         :selection="true"
         :operate="true"
         :tooltip="false"
+        align="left"
         @changeSelection="selectionChangeHandle"
       >
         <div slot="operation" slot-scope="{row}">
@@ -403,7 +404,7 @@ export default {
     },
     toDetail (row) {
       this.$router.push({
-        path: '/home/oem-finance-manage/settlement-order-detail',
+        path: '/home/finance/settlement-order-detail',
         query: {
           settlementOrderId: String(row.id),
           settlementOrderNo: String(row.settlementOrderNo),

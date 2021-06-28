@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <SlDialog
     :title="title"
     custom-class="attachments-manage-dialog"
     :visible.sync="dialogVisible"
@@ -55,10 +55,13 @@
       center
       :closable="false"
     ></el-alert>
-    <span v-if="canEdit" slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="submit" :disabled="!canSubmit">{{$t('button.saveText')}}</el-button>
-    </span>
-  </el-dialog>
+    <template v-slot:bottom>
+      <span v-if="canEdit">
+        <el-button type="primary" @click="submit" :disabled="!canSubmit">{{$t('button.saveText')}}</el-button>
+      </span>
+      <el-button v-else @click="dialogVisible = false">关闭</el-button>
+    </template>
+  </SlDialog>
 </template>
 
 <script>

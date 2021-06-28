@@ -1,15 +1,10 @@
 <template>
   <div v-loading="loading">
     <div class="mb-8px">
-      <el-button
-        class="mr-8px"
-        type="text"
-        size="medium"
-        @click="$router.go(-1)"
-        style="padding:0"
-      >返回</el-button>
+      <el-button type="text" size="medium" @click="$router.go(-1)" style="padding:0">返回</el-button>
+      <el-divider direction="vertical"></el-divider>
       <span class="color-text--primary mr-8px">结算单号:</span>
-      <span class="color-text--minor">123456789</span>
+      <span class="color-text--minor">{{settlementOrderNo}}</span>
     </div>
     <el-card class="mb-2rem" shadow="never">
       <div slot="header" class="clearfix">
@@ -23,6 +18,7 @@
       </div>
       <SlTable
         ref="deliverySettleList"
+        maxHeight="400px"
         align="left"
         :selection="false"
         :border="false"
@@ -33,7 +29,6 @@
         :isEmbedTable="true"
         :showSummary="true"
         :summaryMethod="deliverySummaryMethod"
-        maxHeight="400px"
         rowKey="id"
       ></SlTable>
     </el-card>
@@ -57,6 +52,7 @@
         <SlTable
           ref="supplyList"
           maxHeight="400px"
+          align="left"
           :tableData="supplyList"
           :columns="supplyListColumns"
           :selection="false"

@@ -50,9 +50,9 @@
         rowKey="id"
       >
         <div slot="operation" slot-scope="{row}">
-          <el-button type="text" @click="viewDetail(row.id)">查看</el-button>
-          <el-button type="text" @click="printInvoice(row.id)">打印发货单</el-button>
-          <el-button type="text" @click="printBatchNo(row.id)">打印批次号</el-button>
+          <el-button class="operation-btn" type="text" @click="viewDetail(row.id)">查看</el-button>
+          <el-button class="operation-btn" type="text" @click="printInvoice(row.id)">打印发货单</el-button>
+          <el-button class="operation-btn" type="text" @click="printBatchNo(row.id)">打印批次号</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -316,4 +316,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.operation-btn {
+  margin-left: 0 !important;
+  margin-right: 0.8rem;
+}
 </style>
