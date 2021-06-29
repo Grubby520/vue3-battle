@@ -224,6 +224,10 @@ export default {
           }
         },
         {
+          prop: 'realPurchasePrice',
+          label: '采购单价'
+        },
+        {
           prop: 'dueDeliveryTime',
           label: '应交货时间',
           width: '100',

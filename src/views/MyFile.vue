@@ -70,6 +70,16 @@
             ></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="引荐人" prop="baseInfo.referrer">
+            <el-input
+              v-model.trim="form.baseInfo.referrer"
+              clearable
+              placeholder="请输入引荐人"
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-card>
     <el-card class="module">
@@ -179,6 +189,10 @@ export default {
           ],
           address: [
             emptyValidator('请选择公司地址', ['blur', 'change'])
+          ],
+          contactWebChat: [emptyValidator('请输入联系人微信')],
+          referrer: [
+            emptyValidator('请输入引荐人')
           ]
         },
         shippingAddress: {
