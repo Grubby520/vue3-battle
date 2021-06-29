@@ -163,7 +163,7 @@
         <el-input v-model="form.contactWebChat" maxlength="15" clearable placeholder="请输入联系人微信"></el-input>
       </el-form-item>
       <el-form-item label="引荐人" prop="referrer">
-        <el-input v-model="form.referrer" clearable placeholder="请输入引荐人"></el-input>
+        <el-input v-model="form.referrer" clearable maxlength="50" placeholder="请输入引荐人"></el-input>
       </el-form-item>
     </el-form>
   </div>

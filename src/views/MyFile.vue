@@ -75,6 +75,7 @@
             <el-input
               v-model.trim="form.baseInfo.referrer"
               clearable
+              maxlength="50"
               placeholder="请输入引荐人"
               class="form-item"
             ></el-input>
