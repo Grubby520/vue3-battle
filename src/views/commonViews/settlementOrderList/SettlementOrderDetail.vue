@@ -62,39 +62,13 @@
         ></SlTable>
       </SlListView>
     </el-card>
-    <el-card class="mb-2rem" shadow="never">
-      <div slot="header" class="clearfix">
-        <SlContentTitle
-          text="补扣款单信息"
-          :fontSize="titleFontSize"
-          :line="false"
-          :titleStyle="titleStyle"
-          columnIcon
-        ></SlContentTitle>
-      </div>
-      <SlTable
-        ref="supplementaryDeductionList"
-        align="left"
-        maxHeight="400px"
-        :selection="false"
-        :border="false"
-        :tableData="supplementaryDeductionList"
-        :columns="supplementaryDeductionColumns"
-        :operate="false"
-        :tooltip="false"
-        :isEmbedTable="true"
-        :showSummary="true"
-        :summaryMethod="supDeductionSummaryMethod"
-        rowKey="id"
-      ></SlTable>
-    </el-card>
   </div>
 </template>
 
 <script>
 import BigNumber from 'bignumber.js'
 import { thousandsSeparate } from '@shared/util'
-import GoodsApi from '@api/goods'
+import SettlementApi from '@api/settlement'
 
 export default {
   name: 'SettlementOrderDetail',
@@ -230,54 +204,6 @@ export default {
             return <span>{thousandsSeparate(row.supplierTotalAmount)}</span>
           }
         }
-      ],
-      supplementaryDeductionList: [],
-      supplementaryDeductionColumns: [
-        {
-          prop: 'supplementaryDeductionNo',
-          label: '补扣款单号',
-          width: '200'
-        },
-        {
-          prop: 'paymentTypeName',
-          label: '款项类型',
-          width: '200'
-        },
-        {
-          prop: 'sourceOrderTypeName',
-          label: '源单类型'
-        },
-        {
-          prop: 'sourceOrderNo',
-          label: '源单编号'
-        },
-        {
-          prop: 'amount',
-          label: '总金额 (￥)',
-          width: '100',
-          render: (h, data) => {
-            let { row = {} } = data
-            return <span>{thousandsSeparate(row.amount)}</span>
-          }
-        },
-        {
-          prop: 'remarks',
-          label: '备注',
-          render: (h, data) => {
-            let { row = {} } = data
-            return (
-              <el-tooltip placement="top-start" effect="light">
-                <div slot="content" style="max-width:200px;">{row.remarks}</div>
-                <p v-slClamp={{ clamp: 2 }}>{row.remarks}</p>
-              </el-tooltip>
-            )
-          }
-        },
-        {
-          prop: 'confirmAt',
-          label: '确认时间',
-          width: '200'
-        }
       ]
     }
   },
@@ -286,20 +212,15 @@ export default {
   },
   watch: {},
   created () {
-    this.getDetailInfo()
+    this.getDeliveryInfo()
   },
   methods: {
-    getDetailInfo () {
-      this.getDeliverySettleInfo()
-      this.getSupplyList()
-      this.getSupplementaryDeductionList()
-    },
-    getDeliverySettleInfo () {
+    getDeliveryInfo () {
       if (!this.deliveryNo && !this.settlementOrderId) {
         return
       }
       this.loading = true
-      GoodsApi.getDeliveryInfo({
+      SettlementApi.getDeliveryInfo({
         deliveryNo: this.deliveryNo,
         settlementOrderId: this.settlementOrderId
       }).then(res => {
@@ -336,7 +257,7 @@ export default {
       return sums
     },
     getSupplyList (pageSize = 10, pageIndex = 1) {
-      GoodsApi.getSupplyDetails({
+      SettlementApi.getSupplyDetails({
         deliveryNo: this.deliveryNo,
         settlementOrderId: this.settlementOrderId,
         pageIndex,
@@ -350,51 +271,6 @@ export default {
           this.supplyPage.pageSize = pageSize
         }
       }).finally(() => { })
-    },
-    getSupplementaryDeductionList () {
-      if (!this.deliveryNo && !this.settlementOrderId) {
-        return
-      }
-      this.loading = true
-      GoodsApi.getSupplementaryDeductionInfo({
-        deliveryNo: this.deliveryNo,
-        settlementOrderId: this.settlementOrderId
-      }).then(res => {
-        if (res.success) {
-          this.supplementaryDeductionList = res.data || []
-        }
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    supDeductionSummaryMethod (param) {
-      const { columns, data } = param
-      const sums = []
-      const sumProperties = ['amount']
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = '合计'
-          return
-        }
-
-        if (sumProperties.indexOf(column.property) !== -1) {
-          let total = 0
-          data.forEach(item => {
-            let value = Number(item[column.property])
-            if (item.paymentType === 1) { // 扣款加负号
-              value = -value
-            }
-            if (!isNaN(value)) {
-              total = BigNumber(value).plus(total)
-            }
-          })
-          sums[index] = thousandsSeparate(total)
-        } else {
-          sums[index] = ''
-        }
-      })
-
-      return sums
     }
   },
   mounted () {

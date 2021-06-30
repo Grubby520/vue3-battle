@@ -58,10 +58,10 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getSessionItem } from '@shared/util'
 import CommonUrl from '@api/url.js'
-import GoodsUrl from '@api/goods/goodsUrl'
-import GoodsApi from '@api/goods'
+import SettlementUrl from '@api/settlement/settlementUrl'
+import SettlementApi from '@api/settlement'
 
 export default {
   name: 'SettlementOrderList',
@@ -109,10 +109,10 @@ export default {
         {
           type: 'single-select',
           label: '结算单类型',
-          name: 'type',
+          name: 'orderType',
           data: {
             remoteUrl: CommonUrl.dictUrl,
-            params: { dataCode: 'SETTLEMENT_ORDER_STATUS_ENUM' }
+            params: { dataCode: 'SETTLEMENT_ORDER_TYPE_ENUM' }
           }
         }
       ],
@@ -135,11 +135,11 @@ export default {
           }
         },
         {
-          prop: 'type',
+          prop: 'orderTypeName',
           label: '结算单类型'
         },
         {
-          prop: 'type',
+          prop: 'paymentTypeName',
           label: '款项类型'
         },
         {
@@ -151,7 +151,7 @@ export default {
           label: '关联请款单号'
         },
         {
-          prop: 'createdAt',
+          prop: 'paymentAt',
           label: '账期时间',
           width: '150'
         },
@@ -176,7 +176,7 @@ export default {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
       this.tableLoading = true
-      GoodsApi.getSettlementOrderList(params).then(res => {
+      SettlementApi.getSettlementOrderList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
@@ -378,14 +378,15 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        paymentAtStart: paymentAts && paymentAts[0] ? paymentAts[0] : '',
-        paymentAtEnd: paymentAts && paymentAts[1] ? paymentAts[1] : ''
+        businessType: getSessionItem('supplierType') === 'OEM' ? 1 : 0,
+        createdAtStart: paymentAts && paymentAts[0] ? paymentAts[0] : '',
+        createdAtEnd: paymentAts && paymentAts[1] ? paymentAts[1] : ''
       }
     },
     // 确认请款
     confirmReimbursement () {
       this.loading = true
-      GoodsApi.supplierConfirm(this.selections.map(item => {
+      SettlementApi.supplierConfirm(this.selections.map(item => {
         return {
           settlementOrderId: item.id
         }
@@ -414,7 +415,7 @@ export default {
     },
     exportDetail (row) {
       exportFileFromRemote({
-        url: GoodsUrl.exportSettlement,
+        url: SettlementUrl.exportSettlement,
         name: `结算单${row.settlementOrderNo}详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         params: { settlementOrderId: row.id, type: 1 },
         beforeLoad: () => {
@@ -433,22 +434,17 @@ export default {
     selectionChangeHandle (val) {
       this.$nextTick(() => {
         if (val.length > 0) {
-          // 1、如果存在结算单类型的选中数据,则补扣款单行自动选中
-          // 模拟交互逻辑
-          let findOne = this.selections.some(row => row.id === 53) // 40
-          if (findOne) {
+          // 1、如果存在选中的结算单,则自动选中所有补扣款单
+          let findSettlementOrder = this.selections.some(row => row.orderType === 0)
+          if (findSettlementOrder) {
             this.tableData.forEach(row => {
-              if (row.id === 40) {
+              if (row.orderType === 1) { // 判断是否是补扣款单
                 this.$refs.table.toggleRowSelection(row, true)
               }
             })
           } else {
-            // 2、如果没有结算单类型的选中数据,则取消所有补扣款单的选中
-            this.tableData.forEach(row => {
-              if (row.id === 40) {
-                this.$refs.table.toggleRowSelection(row, false)
-              }
-            })
+            // 2、如果没有选中的结算单,则取消选中所有补扣款单
+            this.$refs.table.clearSelection()
           }
         }
       })

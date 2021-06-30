@@ -28,6 +28,7 @@
           <el-select
             v-model="form.logisticsCompanyId"
             placeholder="物流商"
+            filterable
             clearable
             @change="companyChangeHandler"
           >

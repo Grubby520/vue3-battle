@@ -100,3 +100,24 @@ export function getSameProtocol (url) {
   }
   return url.replace(/^(http|https)/, window.location.protocol.split(':')[0])
 }
+
+/**
+ * 对简单对象属性值的处理
+ * @param {Object} obj 指定需要转换的对象
+ * @param {Function} handlerFn 处理函数,有默认值
+ * @returns obj
+ */
+export function objValuesHandler (obj, handlerFn) {
+  if (!handlerFn) {
+    handlerFn = function (value) {
+      return value === '' ? null : value
+    }
+  }
+  if (obj && Object.prototype.toString.call(obj) === '[object Object]' && typeof handlerFn === 'function') {
+    Object.keys(obj).forEach(key => {
+      obj[key] = handlerFn(obj[key])
+    })
+  }
+
+  return obj
+}
