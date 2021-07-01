@@ -151,7 +151,7 @@ export default {
           label: '关联请款单号'
         },
         {
-          prop: 'paymentAt',
+          prop: 'createdAt',
           label: '账期时间',
           width: '150'
         },
