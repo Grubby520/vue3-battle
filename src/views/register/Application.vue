@@ -262,7 +262,8 @@ export default {
         contactName: '',
         contactNumber: '',
         contactQq: '',
-        contactWebChat: '' // 联系人微信
+        contactWebChat: '',
+        referrer: '' // 联系人微信
       },
       rules: {
         supplierName: [
