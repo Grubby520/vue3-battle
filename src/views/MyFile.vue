@@ -168,7 +168,8 @@ export default {
           contactNumber: null,
           contactQq: null,
           contactWebChat: null, // 微信号
-          erpSupplierId: null // 供应商ID
+          erpSupplierId: null, // 供应商ID
+          referrer: null// 引荐人
         },
         shippingAddress: {
           address: null, // 详细地址
@@ -245,7 +246,8 @@ export default {
             contactNumber: baseInfo.contactNumber,
             contactQq: baseInfo.contactQq,
             contactWebChat: baseInfo.contactWebChat,
-            erpSupplierId: baseInfo.erpSupplierId
+            erpSupplierId: baseInfo.erpSupplierId,
+            referrer: baseInfo.referrer
           }
 
           this.form.shippingAddress = {
@@ -273,7 +275,8 @@ export default {
             contactName: this.form.baseInfo.contactName,
             contactNumber: this.form.baseInfo.contactNumber,
             contactQq: this.form.baseInfo.contactQq,
-            contactWebChat: this.form.baseInfo.contactWebChat
+            contactWebChat: this.form.baseInfo.contactWebChat,
+            referrer: this.form.baseInfo.referrer
           }
           UserApi.supplierUpdate(params).then(res => {
             if (res.success) {

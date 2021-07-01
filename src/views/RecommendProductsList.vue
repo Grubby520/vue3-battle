@@ -19,6 +19,9 @@
           v-if="filterIsLoad"
         />
       </div>
+      <div class="download-wrapper">
+        <el-button class="download-btn" @click="downloadFileHandle" type="text">服装尺寸度量标准.pdf</el-button>
+      </div>
       <el-divider />
       <SlTableToolbar>
         <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
@@ -74,7 +77,9 @@
   </div>
 </template>
 <script>
-import { successNotify, errorNotify, confirmBox } from '@shared/util'
+import {
+  successNotify, errorNotify, confirmBox, exportFileFromRemote
+} from '@shared/util'
 import RecommondUrl from '@api/recommendProducts/recommendProductsUrl.js'
 import RecommondApi from '@api/recommendProducts/recommendProducts.js'
 import CommonApi from '@api/api.js'
@@ -136,6 +141,11 @@ export default {
         {
           name: 'description',
           label: '商品描述',
+          align: 'center'
+        },
+        {
+          name: 'claimByName',
+          label: '认领买手',
           align: 'center'
         },
         {
@@ -280,6 +290,24 @@ export default {
       const params = { mode: status, id, categoryId, supplierItemNo }
       const routerPath = status === 'create' ? '/home/recommend-products/category' : '/home/recommend-products/productDetail'
       this.$router.push({ path: routerPath, query: params })
+    },
+    // 下载服装尺寸度量标准
+    downloadFileHandle () {
+      const url = 'http://srm-file-public-prod.oss-cn-shanghai.aliyuncs.com/291e18ec-95d6-42c1-b78e-76be524bc6f5.pdf'
+      exportFileFromRemote({
+        url,
+        name: `服装尺寸度量标准.pdf`,
+        beforeLoad: () => {
+          this.loading = true
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
+        },
+        afterLoad: () => {
+          this.loading = false
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
+      })
     }
   }
 }
@@ -294,6 +322,12 @@ export default {
       flex-flow: column;
       justify-content: center;
       margin-left: 1rem;
+    }
+  }
+  .download-wrapper {
+    margin-left: 2rem;
+    .download-btn {
+      text-decoration: underline;
     }
   }
 }

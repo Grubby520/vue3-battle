@@ -85,7 +85,6 @@
             >还剩下：{{Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
           </template>
         </el-table-column>
-        <el-table-column prop="realPurchasePrice" label="采购单价" width="100px" align="center"></el-table-column>
         <el-table-column label="进度时间" width="200px" align="center">
           <template slot-scope="scope">
             <p v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</p>
