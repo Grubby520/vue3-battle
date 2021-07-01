@@ -386,7 +386,8 @@ export default {
     // 确认请款
     confirmReimbursement () {
       this.loading = true
-      SettlementApi.supplierConfirm(this.selections.map(item => {
+      let settlementOrders = this.selections.filter(item => item.orderType === 0) // 过滤掉补扣款单
+      SettlementApi.supplierConfirm(settlementOrders.map(item => {
         return {
           settlementOrderId: item.id
         }
