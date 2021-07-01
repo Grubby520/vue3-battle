@@ -1,4 +1,6 @@
 import ParentMenuRoute from '@/views/components/layout/ParentMenuRoute.vue'
+import { FinanceManageRoutes } from './shared_routes'
+
 // ODM供应商菜单项
 const ROUTES = [
   {
@@ -14,7 +16,7 @@ const ROUTES = [
         path: 'my-file',
         name: '基础资料',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_my_info'
         },
         component: () => import('@/views/MyFile.vue')
@@ -34,7 +36,7 @@ const ROUTES = [
         path: 'goods-statistics',
         name: '商品数据',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/GoodsStatistics.vue')
@@ -43,7 +45,7 @@ const ROUTES = [
         path: 'list',
         name: '商品列表',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/RecommendProductsList.vue')
@@ -52,7 +54,7 @@ const ROUTES = [
         path: 'category',
         name: '创建产品',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_create_product'
         },
         component: () => import('@/views/product/Category.vue')
@@ -92,7 +94,7 @@ const ROUTES = [
         path: 'stay-grouped-goods',
         name: '待组单商品',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/StayGroupedGoods.vue')
@@ -101,7 +103,7 @@ const ROUTES = [
         path: 'delivery-list',
         name: '发货单列表',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/DeliveryList.vue')
@@ -110,7 +112,7 @@ const ROUTES = [
         path: 'purchase-list',
         name: '采购单列表',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/PurchaseList.vue')
@@ -119,7 +121,7 @@ const ROUTES = [
         path: 'defective-list',
         name: '次品列表',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/DefectiveList.vue')
@@ -128,7 +130,7 @@ const ROUTES = [
         path: 'less-goods-list',
         name: '缺货列表',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_odm_upload_list'
         },
         component: () => import('@/views/LessGoodsList.vue')
@@ -148,56 +150,57 @@ const ROUTES = [
         path: 'bank',
         name: '收款信息',
         meta: {
-          icon: 'el-icon-paperclip',
+          icon: '',
           code: 'menu_my_info'
         },
         component: () => import('@/views/Bank.vue')
       },
-      {
-        path: 'settlement-order-list',
-        name: '结算单列表',
-        meta: {
-          icon: 'el-icon-paperclip',
-          code: 'menu_my_info'
-        },
-        component: () => import('@/views/SettlementOrderList.vue')
-      },
-      {
-        path: 'settlement-order-detail',
-        name: '结算单详情',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        component: () => import('@/views/settlementOrderList/SettlementOrderDetail.vue')
-      },
-      {
-        path: 'bill-list',
-        name: '请款单列表',
-        meta: {
-          icon: 'el-icon-paperclip',
-          code: 'menu_my_info'
-        },
-        component: () => import('@/views/BillList.vue')
-      },
-      {
-        path: 'supply-deduct-money-list',
-        name: '补扣款单列表',
-        meta: {
-          icon: 'el-icon-paperclip',
-          code: 'menu_my_info'
-        },
-        component: () => import('@/views/SupplyDeductMoneyList.vue')
-      },
-      {
-        path: 'bill-detail',
-        name: '请款单详情',
-        meta: {
-          icon: '',
-          notMenu: true
-        },
-        component: () => import('@/views/billList/BillDetail.vue')
-      }
+      ...FinanceManageRoutes.children
+      // {
+      //   path: 'settlement-order-list',
+      //   name: '结算单列表',
+      //   meta: {
+      //     icon: '',
+      //     code: 'menu_my_info'
+      //   },
+      //   component: () => import('@/views/SettlementOrderList.vue')
+      // },
+      // {
+      //   path: 'settlement-order-detail',
+      //   name: '结算单详情',
+      //   meta: {
+      //     icon: '',
+      //     notMenu: true
+      //   },
+      //   component: () => import('@/views/settlementOrderList/SettlementOrderDetail.vue')
+      // },
+      // {
+      //   path: 'bill-list',
+      //   name: '请款单列表',
+      //   meta: {
+      //     icon: '',
+      //     code: 'menu_my_info'
+      //   },
+      //   component: () => import('@/views/BillList.vue')
+      // },
+      // {
+      //   path: 'supply-deduct-money-list',
+      //   name: '补扣款单列表',
+      //   meta: {
+      //     icon: '',
+      //     code: 'menu_my_info'
+      //   },
+      //   component: () => import('@/views/SupplyDeductMoneyList.vue')
+      // },
+      // {
+      //   path: 'bill-detail',
+      //   name: '请款单详情',
+      //   meta: {
+      //     icon: '',
+      //     notMenu: true
+      //   },
+      //   component: () => import('@/views/billList/BillDetail.vue')
+      // }
     ]
   }
 ]
