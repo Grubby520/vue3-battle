@@ -269,7 +269,8 @@ export default {
             const currentSale = this.curSaleAttrs
               .find(sale => head.extendCode === sale.extendCode)
             if (currentSale.deleteSale) {
-              head.label = `${head.label}(已删除)`
+              head.label = `${head.label}`
+              // head.label = `${head.label}(已删除)`
             } else {
               if (!currentSale.usable) {
                 head.label = `${head.label}(已禁用)`
