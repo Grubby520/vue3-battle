@@ -74,8 +74,7 @@
 import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getSessionItem } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
-import GoodsUrl from '@api/goods/goodsUrl.js'
-import GoodsApi from '@api/goods'
+import SettlementUrl from '@api/settlement/settlementUrl'
 import SettlementApi from '@api/settlement'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
@@ -297,10 +296,10 @@ export default {
     },
     exportList () {
       exportFileFromRemote({
-        url: GoodsUrl.exportReimbursementList,
+        url: SettlementUrl.exportSettlementInfoUrl,
         name: `请款单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         params: {
-          reimbursementIds: this.selections.map(item => item.paymentRequestId)
+          paymentRequestIds: this.selections.map(item => item.paymentRequestId)
         },
         beforeLoad: () => {
           this.loading = true
@@ -321,18 +320,20 @@ export default {
       let url = ''
       switch (type) {
         case 1:
-          url = GoodsUrl.exportInvoice
+          url = SettlementUrl.exportInvoiceUrl
           fileName = `发票_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
         case 3:
-          url = GoodsUrl.exportSupplyList
+          url = SettlementUrl.exportSupplyListUrl
           fileName = `供货清单_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
       }
       exportFileFromRemote({
-        url: url + `/${row.paymentRequestId}`,
+        url: url,
         name: fileName,
-        params: {},
+        params: {
+          paymentRequestId: row.paymentRequestId
+        },
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '下载中' })
@@ -354,7 +355,7 @@ export default {
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      GoodsApi.getAttachmentList({ associationId: row.paymentRequestId, associationType: '3' }).then(res => {
+      SettlementApi.getAttachmentList({ associationId: row.paymentRequestId, associationType: '3' }).then(res => {
         let data = res.data || []
         this.attachments = data.map(item => {
           return {
@@ -366,17 +367,17 @@ export default {
       })
     },
     saveAttachments () {
-      const params = {
-        paymentRequestId: this.paymentRequestId,
-        attachmentInfoDtoList: this.attachments.map(item => {
-          return {
-            attachmentName: item.name,
-            attachmentUrl: item.src
-          }
-        })
-      }
+      const params = this.attachments.map(item => {
+        return {
+          associationId: this.paymentRequestId,
+          associationType: '3',
+          attachmentName: item.name,
+          attachmentUrl: item.src
+        }
+      })
+
       this.loading = true
-      GoodsApi.updateReimbursementAttachments(params).then(res => {
+      SettlementApi.saveAttachmentRelations(params).then(res => {
         if (res.success) {
           this.attachmentsManageDialogShow = false
           this.$message.success('保存成功')

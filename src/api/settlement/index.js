@@ -10,7 +10,9 @@ const SETTLEMENT_API = {
   getPaymentOrderList: (params) => get(URL.paymentOrderListUrl, params),
   getPaymentOrderDetail: (id) => get(`${URL.paymentOrderDetailUrl}/${id}`),
   getSettlementOrderInfo: (params) => get(URL.settlementOrderInfoUrl, params),
-  getSupplementaryDeductionInfo: (params) => get(URL.supplementaryDeductionInfoUrl, params)
+  getSupplementaryDeductionInfo: (params) => get(URL.supplementaryDeductionInfoUrl, params),
+  getAttachmentList: (params) => get(URL.attachmentListUrl, params),
+  saveAttachmentRelations: (params) => post(URL.saveAttachmentRelationsUrl, params)
 }
 
 export default SETTLEMENT_API

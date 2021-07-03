@@ -128,7 +128,6 @@
 </template>
 
 <script>
-import GOODS_API from '@api/goods'
 import SettlementApi from '@api/settlement'
 import { thousandsSeparate } from '@shared/util'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
@@ -407,7 +406,7 @@ export default {
       })
     },
     fetchAttachmentList () {
-      GOODS_API.getAttachmentList({ associationId: this.paymentRequestId, associationType: '3' }).then(({ success, data }) => {
+      SettlementApi.getAttachmentList({ associationId: this.paymentRequestId, associationType: '3' }).then(({ success, data }) => {
         if (success) {
           this.attachments = data.map(({ associationId, ...item }) => {
             return {
