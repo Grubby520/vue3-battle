@@ -93,7 +93,8 @@ export default {
         contactQq: '',
         selfShop: null, // 是否自有1688店铺
         shopLink: null, // 1688店铺链接
-        contactWebChat: '' // 联系微信
+        contactWebChat: '', // 联系微信
+        referrer: '' // 联系微信
       }
 
       state.additionalInfo = {

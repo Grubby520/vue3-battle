@@ -70,6 +70,17 @@
             ></el-input>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="引荐人" prop="baseInfo.referrer">
+            <el-input
+              v-model.trim="form.baseInfo.referrer"
+              clearable
+              maxlength="50"
+              placeholder="请输入引荐人"
+              class="form-item"
+            ></el-input>
+          </el-form-item>
+        </el-col>
       </el-row>
     </el-card>
     <el-card class="module">
@@ -157,7 +168,8 @@ export default {
           contactNumber: null,
           contactQq: null,
           contactWebChat: null, // 微信号
-          erpSupplierId: null // 供应商ID
+          erpSupplierId: null, // 供应商ID
+          referrer: null// 引荐人
         },
         shippingAddress: {
           address: null, // 详细地址
@@ -179,6 +191,10 @@ export default {
           ],
           address: [
             emptyValidator('请选择公司地址', ['blur', 'change'])
+          ],
+          contactWebChat: [emptyValidator('请输入联系人微信')],
+          referrer: [
+            emptyValidator('请输入引荐人')
           ]
         },
         shippingAddress: {
@@ -230,7 +246,8 @@ export default {
             contactNumber: baseInfo.contactNumber,
             contactQq: baseInfo.contactQq,
             contactWebChat: baseInfo.contactWebChat,
-            erpSupplierId: baseInfo.erpSupplierId
+            erpSupplierId: baseInfo.erpSupplierId,
+            referrer: baseInfo.referrer
           }
 
           this.form.shippingAddress = {
@@ -258,7 +275,8 @@ export default {
             contactName: this.form.baseInfo.contactName,
             contactNumber: this.form.baseInfo.contactNumber,
             contactQq: this.form.baseInfo.contactQq,
-            contactWebChat: this.form.baseInfo.contactWebChat
+            contactWebChat: this.form.baseInfo.contactWebChat,
+            referrer: this.form.baseInfo.referrer
           }
           UserApi.supplierUpdate(params).then(res => {
             if (res.success) {
