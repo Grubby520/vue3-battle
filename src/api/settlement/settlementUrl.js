@@ -5,5 +5,10 @@ export default {
   settlementListUrl: baseURL + 'settlement/list', // 结算单列表
   supplierConfirmUrl: baseURL + 'settlement/supplier-confirm', // 确认结算单
   deliveryInfoUrl: baseURL + 'settlement/settlement-order-delivery-info', // 发货单详情
-  supplyDetailsUrl: baseURL + 'settlement/settlement-order-supply-details' // 供货详情
+  supplyDetailsUrl: baseURL + 'settlement/settlement-order-supply-details', // 供货详情
+  paymentOrderListUrl: baseURL + 'payment-request/oem-list', // 请款单列表
+  paymentOrderDetailUrl: baseURL + 'payment-request/detail', // 请款单详情
+  settlementOrderInfoUrl: baseURL + 'payment-request/settlement-order-info', // 结算单信息
+  supplementaryDeductionInfoUrl: baseURL + 'payment-request/supplementary-deduction-info', // 补扣款单信息
+  exportSettlementInfoUrl: baseURL + 'payment-request/export/settlement-order-info' // 导出
 }

@@ -3,9 +3,9 @@
     <div class="mb-8px">
       <el-button type="text" size="medium" style="padding:0" @click="goBack">返回</el-button>
       <el-divider direction="vertical"></el-divider>
-      <template v-if="reimbursementId">
+      <template v-if="paymentRequestId">
         <span class="color-text--primary mr-8px">请款单号:</span>
-        <span class="color-text--minor">{{paymentInfo.reimbursementNo}}</span>
+        <span class="color-text--minor">{{paymentDetail.paymentRequestNo}}</span>
       </template>
     </div>
     <el-card class="mb-2rem" shadow="never">
@@ -25,14 +25,14 @@
             <span
               v-if="prop.value !== 'attachmentNum'"
               class="color-text--minor"
-            >{{prop.format?prop.format(paymentInfo[prop.value]):paymentInfo[prop.value]}}</span>
+            >{{prop.format?prop.format(paymentDetail[prop.value]):paymentDetail[prop.value]}}</span>
             <template v-else>
               <el-link
-                v-if="paymentInfo[prop.value] > 0"
+                v-if="paymentDetail[prop.value] > 0"
                 type="primary"
                 style="vertical-align:baseline"
                 @click="openAttachmentsManageDialog"
-              >{{paymentInfo[prop.value]}}</el-link>
+              >{{paymentDetail[prop.value]}}</el-link>
               <span v-else>0</span>
             </template>
           </div>
@@ -122,13 +122,14 @@
       :data.sync="attachments"
       :status="attachmentsManageStatus"
       :fileType="3"
-      data-key="reimbursementId"
+      data-key="associationId"
     ></AttachmentsManageDialog>
   </div>
 </template>
 
 <script>
 import GOODS_API from '@api/goods'
+import SettlementApi from '@api/settlement'
 import { thousandsSeparate } from '@shared/util'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 const pageCfg = Object.freeze({ index: 1, size: 10 })
@@ -141,9 +142,9 @@ export default {
     return {
       titleFontSize: '1.4rem',
       titleStyle: { marginBottom: '0px', display: 'inline-block' },
-      reimbursementId: this.$route.query.reimbursementId,
+      paymentRequestId: this.$route.query.paymentRequestId,
       status: this.$route.query.status,
-      paymentInfo: {},
+      paymentDetail: {},
       paymentInfoProps: [
         {
           label: '供应商编号',
@@ -159,7 +160,7 @@ export default {
         },
         {
           label: '请款单号',
-          value: 'reimbursementNo'
+          value: 'paymentRequestNo'
         },
         {
           label: '请款单状态',
@@ -179,7 +180,7 @@ export default {
         },
         {
           label: '请款总金额',
-          value: 'applyReimbursementAmount',
+          value: 'applyPaymentAmount',
           format: thousandsSeparate
         },
         {
@@ -203,7 +204,6 @@ export default {
           format: thousandsSeparate
         }
       ],
-      financeInfo: {},
       financeInfoProps: [
         {
           label: '开户名',
@@ -354,24 +354,25 @@ export default {
       attachments: []
     }
   },
+  computed: {
+    financeInfo () {
+      return this.paymentDetail.financeInfoVo || {}
+    }
+  },
   async mounted () {
-    this.fetchPaymentInfo()
-    this.fetchFinanceInfo()
+    this.getPaymentDetail()
   },
   methods: {
-    fetchPaymentInfo () {
-      GOODS_API.getPaymentInfo({ reimbursementId: this.reimbursementId }).then(({ success, data }) => {
-        if (success) this.paymentInfo = data
-      })
-    },
-    fetchFinanceInfo () {
-      GOODS_API.getFinanceInfo({ paymentRequestId: this.reimbursementId }).then(({ success, data }) => {
-        if (success) this.financeInfo = data
+    getPaymentDetail () {
+      SettlementApi.getPaymentOrderDetail(this.paymentRequestId).then(({ success, data }) => {
+        if (success) {
+          this.paymentDetail = data
+        }
       })
     },
     fetchSettlementOrder (pageSize = pageCfg.size, pageIndex = pageCfg.index) {
       this.$set(this.settlementOrder, 'loading', true)
-      GOODS_API.getSettlementOrder({ reimbursementId: this.reimbursementId, pageIndex, pageSize }).then(({ success, data }) => {
+      SettlementApi.getSettlementOrderInfo({ paymentRequestId: this.paymentRequestId, pageIndex, pageSize }).then(({ success, data }) => {
         if (success) {
           const { list, total } = data
           this.settlementOrder = {
@@ -389,7 +390,7 @@ export default {
     },
     fetchSupplementaryDeduction (pageSize = pageCfg.size, pageIndex = pageCfg.index) {
       this.$set(this.supplementaryDeduction, 'loading', true)
-      GOODS_API.getSupplementaryDeduction({ reimbursementId: this.reimbursementId, pageIndex, pageSize }).then(({ success, data }) => {
+      SettlementApi.getSupplementaryDeductionInfo({ paymentRequestId: this.paymentRequestId, pageIndex, pageSize }).then(({ success, data }) => {
         if (success) {
           const { list, total } = data
           this.supplementaryDeduction = {
@@ -406,7 +407,7 @@ export default {
       })
     },
     fetchAttachmentList () {
-      GOODS_API.getAttachmentList({ associationId: this.reimbursementId, associationType: '3' }).then(({ success, data }) => {
+      GOODS_API.getAttachmentList({ associationId: this.paymentRequestId, associationType: '3' }).then(({ success, data }) => {
         if (success) {
           this.attachments = data.map(({ associationId, ...item }) => {
             return {

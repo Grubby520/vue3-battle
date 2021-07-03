@@ -44,7 +44,7 @@
         :operate="true"
         :tooltip="false"
         align="left"
-        rowKey="reimbursementId"
+        rowKey="paymentRequestId"
       >
         <div slot="operation" slot-scope="{row}">
           <el-button class="operation-btn" type="text" @click="download(row,1)">下载Invoice</el-button>
@@ -71,11 +71,12 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getSessionItem } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
 import GoodsUrl from '@api/goods/goodsUrl.js'
 import GoodsApi from '@api/goods'
+import SettlementApi from '@api/settlement'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
 export default {
@@ -87,7 +88,7 @@ export default {
     return {
       loading: false,
       tableLoading: false,
-      reimbursementId: null,
+      paymentRequestId: null,
       attachmentsManageDialogTitle: '上传附件',
       attachmentsManageDialogShow: false,
       attachmentsManageStatus: 'edit',
@@ -104,7 +105,7 @@ export default {
         {
           type: 'input',
           label: '请款单号',
-          name: 'reimbursementNo'
+          name: 'paymentRequestNo'
         },
         {
           type: 'input',
@@ -132,20 +133,20 @@ export default {
       ],
       columns: [
         {
-          prop: 'reimbursementNo',
+          prop: 'paymentRequestNo',
           label: '请款单号',
           render: (h, data) => {
             let { row = {} } = data
-            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}</el-link>
+            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.paymentRequestNo}</el-link>
           }
         },
         {
-          prop: 'applyReimbursementAmount',
+          prop: 'applyPaymentAmount',
           label: '请款总金额(￥)',
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return <span>{thousandsSeparate(row.applyReimbursementAmount)}</span>
+            return <span>{thousandsSeparate(row.applyPaymentAmount)}</span>
           }
         },
         {
@@ -205,10 +206,10 @@ export default {
                   row.requestPayoutAt && (<p>创建时间：{row.requestPayoutAt}</p>)
                 }
                 {
-                  row.payAt && (<p>打款时间：{row.payAt}</p>)
+                  row.paymentTime && (<p>打款时间：{row.paymentTime}</p>)
                 }
                 {
-                  row.rejectAt && (<p>驳回时间：{row.rejectAt}</p>)
+                  row.payRejectAt && (<p>驳回时间：{row.payRejectAt}</p>)
                 }
               </div>
             )
@@ -262,7 +263,7 @@ export default {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
       this.tableLoading = true
-      GoodsApi.getReimbursementList(params).then(res => {
+      SettlementApi.getPaymentOrderList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
@@ -280,15 +281,16 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        requestPayoutStartAt: createAts && createAts[0] ? createAts[0] : '',
-        requestPayoutEndAt: createAts && createAts[1] ? createAts[1] : ''
+        businessType: getSessionItem('supplierType') === 'OEM' ? 1 : 0,
+        createAtStart: createAts && createAts[0] ? createAts[0] : '',
+        createAtEnd: createAts && createAts[1] ? createAts[1] : ''
       }
     },
     toDetail (row) {
       this.$router.push({
         path: '/home/finance/bill-detail',
         query: {
-          reimbursementId: row.reimbursementId,
+          paymentRequestId: row.paymentRequestId,
           status: row.status
         }
       })
@@ -298,7 +300,7 @@ export default {
         url: GoodsUrl.exportReimbursementList,
         name: `请款单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         params: {
-          reimbursementIds: this.selections.map(item => item.reimbursementId)
+          reimbursementIds: this.selections.map(item => item.paymentRequestId)
         },
         beforeLoad: () => {
           this.loading = true
@@ -328,7 +330,7 @@ export default {
           break
       }
       exportFileFromRemote({
-        url: url + `/${row.reimbursementId}`,
+        url: url + `/${row.paymentRequestId}`,
         name: fileName,
         params: {},
         beforeLoad: () => {
@@ -347,12 +349,12 @@ export default {
     },
     openAttachmentsManageDialog (row) {
       this.getAttachmentList(row)
-      this.reimbursementId = row.reimbursementId
+      this.paymentRequestId = row.paymentRequestId
       this.attachmentsManageDialogTitle = this.getAttachmentsText(row)
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      GoodsApi.getAttachmentList({ associationId: row.reimbursementId, associationType: '3' }).then(res => {
+      GoodsApi.getAttachmentList({ associationId: row.paymentRequestId, associationType: '3' }).then(res => {
         let data = res.data || []
         this.attachments = data.map(item => {
           return {
@@ -365,7 +367,7 @@ export default {
     },
     saveAttachments () {
       const params = {
-        paymentRequestId: this.reimbursementId,
+        paymentRequestId: this.paymentRequestId,
         attachmentInfoDtoList: this.attachments.map(item => {
           return {
             attachmentName: item.name,
