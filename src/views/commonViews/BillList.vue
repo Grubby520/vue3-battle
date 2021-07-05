@@ -367,14 +367,15 @@ export default {
       })
     },
     saveAttachments () {
-      const params = this.attachments.map(item => {
-        return {
-          associationId: this.paymentRequestId,
-          associationType: '3',
-          attachmentName: item.name,
-          attachmentUrl: item.src
-        }
-      })
+      const params = {
+        paymentRequestId: this.paymentRequestId,
+        attachmentInfoDtoList: this.attachments.map(item => {
+          return {
+            attachmentName: item.name,
+            attachmentUrl: item.src
+          }
+        })
+      }
 
       this.loading = true
       SettlementApi.saveAttachmentRelations(params).then(res => {

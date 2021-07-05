@@ -14,5 +14,5 @@ export default {
   exportInvoiceUrl: baseURL + 'payment-request/export/invoice', // 下载发票
   exportSupplyListUrl: baseURL + 'payment-request/export/supply-list', // 下载请款单
   attachmentListUrl: baseURL + 'attachment/list', // 查询附件列表
-  saveAttachmentRelationsUrl: baseURL + 'attachment/relation' // 保存附件与业务的关系
+  saveAttachmentRelationsUrl: baseURL + 'payment-request/update-attachment' // 保存附件与业务的关系
 }
