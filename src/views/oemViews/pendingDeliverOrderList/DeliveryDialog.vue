@@ -139,7 +139,8 @@ export default {
   },
   computed: {
     isSelfSend () {
-      return parseInt(this.form.logisticsCompanyId) === 'self-delivery'
+      let selectedlogisticsCompany = this.companyOptions.find(item => item.value === parseInt(this.form.logisticsCompanyId))
+      return selectedlogisticsCompany && selectedlogisticsCompany.courierCode === 'self-delivery'
     },
     rules () {
       let rules = {
@@ -193,7 +194,8 @@ export default {
         this.companyOptions = data.map(item => {
           return {
             label: item.logisticsCompanyName,
-            value: item.id
+            value: item.id,
+            courierCode: item.courierCode
           }
         })
       })
@@ -202,6 +204,7 @@ export default {
       this.form.logisticsNumber = null
     },
     submitHandler () {
+      this.$refs.deliveryForm.clearValidate()
       this.$refs.deliveryForm.validate((valid) => {
         if (valid) {
           let deliveryOrderItems = this.tableData.map(row => {
@@ -236,7 +239,7 @@ export default {
       })
     },
     cancelHandler () {
-      this.$refs.deliveryForm.clearValidate()
+      this.$refs.deliveryForm.resetFields()
     }
   }
 }
