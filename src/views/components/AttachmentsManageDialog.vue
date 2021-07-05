@@ -57,7 +57,12 @@
     ></el-alert>
     <template v-slot:bottom>
       <span v-if="canEdit">
-        <el-button type="primary" @click="submit" :disabled="!canSubmit">{{$t('button.saveText')}}</el-button>
+        <el-button
+          type="primary"
+          @click="submit"
+          :disabled="!canSubmit"
+          :loading="loading"
+        >{{$t('button.saveText')}}</el-button>
       </span>
       <el-button v-else @click="dialogVisible = false">关闭</el-button>
     </template>
@@ -161,6 +166,10 @@ export default {
           message: `文件重复,请重新上传`
         }
       ]
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

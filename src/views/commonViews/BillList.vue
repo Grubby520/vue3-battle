@@ -64,6 +64,7 @@
       :data.sync="attachments"
       :fileType="3"
       :status="attachmentsManageStatus"
+      :loading="loading"
       data-key="associationId"
       @submitHandler="saveAttachments"
     ></AttachmentsManageDialog>
