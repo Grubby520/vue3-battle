@@ -209,7 +209,7 @@ export default {
                   row.paymentTime && (<p>打款时间：{row.paymentTime}</p>)
                 }
                 {
-                  row.payRejectAt && (<p>驳回时间：{row.payRejectAt}</p>)
+                  row.rejectAt && (<p>驳回时间：{row.rejectAt}</p>)
                 }
               </div>
             )
