@@ -171,7 +171,7 @@ export default {
       return this.selections.length > 0
     },
     disabledKeys () {
-      // 补扣款单不能单独选中
+      // 非待商家确认状态不可选、补扣款单类型单据不能单独选中
       return this.tableData.filter(item => item.status !== 1 || item.orderType === 1).map(item => item.id)
     }
   },
@@ -255,11 +255,12 @@ export default {
     selectionChangeHandle (val) {
       this.$nextTick(() => {
         if (val.length > 0) {
-          // 1、如果存在选中的结算单,则自动选中所有补扣款单
+          // 1、如果存在选中的结算单,则自动选中所有【待商家确认状态】的补扣款单
           let findSettlementOrder = this.selections.some(row => row.orderType === 0)
           if (findSettlementOrder) {
             this.tableData.forEach(row => {
-              if (row.orderType === 1) { // 判断是否是补扣款单
+              let hasSelected = this.selections.find(item => item.id === row.id)
+              if (row.orderType === 1 && row.status === 1 && !hasSelected) { // 判断是否是未选中的、待商家确认状态的补扣款单
                 this.$refs.table.toggleRowSelection(row, true)
               }
             })
