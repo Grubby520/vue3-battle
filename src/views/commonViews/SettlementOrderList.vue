@@ -50,7 +50,7 @@
         @changeSelection="selectionChangeHandle"
       >
         <div slot="operation" slot-scope="{row}">
-          <el-button type="text" @click="exportDetail(row)">导出</el-button>
+          <el-button v-if="row.orderType !== 1" type="text" @click="exportDetail(row)">导出</el-button>
         </div>
       </SlTable>
     </SlListView>
@@ -122,6 +122,9 @@ export default {
           label: '结算单号',
           render: (h, data) => {
             let { row = {} } = data
+            if (row.orderType === 1) { // 补扣款单不能访问到详情
+              return <span>{row.settlementOrderNo}</span>
+            }
             return row.settlementOrderNo ? <el-link type="primary" onClick={() => this.toDetail(row)}>{row.settlementOrderNo}</el-link> : ''
           }
         },
@@ -168,7 +171,8 @@ export default {
       return this.selections.length > 0
     },
     disabledKeys () {
-      return this.tableData.filter(item => item.status !== 1).map(item => item.id)
+      // 补扣款单不能单独选中
+      return this.tableData.filter(item => item.status !== 1 || item.orderType === 1).map(item => item.id)
     }
   },
   mounted () { },
@@ -202,7 +206,7 @@ export default {
     // 确认请款
     confirmReimbursement () {
       this.loading = true
-      let settlementOrders = this.selections.filter(item => item.orderType === 0) // 过滤掉补扣款单
+      let settlementOrders = this.selections.filter(item => item.orderType === 0) // 只取结算单
       SettlementApi.supplierConfirm(settlementOrders.map(item => {
         return {
           settlementOrderId: item.id
