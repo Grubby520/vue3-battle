@@ -20,13 +20,22 @@
           v-if="filterIsLoad"
         />
       </div>
-      <div class="download-wrapper">
-        <el-button class="download-btn" @click="downloadFileHandle" type="text">服装尺寸度量标准.pdf</el-button>
+      <div>
+        <el-link class="mb-8px" @click="downloadFileHandle" type="primary">服装尺寸度量标准.pdf</el-link>
       </div>
-      <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
-        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
+        <SlButton
+          type="primary"
+          boxShadow="primary"
+          :disabled="selections.length <= 0"
+          @click="commit"
+        >批量提交</SlButton>
+        <SlButton
+          class="ml-8px"
+          type="primary"
+          boxShadow="primary"
+          @click="productDetail('create','')"
+        >创建产品</SlButton>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTableInfo
@@ -320,12 +329,6 @@ export default {
       flex-flow: column;
       justify-content: center;
       margin-left: 1rem;
-    }
-  }
-  .download-wrapper {
-    margin-left: 2rem;
-    .download-btn {
-      text-decoration: underline;
     }
   }
 }

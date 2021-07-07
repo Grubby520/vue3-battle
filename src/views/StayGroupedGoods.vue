@@ -21,13 +21,21 @@
         ></SlSearchForm>
       </div>
       <SlTableToolbar>
-        <el-button
+        <SlButton
           type="primary"
-          @click="generateInvoice"
+          boxShadow="primary"
           :loading="loading"
           :disabled="!canGenerateInvoice"
-        >生成发货单</el-button>
-        <el-button type="primary" @click="exportDetail" :loading="loading" plain>导出待发货商品详情</el-button>
+          @click="generateInvoice"
+        >生成发货单</SlButton>
+        <SlButton
+          class="ml-8px"
+          type="primary"
+          boxShadow="primary"
+          plain
+          :loading="loading"
+          @click="exportDetail"
+        >导出待发货商品详情</SlButton>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu

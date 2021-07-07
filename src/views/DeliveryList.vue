@@ -46,7 +46,7 @@
         ></SlSearchForm>
       </div>
       <SlTableToolbar>
-        <el-button type="primary" @click="batchPrintNo">批量导出批次号</el-button>
+        <SlButton type="primary" boxShadow="primary" @click="batchPrintNo">批量导出批次号</SlButton>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
