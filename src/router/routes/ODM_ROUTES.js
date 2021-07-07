@@ -156,51 +156,6 @@ const ROUTES = [
         component: () => import('@/views/Bank.vue')
       },
       ...FinanceManageRoutes.children
-      // {
-      //   path: 'settlement-order-list',
-      //   name: '结算单列表',
-      //   meta: {
-      //     icon: '',
-      //     code: 'menu_my_info'
-      //   },
-      //   component: () => import('@/views/SettlementOrderList.vue')
-      // },
-      // {
-      //   path: 'settlement-order-detail',
-      //   name: '结算单详情',
-      //   meta: {
-      //     icon: '',
-      //     notMenu: true
-      //   },
-      //   component: () => import('@/views/settlementOrderList/SettlementOrderDetail.vue')
-      // },
-      // {
-      //   path: 'bill-list',
-      //   name: '请款单列表',
-      //   meta: {
-      //     icon: '',
-      //     code: 'menu_my_info'
-      //   },
-      //   component: () => import('@/views/BillList.vue')
-      // },
-      // {
-      //   path: 'supply-deduct-money-list',
-      //   name: '补扣款单列表',
-      //   meta: {
-      //     icon: '',
-      //     code: 'menu_my_info'
-      //   },
-      //   component: () => import('@/views/SupplyDeductMoneyList.vue')
-      // },
-      // {
-      //   path: 'bill-detail',
-      //   name: '请款单详情',
-      //   meta: {
-      //     icon: '',
-      //     notMenu: true
-      //   },
-      //   component: () => import('@/views/billList/BillDetail.vue')
-      // }
     ]
   }
 ]
