@@ -189,6 +189,10 @@ export default {
               2: {
                 label: '完成时间',
                 prop: 'finishedTime'
+              },
+              4: {
+                label: '取消时间',
+                prop: 'updatedTime' // updatedTime表示多种状态的时间
               }
             }
             if (map[row.status] && row[map[row.status].prop]) {
