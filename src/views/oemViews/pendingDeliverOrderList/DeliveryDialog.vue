@@ -76,7 +76,7 @@
 </template>
 <script>
 import { errorMessageTip } from '@shared/util'
-import { emptyValidator } from '@shared/validate'
+import { emptyValidator, wCharsValidator } from '@shared/validate'
 import OemGoodsAPI from '@api/oemGoods'
 
 export default {
@@ -147,7 +147,7 @@ export default {
         logisticsCompanyId: [
           emptyValidator('请选择物流商', ['blur', 'change'])
         ],
-        logisticsNumber: [emptyValidator('请填写物流单号')]
+        logisticsNumber: [emptyValidator('请填写物流单号'), wCharsValidator('仅支持数字、字母、下划线')]
       }
       if (this.isSelfSend) { // '自发'的情况可以不校验物流单号
         delete rules.logisticsNumber
