@@ -37,8 +37,8 @@
               <td>
                 <SlImage size="8rem" :src="item.image" />
               </td>
-              <td>{{item.skuCode}}</td>
               <td>{{item.spuCode}}</td>
+              <td>{{item.skuCode}}</td>
               <td>{{item.skuAttribute}}</td>
               <td>{{item.goodsName}}</td>
               <td>{{item.deliveryGoodsNum}}</td>
