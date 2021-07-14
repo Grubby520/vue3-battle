@@ -32,6 +32,7 @@
 
 <script>
 // @ is an alias to /src
+import gwm from 'gwm'
 import { createNamespacedHelpers, mapState } from 'vuex'
 import SystemInfo from '@/views/components/layout/SystemInfo.vue'
 import UserInfo from '@/views/components/layout/UserInfo.vue'
@@ -86,6 +87,34 @@ export default {
           }
         }
       })
+    },
+    setWatermark () {
+      const domainNames = {
+        'srm-web.dev.erp.starlinke.tech': 'dev',
+        'srm-web.hotfix.erp.starlinke.tech': 'hotfix',
+        'srm-web.qa.erp.starlinke.tech': 'qa',
+        'srm-web.qa2.erp.starlinke.tech': 'qa2',
+        'srm-web.qa3.erp.starlinke.tech': 'qa3',
+        'srm-web.qa4.erp.starlinke.tech': 'qa4',
+        'srm-web.qa5.erp.starlinke.tech': 'qa5',
+        'alpha.srm.starlinke.cn': 'alpha',
+        'beta.srm.starlinke.cn': 'beta'
+      }
+      const dev = domainNames[window.location.hostname]
+      if (dev) {
+        gwm.creation({
+          container: '.page-aside',
+          txt: `${dev}环境`,
+          width: 100,
+          height: 100,
+          fontSize: 18,
+          color: '#fff',
+          css: {
+            'z-index': '10000',
+            'pointer-events': 'none'
+          }
+        })
+      }
     }
   },
   created () {
@@ -93,6 +122,8 @@ export default {
   },
   mounted () {
     this.setMenus()
+    // 导航栏根据环境设置不同的水印
+    this.setWatermark()
   }
 }
 </script>
