@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getSessionItem } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, getSessionItem } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import SettlementUrl from '@api/settlement/settlementUrl'
 import SettlementApi from '@api/settlement'
@@ -217,8 +217,6 @@ export default {
           this.$message.success(`已生成请款单${res.data ? res.data : ''},请前往请款单列表上传对应请款单资料`)
           this.selections = []
           this.gotoPage()
-        } else {
-          errorMessageTip(res.error && res.error.message)
         }
       }).finally(() => {
         this.loading = false
