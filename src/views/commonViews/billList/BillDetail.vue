@@ -326,7 +326,7 @@ export default {
           label: '总金额(¥)',
           render: (h, data) => {
             const { row = {} } = data
-            const amount = row.paymentType === 1 ? -row.supplementaryDeductionAmount : row.supplementaryDeductionAmount
+            const amount = row.isDeduction ? -row.supplementaryDeductionAmount : row.supplementaryDeductionAmount
             return <span>{thousandsSeparate(amount)}</span>
           }
         },
