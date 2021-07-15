@@ -202,6 +202,7 @@ export default {
     },
     companyChangeHandler () {
       this.form.logisticsNumber = null
+      this.$refs.deliveryForm.clearValidate('logisticsNumber')
     },
     submitHandler () {
       this.$refs.deliveryForm.clearValidate()
