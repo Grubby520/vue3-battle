@@ -368,6 +368,10 @@ export default {
       })
     },
     saveAttachments () {
+      if (this.attachments.length === 0) {
+        errorMessageTip('请上传必要的附件')
+        return
+      }
       const params = {
         paymentRequestId: this.paymentRequestId,
         attachmentInfoDtoList: this.attachments.map(item => {
