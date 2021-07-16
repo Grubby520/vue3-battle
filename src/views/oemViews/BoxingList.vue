@@ -119,17 +119,26 @@ export default {
           render: (h, data) => {
             let { row = {} } = data
             let map = {
-              0: {
+              0: [{
                 label: '发货时间',
                 prop: 'deliveryAt'
-              },
-              1: {
+              }],
+              1: [{
+                label: '发货时间',
+                prop: 'deliveryAt'
+              }, {
                 label: '签收时间',
                 prop: 'signInAt'
-              }
+              }],
+              2: [{
+                label: '取消时间',
+                prop: 'updatedAt'
+              }]
             }
-            if (map[row.status] && row[map[row.status].prop]) {
-              return <p>{map[row.status].label}：{row[map[row.status].prop]}</p>
+            if (map[row.status]) {
+              return map[row.status].map(item => {
+                return <p>{item.label}：{row[item.prop]}</p>
+              })
             } else {
               return <span>-</span>
             }
