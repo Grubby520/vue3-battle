@@ -70,7 +70,7 @@
         :key="'index_'+index"
       >{{orderNo}}</el-tag>
       <template v-slot:bottom>
-        <el-button @click="messageVisible = false">关闭</el-button>
+        <el-button @click="closeMessageDialog">关闭</el-button>
       </template>
     </SlDialog>
   </div>
@@ -239,6 +239,12 @@ export default {
     },
     openConfirmDialog () {
       this.confirmDialogVisible = true
+    },
+    closeMessageDialog () {
+      this.confirmDialogVisible = false
+      this.messageVisible = false
+      this.selections = []
+      this.gotoPage()
     }
   }
 }
