@@ -129,7 +129,7 @@
 
 <script>
 import SettlementApi from '@api/settlement'
-import { thousandsSeparate } from '@shared/util'
+import { thousandsSeparate, isEmpty } from '@shared/util'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 const pageCfg = Object.freeze({ index: 1, size: 10 })
 
@@ -316,11 +316,19 @@ export default {
         },
         {
           prop: 'sourceOrderTypeName',
-          label: '源单类型'
+          label: '源单类型',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <span>{isEmpty(row.sourceOrderTypeName) ? '无' : row.sourceOrderTypeName}</span>
+          }
         },
         {
           prop: 'sourceOrderNo',
-          label: '源单编号'
+          label: '源单编号',
+          render: (h, data) => {
+            const { row = {} } = data
+            return <span>{isEmpty(row.sourceOrderNo) ? '无' : row.sourceOrderNo}</span>
+          }
         },
         {
           label: '总金额(¥)',
@@ -344,7 +352,7 @@ export default {
           }
         },
         {
-          prop: 'confirmAt',
+          prop: 'createdAt',
           label: '创建时间'
         }
       ],

@@ -14,8 +14,8 @@
           v-model="query"
           :items="searchItems"
           :loading="tableLoading"
-          @reset="gotoPage(page.pageSize)"
-          @search="gotoPage(page.pageSize)"
+          @reset="resetAndSearch"
+          @search="resetAndSearch"
         ></SlSearchForm>
       </div>
       <SlTableToolbar>
@@ -40,6 +40,7 @@
       <SlTable
         ref="table"
         v-model="selections"
+        :selections="selections"
         :tableData="tableData"
         :columns="columns"
         :disabledKeys="disabledKeys"
@@ -71,6 +72,8 @@ export default {
       loading: false,
       tableData: [],
       selections: [],
+      isResetOrSearch: false,
+      cacheCheckedSettleOrders: [],
       page: {
         pageIndex: 1,
         pageSize: 10,
@@ -179,6 +182,10 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      // 在请求接口前保存选中的结算单,重置和搜索不保存
+      if (!this.isResetOrSearch) {
+        this.cacheCheckedSettleOrders = this.cacheCheckedSettleOrders.concat(this.selections.filter(item => item.orderType === 0))
+      }
       this.tableLoading = true
       SettlementApi.getSettlementOrderList(params).then(res => {
         let { success, data = {} } = res
@@ -187,10 +194,20 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.selectRowHandler()
         }
       }).finally(() => {
         this.tableLoading = false
+        // 恢复isResetOrSearch标识默认值
+        if (this.isResetOrSearch) {
+          this.isResetOrSearch = false
+        }
       })
+    },
+    resetAndSearch () {
+      this.isResetOrSearch = true
+      this.cacheCheckedSettleOrders = []
+      this.gotoPage(this.page.pageSize)
     },
     generateParams (pageSize, pageIndex) {
       let { paymentAts = [], ...orther } = this.query
@@ -250,16 +267,24 @@ export default {
         errorFn: () => { }
       })
     },
-    selectionChangeHandle (val) {
+    selectionChangeHandle () { // 翻页会触发此事件
+      this.selectRowHandler()
+    },
+    selectRowHandler () {
       this.$nextTick(() => {
-        if (val.length > 0) {
+        const cacheLength = this.cacheCheckedSettleOrders.length
+        if (this.selections.length > 0 || cacheLength > 0) {
           // 1、如果存在选中的结算单,则自动选中所有【待商家确认状态】的补扣款单
           let findSettlementOrder = this.selections.some(row => row.orderType === 0)
-          if (findSettlementOrder) {
+          if (findSettlementOrder || cacheLength > 0) {
             this.tableData.forEach(row => {
               let hasSelected = this.selections.find(item => item.id === row.id)
-              if (row.orderType === 1 && row.status === 1 && !hasSelected) { // 判断是否是未选中的、待商家确认状态的补扣款单
+              let rowInCacheIndex = this.cacheCheckedSettleOrders.findIndex(item => item.id === row.id)
+              if ((row.orderType === 1 || rowInCacheIndex > -1) && row.status === 1 && !hasSelected) { // 判断是否是未选中的、待商家确认状态的补扣款单
                 this.$refs.table.toggleRowSelection(row, true)
+                if (rowInCacheIndex > -1) {
+                  this.cacheCheckedSettleOrders.splice(rowInCacheIndex, 1)
+                }
               }
             })
           } else {

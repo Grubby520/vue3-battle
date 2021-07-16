@@ -141,10 +141,6 @@ export default {
           label: '订单数量'
         },
         {
-          prop: 'deliveryQuantity',
-          label: '实际发货量'
-        },
-        {
           prop: 'claimArrivalDate',
           label: '应交货时间'
         }
