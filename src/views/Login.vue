@@ -52,7 +52,7 @@
 
 import { createNamespacedHelpers, mapState } from 'vuex'
 import { emptyValidator, passwordValidator, charLimitValidator } from '@shared/validate'
-import { valueToMd5, getSessionItem } from '@shared/util'
+import { valueToMd5, getLocalStorageItem } from '@shared/util'
 const { mapActions: userMapActions, mapState: userMapState, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 const { mapMutations: registerMapMutations } = createNamespacedHelpers('register')
 
@@ -129,7 +129,7 @@ export default {
       })
     },
     gotoEntryRoute () {
-      if (getSessionItem('supplierType') === 'OEM') {
+      if (getLocalStorageItem('supplierType') === 'OEM') {
         this.$router.push('home/oem-delivery-manage/pending-order-list')
         return
       }

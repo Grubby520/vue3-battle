@@ -1,4 +1,4 @@
-import { setCookie, removeCookie, setSessionItem, getSessionItem, removeSessionItem, downloadFile } from '@shared/util'
+import { setCookie, removeCookie, setLocalStorageItem, getLocalStorageItem, removeLocalStorageItem, downloadFile } from '@shared/util'
 import { homeStaticRoutes } from '@/router/homeRoutes.js'
 import ODM_ROUTES from '@/router/routes/ODM_ROUTES'
 import OEM_ROUTES from '@/router/routes/OEM_ROUTES'
@@ -80,7 +80,7 @@ export default {
       commit('SET_ROUTES', [])
       removeCookie('token')
       removeCookie('userKey')
-      removeSessionItem('supplierType')
+      removeLocalStorageItem('supplierType')
     },
     AUTH_LOGIN ({ commit }, params) {
       return UserApi.authLogin(params).then((res) => {
@@ -106,14 +106,14 @@ export default {
         const { success, data } = res
         if (success) {
           commit('SET_USER_INFO', data)
-          setSessionItem('supplierType', data.supplierCategory === 1 ? 'OEM' : 'ODM')
+          setLocalStorageItem('supplierType', data.supplierCategory === 1 ? 'OEM' : 'ODM')
           return res
         }
       })
     },
     GET_ROUTES () {
       let routes = []
-      const supplierType = getSessionItem('supplierType')
+      const supplierType = getLocalStorageItem('supplierType')
       if (supplierType === 'OEM') {
         routes = [...OEM_ROUTES]
       } else {

@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getSessionItem } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getLocalStorageItem } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
 import SettlementUrl from '@api/settlement/settlementUrl'
@@ -281,7 +281,7 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        businessType: getSessionItem('supplierType') === 'OEM' ? 1 : 0,
+        businessType: getLocalStorageItem('supplierType') === 'OEM' ? 1 : 0,
         createAtStart: createAts && createAts[0] ? createAts[0] : '',
         createAtEnd: createAts && createAts[1] ? createAts[1] : ''
       }

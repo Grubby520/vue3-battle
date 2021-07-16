@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { getSessionItem } from '@shared/util'
+import { getLocalStorageItem } from '@shared/util'
 
 export default {
   name: 'PageNofound',
@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     gotoEntryRoute () {
-      if (getSessionItem('supplierType') === 'OEM') {
+      if (getLocalStorageItem('supplierType') === 'OEM') {
         this.$router.push('/home/oem-delivery-manage/pending-order-list')
         return
       }

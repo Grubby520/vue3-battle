@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, getSessionItem, filterArrRepeat } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, getLocalStorageItem, filterArrRepeat } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import SettlementUrl from '@api/settlement/settlementUrl'
 import SettlementApi from '@api/settlement'
@@ -215,7 +215,7 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        businessType: getSessionItem('supplierType') === 'OEM' ? 1 : 0,
+        businessType: getLocalStorageItem('supplierType') === 'OEM' ? 1 : 0,
         createdAtStart: paymentAts && paymentAts[0] ? paymentAts[0] : '',
         createdAtEnd: paymentAts && paymentAts[1] ? paymentAts[1] : ''
       }
