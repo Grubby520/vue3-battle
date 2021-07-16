@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, getSessionItem } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, getSessionItem, filterArrRepeat } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import SettlementUrl from '@api/settlement/settlementUrl'
 import SettlementApi from '@api/settlement'
@@ -184,7 +184,7 @@ export default {
       const params = this.generateParams(pageSize, pageIndex)
       // 在请求接口前保存选中的结算单,重置和搜索不保存
       if (!this.isResetOrSearch) {
-        this.cacheCheckedSettleOrders = this.cacheCheckedSettleOrders.concat(this.selections.filter(item => item.orderType === 0))
+        this.cacheCheckedSettleOrders = filterArrRepeat(this.cacheCheckedSettleOrders.concat(this.selections.filter(item => item.orderType === 0)), 'id')
       }
       this.tableLoading = true
       SettlementApi.getSettlementOrderList(params).then(res => {

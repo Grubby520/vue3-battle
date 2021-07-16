@@ -121,3 +121,20 @@ export function objValuesHandler (obj, handlerFn) {
 
   return obj
 }
+
+/**
+ * 对象数组去重
+ * @param {Object[]} data 数据源
+ * @param {String} key 唯一标识
+ */
+export function filterArrRepeat (data, key) {
+  const mapper = {}
+  return data.reduce((initValue, item) => {
+    const identify = item[key]
+    if (!mapper[identify]) {
+      mapper[identify] = true
+      initValue.push(item)
+    }
+    return initValue
+  }, [])
+}

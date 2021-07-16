@@ -40,12 +40,39 @@
         childName="purchaseOrderItemVoList"
       ></SlCardTable>
     </SlListView>
+
     <SlDialog
       title="确认接单"
       :visible.sync="confirmDialogVisible"
       :loading="loading"
       @submit="receiveOrder"
     >请确认商品信息、单价、订单数量后接单</SlDialog>
+
+    <SlDialog title="提示" :visible.sync="messageVisible">
+      <el-alert
+        class="mb-8px"
+        :title="`成功${message.successOrderNum}个`"
+        type="success"
+        show-icon
+        :closable="false"
+      ></el-alert>
+      <el-alert
+        class="mb-8px"
+        :title="`错误${message.failOrderNum}个`"
+        type="error"
+        show-icon
+        :closable="false"
+      ></el-alert>
+      <el-tag
+        class="mr-8px"
+        v-for="(orderNo,index) in message.failOrderList"
+        type="info"
+        :key="'index_'+index"
+      >{{orderNo}}</el-tag>
+      <template v-slot:bottom>
+        <el-button @click="messageVisible = false">关闭</el-button>
+      </template>
+    </SlDialog>
   </div>
 </template>
 
@@ -59,6 +86,7 @@ export default {
     return {
       loading: false,
       confirmDialogVisible: false,
+      messageVisible: false,
       tableData: [],
       selections: [],
       extraQuery: {
@@ -144,7 +172,12 @@ export default {
           prop: 'claimArrivalDate',
           label: '应交货时间'
         }
-      ]
+      ],
+      message: {
+        failOrderNum: 0,
+        successOrderNum: 0,
+        failOrderList: []
+      }
     }
   },
   computed: {
@@ -171,12 +204,21 @@ export default {
       const ids = this.selections.map(item => item.id)
       this.loading = true
       OemGoodsAPI.receiveOrder(ids).then(res => {
-        let { success, error = {} } = res
+        let { success, error = {}, data = {} } = res
         if (success) {
-          this.$message.success(`接单成功`)
-          this.selections = []
-          this.confirmDialogVisible = false
-          this.gotoPage()
+          let { failOrderList, result, successNum } = data
+          if (result === true) {
+            this.$message.success(`接单成功`)
+            this.selections = []
+            this.confirmDialogVisible = false
+            this.gotoPage()
+            return
+          }
+          failOrderList = failOrderList || []
+          this.message.failOrderNum = failOrderList.length
+          this.message.successOrderNum = successNum
+          this.message.failOrderList = failOrderList
+          this.messageVisible = true
         } else {
           errorMessageTip(error.message)
         }
