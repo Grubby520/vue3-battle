@@ -4,7 +4,11 @@
       <el-button type="text" size="medium" @click="$router.go(-1)" style="padding:0">返回</el-button>
       <el-divider direction="vertical"></el-divider>
       <span class="color-text--primary mr-8px">结算单号:</span>
-      <span class="color-text--minor">{{settlementOrderNo}}</span>
+      <span class="color-text--minor mr-16px">{{settlementOrderNo}}</span>
+      <template v-if="deliveryNo">
+        <span class="color-text--primary mr-8px">发货单号:</span>
+        <span class="color-text--minor">{{deliveryNo}}</span>
+      </template>
     </div>
     <el-card class="mb-2rem" shadow="never">
       <div slot="header" class="clearfix">

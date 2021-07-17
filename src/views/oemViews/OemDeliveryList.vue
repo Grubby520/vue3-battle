@@ -184,22 +184,32 @@ export default {
               },
               1: {
                 label: '签收时间',
-                prop: 'updatedTime'
+                prop: 'signInTime'
               },
               2: {
                 label: '完成时间',
                 prop: 'finishedTime'
               },
+              3: {
+                label: '结算时间',
+                prop: 'settleTime'
+              },
               4: {
                 label: '取消时间',
-                prop: 'updatedTime' // updatedTime表示多种状态的时间
+                prop: 'cancelTime'
+              },
+              5: {
+                label: '异常到货时间',
+                prop: 'abnormalArriveTime'
               }
             }
-            if (map[row.status] && row[map[row.status].prop]) {
-              return <p>{map[row.status].label}：{row[map[row.status].prop]}</p>
-            } else {
-              return <span>-</span>
-            }
+            return Object.keys(map).map(key => {
+              let entry = map[key]
+              if (row[entry.prop]) {
+                return <p>{entry.label}：{row[entry.prop]}</p>
+              }
+              return ''
+            })
           }
         }
       ]
