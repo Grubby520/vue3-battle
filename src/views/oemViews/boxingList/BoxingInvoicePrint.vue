@@ -62,8 +62,8 @@ export default {
           this.list.forEach((item, index) => {
             JsBarcode('.barcodeSvg' + index, item.logisticsNumber, {
               height: 35,
-              fontSize: 0,
-              margin: 0
+              width: 1,
+              displayValue: false
             })
           })
           this.toPrint()
