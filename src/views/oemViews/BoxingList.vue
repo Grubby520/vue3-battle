@@ -34,10 +34,17 @@
       >
         <div slot="operation" slot-scope="{row}">
           <el-button class="operation-btn" type="text" @click="viewDetail(row)">查看</el-button>
-          <el-button class="operation-btn" type="text" @click="printBoxingInvoice(row)">打印装箱单</el-button>
+          <el-button
+            v-if="row.logisticsCompanyCode === 'self-delivery'"
+            class="operation-btn"
+            type="text"
+            @click="printBoxingInvoice(row)"
+          >打印装箱单</el-button>
         </div>
       </SlTable>
     </SlListView>
+    <!-- 物流信息 -->
+    <BoxingLogisticsInfoDialog ref="logisticsInfoDialog"></BoxingLogisticsInfoDialog>
     <!-- 装箱单详情 -->
     <BoxingInvoiceDetailDialog ref="boxingInvoiceDetailDialog"></BoxingInvoiceDetailDialog>
     <!-- 打印批次号 -->
@@ -47,6 +54,7 @@
 
 <script>
 import { errorMessageTip } from '@shared/util'
+import BoxingLogisticsInfoDialog from './boxingList/BoxingLogisticsInfoDialog.vue'
 import BoxingInvoiceDetailDialog from './boxingList/BoxingInvoiceDetailDialog.vue'
 import BoxingInvoicePrint from './boxingList/BoxingInvoicePrint.vue'
 import CommonApi from '@api/api.js'
@@ -55,6 +63,7 @@ import OemGoodsAPI from '@api/oemGoods'
 export default {
   name: 'BoxingList',
   components: {
+    BoxingLogisticsInfoDialog,
     BoxingInvoiceDetailDialog,
     BoxingInvoicePrint
   },
@@ -110,7 +119,11 @@ export default {
         },
         {
           prop: 'logisticsNumber',
-          label: '物流单号'
+          label: '物流单号',
+          render: (h, data) => {
+            let { row = {} } = data
+            return <el-button onClick={() => this.viewLogisticsInfo(row)} type="text">{row.logisticsNumber}</el-button>
+          }
         },
         {
           prop: '',
@@ -186,6 +199,9 @@ export default {
     switchNav (index) {
       this.switchActiveIndex = index
       this.gotoPage()
+    },
+    viewLogisticsInfo (row) {
+      this.$refs.logisticsInfoDialog.openDialog(row)
     },
     viewDetail ({ orderNumber }) {
       this.$refs.boxingInvoiceDetailDialog.openDialog(orderNumber)
