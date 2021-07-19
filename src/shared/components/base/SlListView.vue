@@ -42,7 +42,7 @@ export default {
       this.$emit('gotoPage', item.pageSize, item.pageIndex)
     },
     refresh () {
-      this.$emit('gotoPage', this.pageSize, 1)
+      this.$emit('gotoPage', this.pageSize, this.pageIndex)
     }
   }
 }

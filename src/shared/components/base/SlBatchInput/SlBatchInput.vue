@@ -65,6 +65,9 @@ export default {
       this.innerValue = val
     }
   },
+  mounted () {
+    this.innerValue = this.values
+  },
   methods: {
     handleInput () {
       this.innerValue = this.validateLength(this.innerValue)

@@ -44,6 +44,7 @@
 
 <script>
 import OemGoodsAPI from '@api/oemGoods'
+import { setSessionItem, getSessionItem, removeSessionItem } from '@shared/util'
 
 export default {
   name: 'ProductionOrderList',
@@ -85,7 +86,24 @@ export default {
             isBlock: true
           }
         }
-      ]
+      ],
+      pageFromDetail: false,
+      cachePageStatus: {
+        switchActiveIndex: '0',
+        formQuery: {},
+        page: {
+          pageIndex: 1,
+          pageSize: 10
+        }
+      }
+    }
+  },
+  watch: {
+    formQuery: {
+      handler () {
+        this.updateCachePageStatus()
+      },
+      deep: true
     }
   },
   computed: {
@@ -134,7 +152,23 @@ export default {
       return arr
     }
   },
+  created () {
+    if (getSessionItem('isFromDetail')) {
+      let productionOrderListStatus = JSON.parse(getSessionItem('ProdOrderListStatusCache'))
+      this.page = Object.assign({}, productionOrderListStatus.page)
+      this.switchActiveIndex = productionOrderListStatus.switchActiveIndex
+      this.formQuery = productionOrderListStatus.formQuery
+      this.removeSessionItems()
+    }
+  },
   mounted () { },
+  beforeRouteEnter (to, from, next) {
+    if (from.path.includes('production-order-detail')) {
+      setSessionItem('isFromDetail', true)
+    }
+    next()
+  },
+
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
@@ -147,6 +181,7 @@ export default {
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
           this.getSwitchNavs()
+          this.updateCachePageStatus()
         }
       }).finally(() => {
         this.loading = false
@@ -154,6 +189,10 @@ export default {
     },
     reset () {
       this.switchActiveIndex = '0'
+      Object.keys(this.formQuery).forEach(key => {
+        this.formQuery[key] = null
+      })
+      this.removeSessionItems()
       this.gotoPage(this.page.pageSize)
     },
     getSwitchNavs () {
@@ -190,6 +229,16 @@ export default {
         orderTimeStart: orderTimes && orderTimes[0] ? orderTimes[0] : '',
         orderTimeEnd: orderTimes && orderTimes[1] ? orderTimes[1] : ''
       }
+    },
+    updateCachePageStatus () {
+      this.cachePageStatus.switchActiveIndex = this.switchActiveIndex
+      this.cachePageStatus.formQuery = Object.assign({}, this.formQuery)
+      this.cachePageStatus.page = Object.assign({}, this.page)
+      setSessionItem('ProdOrderListStatusCache', JSON.stringify(this.cachePageStatus))
+    },
+    removeSessionItems () {
+      removeSessionItem('ProdOrderListStatusCache')
+      removeSessionItem('isFromDetail')
     }
   }
 }

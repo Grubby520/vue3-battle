@@ -183,7 +183,7 @@ export default {
       /// 判断入参是否有设置默认值。
       /// 若有就取传入的默认值。
       /// 若没有，则根据是否是多选设置默认值。
-      const defaultValue = item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
+      const defaultValue = this.form[item.name] ? this.form[item.name] : item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
       this.$set(this.form, item.name, defaultValue)
       if (item['prepend']) {
         this.$set(this.form, `${item.name}_prepend`, item['prepend'].value)

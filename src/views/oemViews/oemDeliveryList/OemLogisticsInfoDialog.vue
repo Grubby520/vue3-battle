@@ -14,9 +14,11 @@
         </div>
 
         <el-row class="logistics-main--content">
-          <el-col v-for="item in props" :span="12" :key="item.prop">
+          <el-col v-for="item in iteratorProps" :span="12" :key="item.prop">
             <span class="line-height-20 prop-label mr-8px">{{item.label}}:</span>
-            <span class="line-height-20 prop-value">{{form[item.prop]}}</span>
+            <span
+              class="line-height-20 prop-value"
+            >{{form[item.prop]}}{{item.extend?item.extend.render.call(form):''}}</span>
           </el-col>
         </el-row>
       </div>
@@ -55,7 +57,12 @@ export default {
       props: [
         {
           prop: 'logisticsBillNumber',
-          label: '物流单号'
+          label: '物流单号',
+          extend: {
+            render () {
+              return `(${this.logisticsCompanyName})`
+            }
+          }
         },
         {
           prop: 'deliveryOrderNumber',
@@ -66,6 +73,7 @@ export default {
           label: '发货时间'
         }
       ],
+      iteratorProps: [],
       columns: [
         {
           prop: 'date',
@@ -80,20 +88,22 @@ export default {
     }
   },
   methods: {
-    openDialog ({ courierCode, logisticsCompanyName, logisticsBillNumber, deliveryOrderNumber, status, createdTime, updatedTime }) {
+    openDialog ({ courierCode, logisticsCompanyName, logisticsBillNumber, deliveryOrderNumber, status, createdTime, signInTime }) {
       this.deliverDialogVisible = true
       this.loading = true
-      if (parseInt(status) === 1) {
-        this.props.push({
-          prop: 'updatedTime',
+      this.iteratorProps = [].concat(this.props)
+      if (parseInt(status) >= 1) {
+        this.iteratorProps.push({
+          prop: 'signInTime',
           label: '签收时间'
         })
       }
       this.form = {
+        logisticsCompanyName,
         logisticsBillNumber,
         deliveryOrderNumber,
         createdTime,
-        updatedTime
+        signInTime
       }
       OemGoodsAPI.genLogisticsInfo({
         logisticsCompanyName,
