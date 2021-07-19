@@ -16,7 +16,9 @@
         <el-row class="logistics-main--content">
           <el-col v-for="item in props" :span="12" :key="item.prop">
             <span class="line-height-20 prop-label mr-8px">{{item.label}}:</span>
-            <span class="line-height-20 prop-value">{{form[item.prop]}}</span>
+            <span
+              class="line-height-20 prop-value"
+            >{{form[item.prop]?form[item.prop]:'无'}}{{item.extend?item.extend.render.call(form):''}}</span>
           </el-col>
         </el-row>
       </div>
@@ -55,11 +57,20 @@ export default {
       props: [
         {
           prop: 'logisticsNumber',
-          label: '物流单号'
+          label: '物流单号',
+          extend: {
+            render () {
+              return `(${this.logisticsCompanyName})`
+            }
+          }
         },
         {
           prop: 'deliveryAt',
           label: '发货时间'
+        },
+        {
+          prop: 'signInAt',
+          label: '签收时间'
         }
       ],
       columns: [
@@ -76,19 +87,14 @@ export default {
     }
   },
   methods: {
-    openDialog ({ logisticsCompanyCode, logisticsCompanyName, logisticsNumber, status, deliveryAt, signInAt }) {
+    openDialog ({ logisticsCompanyCode, logisticsCompanyName, logisticsNumber, deliveryAt, signInAt }) {
       this.deliverDialogVisible = true
       this.loading = true
-      if (parseInt(status) === 1) {
-        this.props.push({
-          prop: 'signInAt',
-          label: '签收时间'
-        })
-      }
       this.form = {
         logisticsNumber,
         deliveryAt,
-        signInAt
+        signInAt,
+        logisticsCompanyName
       }
       OemGoodsAPI.genLogisticsInfo({
         logisticsCompanyName,
