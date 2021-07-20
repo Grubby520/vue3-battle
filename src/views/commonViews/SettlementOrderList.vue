@@ -224,12 +224,23 @@ export default {
     confirmReimbursement () {
       this.loading = true
       let settlementOrders = this.selections.filter(item => item.orderType === 0) // 只取结算单
-      SettlementApi.supplierConfirm(settlementOrders.map(item => {
+      let settlementOrderIds = settlementOrders.map(item => {
         return {
           settlementOrderId: item.id
         }
       })
-      ).then(res => {
+      // 当被选择的结算单存在于多个页时,selections中不能包含所有结算单，
+      // 此时要在cacheCheckedSettleOrders找出剩余的结算单
+      this.cacheCheckedSettleOrders.forEach(item => {
+        let hasSelected = settlementOrderIds.find(order => item.id === order.settlementOrderId)
+        if (!hasSelected) {
+          settlementOrderIds.push({
+            settlementOrderId: item.id
+          })
+        }
+      })
+
+      SettlementApi.supplierConfirm(settlementOrderIds).then(res => {
         if (res.success) {
           this.$message.success(`已生成请款单${res.data ? res.data : ''},请前往请款单列表上传对应请款单资料`)
           this.selections = []
