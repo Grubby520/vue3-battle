@@ -44,7 +44,7 @@
           <el-input
             v-model="form.logisticsNumber"
             placeholder="物流单号"
-            maxlength="50"
+            maxlength="32"
             show-word-limit
             clearable
             :disabled="!form.logisticsCompanyId || isSelfSend"

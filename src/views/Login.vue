@@ -128,8 +128,11 @@ export default {
         }
       })
     },
+    isOEM () {
+      return getLocalStorageItem('supplierType') === 'OEM'
+    },
     gotoEntryRoute () {
-      if (getLocalStorageItem('supplierType') === 'OEM') {
+      if (this.isOEM()) {
         this.$router.push('home/oem-delivery-manage/pending-order-list')
         return
       }

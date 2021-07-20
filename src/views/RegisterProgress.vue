@@ -12,7 +12,7 @@
             class="audit-remarks align-left color-text--red"
             v-if="auditRemarks"
           >原因：{{auditRemarks}}</p>
-          <el-button v-if="isRejected" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
+          <el-button v-if="isRejected && !isOEM()" type="text" @click.native="toRegister">点击此处重新提交资料</el-button>
         </div>
       </div>
     </div>
@@ -22,7 +22,7 @@
 <script>
 import { createNamespacedHelpers } from 'vuex'
 import RegisterHeader from '@/views/register/RegisterHeader.vue'
-import { getCookie } from '@shared/util'
+import { getCookie, getLocalStorageItem } from '@shared/util'
 const { mapState: userMapState, mapActions: userMapActions, mapGetters: userMapGetters } = createNamespacedHelpers('user')
 
 export default {
@@ -71,6 +71,9 @@ export default {
   },
   methods: {
     ...userMapActions(['GET_USER_INFO', 'UPDATE_ROUTES']),
+    isOEM () {
+      return getLocalStorageItem('supplierType') === 'OEM'
+    },
     toRegister () {
       this.$router.push({
         path: '/register',
