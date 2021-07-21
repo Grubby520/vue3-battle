@@ -2,6 +2,7 @@ const baseURL = '/oem-goods-service/'// 与后端微服务名对应
 
 export default {
   purchaseOrderListUrl: baseURL + 'purchase-order/list', // 待接单列表
+  awaitShipmentsLisUrl: baseURL + 'await-shipments-list', // 待发货单列表
   receiveOrderUrl: baseURL + 'purchase-order/receive', // 接单
   pendingDeliverStaticUrl: baseURL + 'purchase-order/awaitshipment-statistics', // 待发货单列表统计
   productionOrderListUrl: baseURL + 'purchase-order/production-order-list', // 生产订单列表

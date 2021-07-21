@@ -6,6 +6,9 @@ const OEM_GOODS_API = {
   getPurchaseOrderList (params) {
     return post(URL.purchaseOrderListUrl, params)
   },
+  getAwaitShipmentsList (params) {
+    return post(URL.awaitShipmentsLisUrl, params)
+  },
   receiveOrder (params) {
     return put(URL.receiveOrderUrl, params)
   },

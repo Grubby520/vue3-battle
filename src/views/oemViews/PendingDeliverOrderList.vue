@@ -183,8 +183,9 @@ export default {
   methods: {
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      delete params.status // 列表接口不要这个参数
       this.loading = true
-      OemGoodsAPI.getPurchaseOrderList(params).then(res => {
+      OemGoodsAPI.getAwaitShipmentsList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
