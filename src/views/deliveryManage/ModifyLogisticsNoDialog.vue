@@ -59,7 +59,7 @@
               <el-input
                 v-model="form.logisticsNumber"
                 :disabled="isSelf"
-                maxlength="50"
+                maxlength="32"
                 show-word-limit
               ></el-input>
             </el-form-item>
