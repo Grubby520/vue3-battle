@@ -44,7 +44,7 @@
         ref="cardTable"
         :data="tableData"
         :columns="columns"
-        childName="purchaseOrderItemVoList"
+        childName="awaitShipmentItemVoList"
       >
         <template #body="{row:cardRow}">
           <SlTable
@@ -52,7 +52,7 @@
             v-model="selectionsTree[cardRow.id]"
             align="left"
             :border="false"
-            :tableData="cardRow['purchaseOrderItemVoList']"
+            :tableData="cardRow['awaitShipmentItemVoList']||[]"
             :columns="childColumns"
             :operate="false"
             :tooltip="false"
