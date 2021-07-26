@@ -82,6 +82,10 @@ export default {
         {
           prop: 'deliveryQuantity',
           label: '实际发货数量'
+        },
+        {
+          prop: 'deliveryStatusName',
+          label: '发货单异常'
         }
       ]
     }
