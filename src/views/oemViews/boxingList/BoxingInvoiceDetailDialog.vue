@@ -69,8 +69,8 @@ export default {
             let { row = {} } = data
             return (
               <div>
-                <p>需求到货时间：{row.claimArrivalDate}</p>
-                <p>预计到货时间：{row.estimatedArrivalDate}</p>
+                <p>需求到货时间：{this.formatDate(row.claimArrivalDate)}</p>
+                <p>预计到货时间：{this.formatDate(row.estimatedArrivalDate)}</p>
               </div>
             )
           }
@@ -100,6 +100,12 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+    formatDate (date) {
+      if (date) {
+        return date.split(' ')[0]
+      }
+      return '--'
     }
   }
 }
