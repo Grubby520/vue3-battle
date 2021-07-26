@@ -69,7 +69,7 @@ export default {
             let { row = {} } = data
             return (
               <div>
-                <p>需求到货时间：{this.formatDate(row.claimArrivalDate)}</p>
+                <p>要求到货时间：{this.formatDate(row.claimArrivalDate)}</p>
                 <p>预计到货时间：{this.formatDate(row.estimatedArrivalDate)}</p>
               </div>
             )
