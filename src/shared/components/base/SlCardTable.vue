@@ -10,6 +10,7 @@
         <el-checkbox
           v-if="selectable"
           class="mr-16px"
+          v-model="item._rowChecked"
           :true-label="'add_'+item[primaryKey]"
           :false-label="'delete_'+item[primaryKey]"
           @change="selectHandler"
@@ -79,7 +80,7 @@ export default {
       type: Array,
       default: () => []
     },
-    selectable: {
+    selectable: { // 表格是否支持可选
       type: Boolean,
       default: false
     },
@@ -108,17 +109,7 @@ export default {
   },
   watch: {
     data (val) {
-      this.tableData = val.map(item => {
-        let temp = {
-          ...item
-        }
-        let selectRow = this.selectedRows.find(checkedItem => checkedItem[this.primaryKey] === item[this.primaryKey])
-
-        if (this.selectable) {
-          temp['_rowChecked'] = (selectRow && selectRow['_rowChecked']) || false
-        }
-        return temp
-      })
+      this.initData(val)
     },
     selections (val) {
       this.selectedRows = JSON.parse(JSON.stringify(val))
@@ -128,6 +119,18 @@ export default {
 
   },
   methods: {
+    initData (val) {
+      this.tableData = val.map(item => {
+        let temp = {
+          ...item
+        }
+
+        if (this.selectable) {
+          temp['_rowChecked'] = null
+        }
+        return temp
+      })
+    },
     selectHandler (value) {
       let values = value.split('_')
       let operation = values && values[0] // add or delete

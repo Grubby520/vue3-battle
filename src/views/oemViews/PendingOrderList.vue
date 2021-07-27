@@ -194,6 +194,7 @@ export default {
           this.page.total = data.total
           this.page.pageIndex = pageIndex
           this.page.pageSize = pageSize
+          this.selections = []
         }
       }).finally(() => {
         this.loading = false

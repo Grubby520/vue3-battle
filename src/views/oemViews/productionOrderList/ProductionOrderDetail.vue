@@ -223,10 +223,6 @@ export default {
           label: '销售属性'
         },
         {
-          prop: 'orderTypeName',
-          label: '订单类型'
-        },
-        {
           prop: 'claimArrivalDate',
           label: '应交货日期'
         },
