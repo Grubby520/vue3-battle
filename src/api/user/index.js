@@ -16,7 +16,8 @@ const USER_API = {
   getSupplierDetail: (params) => get(URL.supplierDetail, params),
   getSupplierBasicInfo: (params) => get(URL.supplierBasic, params),
   getSupplierBankInfo: (params) => get(URL.supplierBank, params),
-  supplierUpdate: (params) => put(URL.supplierUpdate, params)
+  supplierUpdate: (params) => put(URL.supplierUpdate, params),
+  shippingAddressExists: () => get(URL.shippingAddressExists)
 }
 
 export default USER_API

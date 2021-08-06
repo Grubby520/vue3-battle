@@ -75,6 +75,8 @@
       :inData="stockOutDialogForm"
       @submit="submitStockOutApply"
     ></StockOutDialog>
+    <!-- 退货信息弹出框 -->
+    <InfoDialog :visible.sync="infoShow" :destroyOnClose="true" />
   </div>
 </template>
 
@@ -82,17 +84,20 @@
 import { exportFileFromRemote, date, errorMessageTip } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import GoodsUrl from '@api/goods/goodsUrl'
+import userAPI from '@api/user'
 import GoodsApi from '@api/goods'
 import MerchantNotice from './stayGroupedGoods/MerchantNotice'
 import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
 import StockOutDialog from './stayGroupedGoods/StockOutDialog'
+import InfoDialog from './stayGroupedGoods/infoDialog'
 
 export default {
   name: 'StayGroupedGoods',
   components: {
     MerchantNotice,
     SplitOrderDialog,
-    StockOutDialog
+    StockOutDialog,
+    InfoDialog
   },
   data () {
     return {
@@ -276,7 +281,8 @@ export default {
         }
       ],
       dialogForm: {},
-      stockOutDialogForm: {}
+      stockOutDialogForm: {},
+      infoShow: false
     }
   },
   computed: {
@@ -320,7 +326,11 @@ export default {
     }
   },
   mounted () {
-
+    userAPI.shippingAddressExists().then(({ data }) => {
+      if (!data) {
+        this.infoShow = true
+      }
+    })
   },
   methods: {
     gotoPage (pageSize = 50, pageIndex = 1) {
