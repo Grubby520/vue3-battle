@@ -346,9 +346,12 @@ export default {
       this.curSaleAttrs
         .filter(sale => sale.id === productSaleAttr.attributeId)
         .forEach(sale => {
-          const currentSaleTermIds = productSaleAttr.attributeTerms
-            .reduce((init, term) => init.concat(term.id), [])
-          const terms = sale.terms.filter(term => currentSaleTermIds.includes(term.id))
+          const terms = productSaleAttr.attributeTerms
+            .reduce((init, term) => {
+              const saleTerm = sale.terms.find(attr => attr.id === term.id)
+              saleTerm && init.push(saleTerm)
+              return init
+            }, [])
           this.form[formSaleType] = terms
           this[`${optionType}Options`] = sale.terms
         })
