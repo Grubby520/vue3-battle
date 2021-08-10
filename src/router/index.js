@@ -65,4 +65,14 @@ router.onError(() => {
   window.location.reload()
 })
 
+// 解决添加动态路由控制台报重复路由的警告问题
+router.$updateRoutes = (params) => {
+  router.matcher = new VueRouter({
+    mode: 'history',
+    base: process.env.BASE_URL,
+    routes
+  }).matcher
+  router.addRoutes(params)
+}
+
 export default router

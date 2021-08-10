@@ -1,0 +1,43 @@
+// 要在el表格上应用主题样式,需要在表格上加'sl-table-theme'类(用于灵活控制是否应用样式和切换主题)，同时设置
+// header-row-class-name="table-header--custom"
+// row-class-name="table-row--custom"
+.sl-table-theme {
+
+  // el表格样式自定义
+  .table-header--custom {
+    th {
+      height: 4rem;
+      color: $color-text-minor;
+      font-size: 14px;
+      font-weight: normal;
+      background-color: $color-table-header-bg!important;
+    }
+  }
+  
+  &:not(.el-table--border){
+    // el表格底部的线条问题
+    &::before,
+    .el-table__fixed::before, 
+    .el-table__fixed-right::before{
+      height: 0!important;
+    }
+
+    .table-header--custom {
+      th {
+        border: none !important;
+      }
+    }
+
+    .table-row--custom {
+      td {
+        border-bottom: none!important;
+      }
+    }
+
+  }
+
+  .el-table-column--selection .cell {
+    padding: 0 1rem;
+  }
+}
+

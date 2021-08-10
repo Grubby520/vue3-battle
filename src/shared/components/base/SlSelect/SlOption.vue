@@ -110,7 +110,7 @@ export default {
     }
 
     &.active {
-      color: #409eff;
+      color: #1890ff;
 
       &:after {
         position: absolute;

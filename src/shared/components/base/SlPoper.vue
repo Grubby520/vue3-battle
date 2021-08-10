@@ -1,10 +1,12 @@
 <template>
   <div class="sl-popper" ref="slpopper" @[trigger]="mouseOn($event)">
-    <div class="pop" ref="pop" :style="styleObj" @[trigger].stop="mouseOn">
-      <slot name="pop"></slot>
-    </div>
+    <template v-if="$slots.pop">
+      <div class="pop" ref="pop" :style="styleObj" @[trigger].stop="mouseOn">
+        <slot name="pop"></slot>
+      </div>
 
-    <div class="arrow" ref="arrow" :style="arrowStyleObj"></div>
+      <div class="arrow" ref="arrow" :style="arrowStyleObj"></div>
+    </template>
 
     <slot></slot>
   </div>
@@ -78,7 +80,7 @@ export default {
         e.stopPropagation()
         this.mouseOut()
       })
-      popDom.addEventListener('mouseout', e => {
+      popDom && popDom.addEventListener('mouseout', e => {
         e.stopPropagation()
         this.mouseOut()
       })
@@ -115,7 +117,7 @@ export default {
       let cw = document.documentElement.clientWidth || document.body.clientWidth
       // 获取气泡的宽、高
       let popDom = this.$refs.pop
-      let { height: popH, width: popW } = popDom.getBoundingClientRect()
+      let { height: popH, width: popW } = (popDom && popDom.getBoundingClientRect()) || {}
       // 获取content内容区的信息
       let slPoperDom = this.$refs.slpopper
       let slPoperDomRect = slPoperDom.getBoundingClientRect()
@@ -135,7 +137,7 @@ export default {
 
       // 获取箭头的宽、高
       let arrowDom = this.$refs.arrow
-      let { height: arrowH, width: arrowW } = arrowDom.getBoundingClientRect()
+      let { height: arrowH, width: arrowW } = (arrowDom && arrowDom.getBoundingClientRect()) || {}
       // 获取气泡的fixed定位的位置 top,left,right,bottom
       let aObj = this.getObjPosition(ch, cw, position, rectT, rectH, rectL, rectW, arrowH, arrowW)
       switch (position) {

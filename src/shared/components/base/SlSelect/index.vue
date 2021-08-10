@@ -399,7 +399,7 @@ export default {
     position: relative;
     white-space: nowrap;
     &.active {
-      border-color: #409eff;
+      border-color: #1890ff;
     }
 
     &.disabled {

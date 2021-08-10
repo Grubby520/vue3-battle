@@ -1,5 +1,5 @@
 <template>
-  <div class="sl-search-form">
+  <div class="sl-search-form color-bg--white">
     <el-form :model="form" :label-width="`${labelWidth}px`">
       <el-row :gutter="15">
         <el-col v-if="$slots.before" :span="24">
@@ -39,7 +39,7 @@
           </el-input>
           <el-form-item
             v-else-if="item.type === 'input'"
-            :label="item.isLabel? '':item.label"
+            :label="item.hideLabel? '':item.label"
             :prop="item.name"
           >
             <el-input
@@ -51,12 +51,12 @@
           </el-form-item>
           <template v-else-if="item.type === 'single-select'">
             <el-form-item
-              :label="item.isLabel? '':item.label"
+              :label="item.hideLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
               <SlSingleSelect
-                :label="item.isLabel?item.label:'请选择'"
+                :label="item.hideLabel?item.label:'请选择'"
                 v-model="form[item.name]"
                 :remoteUrl="item.data.remoteUrl"
                 :reqParams="item.data.params"
@@ -67,20 +67,20 @@
           <!-- 树型下拉 -->
           <template v-else-if="item.type === 'tree-select'">
             <el-form-item
-              :label="item.isLabel? '':item.label"
+              :label="item.hideLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
               <SlTreeSelect
                 v-model="form[item.name]"
                 :options="options[item.name]"
-                :label="item.isLabel?item.label:'请选择'"
+                :label="item.hideLabel?item.label:'请选择'"
               ></SlTreeSelect>
             </el-form-item>
           </template>
           <template v-else-if="item.type === 'date'">
             <el-form-item
-              :label="item.isLabel? '':item.label"
+              :label="item.hideLabel? '':item.label"
               :prop="item.name"
               :class="{'block':item.data.isBlock}"
             >
@@ -98,6 +98,25 @@
               ></el-date-picker>
             </el-form-item>
           </template>
+          <template v-else-if="item.type === 'batch-input'">
+            <el-form-item :label="item.hideLabel? '':item.label" :prop="item.name">
+              <SlBatchInput
+                v-model.trim="form[item.name]"
+                :maxLen="item.data && item.data.maxLen?item.data.maxLen:200"
+                :label="item.label"
+              ></SlBatchInput>
+            </el-form-item>
+          </template>
+        </el-col>
+        <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="6">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            :loading="loading"
+            @click="search"
+            plain
+          >搜索</el-button>
+          <el-button icon="el-icon-refresh-right" :loading="loading" @click="reset">重置</el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -125,6 +144,10 @@ export default {
     labelWidth: {
       type: Number,
       default: 100
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -135,11 +158,21 @@ export default {
       getDatePickerOptions: getDatePickerOptions
     }
   },
+  computed: {
+
+  },
   methods: {
     formChange () {
       this.$emit('valChange', this.form)
     },
+    search () {
+      this.$emit('search')
+    },
     reset () {
+      this.resetFormData()
+      this.$emit('reset')
+    },
+    resetFormData () {
       this.form = JSON.parse(JSON.stringify(this.resetForm))
       this.$emit('valChange', this.form)
     }
@@ -150,7 +183,7 @@ export default {
       /// 判断入参是否有设置默认值。
       /// 若有就取传入的默认值。
       /// 若没有，则根据是否是多选设置默认值。
-      const defaultValue = item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
+      const defaultValue = this.form[item.name] ? this.form[item.name] : item.hasOwnProperty('default') ? item.default : item.isMultivalued ? [] : ''
       this.$set(this.form, item.name, defaultValue)
       if (item['prepend']) {
         this.$set(this.form, `${item.name}_prepend`, item['prepend'].value)
@@ -171,18 +204,22 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.sl-search-form /deep/ {
-  .form-item-col {
-    height: 50px;
-  }
-
-  .block {
-    .el-select {
-      display: block;
+.sl-search-form {
+  padding: 2rem 2.4rem 2rem;
+  margin-bottom: 2rem;
+  & /deep/ {
+    .form-item-col {
+      height: 50px;
     }
-    .el-date-editor.el-input,
-    .el-date-editor.el-input__inner {
-      width: 100% !important;
+
+    .block {
+      .el-select {
+        display: block;
+      }
+      .el-date-editor.el-input,
+      .el-date-editor.el-input__inner {
+        width: 100% !important;
+      }
     }
   }
 }

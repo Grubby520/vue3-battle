@@ -5,7 +5,7 @@
     :offset="20"
     :styleSetting="{border: '1px solid rgba(0, 0, 0, .2)'}"
   >
-    <div slot="pop" class="sl-image-pop" :style="{'width': popSize, 'height': popSize}">
+    <div v-if="src" slot="pop" class="sl-image-pop" :style="{'width': popSize, 'height': popSize}">
       <img class="sl-image--popimg" :src="src" :onerror="errorImg" />
     </div>
     <div class="sl-image" :style="{ ...styleSetting, 'width': size, 'height': size}">

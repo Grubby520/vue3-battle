@@ -17,7 +17,7 @@ export default {
     return {
       regionData, // 地址信息
       provinceAndCityData,
-      address: ''
+      address: []
     }
   },
   model: {

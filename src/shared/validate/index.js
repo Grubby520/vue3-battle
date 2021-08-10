@@ -9,6 +9,7 @@ import {
   idCardReg,
   bankCardNumberReg,
   emptyReg,
+  wCharsReg,
   qqReg,
   weChatReg,
   telePhoneReg
@@ -74,6 +75,15 @@ export const emptyValidator = function (errorMsg, trigger = 'blur', required = t
     message: errorMsg,
     trigger: trigger,
     required: required
+  }
+}
+
+// 只能输入数字、字母、下划线
+export const wCharsValidator = function (errorMsg, trigger = 'blur') {
+  return {
+    validator: generateFormItemValidator(wCharsReg, errorMsg),
+    message: errorMsg,
+    trigger: trigger
   }
 }
 
