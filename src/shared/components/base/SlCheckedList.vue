@@ -152,10 +152,10 @@ export default {
       cursor: pointer;
       &.active__button {
         color: #fff;
-        background-color: #409eff;
+        background-color: #1890ff;
       }
       &.active__text {
-        color: #409eff;
+        color: #1890ff;
       }
       &.underline {
         text-decoration: underline;

@@ -5,7 +5,7 @@
         <h3>{{info.merchantName}}</h3>
         <div class="barcode">
           <p>{{info.deliveryNum}}</p>
-          <svg class="barcodeSvg" />
+          <canvas class="barcodeCanvas"></canvas>
         </div>
       </div>
       <div class="info">
@@ -71,10 +71,9 @@ export default {
     show (data) {
       this.info = _cloneDeep(data)
       this.appendStyle()
-      JsBarcode('.barcodeSvg', data.deliveryNum, {
-        height: 18,
-        fontSize: 0,
-        margin: 0
+      JsBarcode('.barcodeCanvas', data.deliveryNum, {
+        height: 30,
+        displayValue: false
       })
       this.toPrint()
     },
@@ -127,10 +126,10 @@ export default {
     h3 {
       font-size: 28px;
       text-align: center;
-      width: 60%;
+      width: 50%;
     }
     .barcode {
-      width: 40%;
+      width: 50%;
       p {
         margin-bottom: 5px;
       }

@@ -1,4 +1,8 @@
-import { setCookie, removeCookie, downloadFile } from '@shared/util'
+import { setCookie, removeCookie, setLocalStorageItem, getLocalStorageItem, removeLocalStorageItem, downloadFile } from '@shared/util'
+import { homeStaticRoutes } from '@/router/homeRoutes.js'
+import ODM_ROUTES from '@/router/routes/ODM_ROUTES'
+import OEM_ROUTES from '@/router/routes/OEM_ROUTES'
+import router from '@/router'
 import UserUrl from '@api/user/userUrl'
 import UserApi from '@api/user'
 
@@ -6,6 +10,7 @@ export default {
   namespaced: true,
   state: {
     permissions: [],
+    routes: [],
     supplierStatus: '',
     supplierStatusCode: '', // 供应商状态代码 0:审核中 1:已入驻 2:已冻结 3:已驳回
     supplierName: '',
@@ -64,13 +69,18 @@ export default {
           state[key] = userInfo[key]
         }
       })
+    },
+    SET_ROUTES (state, routes) {
+      state.routes = routes.length > 0 ? [...routes] : [...homeStaticRoutes]
     }
   },
   actions: {
     RESET_USER_DATA ({ commit }) {
       commit('SET_USER_INFO', {})
+      commit('SET_ROUTES', [])
       removeCookie('token')
       removeCookie('userKey')
+      removeLocalStorageItem('supplierType')
     },
     AUTH_LOGIN ({ commit }, params) {
       return UserApi.authLogin(params).then((res) => {
@@ -96,9 +106,31 @@ export default {
         const { success, data } = res
         if (success) {
           commit('SET_USER_INFO', data)
+          setLocalStorageItem('supplierType', data.supplierCategory === 1 ? 'OEM' : 'ODM')
           return res
         }
       })
+    },
+    GET_ROUTES () {
+      let routes = []
+      const supplierType = getLocalStorageItem('supplierType')
+      if (supplierType === 'OEM') {
+        routes = [...OEM_ROUTES]
+      } else {
+        routes = [...ODM_ROUTES]
+      }
+      return routes
+    },
+    async UPDATE_ROUTES ({ commit, dispatch }) {
+      let dynamicRoute = {
+        path: '/home',
+        component: () => import('@/views/Home.vue'),
+        children: []
+      }
+      let routes = await dispatch('GET_ROUTES')
+      dynamicRoute.children = [...homeStaticRoutes, ...routes]
+      router.$updateRoutes([dynamicRoute])
+      commit('SET_ROUTES', dynamicRoute.children)
     },
     MODIFY_PASSWORD ({ commit }, params) {
       return UserApi.modifyPassword(params).then((res) => {
