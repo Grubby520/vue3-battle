@@ -1,5 +1,5 @@
 import '@assets/scss/common.scss'
-import 'element-ui/lib/theme-chalk/index.css'
+import '@assets/theme/index.css'
 import 'nprogress/nprogress.css'// Progress 进度条 样式
 import Vue from 'vue'
 import App from './App.vue'

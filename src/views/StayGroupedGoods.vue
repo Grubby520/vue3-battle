@@ -4,7 +4,6 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
@@ -12,17 +11,31 @@
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="formQuery" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="formQuery"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
-      <el-divider />
       <SlTableToolbar>
-        <el-button
+        <SlButton
           type="primary"
-          @click="generateInvoice"
+          boxShadow="primary"
           :loading="loading"
           :disabled="!canGenerateInvoice"
-        >生成发货单</el-button>
-        <el-button type="primary" @click="exportDetail" :loading="loading" plain>导出待发货商品详情</el-button>
+          @click="generateInvoice"
+        >生成发货单</SlButton>
+        <SlButton
+          class="ml-8px"
+          type="primary"
+          boxShadow="primary"
+          plain
+          :loading="loading"
+          @click="exportDetail"
+        >导出待发货商品详情</SlButton>
       </SlTableToolbar>
       <div class="switch-nav">
         <el-menu
@@ -101,6 +114,7 @@ export default {
   },
   data () {
     return {
+      tableLoading: false,
       loading: false,
       activeIndex: '-1',
       showSplitOrderDialog: false,
@@ -335,6 +349,7 @@ export default {
   methods: {
     gotoPage (pageSize = 50, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
+      this.tableLoading = true
       GoodsApi.getGroupList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
@@ -345,13 +360,9 @@ export default {
           this.disabledKeys = this.tableData.filter(item => item.canDeliveryOrder === false).map(item => item.id)
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
         this.getSwitchNavs()
       })
-    },
-    reset () {
-      this.$refs.searchForm.reset()
-      this.$refs.listView.refresh()
     },
     getSwitchNavs () {
       GoodsApi.getGroupTabs({}).then(data => {

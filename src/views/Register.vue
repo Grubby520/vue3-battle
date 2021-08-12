@@ -98,7 +98,7 @@ export default {
     }
   },
   methods: {
-    ...userMapActions(['GET_USER_INFO']),
+    ...userMapActions(['GET_USER_INFO', 'UPDATE_ROUTES']),
     ...registerMapMutations(['SET_APPLICATION', 'SET_ADDITIONAL_INFO', 'SET_SUPPLIER_ID']),
     goStep () {
       let stepMap = {
@@ -207,7 +207,9 @@ export default {
       this.GET_USER_INFO().then(res => {
         if (res) {
           if (this.enterMainPage) {
-            this.$router.push('home/recommend-products/list')
+            this.UPDATE_ROUTES().then(() => {
+              this.$router.push('home/recommend-products/list')
+            })
             return
           }
           if (this.isAuditting) {

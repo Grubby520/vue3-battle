@@ -3,10 +3,8 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
-      :searchLoading="searchLoading"
       class="recommonPar"
     >
       <div slot="search">
@@ -15,17 +13,29 @@
           v-model="query"
           :items="searchItems"
           :labelWidth="20"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
           ref="searchForm"
           v-if="filterIsLoad"
         />
       </div>
-      <div class="download-wrapper">
-        <el-button class="download-btn" @click="downloadFileHandle" type="text">服装尺寸度量标准.pdf</el-button>
+      <div>
+        <el-link class="mb-8px" @click="downloadFileHandle" type="primary">服装尺寸度量标准.pdf</el-link>
       </div>
-      <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" @click="commit" :disabled="selections.length <= 0">批量提交</el-button>
-        <el-button type="primary" @click="productDetail('create','')" class="recommond-create">创建产品</el-button>
+        <SlButton
+          type="primary"
+          boxShadow="primary"
+          :disabled="selections.length <= 0"
+          @click="commit"
+        >批量提交</SlButton>
+        <SlButton
+          class="ml-8px"
+          type="primary"
+          boxShadow="primary"
+          @click="productDetail('create','')"
+        >创建产品</SlButton>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTableInfo
@@ -90,11 +100,11 @@ export default {
   },
   data () {
     return {
+      tableLoading: false,
       tableData: [],
       selections: [], // 复选框数据
       disabledKeys: [],
       loading: false,
-      searchLoading: false,
       page: {
         pageIndex: 1,
         total: 0
@@ -109,17 +119,17 @@ export default {
           default: null,
           type: 'tree-select',
           label: '品类',
-          isLabel: true,
+          hideLabel: true,
           name: 'categoryId',
           data: {
             options: []
           }
         },
-        { type: 'input', label: '供方货号', name: 'supplierItemNo', isLabel: true },
+        { type: 'input', label: '供方货号', name: 'supplierItemNo', hideLabel: true },
         {
           type: 'single-select',
           label: '状态',
-          isLabel: true,
+          hideLabel: true,
           name: 'status',
           data: {
             remoteUrl: RecommondUrl.recommendStatus,
@@ -201,8 +211,6 @@ export default {
       })
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
-      this.loading = true
-      this.searchLoading = true
       let requestParams = { ...this.query }
       // 将分类过滤取值赋给[categoryIdLevel]，[categoryId]取level的最后一级
       const path = requestParams.categoryId || ''
@@ -210,9 +218,12 @@ export default {
       requestParams.categoryId = path.split(',').reverse()[0]
       const recommondpar = { ...requestParams, pageIndex, pageSize }
       this.tableData = []
+      this.loading = true
+      this.tableLoading = true
       RecommondApi.getList({ ...recommondpar })
         .then((res) => {
           const { list, total } = res.data
+
           list.forEach(item => {
             if (item.description.length > 30) {
               item.description = item.description.substring(0, 30) + '...'
@@ -224,16 +235,12 @@ export default {
             .filter(item => item.status.value !== 0)
             .map(item => item.id)
           this.page.total = total
-        })
-        .finally(() => {
+          this.page.pageIndex = pageIndex
+          this.page.pageSize = pageSize
+        }).finally(() => {
           this.loading = false
-          this.searchLoading = false
+          this.tableLoading = false
         })
-    },
-    reset () {
-      this.$refs.searchForm.reset()
-      // 更新列表
-      this.$refs.listView.refresh()
     },
     commit (row) {
       // 批量推品
@@ -322,12 +329,6 @@ export default {
       flex-flow: column;
       justify-content: center;
       margin-left: 1rem;
-    }
-  }
-  .download-wrapper {
-    margin-left: 2rem;
-    .download-btn {
-      text-decoration: underline;
     }
   }
 }

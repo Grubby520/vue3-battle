@@ -15,13 +15,13 @@ export default new Vuex.Store({
     breadcrumbs: [],
     activePath: null,
     menuCollapse: false,
-    hasVersionUpdated: false // 版本是否更新
+    hasVersionUpdated: false, // 版本是否更新
+    uniformlyCapturedErrorCodes: [] // 用于存储统一捕获的异常代码,用于判断，避免多次弹出异常提示
   },
   mutations: {
     SET_LAODING (state, loadingInstance) {
       state.loadingInstance = loadingInstance
     },
-
     SET_BREADCRUMBS (state, breadcrumbs) {
       state.breadcrumbs = breadcrumbs
     },
@@ -37,6 +37,13 @@ export default new Vuex.Store({
     },
     SET_VERSION_UPDATED (state, hasVersionUpdated) {
       state.hasVersionUpdated = hasVersionUpdated
+    },
+    ADD_UNIFORMLY_ERROR_CODES (state, { code, clear = false }) {
+      if (clear) {
+        state.uniformlyCapturedErrorCodes = []
+      } else {
+        state.uniformlyCapturedErrorCodes = Array.from(new Set([...this.state.uniformlyCapturedErrorCodes, code]))
+      }
     }
   },
   actions: {

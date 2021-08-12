@@ -4,13 +4,8 @@ import { noSymbolValue } from '@api/static/index'
 import URL from './goodsUrl'
 
 const GOODS_API = {
-  // 获取附件列表
   remarks (params) {
     return put(URL.remarks, params)
-  },
-  // 获取附件列表
-  getAttachmentList (params) {
-    return get(URL.attachmentListUrl, params)
   },
   getPurchaseStatistics (params) {
     return post(URL.purchaseStatistics, params).then(res => {
@@ -135,57 +130,6 @@ const GOODS_API = {
 
   exportExcel (data) {
     return get(URL.exportExcel, data)
-  },
-
-  getSettlementOrderList (params) {
-    return get(URL.settlementOrderList, params)
-  },
-
-  // 商家确认
-  supplierConfirm (params) {
-    return post(URL.supplierConfirm, params)
-  },
-
-  getDeliveryInfo (params) {
-    return get(URL.deliveryInfo, params)
-  },
-
-  // 供货明细
-  getSupplyDetails (params) {
-    return get(URL.supplyDetails, params)
-  },
-
-  // 补扣款单信息
-  getSupplementaryDeductionInfo (params) {
-    return get(URL.supplementaryDeductionInfo, params)
-  },
-
-  getPaymentInfo (params) {
-    return get(URL.paymentInfo, params)
-  },
-
-  getFinanceInfo (params) {
-    return get(URL.financeInfo, params)
-  },
-
-  getSettlementOrder (params) {
-    return get(URL.settlementOrder, params)
-  },
-
-  getSupplementaryDeduction (params) {
-    return get(URL.supplementaryDeduction, params)
-  },
-
-  getSupplyDeductionList (params) {
-    return get(URL.supplyDeductionList, params)
-  },
-
-  getReimbursementList (params) {
-    return get(URL.reimbursementList, params)
-  },
-
-  updateReimbursementAttachments (params) {
-    return post(URL.updateReimbursementAttachments, params)
   },
 
   getStockOutList (params) {
