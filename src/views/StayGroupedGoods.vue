@@ -415,7 +415,9 @@ export default {
           this.selections = []
           this.gotoPage()
         } else {
-          errorMessageTip(res.error && res.error.message)
+          if (!this.$store.state.uniformlyCapturedErrorCodes.includes(res.error.code)) {
+            errorMessageTip(res.error && res.error.message)
+          }
         }
       }).finally(() => {
         this.loading = false
@@ -488,7 +490,9 @@ export default {
           this.gotoPage()
           this.$message.success(`申请成功`)
         } else {
-          errorMessageTip(res.error && res.error.message)
+          if (!this.$store.state.uniformlyCapturedErrorCodes.includes(res.error.code)) {
+            errorMessageTip(res.error && res.error.message)
+          }
         }
       })
     }
