@@ -132,7 +132,7 @@ export default {
       let application = {}
       let additionalInfo = {}
       // 申请入驻信息回填
-      shippingAddress.provinces = JSON.parse(shippingAddress.provinces) // 省市区 string -> array
+      shippingAddress.provinces = JSON.parse(shippingAddress.provinces) || [] // 省市区 string -> array
       application = {
         address: baseInfo.address ? JSON.parse(baseInfo.address) : [],
         tradeType: baseInfo.tradeType ? JSON.parse(baseInfo.tradeType) : [],
