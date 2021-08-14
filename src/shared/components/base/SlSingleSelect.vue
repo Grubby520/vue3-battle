@@ -18,6 +18,7 @@
 </template>
 <script>
 import { get } from '@shared/http'
+import { yesOrNo } from '@api/static'
 
 export default {
   name: 'SlSingleSelect',
@@ -58,8 +59,8 @@ export default {
     remoteUrl: {
       handler: function (val, oldVal) {
         if (val) {
-          get(val, this.reqParams ? this.reqParams : {}).then(res => {
-            this.selfOptions = res.data || []
+          this.getOptions(val, this.reqParams ? this.reqParams : {}).then(data => {
+            this.selfOptions = data
           })
         }
       },
@@ -87,6 +88,16 @@ export default {
     reset () {
       this.value = null
       this.selfOptions = []
+    },
+    getOptions (url, params) {
+      if (params.dataCode === 'YES_NO') {
+        return Promise.resolve(yesOrNo)
+      }
+
+      return get(url, params).then(res => {
+        let data = res.data || []
+        return data
+      })
     }
   },
   mounted () {
