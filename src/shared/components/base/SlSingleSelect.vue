@@ -29,7 +29,6 @@ export default {
   props: {
     modelVal: {
       type: [String, Number, Boolean],
-      required: true,
       default: null
     },
     remoteUrl: {
