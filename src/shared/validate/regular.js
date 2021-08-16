@@ -4,7 +4,7 @@ export const phoneNoReg = /^((\+86)?(13\d|14[5-9]|15[0-35-9]|16[25-7]|17[0-8]|18
 export const numberReg = /^[0-9]+$/
 export const letterReg = /^[A-Za-z]+$/
 export const wordCharacterReg = /^\w+$/
-export const emptyReg = /^$/
+export const emptyReg = /^(null|undefined)?$/
 // 数字、字母、下划线
 export const wCharsReg = /^\w*$/
 // 18位/15位身份证校验

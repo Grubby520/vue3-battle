@@ -17,6 +17,7 @@ export default {
       let baseInfo = {}
       let bankInfo = {}
       let certification = {}
+      let shippingAddress = {}
       let getHandledPictureUrl = function (image) {
         if (!image) {
           return ''
@@ -64,10 +65,15 @@ export default {
       certification['taxRegisterImage'] = getHandledPictureUrl(state.additionalInfo.taxRegisterImage[0])
       certification['companyShareholderImage'] = getHandledPictureUrl(state.additionalInfo.companyShareholderImage[0])
 
+      // 退货信息
+      shippingAddress = JSON.parse(JSON.stringify(state.application.shippingAddress))
+      shippingAddress.provinces = JSON.stringify(shippingAddress.provinces || []) // 省市区 string -> array
+
       return {
         baseInfo,
         certification,
-        bankInfo
+        bankInfo,
+        shippingAddress
       }
     }
   },
