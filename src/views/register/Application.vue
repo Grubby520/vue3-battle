@@ -171,6 +171,50 @@
           show-word-limit
         ></el-input>
       </el-form-item>
+
+      <SlContentTitle text="退货信息" :textStyle="titleTextStyle" line></SlContentTitle>
+      <el-form-item label="退货地址" prop="shippingAddress.provinces">
+        <SlAreaCascader v-model="form.shippingAddress.provinces" class="form-item"></SlAreaCascader>
+      </el-form-item>
+      <el-form-item label="详细地址" prop="shippingAddress.address">
+        <el-input
+          v-model="form.shippingAddress.address"
+          maxlength="200"
+          show-word-limit
+          placeholder="请填写详细收货地址"
+          clearable
+          class="form-item"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="收件人" prop="shippingAddress.contactName">
+        <el-input
+          v-model.trim="form.shippingAddress.contactName"
+          maxlength="20"
+          show-word-limit
+          placeholder="请填写收件人"
+          clearable
+          class="form-item"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="手机号码" prop="shippingAddress.contactCellphone">
+        <el-input
+          v-model.trim="form.shippingAddress.contactCellphone"
+          type="tel"
+          maxlength="11"
+          placeholder="请填写收件人电话号码"
+          clearable
+          class="form-item"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="固定电话" prop="shippingAddress.contactTelephone">
+        <el-input
+          v-model.trim="form.shippingAddress.contactTelephone"
+          clearable
+          maxlength="20"
+          show-word-limit
+          class="form-item"
+        ></el-input>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -187,7 +231,8 @@ import {
   transactionAamountValidator,
   emailValidator,
   qqValidator,
-  fnValidator
+  fnValidator,
+  telePhoneValidator
 } from '@shared/validate'
 import CommonApi from '@api/api.js'
 import UserApi from '@api/user'
@@ -269,7 +314,14 @@ export default {
         contactNumber: '',
         contactQq: '',
         contactWebChat: '',
-        referrer: '' // 联系人微信
+        referrer: '', // 联系人微信
+        shippingAddress: {
+          address: null, // 详细地址
+          provinces: [], // 省市区
+          contactCellphone: null, // 手机号
+          contactTelephone: '', // 固定号
+          contactName: null
+        }
       },
       rules: {
         supplierName: [
@@ -331,7 +383,21 @@ export default {
         ],
         referrer: [
           emptyValidator('请输入引荐人')
-        ]
+        ],
+        shippingAddress: {
+          address: [
+            emptyValidator('请填写详细地址', 'blur')
+          ],
+          provinces: [
+            emptyValidator('请选择公司地址', ['blur', 'change'])
+          ],
+          contactCellphone: [
+            emptyValidator('请输入手机号'),
+            phoneNoValidator()
+          ],
+          contactName: [emptyValidator('请输入收件人')],
+          contactTelephone: [telePhoneValidator()]
+        }
       },
       titleTextStyle: {
         margin: '1em 0 1em 0'

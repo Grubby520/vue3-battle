@@ -16,5 +16,6 @@ export default {
   supplierDetail: baseURL + 'supplier/detail',
   supplierBasic: baseURL + 'supplier/detail/basic',
   supplierBank: baseURL + 'supplier/detail/bank',
-  supplierUpdate: baseURL + 'supplier/detail/basic/update'
+  supplierUpdate: baseURL + 'supplier/detail/basic/update',
+  shippingAddressExists: baseURL + 'supplier/shipping-address-exists'
 }
