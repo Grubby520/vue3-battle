@@ -9,7 +9,6 @@ const baseURL = '/srm-goods-service/'// 与后端微服务名对应
 
 export default {
   remarks: baseURL + 'invoice/update-remarks', // 备注
-  attachmentListUrl: baseURL + 'attachment/list', // 查询附件列表
   purchaseStatistics: baseURL + 'purchase/agg',
   purchaseTabs: baseURL + 'purchase/agg/tabs',
   purchaseList: baseURL + 'purchase',
@@ -28,23 +27,6 @@ export default {
   printNo: baseURL + 'invoice/gen-pre-invoice-batch-no', // 打印批次号
   modifyInvoice: baseURL + 'invoice/update-invoice', // 发货单修改
   modifyLogisticsNo: baseURL + 'invoice/add-logistics-number', // 发货单修改
-  settlementOrderList: baseURL + 'settlement-order/list', // 结算单列表
-  exportSettlement: baseURL + 'settlement-order/export-settlement', // 结算单导出
-  supplierConfirm: baseURL + 'settlement-order/supplier-confirm', // 商家确认
-  deliveryInfo: baseURL + 'settlement-order/settlement-order-delivery-info', // 发货单结算信息
-  supplyDetails: baseURL + 'settlement-order/settlement-order-supply-details', // 供货明细
-  supplementaryDeductionInfo: baseURL + 'settlement-order/settlement-supplementary-deduction', // 补扣款单信息
-  paymentInfo: baseURL + 'reimbursement/payment-info', // 付款单信息查询
-  financeInfo: baseURL + 'reimbursement/finance-info', // 财务信息查询
-  settlementOrder: baseURL + 'reimbursement/settlement-order-info', // 结算单信息查询
-  supplementaryDeduction: baseURL + 'reimbursement/supplementary-deduction-info', // 补扣款单信息查询
-  supplyDeductionList: baseURL + 'supplementary-deduction/list', // 补扣款单列表
-  reimbursementList: baseURL + 'reimbursement/page-list', // 请款单列表
-  exportReimbursementList: baseURL + 'reimbursement/export/settlement-order-info', // 请款单详情导出
-  exportInvoice: baseURL + 'reimbursement/export/invoice', // 下载发票
-  exportRequestForm: baseURL + 'reimbursement/export/request-form', // 下载请款单
-  exportSupplyList: baseURL + 'reimbursement/export/supply-list', // 下载供货清单
-  updateReimbursementAttachments: baseURL + 'reimbursement/update-attachment', // 保存请款单附件
   stockOutList: baseURL + 'stock-out/page-srm-list', // 缺货列表
   stockOutApply: baseURL + 'stock-out', // 申请缺货
   productDashboardList: baseURL + 'product-dashboard/page', // 商品看板列表查询

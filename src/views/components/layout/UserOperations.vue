@@ -2,10 +2,7 @@
   <div class="user-operations">
     <el-dropdown>
       <span class="el-dropdown-link">
-        <div class="user-avatar">
-          <img src="@/assets/user-avatar.png" alt="头像" />
-        </div>
-        <i class="el-icon-caret-bottom color-text--white"></i>
+        <i class="el-icon-caret-bottom color-text--weak"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item @click.native="modifyPassword">修改密码</el-dropdown-item>
@@ -50,18 +47,15 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+@import '@assets/scss/_var.scss';
+
 .user-operations {
   display: inline-block;
   cursor: pointer;
-}
-
-.user-avatar {
-  display: inline-block;
-  img {
-    height: 2.5rem;
-    width: 2.5rem;
-    vertical-align: middle;
-    border-radius: 100%;
+  &:hover {
+    .el-icon-caret-bottom {
+      color: $color-primary;
+    }
   }
 }
 </style>

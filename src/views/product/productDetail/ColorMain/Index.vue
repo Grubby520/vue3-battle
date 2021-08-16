@@ -269,7 +269,8 @@ export default {
             const currentSale = this.curSaleAttrs
               .find(sale => head.extendCode === sale.extendCode)
             if (currentSale.deleteSale) {
-              head.label = `${head.label}(已删除)`
+              head.label = `${head.label}`
+              // head.label = `${head.label}(已删除)`
             } else {
               if (!currentSale.usable) {
                 head.label = `${head.label}(已禁用)`
@@ -345,9 +346,12 @@ export default {
       this.curSaleAttrs
         .filter(sale => sale.id === productSaleAttr.attributeId)
         .forEach(sale => {
-          const currentSaleTermIds = productSaleAttr.attributeTerms
-            .reduce((init, term) => init.concat(term.id), [])
-          const terms = sale.terms.filter(term => currentSaleTermIds.includes(term.id))
+          const terms = productSaleAttr.attributeTerms
+            .reduce((init, term) => {
+              const saleTerm = sale.terms.find(attr => attr.id === term.id)
+              saleTerm && init.push(saleTerm)
+              return init
+            }, [])
           this.form[formSaleType] = terms
           this[`${optionType}Options`] = sale.terms
         })
@@ -444,7 +448,7 @@ export default {
 .ProductSale {
   margin-bottom: 2rem;
   &-sizes {
-    color: #409eff;
+    color: #1890ff;
     cursor: default;
   }
   .el-card {

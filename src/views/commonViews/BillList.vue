@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-alert class="mb-2rem" type="warning" :closable="false">
+    <el-alert class="mb-16px" type="warning" :closable="false">
       注意！请打印发票和供货清单，每页加盖公司公章后扫描文件并上传每一页图片完成结算。
       <span>
         参照范本
@@ -10,18 +10,29 @@
     <SlListView
       ref="listView"
       @gotoPage="gotoPage"
-      @reset="reset"
       :total="page.total"
       :pageIndex="page.pageIndex"
       :pageSize="page.pageSize"
     >
       <div slot="search">
         <!-- 搜索区域search包含搜索和重置按钮 -->
-        <SlSearchForm ref="searchForm" v-model="query" :items="searchItems"></SlSearchForm>
+        <SlSearchForm
+          ref="searchForm"
+          v-model="query"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
       </div>
-      <el-divider />
       <SlTableToolbar>
-        <el-button type="primary" :loading="loading" :disabled="!canExport" @click="exportList">导出</el-button>
+        <SlButton
+          type="primary"
+          boxShadow="primary"
+          :loading="loading"
+          :disabled="!canExport"
+          @click="exportList"
+        >导出</SlButton>
       </SlTableToolbar>
       <!-- 表格区域包含分页 -->
       <SlTable
@@ -32,32 +43,15 @@
         :selection="true"
         :operate="true"
         :tooltip="false"
-        rowKey="reimbursementId"
+        align="left"
+        rowKey="paymentRequestId"
       >
         <div slot="operation" slot-scope="{row}">
-          <el-button
-            class="mb-05rem operation-btn"
-            type="primary"
-            size="mini"
-            @click="download(row,1)"
-          >下载Invoice</el-button>
-          <el-button
-            class="mb-05rem operation-btn"
-            type="primary"
-            size="mini"
-            @click="download(row,2)"
-          >下载请款单</el-button>
-          <el-button
-            class="mb-05rem operation-btn"
-            type="primary"
-            size="mini"
-            @click="download(row,3)"
-          >下载供货清单</el-button>
+          <el-button class="operation-btn" type="text" @click="download(row,1)">下载Invoice</el-button>
+          <el-button class="operation-btn" type="text" @click="download(row,3)">下载供货清单</el-button>
           <el-button
             class="operation-btn"
-            type="primary"
-            size="mini"
-            plain
+            type="text"
             @click="openAttachmentsManageDialog(row)"
           >{{attachmentsText(row)}}</el-button>
         </div>
@@ -70,6 +64,7 @@
       :data.sync="attachments"
       :fileType="3"
       :status="attachmentsManageStatus"
+      :loading="loading"
       data-key="associationId"
       @submitHandler="saveAttachments"
     ></AttachmentsManageDialog>
@@ -77,11 +72,11 @@
 </template>
 
 <script>
-import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip } from '@shared/util'
+import { exportFileFromRemote, date, thousandsSeparate, errorMessageTip, getLocalStorageItem } from '@shared/util'
 import CommonUrl from '@api/url.js'
 import BillUrl from '@api/bill/billUrl.js'
-import GoodsUrl from '@api/goods/goodsUrl.js'
-import GoodsApi from '@api/goods'
+import SettlementUrl from '@api/settlement/settlementUrl'
+import SettlementApi from '@api/settlement'
 import AttachmentsManageDialog from '@/views/components/AttachmentsManageDialog.vue'
 
 export default {
@@ -92,7 +87,8 @@ export default {
   data () {
     return {
       loading: false,
-      reimbursementId: null,
+      tableLoading: false,
+      paymentRequestId: null,
       attachmentsManageDialogTitle: '上传附件',
       attachmentsManageDialogShow: false,
       attachmentsManageStatus: 'edit',
@@ -109,7 +105,7 @@ export default {
         {
           type: 'input',
           label: '请款单号',
-          name: 'reimbursementNo'
+          name: 'paymentRequestNo'
         },
         {
           type: 'input',
@@ -137,20 +133,20 @@ export default {
       ],
       columns: [
         {
-          prop: 'reimbursementNo',
+          prop: 'paymentRequestNo',
           label: '请款单号',
           render: (h, data) => {
             let { row = {} } = data
-            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.reimbursementNo}</el-link>
+            return <el-link type="primary" onClick={() => this.toDetail(row)}>{row.paymentRequestNo}</el-link>
           }
         },
         {
-          prop: 'applyReimbursementAmount',
+          prop: 'applyPaymentAmount',
           label: '请款总金额(￥)',
           width: '120',
           render: (h, data) => {
             let { row = {} } = data
-            return <span>{thousandsSeparate(row.applyReimbursementAmount)}</span>
+            return <span>{thousandsSeparate(row.applyPaymentAmount)}</span>
           }
         },
         {
@@ -210,7 +206,7 @@ export default {
                   row.requestPayoutAt && (<p>创建时间：{row.requestPayoutAt}</p>)
                 }
                 {
-                  row.payAt && (<p>打款时间：{row.payAt}</p>)
+                  row.paymentTime && (<p>打款时间：{row.paymentTime}</p>)
                 }
                 {
                   row.rejectAt && (<p>驳回时间：{row.rejectAt}</p>)
@@ -266,7 +262,8 @@ export default {
     },
     gotoPage (pageSize = 10, pageIndex = 1) {
       const params = this.generateParams(pageSize, pageIndex)
-      GoodsApi.getReimbursementList(params).then(res => {
+      this.tableLoading = true
+      SettlementApi.getPaymentOrderList(params).then(res => {
         let { success, data = {} } = res
         if (success) {
           this.tableData = data.list
@@ -275,15 +272,8 @@ export default {
           this.page.pageSize = pageSize
         }
       }).finally(() => {
-        this.$refs.listView.loading = false
+        this.tableLoading = false
       })
-    },
-    reset () {
-      this.resetParams()
-      this.$refs.listView.refresh()
-    },
-    resetParams () {
-      this.$refs.searchForm.reset()
     },
     generateParams (pageSize, pageIndex) {
       let { createAts = [], ...orther } = this.query
@@ -291,25 +281,26 @@ export default {
         ...orther,
         pageIndex,
         pageSize,
-        requestPayoutStartAt: createAts && createAts[0] ? createAts[0] : '',
-        requestPayoutEndAt: createAts && createAts[1] ? createAts[1] : ''
+        businessType: getLocalStorageItem('supplierType') === 'OEM' ? 1 : 0,
+        createAtStart: createAts && createAts[0] ? createAts[0] : '',
+        createAtEnd: createAts && createAts[1] ? createAts[1] : ''
       }
     },
     toDetail (row) {
       this.$router.push({
         path: '/home/finance/bill-detail',
         query: {
-          reimbursementId: row.reimbursementId,
+          paymentRequestId: row.paymentRequestId,
           status: row.status
         }
       })
     },
     exportList () {
       exportFileFromRemote({
-        url: GoodsUrl.exportReimbursementList,
+        url: SettlementUrl.exportSettlementInfoUrl,
         name: `请款单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
         params: {
-          reimbursementIds: this.selections.map(item => item.reimbursementId)
+          paymentRequestIds: this.selections.map(item => item.paymentRequestId)
         },
         beforeLoad: () => {
           this.loading = true
@@ -330,22 +321,20 @@ export default {
       let url = ''
       switch (type) {
         case 1:
-          url = GoodsUrl.exportInvoice
+          url = SettlementUrl.exportInvoiceUrl
           fileName = `发票_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
-        case 2:
-          url = GoodsUrl.exportRequestForm
-          fileName = `请款单_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
-          break
         case 3:
-          url = GoodsUrl.exportSupplyList
+          url = SettlementUrl.exportSupplyListUrl
           fileName = `供货清单_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`
           break
       }
       exportFileFromRemote({
-        url: url + `/${row.reimbursementId}`,
+        url: url,
         name: fileName,
-        params: {},
+        params: {
+          paymentRequestId: row.paymentRequestId
+        },
         beforeLoad: () => {
           this.loading = true
           this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '下载中' })
@@ -362,12 +351,12 @@ export default {
     },
     openAttachmentsManageDialog (row) {
       this.getAttachmentList(row)
-      this.reimbursementId = row.reimbursementId
+      this.paymentRequestId = row.paymentRequestId
       this.attachmentsManageDialogTitle = this.getAttachmentsText(row)
       this.attachmentsManageDialogShow = true
     },
     getAttachmentList (row) {
-      GoodsApi.getAttachmentList({ associationId: row.reimbursementId, associationType: '3' }).then(res => {
+      SettlementApi.getAttachmentList({ associationId: row.paymentRequestId, associationType: '3' }).then(res => {
         let data = res.data || []
         this.attachments = data.map(item => {
           return {
@@ -379,8 +368,12 @@ export default {
       })
     },
     saveAttachments () {
+      if (this.attachments.length === 0) {
+        errorMessageTip('请上传必要的附件')
+        return
+      }
       const params = {
-        paymentRequestId: this.reimbursementId,
+        paymentRequestId: this.paymentRequestId,
         attachmentInfoDtoList: this.attachments.map(item => {
           return {
             attachmentName: item.name,
@@ -388,8 +381,9 @@ export default {
           }
         })
       }
+
       this.loading = true
-      GoodsApi.updateReimbursementAttachments(params).then(res => {
+      SettlementApi.saveAttachmentRelations(params).then(res => {
         if (res.success) {
           this.attachmentsManageDialogShow = false
           this.$message.success('保存成功')
@@ -407,8 +401,7 @@ export default {
 
 <style scoped lang="scss">
 .operation-btn {
-  width: 8em;
-  padding: 0.5em;
   margin-left: 0 !important;
+  margin-right: 0.8rem;
 }
 </style>

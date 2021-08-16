@@ -4,7 +4,7 @@
       <router-view />
     </transition>
     <!-- icon-font symbol图标 -->
-    <remote-js src="//at.alicdn.com/t/font_2214107_eremntfnql.js"></remote-js>
+    <remote-js src="//at.alicdn.com/t/font_2214107_7olpj3m9zjs.js"></remote-js>
     <!-- 版本更新提示 -->
     <VersionUpdatePrompt></VersionUpdatePrompt>
   </div>
@@ -22,12 +22,24 @@ export default {
     RemoteJs,
     VersionUpdatePrompt
   },
+  data () {
+    return {
+      showRouterView: true
+    }
+  },
+
   mounted () {
     if (process.env.NODE_ENV === 'production') {
       setInterval(() => {
         this.getVersion()
       }, 1000 * 60 * 5)
     }
+    // 解决刷新页面后路由数据丢失的问题【动态路由问题】
+    this.$store.dispatch('user/UPDATE_ROUTES').then(() => {
+      if (window.location.href.indexOf('/home') !== -1) {
+        this.$router.push(getLocalStorageItem('activePath'))
+      }
+    })
   },
   methods: {
     getVersion () {
@@ -61,10 +73,10 @@ body {
 }
 
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif, 'PingFang SC';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: #212b36; // 主要文字色
   font-size: 14px; // 设计稿主字体大小
   height: 100%;
 }

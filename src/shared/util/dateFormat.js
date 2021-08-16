@@ -116,19 +116,19 @@ export function getDatePickerOptions (type = 'daterange') {
           start = new Date(nowDateTime - 3600 * 1000 * 24 * 1)
           break
         case '3d':
-          start = new Date(nowDateTime - 3600 * 1000 * 24 * 3)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 2)
           break
         case '7d':
-          start = new Date(nowDateTime - 3600 * 1000 * 24 * 7)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 6)
           break
         case '15d':
-          start = new Date(nowDateTime - 3600 * 1000 * 24 * 15)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 14)
           break
         case '30d':
-          start = new Date(nowDateTime - 3600 * 1000 * 24 * 30)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 29)
           break
         case '90d':
-          start = new Date(nowDateTime - 3600 * 1000 * 24 * 90)
+          start = new Date(nowDateTime - 3600 * 1000 * 24 * 89)
           break
       }
 

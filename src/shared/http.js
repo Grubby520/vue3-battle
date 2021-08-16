@@ -69,9 +69,11 @@ axiosInstance.interceptors.response.use(
         case '500004': // 超出最大限制
         case '900001':
         case '200017': // feign调用失败
+          store.commit('ADD_UNIFORMLY_ERROR_CODES', { code: error.code }) // 添加统一捕获的错误代码
           errorMessageTip(error.message)
           break
         case '100005': // 失效的token
+          store.commit('ADD_UNIFORMLY_ERROR_CODES', { code: error.code })
           errorMessageTip('身份验证信息失效,请重新登录')
           break
       }

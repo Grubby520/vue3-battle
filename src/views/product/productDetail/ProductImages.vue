@@ -18,7 +18,7 @@
             <SlUploadImages
               v-model="productImages"
               :imageType="0"
-              :limit="8"
+              :limit="1000"
               :multiple="true"
               :disabled="mode"
             />

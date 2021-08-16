@@ -1,4 +1,4 @@
-import { homeRoutes } from '@/router/homeRoutes.js'
+import { homeStaticRoutes } from '@/router/homeRoutes.js'
 export const routes = [
   {
     path: '/(login)?',
@@ -28,7 +28,7 @@ export const routes = [
   {
     path: '/home',
     component: () => import('@/views/Home.vue'),
-    children: homeRoutes
+    children: homeStaticRoutes
   },
   {
     path: '/doc',

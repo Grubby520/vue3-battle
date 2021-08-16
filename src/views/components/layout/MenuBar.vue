@@ -34,11 +34,11 @@ export default {
     },
     backgroundColor: {
       type: String,
-      default: '#222d32'
+      default: '#1a233b'
     },
     textColor: {
       type: String,
-      default: '#8aa4af'
+      default: '#b1b5c1'
     },
     activeTextColor: {
       type: String,
@@ -62,6 +62,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import '@assets/scss/_var.scss';
 .menu-bar {
   height: calc(100% - 5rem);
   overflow-y: auto;
@@ -73,6 +74,9 @@ export default {
 .menu-bar /deep/ {
   .el-menu {
     border: none;
+  }
+  .el-menu-item.is-active {
+    background-color: $color-primary !important;
   }
   // 以下样式处理 element菜单报 Maximum call stack size exceeded错的折中处理
   .el-menu--collapse > div > .el-submenu > .el-submenu__title span {

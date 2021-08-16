@@ -21,7 +21,7 @@ export default {
 <style lang="scss" scoped>
 .merchant-notice {
   line-height: 1.5;
-  margin-bottom: 2em;
+  margin-bottom: 1.6rem;
   & /deep/ {
     .el-alert__title,
     .el-alert__description {

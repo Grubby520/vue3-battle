@@ -162,6 +162,15 @@
       <el-form-item label="联系人微信" prop="contactWebChat">
         <el-input v-model="form.contactWebChat" maxlength="15" clearable placeholder="请输入联系人微信"></el-input>
       </el-form-item>
+      <el-form-item label="引荐人" prop="referrer">
+        <el-input
+          v-model="form.referrer"
+          clearable
+          maxlength="50"
+          placeholder="请输入引荐人"
+          show-word-limit
+        ></el-input>
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -259,7 +268,8 @@ export default {
         contactName: '',
         contactNumber: '',
         contactQq: '',
-        contactWebChat: '' // 联系人微信
+        contactWebChat: '',
+        referrer: '' // 联系人微信
       },
       rules: {
         supplierName: [
@@ -315,6 +325,12 @@ export default {
         ],
         contactQq: [
           qqValidator()
+        ],
+        contactWebChat: [
+          emptyValidator('请输入联系人微信')
+        ],
+        referrer: [
+          emptyValidator('请输入引荐人')
         ]
       },
       titleTextStyle: {

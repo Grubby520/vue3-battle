@@ -1,5 +1,5 @@
 <template>
-  <div class="odmOneDetails">
+  <div class="odmOneDetails color-bg--white">
     <p class="odmOneDetails-title">选择类目</p>
     <CategoryCascader v-model="currentNodes"></CategoryCascader>
     <p class="odmOneDetails-des align-left">当前选择分类：{{cateLabels}}</p>
@@ -63,6 +63,7 @@ export default {
 .odmOneDetails {
   width: 80%;
   margin: 0 auto;
+  padding: 2.4rem 1.6rem 2.4rem;
   &-title {
     font-size: 1.8rem;
     font-weight: bold;

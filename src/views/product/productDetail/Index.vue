@@ -350,7 +350,8 @@ export default {
           attributeTerms.forEach(attrTerm => {
             if (!cateTermIds.includes(attrTerm.id)) {
               Object.assign(attrTerm, {
-                name: `${attrTerm.name}(已删除)`,
+                name: `${attrTerm.name}`,
+                // name: `${attrTerm.name}(已删除)`,
                 attributeId,
                 extendCode: sale.attribute.extendCode,
                 code: `${attrTerm.id}`
@@ -375,7 +376,8 @@ export default {
     buidDeletedSaleAttrs (sale) {
       const { attribute, attributeTerms, attributeId } = sale
       Object.assign(attribute, {
-        name: `${attribute.name}(已删除)`,
+        name: `${attribute.name}`,
+        // name: `${attribute.name}(已删除)`,
         saleAttributeType: { 'value': attribute.saleAttributeType },
         deleteSale: true
       })
@@ -383,7 +385,8 @@ export default {
       deleteAttrs['terms'] = attributeTerms
         .map(attr => {
           Object.assign(attr, {
-            name: `${attr.name}(已删除)`,
+            name: `${attr.name}`,
+            // name: `${attr.name}(已删除)`,
             attributeId,
             extendCode: attribute.extendCode,
             code: `${attr.id}`
