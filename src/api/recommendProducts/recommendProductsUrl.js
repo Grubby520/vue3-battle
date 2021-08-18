@@ -1,4 +1,4 @@
-const baseURL = '/srm-goods-service'
+const baseURL = '/srm-odm-goods-service'
 const plmUrl = 'plm-product-service'
 const RECOMMEND_URLS = {
   // 列表页
