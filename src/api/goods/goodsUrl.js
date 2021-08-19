@@ -5,7 +5,7 @@
  * @LastEditTime: 2021-06-22 14:56:37
  * @Description: file content
  */
-const baseURL = '/srm-goods-service/'// 与后端微服务名对应
+const baseURL = '/srm-odm-goods-service/'// 与后端微服务名对应
 
 export default {
   remarks: baseURL + 'invoice/update-remarks', // 备注

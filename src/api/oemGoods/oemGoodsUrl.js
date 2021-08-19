@@ -1,4 +1,4 @@
-const baseURL = '/oem-goods-service/'// 与后端微服务名对应
+const baseURL = '/srm-oem-goods-service/'// 与后端微服务名对应
 
 export default {
   purchaseOrderListUrl: baseURL + 'purchase-order/list', // 待接单列表
