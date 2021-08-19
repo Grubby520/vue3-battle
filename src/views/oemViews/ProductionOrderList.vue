@@ -44,6 +44,7 @@
 
 <script>
 import OemGoodsAPI from '@api/oemGoods'
+import CommonUrl from '@api/url.js'
 import { setSessionItem, getSessionItem, removeSessionItem } from '@shared/util'
 
 export default {
@@ -85,6 +86,15 @@ export default {
             datetype: 'daterange',
             isBlock: true
           }
+        },
+        {
+          type: 'single-select',
+          label: '快返单',
+          name: 'fastOrderFlag',
+          data: {
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'YES_NO' }
+          }
         }
       ],
       pageFromDetail: false,
@@ -111,7 +121,13 @@ export default {
       const defaultColumns = [
         {
           prop: 'purchaseOrderNumber',
-          label: '生产订单号'
+          label: '生产订单号',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <p>{row.purchaseOrderNumber} {row.fastOrderFlag && <el-tag class="ml-8px" type="danger">快返单</el-tag>}</p>
+            )
+          }
         },
         {
           prop: 'skuQuantity',

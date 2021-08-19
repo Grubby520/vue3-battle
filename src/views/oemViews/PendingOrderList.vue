@@ -38,7 +38,17 @@
         :selections.sync="selections"
         selectable
         childName="purchaseOrderItemVoList"
-      ></SlCardTable>
+      >
+        <template #header="{row}">
+          <el-tag v-if="row.fastOrderFlag" class="mr-8px" type="danger">快返单</el-tag>
+          <ul v-if="columns.length > 0" class="default-header-content">
+            <li class="mr-24px" v-for="propItem in columns" :key="propItem.prop">
+              <span class="header-prop-label mr-8px">{{propItem.label}}:</span>
+              <span class="header-prop-value">{{row[propItem.prop]}}</span>
+            </li>
+          </ul>
+        </template>
+      </SlCardTable>
     </SlListView>
 
     <SlDialog
@@ -79,6 +89,7 @@
 <script>
 import { errorMessageTip } from '@shared/util'
 import OemGoodsAPI from '@api/oemGoods'
+import CommonUrl from '@api/url.js'
 
 export default {
   name: 'PendingOrderList',
@@ -123,6 +134,15 @@ export default {
             datetype: 'daterange',
             isBlock: true
           }
+        },
+        {
+          type: 'single-select',
+          label: '快返单',
+          name: 'fastOrderFlag',
+          data: {
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'YES_NO' }
+          }
         }
       ],
       columns: [
@@ -156,10 +176,10 @@ export default {
           prop: 'attributesName',
           label: '销售属性'
         },
-        // {
-        //   prop: 'orderTypeName',
-        //   label: '订单类型'
-        // },
+        {
+          prop: 'orderTypeName',
+          label: '首/返单类型'
+        },
         {
           prop: 'realPrice',
           label: '单价'
