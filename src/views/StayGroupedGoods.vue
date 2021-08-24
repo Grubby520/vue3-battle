@@ -1,0 +1,510 @@
+<template>
+  <div>
+    <MerchantNotice></MerchantNotice>
+    <SlListView
+      ref="listView"
+      @gotoPage="gotoPage"
+      :total="page.total"
+      :pageIndex="page.pageIndex"
+      :pageSize="page.pageSize"
+      :pageSizes="pageSizes"
+    >
+      <div slot="search">
+        <!-- 搜索区域search包含搜索和重置按钮 -->
+        <SlSearchForm
+          ref="searchForm"
+          v-model="formQuery"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
+      </div>
+      <SlTableToolbar>
+        <SlButton
+          type="primary"
+          boxShadow="primary"
+          :loading="loading"
+          :disabled="!canGenerateInvoice"
+          @click="generateInvoice"
+        >生成发货单</SlButton>
+        <SlButton
+          class="ml-8px"
+          type="primary"
+          boxShadow="primary"
+          plain
+          :loading="loading"
+          @click="exportDetail"
+        >导出待发货商品详情</SlButton>
+      </SlTableToolbar>
+      <div class="switch-nav">
+        <el-menu
+          :default-active="activeIndex"
+          class="color-bg--white"
+          mode="horizontal"
+          @select="switchNav"
+        >
+          <el-menu-item
+            v-for="(item,index) in switchNavs"
+            :key="'index'+index"
+            :index="item.index+''"
+          >
+            <template v-if="item.status">
+              <span
+                class="switch-nav-status"
+                :class="{'color-text--danger':item.status === 'danger'}"
+              >{{item.statusText}}</span>
+            </template>
+            {{item.name}}({{item.amount?item.amount:0}})
+          </el-menu-item>
+        </el-menu>
+        <div class="choosed-sku-statistics">
+          选中SKU：
+          <span>SKU款数({{skuTypeNumber}})</span>&nbsp;&nbsp;
+          <span>SKU件数({{skuNumber}})</span>
+        </div>
+      </div>
+      <!-- 表格区域包含分页 -->
+      <SlTable
+        ref="table"
+        v-model="selections"
+        :tableData="tableData"
+        :columns="columns"
+        :operate="false"
+        :tooltip="false"
+        :disabledKeys="disabledKeys"
+        rowKey="id"
+      ></SlTable>
+    </SlListView>
+    <!-- 拆单对话框 -->
+    <SplitOrderDialog
+      :showDialog.sync="showSplitOrderDialog"
+      :inData="dialogForm"
+      @submit="submitSplitOrder"
+    ></SplitOrderDialog>
+    <!-- 缺货申请对话框 -->
+    <StockOutDialog
+      :showDialog.sync="showStockOutDialog"
+      :inData="stockOutDialogForm"
+      @submit="submitStockOutApply"
+    ></StockOutDialog>
+    <!-- 退货信息弹出框 -->
+    <InfoDialog :visible.sync="infoShow" :destroyOnClose="true" />
+  </div>
+</template>
+
+<script>
+import { exportFileFromRemote, date, errorMessageTip } from '@shared/util'
+import CommonUrl from '@api/url.js'
+import GoodsUrl from '@api/goods/goodsUrl'
+import userAPI from '@api/user'
+import GoodsApi from '@api/goods'
+import MerchantNotice from './stayGroupedGoods/MerchantNotice'
+import SplitOrderDialog from './stayGroupedGoods/SplitOrderDialog'
+import StockOutDialog from './stayGroupedGoods/StockOutDialog'
+import InfoDialog from './stayGroupedGoods/infoDialog'
+
+export default {
+  name: 'StayGroupedGoods',
+  components: {
+    MerchantNotice,
+    SplitOrderDialog,
+    StockOutDialog,
+    InfoDialog
+  },
+  data () {
+    return {
+      tableLoading: false,
+      loading: false,
+      activeIndex: '-1',
+      showSplitOrderDialog: false,
+      showStockOutDialog: false,
+      switchNavs: [],
+      tableData: [],
+      selections: [],
+      disabledKeys: [],
+      extraQuery: {
+        type: -1
+      },
+      formQuery: {
+      },
+      page: {
+        pageIndex: 1,
+        pageSize: 50,
+        total: 0
+      },
+      pageSizes: [10, 20, 50, 100, 200],
+      searchItems: [
+        {
+          type: 'input',
+          label: '订单号',
+          name: 'orderId'
+        },
+        {
+          type: 'input',
+          label: '供方货号',
+          name: 'supplierNum'
+        },
+        {
+          type: 'input',
+          label: '商家SKU',
+          name: 'merchantSku'
+        },
+        {
+          type: 'input',
+          label: 'SKU',
+          name: 'sku'
+        },
+        {
+          type: 'single-select',
+          label: '订单类型',
+          name: 'orderType',
+          data: {
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'PURCHASE_ORDER_TYPE' }
+          }
+        },
+        {
+          type: 'date',
+          label: '应交货时间',
+          name: 'dueDeliveryTimes',
+          data: {
+            datetype: 'daterange',
+            isBlock: true
+          }
+        }
+      ],
+      columns: [
+        {
+          prop: 'orderId',
+          label: '订单号'
+        },
+        {
+          prop: 'baseInfo',
+          label: '基本信息',
+          width: '200',
+          isInImg: 'imageUrl',
+          pre: {
+            supplierItemNo: '供方货号',
+            merchantSku: '商家SKU',
+            sku: 'SKU',
+            spu: 'SPU'
+          },
+          data: {
+            imgSize: '5rem'
+          }
+        },
+        {
+          prop: 'productName',
+          label: '商品名称',
+          width: '225',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <el-tooltip placement="top" effect="light">
+                <div slot="content" style="max-width:300px">{row.productName}</div>
+                <p v-slClamp={{ clamp: 2 }}>{row.productName}</p>
+              </el-tooltip>
+            )
+          }
+        },
+        {
+          prop: 'sellProperty',
+          label: '销售属性',
+          width: '150'
+        },
+        {
+          prop: 'orderTypeDes',
+          label: '订单类型'
+        },
+        {
+          prop: 'ctime',
+          label: '创建时间',
+          width: '250px',
+          render: (h, data) => {
+            let { row = {} } = data
+            if (Array.isArray(row['ctime'])) {
+              return (
+                row['ctime'].map(item => {
+                  if (!item.timeStamp) return ''
+                  if (row['ctime'].length === 1) {
+                    return (<span>{item.timeStamp}</span>)
+                  }
+                  return (
+                    <div>
+                      <span>{item.typeDes}:</span>
+                      <span>{item.timeStamp}</span>
+                    </div>
+                  )
+                })
+              )
+            }
+            return <template></template>
+          }
+        },
+        {
+          prop: 'realPurchasePrice',
+          label: '采购单价'
+        },
+        {
+          prop: 'dueDeliveryTime',
+          label: '应交货时间',
+          width: '100',
+          render: (h, data) => {
+            let { row = {} } = data
+            let dueDeliveryTime = row.dueDeliveryTime ? +new Date(row.dueDeliveryTime) : 0
+            let offsetDays = (dueDeliveryTime - new Date().getTime()) / 1000 / 60 / 60 / 24
+            if (!row.dueDeliveryTime) return ''
+            return (
+              <div>
+                <p>{date(dueDeliveryTime, 'yyyy-MM-dd')}</p>
+                <span class="color-text--danger">{offsetDays >= 0 ? `还剩余${Math.ceil(offsetDays)}天` : '已超期'}</span>
+              </div>
+            )
+          }
+        },
+        {
+          prop: 'requiredNum',
+          label: '需求数量'
+        },
+        {
+          prop: 'shippedNum',
+          label: '发货数量',
+          width: '100px',
+          render: (h, data) => {
+            let { row = {} } = data
+            return (
+              <div>
+                <el-input
+                  vModel={row.shippedNum} placeholder="请输入数量"
+                  vSlFormatNumber={{ type: 'integer', max: 999999, compareLength: true, includeZero: true }} disabled></el-input>
+                <div class="mt-1rem">
+                  <el-button type="primary" style="width:100%" onClick={() => this.openSplitDialog(row)} disabled={!row.shippedEnable || row.hasWaitStockOutApplication}>拆单</el-button>
+                </div>
+                {
+                  row.shippedEnable && (
+                    <div class="mt-1rem">
+                      <el-button type="primary" style="width:100%" onClick={() => this.openStockOutDialog(row)} disabled={row.hasWaitStockOutApplication}>缺货申请</el-button>
+                    </div>
+                  )
+                }
+
+              </div>
+            )
+          }
+        }
+      ],
+      dialogForm: {},
+      stockOutDialogForm: {},
+      infoShow: false
+    }
+  },
+  computed: {
+    canGenerateInvoice () {
+      return this.selections.length > 0 // 后续会加权限控制
+    },
+    skuTypeNumber () {
+      let typeMap = {}
+      let total = 0
+      this.selections.forEach(item => {
+        if (item.baseInfo) {
+          if (!typeMap[item.baseInfo.sku]) {
+            typeMap[item.baseInfo.sku] = 1
+            total++
+          }
+        }
+      })
+      return total
+    },
+    skuNumber () {
+      return this.selections.reduce((prev, next) => {
+        prev += next.shippedNum
+        return prev
+      }, 0)
+    },
+    hasRepeatOrderIdAndSkucode () {
+      let tempMap = {}
+      for (let i = 0, len = this.selections.length; i < len; i++) {
+        let item = this.selections[i]
+        let key = item.orderId + item.baseInfo.sku
+        if (!tempMap[key]) {
+          tempMap[key] = 1
+        } else {
+          tempMap[key]++
+        }
+        if (tempMap[key] > 1) {
+          return true
+        }
+      }
+      return false
+    }
+  },
+  mounted () {
+    userAPI.shippingAddressExists().then(({ data }) => {
+      if (!data) {
+        this.infoShow = true
+      }
+    })
+  },
+  methods: {
+    gotoPage (pageSize = 50, pageIndex = 1) {
+      const params = this.generateParams(pageSize, pageIndex)
+      this.tableLoading = true
+      GoodsApi.getGroupList(params).then(res => {
+        let { success, data = {} } = res
+        if (success) {
+          this.tableData = data.list
+          this.page.total = data.total
+          this.page.pageIndex = pageIndex
+          this.page.pageSize = pageSize
+          this.disabledKeys = this.tableData.filter(item => item.canDeliveryOrder === false).map(item => item.id)
+        }
+      }).finally(() => {
+        this.tableLoading = false
+        this.getSwitchNavs()
+      })
+    },
+    getSwitchNavs () {
+      GoodsApi.getGroupTabs({}).then(data => {
+        this.switchNavs = data
+      })
+    },
+    switchNav (index) {
+      this.selections = []
+      this.activeIndex = this.extraQuery.type = index
+      this.gotoPage()
+    },
+    generateParams (pageSize, pageIndex) {
+      let { dueDeliveryTimes = [], ...orther } = this.formQuery
+      return {
+        ...orther,
+        ...this.extraQuery,
+        pageIndex,
+        pageSize,
+        dueDeliveryStartTime: dueDeliveryTimes && dueDeliveryTimes[0] ? dueDeliveryTimes[0] : '',
+        dueDeliveryEndTime: dueDeliveryTimes && dueDeliveryTimes[1] ? dueDeliveryTimes[1] : ''
+      }
+    },
+    validateGenerateInvoice () {
+      if (this.skuTypeNumber > 50) {
+        errorMessageTip('总SKU个数超过50，不能生成发货单')
+        return false
+      }
+
+      if (this.skuNumber > 200) {
+        errorMessageTip('总发货数量超过200，不能生成发货单')
+        return false
+      }
+
+      if (this.hasRepeatOrderIdAndSkucode) {
+        errorMessageTip('同一个SKU拆单后不能组在同一个发货单内')
+        return false
+      }
+      return true
+    },
+    generateInvoice () {
+      if (!this.validateGenerateInvoice()) {
+        return
+      }
+      this.loading = true
+      GoodsApi.groupGenerateShippedBill({
+        ids: this.selections.map(item => item.id)
+      }).then(res => {
+        if (res.success) {
+          this.$message.success(`生成发货单(${res.data})成功`)
+          this.selections = []
+          this.gotoPage()
+        } else {
+          if (!this.$store.state.uniformlyCapturedErrorCodes.includes(res.error.code)) {
+            errorMessageTip(res.error && res.error.message)
+          }
+        }
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    exportDetail () {
+      exportFileFromRemote({
+        url: GoodsUrl.groupExport,
+        params: this.generateParams(),
+        name: `待发货SKU维度详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
+        beforeLoad: () => {
+          this.loading = true
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
+        },
+        afterLoad: () => {
+          this.loading = false
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
+      })
+    },
+    openSplitDialog (row) {
+      this.dialogForm = {
+        id: row.id,
+        sku: row.baseInfo.sku,
+        src: row.baseInfo.imageUrl,
+        merchantSku: row.baseInfo.merchantSku,
+        requiredNum: row.requiredNum,
+        retainRequiredNum: row.requiredNum - row.shippedNum,
+        shippedNum: row.shippedNum
+      }
+      this.showSplitOrderDialog = true
+    },
+    openStockOutDialog (row) {
+      this.stockOutDialogForm = {
+        id: row.id,
+        sku: row.baseInfo.sku,
+        src: row.baseInfo.imageUrl,
+        merchantSku: row.baseInfo.merchantSku,
+        requiredNum: row.requiredNum,
+        type: 0,
+        quantity: undefined,
+        remarks: undefined
+      }
+      this.showStockOutDialog = true
+    },
+    submitSplitOrder (submitData) {
+      GoodsApi.groupSplite({
+        id: submitData.id,
+        sku: submitData.sku,
+        saveRequiredNum: parseInt(submitData.retainRequiredNum)
+      }).then(res => {
+        if (res.success) {
+          this.showSplitOrderDialog = false
+          this.gotoPage()
+          this.$message.success(`拆单成功`)
+        }
+      })
+    },
+    submitStockOutApply (submitData) {
+      GoodsApi.doStockOutApply({
+        purchaseOrderItemId: submitData.id,
+        type: submitData.type,
+        quantity: parseInt(submitData.quantity),
+        remarks: submitData.remarks
+      }).then(res => {
+        if (res.success) {
+          this.showStockOutDialog = false
+          this.gotoPage()
+          this.$message.success(`申请成功`)
+        } else {
+          if (!this.$store.state.uniformlyCapturedErrorCodes.includes(res.error.code)) {
+            errorMessageTip(res.error && res.error.message)
+          }
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.choosed-sku-statistics {
+  position: absolute;
+  top: 50%;
+  right: 2em;
+  transform: translateY(-50%);
+}
+</style>

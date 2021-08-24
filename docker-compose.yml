@@ -1,0 +1,26 @@
+version: "3.5"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "100m"
+    max-file: "10"
+
+services:
+  srm-web:
+    build: .
+    image: ${DOCKER_REGISTRY:-starlink}/srm-web:${ERP_VERSION:-latest}
+    restart: always
+    environment:
+      GATEWAY_URL: gateway-service
+      GATEWAY_PORT: 8765
+    logging: *default-logging
+    networks:
+      - erp-net
+    ports:
+      - "${PORT:-80}:80"
+
+networks:
+  erp-net:
+    external: true
+    name: erp-net

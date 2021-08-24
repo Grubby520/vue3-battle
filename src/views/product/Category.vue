@@ -1,0 +1,77 @@
+<template>
+  <div class="odmOneDetails color-bg--white">
+    <p class="odmOneDetails-title">选择类目</p>
+    <CategoryCascader v-model="currentNodes"></CategoryCascader>
+    <p class="odmOneDetails-des align-left">当前选择分类：{{cateLabels}}</p>
+    <div class="align-center">
+      <el-button @click="save" type="primary">确认</el-button>
+    </div>
+  </div>
+</template>
+
+<script>
+import CategoryCascader from './CategoryCascader'
+import { throttle } from '@/shared/util'
+export default {
+  props: {
+    mode: { type: String, required: false, default: 'create' },
+    id: { type: [Number, String], required: false, default: '' },
+    categoryId: { type: [Number, String], required: false, default: undefined }
+  },
+  components: { CategoryCascader },
+  data () {
+    return {
+      currentNodes: []
+    }
+  },
+  mounted () {
+    this._throttle = throttle(this.throttleMessage, 3000)
+  },
+  computed: {
+    cateLabels () {
+      return this.currentNodes.reduce((init, a) => init.concat(a.name), []).join('>')
+    }
+  },
+  methods: {
+    save () {
+      const current = this.currentNodes[this.currentNodes.length - 1]
+      const isFourCategory = this.currentNodes.length === 4
+      if (current && current.leaf && isFourCategory) {
+        const categoryId = current.id
+        this.$router.push({
+          path: '/home/recommend-products/productDetail',
+          query: {
+            cateLabels: this.cateLabels,
+            categoryId: categoryId,
+            categoryPath: current.categoryLevel,
+            mode: this.mode,
+            id: this.id
+          }
+        })
+      } else {
+        this._throttle()
+      }
+    },
+    throttleMessage () {
+      this.$message.error('请选择第四级类目！')
+    }
+  }
+}
+</script>
+
+<style scoped lang="scss">
+.odmOneDetails {
+  width: 80%;
+  margin: 0 auto;
+  padding: 2.4rem 1.6rem 2.4rem;
+  &-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  &-des {
+    margin: 2rem 0;
+    font-size: 1.5rem;
+  }
+}
+</style>

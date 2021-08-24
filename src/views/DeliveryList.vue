@@ -1,0 +1,598 @@
+<template>
+  <div class="delivery-list">
+    <div class="delivery-introduce">
+      <div class="deliver-info delivery-introduce-bg">
+        <p>商家发货须知：</p>
+        <p>1、每个发货单务必打一个包裹，对应一个物流单号，包裹内必须添加纸质发货清单，切勿将不同发货单商品混合打包发货。</p>
+        <p>2、商家填错发货单号、快递单号，商家发货颜色、尺码、款式、细节与需求不符，按照退件处理，回寄费用商家负担，请商家严把商品质量。</p>
+        <p>3、每个发货单SKU款数不超过50款，SKU件数不超过200件。</p>
+        <p>4、自发货当日起超过15天未被仓库签收的发货单将自动关闭。关闭的发货单仓库不再签收做退回处理。</p>
+      </div>
+      <div class="warehouse-address delivery-introduce-bg">
+        <p>仓库地址：广东省佛山市三水区云东海街道广州军区干休所创亚物流园A仓</p>
+        <p>收货人员：18667186841</p>
+      </div>
+      <div class="update-package delivery-introduce-bg">
+        <p>更换包装须知：</p>
+        <p>1、2021年6月25日收货的商品必须使用我司的包装并且贴条码标签，如果到货的产品没有更换包装，仓库将收取费用进行重新包装，相应费用会在后续货款中进行扣除。</p>
+        <p>2、购买包装耗材下单时需备注自己的供应商ID和供应商名称，可在商家后台【基础资料】页面查看。</p>
+        <p>3、如果发现商家还在使用带有shein的包装袋或标签我司仓库将进行退货处理。</p>
+        <p>
+          4、
+          <el-link
+            type="primary"
+            style="font-size: 12px;"
+            target="_blank"
+            href="https://detail.1688.com/offer/647643367713.html?spm=a26286.8251493.description.2.221425b2S6qTRa"
+          >包装购买链接</el-link>
+        </p>
+      </div>
+    </div>
+    <SlListView
+      ref="listView"
+      @gotoPage="gotoPage"
+      :total="page.total"
+      :pageIndex="page.pageIndex"
+      :pageSize="page.pageSize"
+    >
+      <div slot="search">
+        <SlSearchForm
+          ref="searchForm"
+          v-model="searchQuery"
+          :items="searchItems"
+          :loading="tableLoading"
+          @reset="gotoPage(page.pageSize)"
+          @search="gotoPage(page.pageSize)"
+        ></SlSearchForm>
+      </div>
+      <SlTableToolbar>
+        <SlButton type="primary" boxShadow="primary" @click="batchPrintNo">批量导出批次号</SlButton>
+      </SlTableToolbar>
+      <div class="switch-nav">
+        <el-menu
+          :default-active="activeIndex"
+          class="color-bg--white"
+          mode="horizontal"
+          @select="switchNav"
+        >
+          <el-menu-item index="0">全部({{count}})</el-menu-item>
+          <el-menu-item index="1">全部待发货({{navInfo.totalWait}})</el-menu-item>
+          <el-menu-item index="2">1日未发货({{navInfo.totalWaitOneDay}})</el-menu-item>
+          <el-menu-item index="3">2日未发货({{navInfo.totalWaitTwoDay}})</el-menu-item>
+          <el-menu-item index="4">3日未发货({{navInfo.totalWaitThreeDay}})</el-menu-item>
+        </el-menu>
+      </div>
+      <div class="sl-table-wrap">
+        <el-table
+          :data="tableData"
+          size="mini"
+          ref="multipleTable"
+          class="tableData sl-table-theme"
+          style="width: 100%"
+          header-row-class-name="table-header--custom"
+          row-class-name="table-row--custom"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="55" :selectable="checkSelectable"></el-table-column>
+          <el-table-column prop="date" label="发货单号" width="150px" align="center">
+            <template slot-scope="scope">
+              <el-button @click="odmDetail(scope.row,'see')" type="text">{{scope.row.orderNumber}}</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="orderRequireNum" label="订单需求数量" width="120px" align="center"></el-table-column>
+          <el-table-column prop="deliveryNum" label="实际发货数量" width="120px" align="center"></el-table-column>
+          <el-table-column prop="totalPrice" label="总金额（￥）" width="100px" align="center"></el-table-column>
+          <el-table-column label="状态" width="80px" align="center">
+            <template slot-scope="scope">{{orderStatusList[scope.row.orderStatus]}}</template>
+          </el-table-column>
+          <el-table-column prop="shelvedNum" label="上架数量" width="120px" align="center"></el-table-column>
+          <el-table-column label="最晚交货时间" width="180px" align="center">
+            <template slot-scope="scope">
+              <p>{{scope.row.lastDeliveryTimeS*1000 | dateFormat('yyyy-MM-dd')}}</p>
+              <p
+                style="color:red"
+                v-if="Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24) > 0"
+              >还剩下：{{Math.ceil((scope.row.lastDeliveryTimeS * 1000 - Date.parse(new Date) )/1000/3600/24)}}天</p>
+            </template>
+          </el-table-column>
+          <el-table-column label="进度时间" width="200px" align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.singleTime">组单时间：{{scope.row.singleTime}}</p>
+              <p v-if="scope.row.deliveryTime">发货时间：{{scope.row.deliveryTime}}</p>
+              <p v-if="scope.row.submissionTime">签收时间：{{scope.row.submissionTime}}</p>
+              <p v-if="scope.row.completeTime">完成时间：{{scope.row.completeTime}}</p>
+            </template>
+          </el-table-column>
+          <el-table-column prop="settleOrderNumber" label="结算单号" width="100px" align="center"></el-table-column>
+          <el-table-column prop="logisticsNumber" label="物流信息" width="180px" align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.logisticsNumber">
+                物流单号：
+                <el-button
+                  @click="openLogistisInfoDialog(scope.row)"
+                  type="text"
+                >{{scope.row.logisticsNumber}}</el-button>
+              </p>
+              <el-button
+                type="primary"
+                @click="modifyLogistNo(scope.row)"
+                v-if="[0,1].includes(Number(scope.row.orderStatus))"
+              >{{scope.row.logisticsNumber ? '修改物流单号':'添加物流单号'}}</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="remarks" label="备注" width="200px" align="center"></el-table-column>
+          <el-table-column label="操作" width="180px" align="center" fixed="right">
+            <template slot-scope="scope">
+              <!-- <el-button
+              @click="odmDetail(scope.row,'modify')"
+              type="text"
+              v-if="[0,1].includes(Number(scope.row.orderStatus))"
+              >修改</el-button>-->
+              <el-button class="operate-btn" @click="odmDetail(scope.row,'see')" type="text">查看</el-button>
+              <el-button
+                class="operate-btn"
+                @click="exportExcle(scope.row)"
+                type="text"
+                v-if="scope.row.orderStatus != 5"
+              >导出表格</el-button>
+              <el-button
+                class="operate-btn"
+                @click="printOrder(scope.row)"
+                type="text"
+                v-if="scope.row.orderStatus != 5"
+              >打印发货单</el-button>
+              <el-button
+                class="operate-btn"
+                @click="printBatch(scope.row)"
+                type="text"
+                v-if="scope.row.orderStatus != 5"
+              >打印批次号</el-button>
+              <el-button class="operate-btn" type="text" @click="handleRemark(scope.row)">备注</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </SlListView>
+    <!-- 物流信息dialog -->
+    <logistics-info ref="logisticsInfo"></logistics-info>
+    <!-- 修改物理单号 -->
+    <modify-logistics-no ref="logisticsNo"></modify-logistics-no>
+    <!-- 发货单详情 -->
+    <shipping-details ref="shippingDetail"></shipping-details>
+    <print-batch-no ref="printBatch"></print-batch-no>
+    <print-invoice ref="printInvoice"></print-invoice>
+    <!-- 备注 -->
+    <el-dialog
+      title="备注"
+      :visible.sync="remarksDialogVisible"
+      width="600px"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="remarksForm">
+        <el-form-item>
+          <el-input v-model="remarksForm.remarks" type="textarea" :rows="4" maxlength="200"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="remarksDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleSaveRemarks">保 存</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import logisticsInfo from './deliveryManage/LogisticsInfoDialog'
+import PrintBatchNo from './components/PrintBatchNo'
+import PrintInvoice from './deliveryManage/PrintInvoice'
+import ModifyLogisticsNo from './deliveryManage/ModifyLogisticsNoDialog'
+import ShippingDetails from './deliveryManage/ShippingDetailsDiaolog'
+import CommonUrl from '@api/url.js'
+import GoodsUrl from '@api/goods/goodsUrl.js'
+import GOODS_API from '@api/goods'
+import { exportFileFromRemote, date } from '@shared/util'
+import { Message } from 'element-ui'
+import { find as _find } from 'lodash'
+export default {
+  name: 'DeliveryList',
+  components: { logisticsInfo, ModifyLogisticsNo, ShippingDetails, PrintBatchNo, PrintInvoice },
+  data () {
+    return {
+      tableLoading: false,
+      remarksForm: {
+        remarks: ''
+      },
+      remarksRow: {},
+      remarksDialogVisible: false,
+      page: {
+        pageIndex: 1,
+        pageSize: 10,
+        total: 0
+      },
+      searchQuery: {},
+      searchItems: [
+        {
+          type: 'input',
+          label: '发货单号',
+          name: 'deliveryNumber'
+        },
+        {
+          type: 'input',
+          label: '订单号',
+          name: 'purchaseOrderNumber'
+        },
+        {
+          type: 'input',
+          label: 'SKU',
+          name: 'sku'
+        },
+        {
+          type: 'date',
+          label: '组单时间',
+          name: 'cTime',
+          data: {
+            datetype: 'daterange',
+            isBlock: true
+          }
+        },
+        {
+          type: 'date',
+          label: '最晚交货时间',
+          name: 'uTime',
+          data: {
+            datetype: 'daterange',
+            isBlock: true
+          }
+        },
+        {
+          type: 'single-select',
+          label: '发货单状态',
+          name: 'status',
+          data: {
+            remoteUrl: CommonUrl.dictUrl,
+            params: { dataCode: 'INVOICE_STATUS_ENUM' }
+          }
+        },
+        {
+          type: 'input',
+          label: '物流单号',
+          name: 'logisticsNumber'
+        }
+      ],
+      orderStatusList: ['待发货', '已发货 ', '已到货', '异常到货', '已完成', '已取消'],
+      navInfo: {},
+      tableData: [],
+      activeIndex: '0',
+      selectdChange: [],
+      count: 0
+    }
+  },
+
+  methods: {
+    handleSaveRemarks () {
+      const deliveryOrderNumber = this.remarksRow.orderNumber
+      GOODS_API.remarks({
+        deliveryOrderNumber,
+        remarks: this.remarksForm.remarks
+      }).then((res) => {
+        if (res.success) {
+          this.$notify({
+            title: '成功',
+            message: '修改成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.$set(this.remarksForm, 'remarks', '')
+          this.remarksDialogVisible = false
+          let params = this.getParams(10, 1)
+          this.getInvoiceList(params)
+        }
+      })
+    },
+
+    handleRemark (row) {
+      this.remarksDialogVisible = true
+      this.remarksRow = row
+      this.$set(this.remarksForm, 'remarks', row.remarks)
+    },
+
+    checkSelectable (row) {
+      return row.orderStatus !== 5
+    },
+
+    gotoPage (pageSize = 10, pageIndex = 1) {
+      let params = this.getParams(pageSize, pageIndex)
+      this.tableLoading = true
+      if (this.activeIndex > 0) {
+        delete params.status
+        params.type = this.activeIndex
+      }
+      GOODS_API.invoiceList(params).then(res => {
+        if (res.success) {
+          let data = res.data
+          this.page.pageIndex = data.pageIndex
+          this.page.pageSize = data.pageSize
+          this.page.total = data.total
+          this.count = data.count
+          this.tableData = data.deliveryOrderList
+          this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
+        } else {
+          Message({
+            type: 'error',
+            message: res.error.message
+          })
+        }
+      }).finally(() => {
+        this.tableLoading = false
+      })
+    },
+
+    handleSelectionChange (val) {
+      this.selectdChange = val
+    },
+
+    switchNav (val) {
+      let arr = _find(this.searchItems, { name: 'status' })
+      this.activeIndex = val
+      if (val > 0) {
+        if (arr) {
+          this.searchItems.pop()
+        }
+      } else {
+        if (!arr) {
+          let obj = {
+            type: 'single-select',
+            label: '发货单状态',
+            name: 'status',
+            data: {
+              remoteUrl: CommonUrl.dictUrl,
+              params: { dataCode: 'INVOICE_STATUS_ENUM' }
+            }
+          }
+          this.searchItems.push(obj)
+        }
+      }
+      let params = this.getParams(10, 1)
+      if (val > 0) {
+        delete params.status
+        params.type = val
+      }
+      this.getInvoiceList(params)
+    },
+
+    getParams (pageSize, pageIndex) {
+      let [singleTimeStart, singleTimeEnd] = ['', '']
+      let [latestDeliveryTimeStart, latestDeliveryTimeEnd] = ['', '']
+      if (this.searchQuery.cTime) {
+        [singleTimeStart, singleTimeEnd] = this.searchQuery.cTime
+      }
+      if (this.searchQuery.uTime) {
+        [latestDeliveryTimeStart, latestDeliveryTimeEnd] = this.searchQuery.uTime
+      }
+      let params = Object.assign({ singleTimeStart, singleTimeEnd, latestDeliveryTimeStart, latestDeliveryTimeEnd }, this.searchQuery)
+      delete params.cTime
+      delete params.uTime
+      params.pageSize = pageSize
+      params.pageIndex = pageIndex
+      return params
+    },
+
+    getInvoiceList (params) {
+      GOODS_API.invoiceList(params).then(res => {
+        if (res) {
+          let data = res.data
+          this.page.pageIndex = data.pageIndex
+          this.page.pageSize = data.pageSize
+          this.page.total = data.total
+          this.count = data.count
+          this.tableData = data.deliveryOrderList
+          this.navInfo = { totalWaitOneDay: data.totalWaitOneDay, totalWait: data.totalWait, totalWaitTwoDay: data.totalWaitTwoDay, totalWaitThreeDay: data.totalWaitThreeDay }
+        }
+      })
+    },
+
+    async openLogistisInfoDialog (row) {
+      let params = {
+        logisticsNumber: row.logisticsNumber,
+        logisticsCompanyName: row.logisticsCompanyName,
+        logisticsCompanyCode: row.courierCode
+      }
+
+      let loding = this.$loading({
+        lock: true,
+        text: '加载中...',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      })
+
+      let res = await GOODS_API.getLogisticsInfo(params)
+      if (res.success) {
+        let data = { isShowLogistics: true, info: res.data[0], row: row }
+        this.$refs.logisticsInfo.show(data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
+      }
+      loding.close()
+    },
+
+    async odmDetail (row, type) {
+      let res = await GOODS_API.getInvoiceDetail(row.id)
+      if (res.success) {
+        let data = { type: type, dialogVisible: true, row: row, shippingDeatils: res.data }
+        if (type === 'modify') {
+          data.onClick = (data) => {
+            row.deliveryNum = data
+          }
+        }
+        this.$refs.shippingDetail.show(data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
+      }
+    },
+
+    async modifyLogistNo (row) {
+      let res = await GOODS_API.logisticsCompany()
+      if (res.success) {
+        let arr = res.data
+        let data = Object.assign({
+          onClick: (data) => {
+            row.logisticsNumber = data.logisticsNumber
+            row.courierCode = data.courierCode
+            row.courierName = data.courierName
+            row.logisticsCompanyName = data.logisticsCompanyName
+            row.logisticsCompanyId = data.logisticsCompanyId
+            row.orderStatus = data.type
+          }
+        }, { showDiaolog: true, row: row, companyList: arr })
+        this.$refs.logisticsNo.show(data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
+      }
+    },
+
+    printBatch (row) {
+      GOODS_API.printNo(row.id).then(data => {
+        if (data.success) {
+          this.$refs.printBatch.show(data.data)
+        } else {
+          Message({
+            message: data.error.message,
+            type: 'error'
+          })
+        }
+      })
+    },
+
+    async printOrder (row) {
+      let res = await GOODS_API.printInvoice(row.id)
+      if (res.success) {
+        this.$refs.printInvoice.show(res.data)
+      } else {
+        Message({
+          message: res.error.message,
+          type: 'error'
+        })
+      }
+    },
+
+    exportExcle (row) {
+      exportFileFromRemote({
+        url: GoodsUrl.exportExcel + '?deliveryOrderId=' + row.id,
+        name: `发货单详情_${date(+new Date(), 'yyyy-MM-dd')}.xlsx`,
+        beforeLoad: () => {
+          this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
+        },
+        afterLoad: () => {
+          this.selections = []
+          this.$store.dispatch('CLOSE_LOADING')
+        },
+        successFn: () => { },
+        errorFn: () => { }
+      })
+    },
+
+    batchPrintNo () {
+      if (this.selectdChange.length > 0) {
+        let arr = []
+        this.selectdChange.forEach((item) => {
+          arr.push(item.id)
+        })
+        exportFileFromRemote({
+          url: GoodsUrl.printNo,
+          name: `批量导出批次号.zip`,
+          params: { ids: arr.join(',') },
+          beforeLoad: () => {
+            this.$store.dispatch('OPEN_LOADING', { isCount: false, loadingText: '导出中' })
+          },
+          afterLoad: () => {
+            this.selections = []
+            this.$store.dispatch('CLOSE_LOADING')
+          },
+          successFn: () => { },
+          errorFn: () => { }
+        })
+        // GOODS_API.batchPrintNo({ ids: arr.join(',') })
+      } else {
+        Message({
+          message: '请至少选择一条发货记录',
+          type: 'warning'
+        })
+      }
+    }
+  },
+
+  mounted () {
+    // this.getInvoiceList(this.page)
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.operate-btn {
+  display: block;
+  &:first-child {
+    margin-left: 10px;
+  }
+}
+.delivery-list {
+  width: 100%;
+  .delivery-introduce {
+    font-size: 12px;
+    line-height: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    .delivery-introduce-bg {
+      background: #fdf6ec;
+      border-radius: 4px;
+      width: 50%;
+      margin-bottom: 15px;
+    }
+    .deliver-info,
+    .update-package {
+      width: 60%;
+      padding: 20px;
+    }
+    .warehouse-address {
+      width: 30%;
+      padding: 40px 20px;
+    }
+  }
+  .tableData {
+    &-col {
+      &-img {
+        width: 10rem;
+        height: 10rem;
+        margin-right: 1rem;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+      &-pre {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      &-con {
+        text-align: left;
+      }
+    }
+    /deep/ .cell {
+      text-align: center;
+    }
+  }
+}
+</style>
